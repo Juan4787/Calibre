@@ -104,6 +104,8 @@ def test_generated_uncertainty_and_metamorphism(case, cause):
         "evidence",
         "version",
         "trace",
+        "wrong_difference_sign",
+        "unknown_rule",
     ],
 )
 def test_checker_rejects_economic_corruption(corruption):
@@ -133,6 +135,10 @@ def test_checker_rejects_economic_corruption(corruption):
         finding.update(status="FAIL", confirmed_difference="10", missing_evidence=[])
     elif corruption == "version":
         finding["version"] = "V2"
+    elif corruption == "wrong_difference_sign":
+        finding["difference"] = "-10"
+    elif corruption == "unknown_rule":
+        finding["rule"] = "R_UNKNOWN"
     else:
         next(t for t in finding["trace"] if t["op"] == "comparison")["output"] = "-10"
     # Isolate semantic validation: merely noticing a changed hash is not this oracle.
