@@ -212,7 +212,10 @@ def test_currencies_never_summed_or_converted(raw_dataset):
     result = compute(raw_dataset)
     assert result.summary["currencies"]["ARS"]["actual"] == "100"
     assert result.summary["currencies"]["USD"]["actual"] == "3"
-    assert next(f for f in result.findings if f.currency == "USD").status == "UNDETERMINABLE"
+    finding = next(f for f in result.findings if f.currency == "USD")
+    assert finding.status == "UNDETERMINABLE"
+    assert finding.shipment_ids == []
+    assert any("La moneda del cargo difiere de la del acuerdo" in r for r in finding.reasons)
 
 
 def test_missing_expected_charge_requires_explicit_scope_and_is_review(raw_dataset):
