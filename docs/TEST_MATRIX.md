@@ -1314,10 +1314,10 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
 - **FIXTURE_DATOS:** RunB; snapshot/ancla; fuente altered; artifact distinto; proceso abierto con código cambiado
 - **PASOS_EXACTOS:** 1. Replay original. 2. Alterar fuente/snapshot en copia. 3. Cambiar artifact o código cargado. 4. Confirmar que no reescribe resultado.
-- **RESULTADO_ESPERADO:** Mismoartefacto coincide exactamente; integridad fallida/artefacto nuevo/proceso desactualizado rechaza. Reimportación es operación diferente.
+- **RESULTADO_ESPERADO:** Mismo artefacto: resultado exacto. Integridad fallida, artefacto distinto o proceso desactualizado bloquean replay. Reimportar es otra operación.
 - **ORACULO:** OR-06 OR-08
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** Otroartifact rechazado no es nondeterminismo probado.
+- **FALSOS_POSITIVOS:** Rechazar otro artefacto no demuestra falta de determinismo.
 - **FALSOS_NEGATIVOS:** Replay perfecto perpetúa error de importer previo.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** integration
@@ -1352,8 +1352,8 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-21 INV-28 INV-30
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** DBhistórica sinimporterhash/client_id; feature configurada no ejecutada; run dañado
-- **PASOS_EXACTOS:** 1. Ejecutar impact mode=ro con filtrosfeature/importer. 2. Mantener desconocidos en candidatos. 3. Contrastar inventario manual y hashDB antes/después.
+- **FIXTURE_DATOS:** Base histórica sin importer_hash ni client_id; operador configurado pero no ejecutado; corrida dañada.
+- **PASOS_EXACTOS:** 1. Ejecutar impact con --feature const y --importer-hash distinto. 2. Conservar desconocidos como candidatos. 3. Contrastar inventario manual. 4. Comparar bytes de la base antes/después.
 - **RESULTADO_ESPERADO:** Unknown no se excluye; config y trace consultadas; cliente declarado externamente; no escribir schema/triggers ni inventar huellas pasadas.
 - **ORACULO:** OR-05 OR-06
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
@@ -1392,8 +1392,8 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-25 INV-28
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** DB2runs/decisiones/fuentes; copia backup a ruta nueva; archivo destino existente
-- **PASOS_EXACTOS:** 1. Crearbackup conAPI. 2. Restaurar en otra ruta. 3. Verificar inventario/hashes/decisiones/fuentes y replay conartefacto original. 4. Intentar overwrite.
+- **FIXTURE_DATOS:** Base con dos corridas, decisiones y fuentes; destino nuevo para backup y otro ya existente.
+- **PASOS_EXACTOS:** 1. Crear backup con la API. 2. Restaurar en otra ruta. 3. Verificar inventario, hashes, decisiones, fuentes y replay con el artefacto original. 4. Intentar sobrescribir el destino existente.
 - **RESULTADO_ESPERADO:** Copia consistente y mismas corridas; overwrite rechazado; original intacto. Copia fuera del equipo exige operación real.
 - **ORACULO:** OR-06 OR-10
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
@@ -1432,7 +1432,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-25 INV-04
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** Subproceso copiaDB, fallo antes/despuésINSERT/commit; dosruns simultáneos; disco lleno simulado
+- **FIXTURE_DATOS:** Subproceso sobre copia de base; fallo antes/después de INSERT y commit; dos corridas simultáneas; disco lleno simulado.
 - **PASOS_EXACTOS:** 1. Inyectar fallo en frontera transaccional. 2. Reabrir copia. 3. Inventariar completos/ausentes y fuentes huérfanas. 4. Validar no corrida parcial visible.
 - **RESULTADO_ESPERADO:** Run completo o ausente, cadena íntegra; busy error recuperable. Fuentes huérfanas pueden existir y no son pérdida histórica; export incompleto no se presenta como completo.
 - **ORACULO:** OR-06 OR-10
@@ -1472,9 +1472,9 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-20 INV-25
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** DBvacía/v1/futurav2; v0no vacía; schema incompleto; futura migración parcial
-- **PASOS_EXACTOS:** 1. Abrir copias de cadaestado. 2. Futuramigración: backup anclado, ejecutar, fallar enmedio, restore/retry. 3. Comparar históricos y originales.
-- **RESULTADO_ESPERADO:** Vacía inicializa1; futura rechaza; v1reabre sin cambio. v0no vacía/incompleta requiere validación adicional pendiente; ninguna migración real certificada.
+- **FIXTURE_DATOS:** Base vacía, schema v1, schema futuro v2, v0 no vacío y schema incompleto; futura migración interrumpida.
+- **PASOS_EXACTOS:** 1. Abrir copias de cada estado. 2. Para una futura migración: preservar backup con hash externo, interrumpir antes/después de cada DDL y restaurar/reintentar. 3. Comparar corridas históricas y originales.
+- **RESULTADO_ESPERADO:** Vacía inicializa schema 1; versión futura se rechaza; v1 reabre sin cambios. v0 no vacío o incompleto requiere validación pendiente. No se certifica una migración real.
 - **ORACULO:** OR-06
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** No inventar downgrade de schema futuro.
@@ -1512,9 +1512,9 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-23 INV-03
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** Run ficticio4estados+monedas;8hojas; exportJSON/HTML; APIrun; observación DOM opcional
-- **PASOS_EXACTOS:** 1. Verificar run e invariantes. 2. Leer salidas con lectoresindependientes. 3. Comparar filas/monedas/estado/importes y resúmenes. 4. Mutar cada salida y exigir detección.
-- **RESULTADO_ESPERADO:** Camposmateriales exactos; filas completas, sin fórmulas; API/DOM sólo cubiertos si se aportan. Ausencia de canal no es aprobación de ese canal.
+- **FIXTURE_DATOS:** Corrida ficticia con cuatro estados y dos monedas; ocho hojas XLSX; JSON y HTML exportados; respuesta API y observación DOM.
+- **PASOS_EXACTOS:** 1. Verificar integridad e invariantes. 2. Leer salidas con lectores independientes. 3. Comparar filas, monedas, estados, importes y resúmenes. 4. Alterar cada salida por separado y exigir detección.
+- **RESULTADO_ESPERADO:** Campos materiales exactos; filas completas y sin fórmulas. API y DOM sólo se cubren al aportar capturas independientes. Un canal ausente queda pendiente.
 - **ORACULO:** OR-03 OR-07
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** HTML es resumen: no exigir columna inexistente, sí su contenido declarado.
@@ -1552,13 +1552,13 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-23 INV-25
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** Texto32768chars, límitefilas reducido en test, nota=HYPERLINK/script, importes36dígitos
-- **PASOS_EXACTOS:** 1. Exportar. 2. Abrir tiposdecelda/cantidad. 3. Forzar límiteyverificar ZIPsinXLSX+warning+JSONentero. 4. Inspeccionar HTML escapado.
-- **RESULTADO_ESPERADO:** Nunca XLSXparcial; texto explícito sinfórmulas; JSONoriginal íntegro; alerta de omisión conservada.
+- **FIXTURE_DATOS:** Texto de 32768 caracteres, límite de filas reducido en test, nota con =HYPERLINK o script, importes de 36 dígitos.
+- **PASOS_EXACTOS:** 1. Exportar. 2. Revisar tipos y cantidad de celdas. 3. Forzar límite y verificar ZIP sin XLSX, advertencia explícita y JSON completo. 4. Inspeccionar escape del HTML.
+- **RESULTADO_ESPERADO:** No se entrega un XLSX parcial; texto explícito sin fórmulas; JSON íntegro y advertencia de omisión conservada.
 - **ORACULO:** OR-07 OR-09
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** Texto exacto en Excel no es celda numérica sumable automáticamente.
-- **FALSOS_NEGATIVOS:** Probar límite reducido no mide memoria real de100kfilas.
+- **FALSOS_NEGATIVOS:** Probar un límite reducido no mide la memoria real para 100000 filas.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** integration; security
 - **COSTO_EJECUCION:** bajo
@@ -1592,13 +1592,13 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-23 INV-24 INV-29
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** Dosruns parecidos; cantidades1e15+.01como strings;150findings;4estados;decisión distinta
-- **PASOS_EXACTOS:** 1. Capturar DOM de todaslaspáginas/filtros. 2. Cambiar run rápido, abrir detalle/decidir. 3. Comparar valores visibles y etiquetas conrun exacto. 4. Probar moneda0/3decimales.
-- **RESULTADO_ESPERADO:** No Number/float en dinero; página/filtro no cambia métricasglobales; motor y decisión separados; ningún request fuera de loopback.
+- **FIXTURE_DATOS:** Dos corridas similares; importe textual 1000000000000000.01; 150 hallazgos; cuatro estados y decisión humana distinta del estado del motor.
+- **PASOS_EXACTOS:** 1. Capturar DOM de todas las páginas y filtros. 2. Cambiar rápidamente de corrida, abrir detalle y registrar decisión. 3. Comparar valores y etiquetas con la corrida exacta. 4. Probar importes con cero y tres decimales.
+- **RESULTADO_ESPERADO:** Dinero sin conversión a Number/float; paginación y filtros no cambian métricas globales. Estado del motor y decisión separados; solicitudes sólo a loopback.
 - **ORACULO:** OR-07 OR-09
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** Captura de una página no equivale al lote entero; registrar filtro.
-- **FALSOS_NEGATIVOS:** API200 no prueba lo que el operador leyó.
+- **FALSOS_NEGATIVOS:** Una respuesta exitosa de API no prueba qué leyó el operador.
 - **AUTOMATIZABLE:** parcialmente
 - **TIPO_IDEAL:** E2E
 - **COSTO_EJECUCION:** medio
@@ -1630,13 +1630,13 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-26 INV-30
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** Hostmalicioso,originajeno,tokenfaltante/erróneo,CORSpreflight; socketdelservicio
-- **PASOS_EXACTOS:** 1. RequestsPOSTsin/contokenyorigin. 2. Verificarbind127.0.0.1enprocesoCLI. 3. Probarlectura cross-origin desde navegador. 4. Inspeccionar efectosDB.
-- **RESULTADO_ESPERADO:** Host/origin/token incorrectos rechazan; sin CORSpermisivo; sólo loopback. 403conefectosprevios es fallo.
+- **FIXTURE_DATOS:** Host malicioso, Origin ajeno, token faltante o erróneo, preflight CORS y socket real del servicio.
+- **PASOS_EXACTOS:** 1. Enviar POST con y sin token y Origin válidos. 2. Verificar bind a 127.0.0.1 en el proceso CLI. 3. Probar lectura desde otro origen en navegador. 4. Inspeccionar efectos en la base.
+- **RESULTADO_ESPERADO:** Host, Origin o token incorrectos se rechazan; CORS sin orígenes ajenos; servicio sólo en loopback. Un rechazo con efectos previos en la base es un fallo.
 - **ORACULO:** OR-09
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** Token local no autentica usuarios del mismo equipo.
-- **FALSOS_NEGATIVOS:** TestClient no verifica socketreal/bind ni comportamiento navegador.
+- **FALSOS_NEGATIVOS:** TestClient no verifica el socket real, su dirección de escucha ni el comportamiento del navegador.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** security; E2E
 - **COSTO_EJECUCION:** bajo
@@ -1670,13 +1670,13 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-25 INV-30
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** Canaryoutside;../../name,rutaabsoluta,C:\name,symlink,destinoexistente
-- **PASOS_EXACTOS:** 1. Subirfilenamehostil. 2. Exportar/backup a destinos temporales existentes/symlink. 3. Comprobar canary y archivos modificados. 4. Nunca usar archivos reales.
-- **RESULTADO_ESPERADO:** Uploads porhash;no arbitraryread/write; overwrite rechaza. Política efectiva de symlinks queda pendiente antes de confiar rutas compartidas.
+- **FIXTURE_DATOS:** Archivo testigo externo; ../../name, ruta absoluta, ruta Windows, enlace simbólico y destino existente.
+- **PASOS_EXACTOS:** 1. Subir un archivo con nombre hostil. 2. Exportar y crear backup en destinos temporales existentes y enlaces simbólicos. 3. Verificar el testigo y archivos modificados. 4. Usar sólo datos sintéticos.
+- **RESULTADO_ESPERADO:** Uploads identificados por hash; sin lectura ni escritura arbitrarias; sobrescritura rechazada. Verificar política de enlaces simbólicos antes de usar rutas compartidas.
 - **ORACULO:** OR-09
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** CLI acepta ruta elegida por operador; no confundirla con ruta controlada por upload.
-- **FALSOS_NEGATIVOS:** Carpeta vacía symlink puede redirigir export sin romper chequeo de nooverwrite.
+- **FALSOS_NEGATIVOS:** Un enlace a una carpeta vacía puede redirigir la exportación sin activar la barrera de sobrescritura.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** security
 - **COSTO_EJECUCION:** medio
@@ -1708,13 +1708,13 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-25 INV-30
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** DTDpequeña,entitycanary,ZIPentryduplicate/traversal,archive sizes; process budget
-- **PASOS_EXACTOS:** 1. Generar archivo pequeño sintético. 2. Ejecutar en subprocess sinredyconlímite. 3. Registrar rechazo/salidas/red/canary. 4. Verificar expansión ademásdeheader.
-- **RESULTADO_ESPERADO:** Sin ejecución/red/lecturaexterna; excepción útilyrecuperable; ninguna corridaeconómica parcial. No instalar archivos activos para la prueba.
+- **FIXTURE_DATOS:** DTD pequeña con entidad hacia archivo testigo; entradas ZIP repetidas o con ../; tamaños declarados y reales; presupuesto de proceso.
+- **PASOS_EXACTOS:** 1. Generar un archivo sintético pequeño. 2. Ejecutar en subproceso sin red y con límites. 3. Registrar rechazo, salidas, red y testigo. 4. Verificar expansión efectiva y cabecera.
+- **RESULTADO_ESPERADO:** Sin ejecución de contenido, red ni lectura externa; error recuperable; ninguna corrida económica parcial. Archivos sintéticos y acotados.
 - **ORACULO:** OR-09
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** Rechazo genérico de corrupción es aceptable si no hay efecto y orienta recuperación.
-- **FALSOS_NEGATIVOS:** Fuzzerdebytes500 no alcanza DTD/zipválido ni expansión.
+- **FALSOS_NEGATIVOS:** Generar 500 bytes aleatorios no ejercita DTD, ZIP válido ni expansión.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** fuzz; security
 - **COSTO_EJECUCION:** medio
@@ -1748,13 +1748,13 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** HIGH
 - **INVARIANTE:** INV-25 INV-29
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** Mappinginválido,campoextra,idajeno,upload32MiB+,mismaentradaCLI/API
-- **PASOS_EXACTOS:** 1. Registrar inventarioDB. 2. Enviar request inválido. 3. Comparar cambios permitidos de fuentes/configs versus runs. 4. Repetir válido y contrastar resultadoCLI.
-- **RESULTADO_ESPERADO:** Errorrecuperable sinstack al usuario; norunparcial; resultadoeconómicoCLI/APIidéntico; no datos sensibles enrespuesta técnica.
+- **FIXTURE_DATOS:** Mapping inválido, campo extra, ID ajeno, upload mayor de 32 MiB y misma entrada válida por CLI/API.
+- **PASOS_EXACTOS:** 1. Registrar inventario de la base. 2. Enviar petición inválida. 3. Comparar fuentes y configuraciones conservadas con corridas creadas. 4. Enviar entrada válida y contrastar con CLI.
+- **RESULTADO_ESPERADO:** Error recuperable sin traceback para el usuario; ninguna corrida parcial; mismo resultado económico por CLI/API; sin datos sensibles expuestos.
 - **ORACULO:** OR-03 OR-07
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** Preview conserva fuente/config legítimamente aunque no se ejecuteaudit.
-- **FALSOS_NEGATIVOS:** Sóloassertstatuscode ignora cuerpo y efectos.
+- **FALSOS_POSITIVOS:** La vista previa puede conservar una fuente o configuración sin ejecutar la auditoría.
+- **FALSOS_NEGATIVOS:** Comprobar sólo el código de respuesta ignora el cuerpo y los efectos persistidos.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** integration
 - **COSTO_EJECUCION:** bajo
@@ -1788,13 +1788,13 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** HIGH
 - **INVARIANTE:** INV-19 INV-30
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** Fixturesinstalados; socket externo bloqueado; navegador request monitor
-- **PASOS_EXACTOS:** 1. Bloquear network en core/CLI. 2. Importar,auditar,exportar,replay. 3. NavegarUI conmonitor y comparar destinos.
-- **RESULTADO_ESPERADO:** Audit/exports íntegros offline;UI sólo loopback; instalación inicial de dependencias no se confunde con operaciónoffline.
+- **FIXTURE_DATOS:** Fixtures instalados, conexiones externas bloqueadas y monitor de solicitudes del navegador.
+- **PASOS_EXACTOS:** 1. Bloquear conexiones externas para core y CLI. 2. Importar, auditar, exportar y reproducir. 3. Navegar la UI y revisar destinos de todas las solicitudes.
+- **RESULTADO_ESPERADO:** Auditoría y exportaciones íntegras sin red; UI sólo en loopback. Evaluar instalación inicial de dependencias por separado.
 - **ORACULO:** OR-09
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** Instalaciónrequierepaquetes ya disponibles; no es unallamadaoculta de auditoría.
-- **FALSOS_NEGATIVOS:** Monkeypatchsocket no detecta subprocesos o navegador externo.
+- **FALSOS_POSITIVOS:** Instalar sin red requiere paquetes previos; esto no demuestra dependencia remota durante la auditoría.
+- **FALSOS_NEGATIVOS:** Interceptar sockets de Python no cubre subprocesos ni navegador.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** integration; E2E
 - **COSTO_EJECUCION:** bajo
@@ -1828,12 +1828,12 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-07 INV-08 INV-13
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** Contrato y ejemplos verdaderos; mínimo porservicio/remito; temporalporcomponente; columnaimporteambigua
-- **PASOS_EXACTOS:** 1. Aplicarprotocolo pasos1..10. 2. Crear hoja manualantesdelmotor. 3. Confirmar representaciónconcliente. 4. Congelarhashes y dudas.
+- **FIXTURE_DATOS:** Contrato y ejemplos reales; mínimo por servicio o remito; fecha por componente; columna de importe ambigua.
+- **PASOS_EXACTOS:** 1. Aplicar pasos 1–10 del protocolo de cliente real. 2. Calcular hoja manual antes de ejecutar el motor. 3. Confirmar representación con el cliente. 4. Preservar hashes y dudas.
 - **RESULTADO_ESPERADO:** Toda regla material tiene responsable y ejemplo independiente; desconocido bloquea certeza, no default de industria.
 - **ORACULO:** OR-01 OR-04
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** Práctica nueva legítima no es bug hasta compararconcontratoconfirmado.
+- **FALSOS_POSITIVOS:** Una práctica nueva no es un bug hasta compararla con el contrato confirmado.
 - **FALSOS_NEGATIVOS:** Tests sintéticos pueden pasar con contrato equivocado.
 - **AUTOMATIZABLE:** parcialmente
 - **TIPO_IDEAL:** manual
@@ -1866,13 +1866,13 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** HIGH
 - **INVARIANTE:** INV-26 INV-13
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** ArquetiposA..EdeQA_CASES; mismosIDs/preciosdiferentes;Ebasepickup+extradelivery
-- **PASOS_EXACTOS:** 1. Configurarsincambiarcore. 2. Calcularmanual. 3. Ejecutaryregistrararchivostocados. 4. SiEnocabe fielmente,documentarabstracciónfaltante.
-- **RESULTADO_ESPERADO:** A31.5,B900,Cbandas/pallet/evidencia,D194.25USD, E100+12 separado sólo si fiel al contrato. Sinif cliente/sector/carrier encore.
+- **FIXTURE_DATOS:** Arquetipos A–E de QA_CASES; mismos IDs y precios diferentes; E con base por pickup y adicional por delivery.
+- **PASOS_EXACTOS:** 1. Configurar sin cambiar el core. 2. Calcular manualmente. 3. Ejecutar y registrar archivos modificados. 4. Si E no puede representarse fielmente, documentar la abstracción faltante.
+- **RESULTADO_ESPERADO:** A: 31.5; B: 900; C: bandas, pallets y evidencia; D: 194.25 USD; E: 100 + 12 con acuerdos separados sólo si representan el contrato. Sin condiciones por cliente, sector o transportista en el core.
 - **ORACULO:** OR-01 OR-05
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** Cambio reutilizable justificado delcore no equivale a custom.
-- **FALSOS_NEGATIVOS:** QuintoarquetipoE no está ejercitadoporeltest existente.
+- **FALSOS_POSITIVOS:** Un cambio reutilizable y justificado del core no equivale a una excepción exclusiva de cliente.
+- **FALSOS_NEGATIVOS:** El test existente no ejercita el quinto arquetipo E.
 - **AUTOMATIZABLE:** parcialmente
 - **TIPO_IDEAL:** integration
 - **COSTO_EJECUCION:** medio
@@ -1902,17 +1902,17 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **TEST_ID:** QA-47
 - **NOMBRE:** Paquete y plataforma real
 - **COMPONENTE:** packaging/OS
-- **RIESGO:** Checkoutfunciona pero instalación pierde archivos o cambia importación
+- **RIESGO:** El checkout funciona pero el paquete instalado pierde recursos o cambia la importación.
 - **SEVERIDAD:** HIGH
 - **INVARIANTE:** INV-21 INV-23
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** Wheel/sdist recién construidos; directorioajenoalrepo; Linux y Windows de uso
-- **PASOS_EXACTOS:** 1. Instalarpaqueteaislado. 2. SmokeconUIstatic/demo/replay/export. 3. Compararcontenidos/hash. 4. Windows: rutasUnicode,longitudes,lineendings,Excel real.
-- **RESULTADO_ESPERADO:** Importdesdepaqueteinstalado,noeditable; recursoscompletos; equivalenciaeconómica. Windowsnoaprobadosinmáquinareal.
+- **FIXTURE_DATOS:** Wheel y sdist recién construidos; directorio fuera del repositorio; Linux y Windows del entorno de uso.
+- **PASOS_EXACTOS:** 1. Instalar paquete aislado. 2. Comprobar recursos UI, demo, replay y exportación. 3. Comparar contenidos y hashes. 4. En Windows: rutas Unicode, longitudes, saltos de línea y Excel real.
+- **RESULTADO_ESPERADO:** Importación desde paquete instalado sin modo editable; recursos completos y equivalencia económica. Windows pendiente hasta probarlo en una máquina real.
 - **ORACULO:** OR-04 OR-06 OR-07
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** FechasZIPybuildhashpuedencambiar sin cambioeconómico; comparararchivos materialmente.
-- **FALSOS_NEGATIVOS:** LinuxCI no valida Windows ni aplicaciónExcel.
+- **FALSOS_POSITIVOS:** Fechas ZIP y hashes del build pueden cambiar sin cambio económico; comparar contenido de archivos.
+- **FALSOS_NEGATIVOS:** CI en Linux no valida Windows ni la aplicación Excel.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** integration
 - **COSTO_EJECUCION:** alto
@@ -1940,17 +1940,17 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **TEST_ID:** QA-48
 - **NOMBRE:** Escala, memoria y tiempos de todas las etapas
 - **COMPONENTE:** performance
-- **RIESGO:** Cierre real excedeRAM o timeout y salida parece completa
+- **RIESGO:** Un cierre real agota memoria o tiempo y entrega una salida aparentemente completa.
 - **SEVERIDAD:** HIGH
 - **INVARIANTE:** INV-25
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** 10kS/50kC y100kC; trazascompletas;tabla10ktarifas;mediciónporfase
-- **PASOS_EXACTOS:** 1. Unproceso/tamañoconRSSbaseline. 2. Medirimport/audit/hash/save/export/UIporseparado. 3. Conciliarcantidadesysumasalterminar.
-- **RESULTADO_ESPERADO:** Sinpérdida/resultadoequivocado;presupuestooperativoacordado. Baselinescore15.953s/945.9MiB y31.577s/1821.2MiB no sonSLAend-to-end.
+- **FIXTURE_DATOS:** 10000 operaciones con 50000 y 100000 cargos; trazas completas; tabla de 10000 tarifas; medición por fase.
+- **PASOS_EXACTOS:** 1. Un proceso por tamaño con memoria base registrada. 2. Medir importación, motor, hashes, persistencia, exportación y UI por separado. 3. Conciliar cantidades y sumas al terminar.
+- **RESULTADO_ESPERADO:** Sin pérdida ni resultado incorrecto y dentro del presupuesto operativo acordado. Las mediciones históricas del core en VERIFICATION.md no constituyen un SLA de todo el flujo.
 - **ORACULO:** OR-03 OR-10
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** Ruido de carga/maquinadistinta no es regresión causal.
-- **FALSOS_NEGATIVOS:** Benchmarksinpersistencia/reportes oculta pico real delcierre.
+- **FALSOS_POSITIVOS:** Carga concurrente o máquina distinta pueden cambiar tiempos sin regresión causal.
+- **FALSOS_NEGATIVOS:** Un benchmark sin persistencia ni reportes puede omitir el pico real del cierre.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** benchmark
 - **COSTO_EJECUCION:** alto
@@ -1982,13 +1982,13 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-01 INV-04 INV-23
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** Runválido y copias conconfirmedfake,IDduplicado,sumamutada,labelFAILenXLSX,missingrow
-- **PASOS_EXACTOS:** 1. Esperarchecklimpiodebaseline. 2. Modificarunacausa por copia. 3. Exigirmensajeidentificableyexit1. 4. Inputmalformadoexit2.
-- **RESULTADO_ESPERADO:** Cada manipulaciónobjetivorechazada;nocoreimportsenqa/referenceorinvariants;pendientesclaros,noformatoPythonassertcomoúnicobarreraCLI.
+- **FIXTURE_DATOS:** Corrida válida y copias con confirmada inventada, ID duplicado, suma alterada, estado falso en XLSX y fila faltante.
+- **PASOS_EXACTOS:** 1. Exigir resultado limpio para la base válida. 2. Alterar una causa por copia. 3. Exigir error identificable y salida 1. 4. Probar entrada malformada con salida 2.
+- **RESULTADO_ESPERADO:** Cada alteración objetivo se detecta. qa/reference.py y qa/invariants.py no importan lógica productiva. El CLI conserva sus validaciones con Python optimizado.
 - **ORACULO:** OR-01 OR-03 OR-07
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** Corregircapturaincompletaantesdeatribuirfallaalproducto.
-- **FALSOS_NEGATIVOS:** Sólo probarqueunbuenrunpasa no pruebaqueelchecker sirva.
+- **FALSOS_POSITIVOS:** Descartar captura incompleta antes de atribuir el fallo al producto.
+- **FALSOS_NEGATIVOS:** Aceptar una corrida correcta no demuestra que el verificador detecte una incorrecta.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** mutation; unit
 - **COSTO_EJECUCION:** bajo
@@ -2023,12 +2023,12 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **INVARIANTE:** INV-01 INV-02 INV-06 INV-07 INV-09
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
 - **FIXTURE_DATOS:** qa/mutants.json, copias temporales src/tests/fixtures; baseline sano
-- **PASOS_EXACTOS:** 1. Validaranclaúnica. 2. Ejecutarbaselineenlacopia. 3. Aplicarunmutante. 4. Ejecutarsusselectores. 5. Requerirfailuredeassert,no collectionerror/timeout.
-- **RESULTADO_ESPERADO:** Mutacionesdesigno,tolerancia,moneda,versiónyevidencia mueren porassert causal; sobreviviente bloqueafeature;incompetente/inconclusivo no cuenta muerto.
+- **PASOS_EXACTOS:** 1. Validar ancla única. 2. Ejecutar tests base en copia temporal. 3. Aplicar un mutante. 4. Ejecutar sus selectores. 5. Exigir fallo de aserción causal; colección fallida o timeout es inconcluso.
+- **RESULTADO_ESPERADO:** Mutaciones de signo, tolerancia, moneda, versión y evidencia deben fallar por aserción causal. Un sobreviviente bloquea la función afectada hasta investigar. Incompetente o inconcluso no cuenta como detectado.
 - **ORACULO:** OR-01 OR-05
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** CambiosdeAPIoanclahacenmutanteobsoleto,noequivalente.
-- **FALSOS_NEGATIVOS:** Fallodehashglobalmata mutante sin ejercitar invariante; revisar causalidad.
+- **FALSOS_POSITIVOS:** Un cambio de API o ancla puede volver obsoleto al mutante; no demuestra equivalencia semántica.
+- **FALSOS_NEGATIVOS:** Un fallo global de hash puede detectar un mutante sin ejercitar el invariante; revisar la aserción causal.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** mutation
 - **COSTO_EJECUCION:** medio
@@ -2060,13 +2060,13 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-12 INV-13 INV-22
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** Períodoverdaderoycontrolhistóricoconcustodioseparado;REAL_CLIENT_VALIDATION_PROTOCOL
-- **PASOS_EXACTOS:** 1. Congelarrepresentaciónycorridaantesdevercontrol. 2. Compararporcargo/moneda. 3. RevisarfalsosPASS/FAILyconocidas/nuevas/desconocidas. 4. Registrarhoras.
-- **RESULTADO_ESPERADO:** Verdadcontrasteexterna; nueva correctanoequivalearecupero; no ajustarprimera corrida trasverrespuestas sin conservarla.
+- **FIXTURE_DATOS:** Período real y control histórico bajo custodio separado; seguir REAL_CLIENT_VALIDATION_PROTOCOL.md.
+- **PASOS_EXACTOS:** 1. Congelar representación y corrida antes de ver control histórico. 2. Comparar por cargo y moneda. 3. Resolver falsos PASS/FAIL y diferencias conocidas, nuevas o desconocidas. 4. Registrar horas de trabajo.
+- **RESULTADO_ESPERADO:** Contraste externo documentado; diferencia nueva correcta no equivale a dinero recuperado. Conservar primera corrida antes de ajustar tras conocer las respuestas.
 - **ORACULO:** OR-01 OR-04
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** Diferentealcance/períodonopermitecompararmontosdirectamente.
-- **FALSOS_NEGATIVOS:** Controlhistórico también puedeestar equivocado; requerir resoluciónindependiente.
+- **FALSOS_POSITIVOS:** Con distinto alcance o período no se comparan montos directamente.
+- **FALSOS_NEGATIVOS:** El control histórico también puede estar equivocado; resolver diferencias con evidencia independiente.
 - **AUTOMATIZABLE:** parcialmente
 - **TIPO_IDEAL:** manual
 - **COSTO_EJECUCION:** alto
@@ -2094,17 +2094,17 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **TEST_ID:** QA-52
 - **NOMBRE:** Gate de pago sin nuestra supervisión
 - **COMPONENTE:** release/use policy
-- **RIESGO:** Habilitaruso sensible por cantidad de tests verdes
+- **RIESGO:** Habilitar decisiones de pago sólo por cantidad de tests aprobados.
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-01 INV-21 INV-25 INV-26
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** GateUdeRELEASE_CRITERIA; evidencias reales/operativas/Windows según alcance
-- **PASOS_EXACTOS:** 1. EvaluarcadaobligaciónGateU. 2. Anotarpendientes/incidentes/desconocidos. 3. Exigirrestriccionesefectivas/restore/identidad/totaldocumental.
-- **RESULTADO_ESPERADO:** GateUcerradoen0.1.0; ninguna estadística sintética lo abre; no sustituiraprobacióncontractualconpytest.
+- **FIXTURE_DATOS:** Gate U de RELEASE_CRITERIA.md; evidencia real, operativa y de Windows según alcance.
+- **PASOS_EXACTOS:** 1. Evaluar cada requisito del Gate U. 2. Registrar pendientes, incidentes y desconocidos. 3. Comprobar restricciones efectivas, restauración, identidad y conciliación del total documental.
+- **RESULTADO_ESPERADO:** Gate U cerrado para 0.1.0. Ninguna estadística sintética lo habilita; pytest no sustituye confirmación del contrato.
 - **ORACULO:** OR-01 OR-06 OR-10
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** Noexigirestegateparadesarrolloofflineconficticios.
-- **FALSOS_NEGATIVOS:** Confundirpilotoconsupervisión con aprobaciónautónoma.
+- **FALSOS_POSITIVOS:** Este gate no impide desarrollo local con datos ficticios.
+- **FALSOS_NEGATIVOS:** Confundir piloto supervisado con habilitación para decidir pagos sin revisión.
 - **AUTOMATIZABLE:** parcialmente
 - **TIPO_IDEAL:** manual
 - **COSTO_EJECUCION:** alto
@@ -2132,17 +2132,17 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **TEST_ID:** QA-53
 - **NOMBRE:** IDs y JSON inequívocos
 - **COMPONENTE:** serialization/models
-- **RIESGO:** Clave duplicada o IDcolisionado cambia interpretación
+- **RIESGO:** Una clave JSON duplicada o colisión de ID cambia la interpretación.
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-04 INV-26
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** JSONconamount1 y100repetidos;S/C/A/EIDsduplicados;datosmalformados/unknownfield
-- **PASOS_EXACTOS:** 1. LeerJSONconparserproducto. 2. Validarduplicadosporentidad. 3. Verificarrechazosimportvisibles. 4. ProbarcheckerJSONestricto.
-- **RESULTADO_ESPERADO:** Clavesrepetidas/nonfinite/extra fields rechazados; ninguna filaúltimagana silenciosamente;duplicados deimportsevisibilizan.
+- **FIXTURE_DATOS:** JSON con clave amount repetida y valores 1 y 100; IDs repetidos por entidad S/C/A/E; datos malformados y campo desconocido.
+- **PASOS_EXACTOS:** 1. Leer JSON con parser del producto. 2. Validar duplicados por entidad. 3. Verificar rechazos visibles de importación. 4. Probar lector JSON estricto del verificador.
+- **RESULTADO_ESPERADO:** Claves repetidas, números no finitos y campos extra rechazados; ninguna política silenciosa de conservar última fila; duplicados de importación visibles.
 - **ORACULO:** OR-04
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** MismoIDentreentidades diferentes puede ser válido; espacio deIDs es porentidad.
-- **FALSOS_NEGATIVOS:** ParserdeherramientaQA permisivopuedeaceptarloqueproductorechaza.
+- **FALSOS_POSITIVOS:** Mismo ID en entidades distintas puede ser válido; unicidad por entidad.
+- **FALSOS_NEGATIVOS:** Un parser permisivo en QA puede aceptar lo que el producto rechaza.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** fuzz; unit
 - **COSTO_EJECUCION:** bajo
@@ -2176,13 +2176,13 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-21 INV-22 INV-28
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** ZIPdemo;mutararchivo/manifest/snapshot/decisión;duplicateentries/fuentefaltante/pathhostil
-- **PASOS_EXACTOS:** 1. Verificarmanifestmásrunmáschainmásfuentes. 2. CompararhashZIPconanclaexterna. 3. Mutaruncomponente. 4. NoextraerZIPajeno para verificar.
-- **RESULTADO_ESPERADO:** Cadaalteración detectadarelativaancla;manifestautoconsistente no pruebaautenticidad;metadatafueradehash se informa.
+- **FIXTURE_DATOS:** ZIP de demo; alterar archivo, manifest, snapshot o decisión; entradas repetidas, fuente faltante y ruta hostil.
+- **PASOS_EXACTOS:** 1. Verificar manifest, corrida, cadena de decisiones y fuentes. 2. Comparar hash del ZIP con ancla externa. 3. Alterar un componente por copia. 4. Verificar sin extraer rutas controladas por el archivo.
+- **RESULTADO_ESPERADO:** Alteraciones detectadas respecto del ancla; un manifest consistente consigo mismo no prueba autenticidad. Declarar metadata no cubierta por hashes.
 - **ORACULO:** OR-06 OR-09
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** ZIPlegítimoreexportado puedecambiartimestamps/hash decontenedor.
-- **FALSOS_NEGATIVOS:** Atacantepuederehacertodosloshashes;sinanclano hay autenticación.
+- **FALSOS_POSITIVOS:** Reexportar legítimamente un ZIP puede cambiar timestamps y hash del contenedor.
+- **FALSOS_NEGATIVOS:** Un atacante puede recalcular todos los hashes; sin ancla independiente no hay autenticación.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** security; integration
 - **COSTO_EJECUCION:** bajo
@@ -2216,13 +2216,13 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** HIGH
 - **INVARIANTE:** INV-21 INV-19
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** Commitlimpio;checkoutaislado;lock;originalesconCRLFySHA;wheel/sdist
-- **PASOS_EXACTOS:** 1. Compararárbolversionado/materiales. 2. Instalaryprobarencheckoutlimpio. 3. Registrarhuellasdelpaquete/deps. 4. VerificarsemánticaconLFsinexigirSHAdeloriginalCRLF.
-- **RESULTADO_ESPERADO:** Códigoentregado coincideconverificado;datosoriginales mantienenhashpropiodesusbytes;sinsecrets/DB/outputenGit. No asumir buildsbit-identicalsinsello reproducible.
+- **FIXTURE_DATOS:** Commit limpio, checkout aislado, lock de dependencias, originales con CRLF y SHA, wheel y sdist.
+- **PASOS_EXACTOS:** 1. Comparar árbol versionado y archivos materiales. 2. Instalar y probar en checkout limpio. 3. Registrar hashes del paquete y dependencias. 4. Verificar equivalencia de parsing con LF sin exigir SHA del original CRLF.
+- **RESULTADO_ESPERADO:** Código entregado igual al verificado; cada original conserva hash de sus bytes; secretos, bases y salidas fuera de Git. No presumir builds idénticos sin comprobar reproducibilidad.
 - **ORACULO:** OR-06 OR-08
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** Normalizarnewline cambiabytes/provenance pero noeconomía si parsingesigual.
-- **FALSOS_NEGATIVOS:** Editableinstall puedeocultar recurso faltante enwheel.
+- **FALSOS_POSITIVOS:** Normalizar saltos de línea cambia bytes y procedencia; sólo preserva economía si parsing es equivalente.
+- **FALSOS_NEGATIVOS:** Una instalación editable puede ocultar recursos faltantes en wheel.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** integration
 - **COSTO_EJECUCION:** medio
@@ -2254,13 +2254,13 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-05 INV-09 INV-13
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** SrefR;C100L1yC100L2;base100;clientedefine2serviciosindependientes
-- **PASOS_EXACTOS:** 1. Revisargroup_keyycontrato. 2. Ejecutarsinperiodoenclave. 3. Configurarperíodo/servicioexplícito conoperacionescorrectas. 4. Comparargrafoobligaciones.
-- **RESULTADO_ESPERADO:** Dosobligacionesindependientesno se comparancontrau nE100. Elcoreactualnoincluyesettlementenagrupación: mapping/scope confirmadosodeclararcaso no soportado.
+- **FIXTURE_DATOS:** Referencia R; cargos de 100 en liquidaciones L1 y L2; tarifa 100; cliente confirma dos servicios independientes.
+- **PASOS_EXACTOS:** 1. Revisar group_key y contrato. 2. Auditar sin período en clave. 3. Representar período y servicio explícitos con operaciones correctas. 4. Comparar grafo de obligaciones manual.
+- **RESULTADO_ESPERADO:** Dos obligaciones independientes no se comparan contra un único esperado de 100. El core actual no incluye settlement en agrupación; confirmar mapping y alcance o declarar el caso no soportado.
 - **ORACULO:** OR-01 OR-05
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** Doslíneasdefacturaspuedencompletarunservicio;noasumirsiempreindependientes.
-- **FALSOS_NEGATIVOS:** Fixturesdeunúnicoperíodonoejercitanesteerrorcausal.
+- **FALSOS_POSITIVOS:** Dos líneas de facturas pueden completar un servicio; no asumir independencia automáticamente.
+- **FALSOS_NEGATIVOS:** Fixtures de un único período no ejercitan este error causal.
 - **AUTOMATIZABLE:** parcialmente
 - **TIPO_IDEAL:** integration
 - **COSTO_EJECUCION:** medio
@@ -2288,17 +2288,17 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **TEST_ID:** QA-57
 - **NOMBRE:** Diagnóstico no muta evidencia
 - **COMPONENTE:** QA/forensics
-- **RIESGO:** Herramienta deincidente inicializa/migraDB original
+- **RIESGO:** La herramienta de diagnóstico inicializa o migra la base original.
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-30 INV-28
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** DBreadonly, schemafuturo/incompleto, filaJSONcorrupta; hashesprevios
-- **PASOS_EXACTOS:** 1. Ejecutarimpactenmode=ro. 2. Intentarinputinexistente. 3. Compararbytes/schema/triggersantesdespués. 4. Corruptoapareceunknown o errorglobal explícito.
-- **RESULTADO_ESPERADO:** NoStoreconstructor,nocreaciónDB/nuevostriggers; ninguna selección vacía falsa por corrupción.
+- **FIXTURE_DATOS:** Base de sólo lectura; schema futuro o incompleto; fila JSON corrupta; hashes previos.
+- **PASOS_EXACTOS:** 1. Ejecutar impact en sólo lectura. 2. Intentar ruta inexistente. 3. Comparar bytes, schema y triggers antes/después. 4. Corrupción debe aparecer como unknown o error global explícito.
+- **RESULTADO_ESPERADO:** No invocar Store, crear bases ni instalar triggers. La corrupción nunca produce una selección vacía que aparente ausencia de impacto.
 - **ORACULO:** OR-06 OR-09
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** UnDBactivo puede cambiar porprocesoproductivo;congelarcopia para compararhash.
-- **FALSOS_NEGATIVOS:** Chequearsolomtime no demuestraausenciademutación.
+- **FALSOS_POSITIVOS:** Una base activa puede cambiar por otro proceso; preservar copia consistente para comparar hashes.
+- **FALSOS_NEGATIVOS:** Comprobar sólo mtime no demuestra ausencia de modificaciones.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** integration
 - **COSTO_EJECUCION:** bajo
@@ -2328,17 +2328,17 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **TEST_ID:** QA-58
 - **NOMBRE:** Píxel exacto y matrices visuales exhaustivas
 - **COMPONENTE:** cosmetic UI
-- **RIESGO:** Desviación estética sin impacto enlectura
+- **RIESGO:** Desviación estética sin impacto en la lectura.
 - **SEVERIDAD:** LOW
 - **INVARIANTE:** INV-23 (sólo si cambia significado)
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** TodaslascombinacionesdeSO/fuentes/anchos, sin defectoseconómicos conocidos
-- **PASOS_EXACTOS:** 1. Diferirpixelperfect. 2. Conservar sólo prueba de texto/contraste/overflow material enQA39. 3. Reconsiderar ante fallo real de lectura.
-- **RESULTADO_ESPERADO:** No gastarbudgetenmatrizestéticaexhaustiva; cualquierimporte/labeloculto escala aQA39/P0.
+- **FIXTURE_DATOS:** Todas las combinaciones de sistemas operativos, fuentes y anchos; sin defectos económicos conocidos.
+- **PASOS_EXACTOS:** 1. Diferir igualdad exacta de píxeles. 2. Cubrir texto, contraste y desbordamiento material en QA-39. 3. Reconsiderar ante fallo real de lectura.
+- **RESULTADO_ESPERADO:** Diferir matriz estética exhaustiva. Cualquier importe o etiqueta ocultos se clasifican como QA-39/P0.
 - **ORACULO:** OR-07
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** Antialiasing/fuenteproduce diffsinerroroperativo.
-- **FALSOS_NEGATIVOS:** Descartardiseñovisualnoautorizaocultar moneda/estado.
+- **FALSOS_POSITIVOS:** Antialiasing o fuentes distintas producen diferencias visuales sin error operativo.
+- **FALSOS_NEGATIVOS:** Diferir pruebas cosméticas no permite ocultar moneda o estado.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** E2E
 - **COSTO_EJECUCION:** alto

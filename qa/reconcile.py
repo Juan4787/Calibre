@@ -61,10 +61,10 @@ class Tables(HTMLParser):
             self.cell.append(data)
 
     def handle_endtag(self, tag):
-        if tag in {"td", "th"} and self.cell is not None:
+        if tag in {"td", "th"} and self.cell is not None and self.row is not None:
             self.row.append("".join(self.cell))
             self.cell = None
-        elif tag == "tr" and self.row is not None:
+        elif tag == "tr" and self.row is not None and self.table is not None:
             self.table.append(self.row)
             self.row = None
         elif tag == "table" and self.table is not None:
@@ -341,7 +341,7 @@ def display_money(value):
     whole, dot, fraction = value.partition(".")
     sign = "-" if whole.startswith("-") else ""
     digits = whole.removeprefix("-")
-    chunks = []
+    chunks: list[str] = []
     while digits:
         chunks.insert(0, digits[-3:])
         digits = digits[:-3]

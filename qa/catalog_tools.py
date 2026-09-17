@@ -102,7 +102,7 @@ def rendered():
 
 
 def validate_catalog():
-    errors = []
+    errors: list[str] = []
     counts = Counter(row["TEST_ID"] for row in FAMILIES)
     errors.extend(f"Duplicate TEST_ID {key}" for key, count in counts.items() if count != 1)
     invariants = (ROOT / "docs/ECONOMIC_INVARIANTS.md").read_text(encoding="utf-8")

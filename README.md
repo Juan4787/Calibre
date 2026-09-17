@@ -4,6 +4,10 @@ Prototipo B2B local para reconstruir cargos esperados a partir de operaciones, a
 
 El programa separa PASS, FAIL, REVIEW y UNDETERMINABLE. Sólo una discrepancia objetiva integra las diferencias confirmadas. Ningún importe se presenta como ahorro. Las decisiones humanas no modifican el hallazgo original.
 
+El sistema de QA parte de [TEST_STRATEGY](docs/TEST_STRATEGY.md). La [matriz operativa](docs/TEST_MATRIX.md) y el [backlog](docs/TEST_AUTOMATION_BACKLOG.md) distinguen pruebas implementadas de obligaciones pendientes. [QA_EXECUTION](docs/QA_EXECUTION.md) contiene comandos, oráculos, mutaciones y criterios de interpretación; [QA_IMPLEMENTATION](docs/QA_IMPLEMENTATION.md) registra la muestra efectivamente verificada. Ante un resultado económico sospechoso, seguir [TRIAGE_PLAYBOOK](docs/TRIAGE_PLAYBOOK.md) e [INCIDENT_RESPONSE](docs/INCIDENT_RESPONSE.md). Los [gates de piloto y uso](docs/RELEASE_CRITERIA.md) requieren evidencia adicional y no quedan aprobados por la cantidad de tests.
+
+[QA_DELIVERY](docs/QA_DELIVERY.md) resume las 22 decisiones de testing, incidentes, uso y delegación.
+
 ## Inicio rápido — Linux/macOS, Python 3.12+
 
 ```bash
@@ -72,9 +76,11 @@ Leer [guía del primer cliente real](docs/FIRST_REAL_CLIENT.md), [reglas e impor
 Ejecutar secuencialmente:
 
 ```bash
-.venv/bin/ruff check src tests scripts
-.venv/bin/ruff format --check src tests scripts
+.venv/bin/ruff check src tests scripts qa
+.venv/bin/ruff format --check src tests scripts qa
 .venv/bin/mypy src
+.venv/bin/mypy --explicit-package-bases qa scripts/qa.py
+.venv/bin/python scripts/qa.py matrix --check
 node --check src/freight_audit/static/app.js
 .venv/bin/pytest -q
 .venv/bin/python -m compileall -q src

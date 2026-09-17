@@ -7,7 +7,7 @@ La tabla define las obligaciones. “Defensas” identifica capas requeridas, no
 | ID / severidad | Invariante y por qué importa | Mecanismo de rotura | Prueba / defensa |
 |---|---|---|---|
 | INV-01 CRITICAL | Sólo FAIL aporta Δ confirmada; los otros tres estados aportan cero | Sumar difference tentativo; UI llama ahorro a REVIEW | Caso A=200,E=100 sin evidencia → REVIEW/0; checker, resumen, API, reportes, UI |
-| INV-02 CRITICAL | PASS exige |Δ|≤T y FAIL exige |Δ|>T con precondiciones suficientes | Cambiar ≤ a <, ignorar tolerancia o evidencia | ±0,01 y ±0,02 sobre E=100,T=0,01; referencia independiente, core/checker |
+| INV-02 CRITICAL | PASS exige abs(Δ)≤T y FAIL exige abs(Δ)>T con precondiciones suficientes | Cambiar ≤ a <, ignorar tolerancia o evidencia | ±0,01 y ±0,02 sobre E=100,T=0,01; referencia independiente, core/checker |
 | INV-03 CRITICAL | Δ=A−E; exceso≥0, defecto≤0; neto=exceso+defecto | Invertir signo, usar absoluto o compensar antes de separar | +50 y −75 → exceso50/defecto−75/neto−25; referencia racional, resumen/reportes |
 | INV-04 CRITICAL | Cada cargo aceptado aparece exactamente una vez en `charge_ids` de F | Unmatched perdido, agrupación duplicada, cargo de otra corrida | Counter de IDs de C igual a Counter de F, sin IDs desconocidos; core/checker |
 | INV-05 CRITICAL | A(f)=Σ importes de sus cargos; por moneda ΣA(f)=ΣC | Sumar monto esperado, saltar crédito, duplicar línea | Partición + sumas independientes, incluyendo cero/negativos; core/checker |

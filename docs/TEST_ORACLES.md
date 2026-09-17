@@ -58,7 +58,7 @@ Casos manuales mínimos para OR-02: fijo100→100; 10×2 con mínimo30 y +5%→3
 
 ## Generadores con significado
 
-`qa/generators.py` produce casos de tarifa por unidad+mínimo+porcentaje con racionales terminantes; montos junto a tolerancia; reglas/cargos/evidencia completos; y corrupción de una sola precondición. Generar primero el caso válido y después retirar dato, duplicar versión o agregar candidato. Esto permite atribuir causalidad y hacer shrinking hacia un caso mínimo, sin `assume` que descarte casi todos los ejemplos.
+`qa/generators.py` produce casos válidos de tarifa por unidad+mínimo+porcentaje con racionales terminantes, importes reales iguales al esperado y tolerancia cero. Después permite invalidar una sola precondición: evidencia, matching, versión, fecha o integridad de importación. Los bordes de tolerancia están en tests manuales existentes; su generador específico sigue pendiente. Este orden permite atribuir causalidad y hacer shrinking hacia un caso mínimo, sin `assume` que descarte casi todos los ejemplos.
 
 Backlog: calendario con pares de intervalos adyacentes/gap/overlap; tablas con una clave única y luego segunda coincidencia; bandas con límites repetidos; bipartitos de matching 1→N/N→1/solapados; mappings de permutaciones/bijecciones de conceptos; cobertura y evidencia con cada ámbito. Invalidar una dimensión por caso. Valores negativos se prueban como aritmética firmada, sin asumir que un contrato los autoriza.
 

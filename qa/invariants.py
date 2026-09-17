@@ -111,11 +111,11 @@ def check_run(run: dict, *, require_provenance=False, verify_hashes=True) -> lis
     )
     incomplete = any(i["category"] in {"row", "file", "mapping"} for i in snapshot.get("issues", []))
     require(result["issues"] == snapshot.get("issues", []), "INV-29", "issues differ from snapshot")
-    seen = Counter()
+    seen: Counter[str] = Counter()
     ids = set()
     counts = dict.fromkeys(STATUSES, 0)
-    charge_counts = Counter()
-    buckets = defaultdict(lambda: dict.fromkeys(BUCKET_KEYS, Fraction(0)))
+    charge_counts: Counter[str] = Counter()
+    buckets: dict[str, dict[str, Fraction]] = defaultdict(lambda: dict.fromkeys(BUCKET_KEYS, Fraction(0)))
     for finding in result["findings"]:
         fid, status = finding["id"], finding["status"]
         require(fid not in ids, "INV-04", f"duplicate finding {fid}")

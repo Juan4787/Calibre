@@ -5,7 +5,9 @@ import json
 import sqlite3
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
+from zipfile import BadZipFile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -24,10 +26,10 @@ def main():
     invariants = commands.add_parser("invariants")
     invariants.add_argument("audit_json", type=Path)
     invariants.add_argument("--require-provenance", action="store_true")
-    reconcile = commands.add_parser("reconcile")
-    reconcile.add_argument("directory", type=Path)
-    reconcile.add_argument("--api-run", type=Path)
-    reconcile.add_argument("--observed-ui", type=Path)
+    reconcile_parser = commands.add_parser("reconcile")
+    reconcile_parser.add_argument("directory", type=Path)
+    reconcile_parser.add_argument("--api-run", type=Path)
+    reconcile_parser.add_argument("--observed-ui", type=Path)
     impact = commands.add_parser("impact")
     impact.add_argument("--db", type=Path, required=True)
     filters = (
@@ -70,9 +72,8 @@ def main():
             if (not args.priority or r["PRIORIDAD"] in args.priority)
             and (not args.ids or r["TEST_ID"] in args.ids)
         ]
-        pending = [
-            r["TEST_ID"] for r in selected if r["ESTADO_COBERTURA"] in {"parcial", "diseñado", "diferido"}
-        ]
+        # New tooling validates a subset, not every obligation in its family.
+        pending = [r["TEST_ID"] for r in selected if r["ESTADO_COBERTURA"] != "completa"]
         selectors = sorted({s for r in selected for s in r["SELECTORES"]})
         if args.run_existing and not errors:
             if not selectors:
@@ -135,8 +136,8 @@ def main():
         from qa.mutation import run_mutants
 
         result = {"mutants": run_mutants(args.ids, execute=args.execute), "certification": False}
-        if args.execute:
-            code = int(any(r["outcome"] != "killed" for r in result["mutants"]))
+        required = "killed" if args.execute else "planned"
+        code = int(any(r["outcome"] != required for r in result["mutants"]))
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return code
 
@@ -144,7 +145,18 @@ def main():
 if __name__ == "__main__":
     try:
         sys.exit(main())
-    except (ValueError, KeyError, TypeError, OSError, sqlite3.DatabaseError) as exc:
+    except (
+        ValueError,
+        KeyError,
+        TypeError,
+        AttributeError,
+        IndexError,
+        RecursionError,
+        OSError,
+        sqlite3.DatabaseError,
+        BadZipFile,
+        ET.ParseError,
+    ) as exc:
         print(
             json.dumps(
                 {"error": type(exc).__name__, "message": str(exc), "certification": False}, ensure_ascii=False

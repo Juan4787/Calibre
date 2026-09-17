@@ -2,6 +2,8 @@
 
 import json
 import sqlite3
+import subprocess
+import sys
 from copy import deepcopy
 from pathlib import Path
 
@@ -190,6 +192,34 @@ def test_impact_is_read_only_and_retains_unknowns(tmp_path):
 
 def test_qa_catalog_references_real_tests():
     assert validate_catalog() == []
+
+
+@pytest.mark.parametrize("payload", ['{"amount":"1","amount":"100"}', '{"snapshot": []}', "[]"])
+def test_qa_cli_malformed_input_is_inconclusive(tmp_path, payload):
+    path = tmp_path / "invalid.json"
+    path.write_text(payload, encoding="utf-8")
+    checked = subprocess.run(
+        [sys.executable, "-O", str(ROOT / "scripts/qa.py"), "invariants", str(path)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert checked.returncode == 2
+    assert json.loads(checked.stdout)["certification"] is False
+    assert "Traceback" not in checked.stderr
+
+
+def test_qa_cli_new_family_still_has_pending_obligations():
+    checked = subprocess.run(
+        [sys.executable, str(ROOT / "scripts/qa.py"), "matrix", "--ids", "QA-03"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert checked.returncode == 0  # Listing is successful, not certification.
+    result = json.loads(checked.stdout)
+    assert result["pending_family_coverage"] == ["QA-03"]
+    assert result["certification"] is False
 
 
 def test_small_fuzz_corpus():
