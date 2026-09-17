@@ -1,0 +1,605 @@
+{
+  "$defs": {
+    "BandRow": {
+      "additionalProperties": false,
+      "properties": {
+        "lower": {
+          "anyOf": [
+            {
+              "maxLength": 50,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lower"
+        },
+        "upper": {
+          "anyOf": [
+            {
+              "maxLength": 50,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Upper"
+        },
+        "value": {
+          "$ref": "#/$defs/Value"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "title": "BandRow",
+      "type": "object"
+    },
+    "Expr": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "enum": [
+            "const",
+            "attr",
+            "sum",
+            "count",
+            "add",
+            "sub",
+            "mul",
+            "div",
+            "min",
+            "max",
+            "round",
+            "lookup",
+            "band",
+            "if",
+            "eq",
+            "gt",
+            "gte",
+            "lt",
+            "lte",
+            "and",
+            "or",
+            "not"
+          ],
+          "title": "Op",
+          "type": "string"
+        },
+        "args": {
+          "items": {
+            "$ref": "#/$defs/Expr"
+          },
+          "maxItems": 100,
+          "title": "Args",
+          "type": "array"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Value"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "field": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Field"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "table": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Table"
+        },
+        "scale": {
+          "anyOf": [
+            {
+              "maximum": 12,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scale"
+        },
+        "rounding": {
+          "anyOf": [
+            {
+              "enum": [
+                "ROUND_HALF_UP",
+                "ROUND_HALF_EVEN",
+                "ROUND_DOWN",
+                "ROUND_UP"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rounding"
+        }
+      },
+      "required": [
+        "op"
+      ],
+      "title": "Expr",
+      "type": "object"
+    },
+    "LookupRow": {
+      "additionalProperties": false,
+      "properties": {
+        "keys": {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "title": "Keys",
+          "type": "array"
+        },
+        "value": {
+          "$ref": "#/$defs/Value"
+        }
+      },
+      "required": [
+        "keys",
+        "value"
+      ],
+      "title": "LookupRow",
+      "type": "object"
+    },
+    "MatchKey": {
+      "additionalProperties": false,
+      "properties": {
+        "charge": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Charge",
+          "type": "string"
+        },
+        "shipment": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Shipment",
+          "type": "string"
+        },
+        "aliases": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Aliases",
+          "type": "object"
+        }
+      },
+      "required": [
+        "charge",
+        "shipment"
+      ],
+      "title": "MatchKey",
+      "type": "object"
+    },
+    "Matching": {
+      "additionalProperties": false,
+      "properties": {
+        "keys": {
+          "items": {
+            "$ref": "#/$defs/MatchKey"
+          },
+          "minItems": 1,
+          "title": "Keys",
+          "type": "array"
+        },
+        "cardinality": {
+          "default": "one",
+          "enum": [
+            "one",
+            "group"
+          ],
+          "title": "Cardinality",
+          "type": "string"
+        },
+        "explicit": {
+          "additionalProperties": {
+            "items": {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "propertyNames": {
+            "maxLength": 200,
+            "minLength": 1
+          },
+          "title": "Explicit",
+          "type": "object"
+        },
+        "duplicate_fields": {
+          "items": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Duplicate Fields",
+          "type": "array"
+        }
+      },
+      "required": [
+        "keys"
+      ],
+      "title": "Matching",
+      "type": "object"
+    },
+    "Requirement": {
+      "additionalProperties": false,
+      "properties": {
+        "any_of": {
+          "items": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Any Of",
+          "type": "array"
+        },
+        "scope": {
+          "default": "group",
+          "enum": [
+            "group",
+            "each_shipment",
+            "each_charge"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "document_required": {
+          "default": false,
+          "title": "Document Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "any_of"
+      ],
+      "title": "Requirement",
+      "type": "object"
+    },
+    "Rule": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "concept": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Concept",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "expression": {
+          "$ref": "#/$defs/Expr"
+        },
+        "when": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Expr"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Requirement"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "expected": {
+          "default": false,
+          "title": "Expected",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "concept",
+        "description",
+        "expression"
+      ],
+      "title": "Rule",
+      "type": "object"
+    },
+    "Table": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "lookup",
+            "band"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/$defs/LookupRow"
+          },
+          "maxItems": 20000,
+          "title": "Rows",
+          "type": "array"
+        },
+        "bands": {
+          "items": {
+            "$ref": "#/$defs/BandRow"
+          },
+          "maxItems": 1000,
+          "title": "Bands",
+          "type": "array"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "Table",
+      "type": "object"
+    },
+    "Value": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "enum": [
+            "decimal",
+            "text",
+            "date",
+            "boolean"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "title": "Value"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ],
+      "title": "Value",
+      "type": "object"
+    },
+    "Version": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "valid_from": {
+          "title": "Valid From",
+          "type": "string"
+        },
+        "valid_to": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid To"
+        },
+        "rules": {
+          "items": {
+            "$ref": "#/$defs/Rule"
+          },
+          "maxItems": 200,
+          "minItems": 1,
+          "title": "Rules",
+          "type": "array"
+        },
+        "tables": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Table"
+          },
+          "propertyNames": {
+            "maxLength": 200,
+            "minLength": 1
+          },
+          "title": "Tables",
+          "type": "object"
+        },
+        "source_note": {
+          "title": "Source Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "valid_from",
+        "rules",
+        "source_note"
+      ],
+      "title": "Version",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "carrier": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Carrier",
+      "type": "string"
+    },
+    "currency": {
+      "pattern": "^[A-Z]{3}$",
+      "title": "Currency",
+      "type": "string"
+    },
+    "date_field": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Date Field",
+      "type": "string"
+    },
+    "scale": {
+      "maximum": 8,
+      "minimum": 0,
+      "title": "Scale",
+      "type": "integer"
+    },
+    "rounding": {
+      "enum": [
+        "ROUND_HALF_UP",
+        "ROUND_HALF_EVEN",
+        "ROUND_DOWN",
+        "ROUND_UP"
+      ],
+      "title": "Rounding",
+      "type": "string"
+    },
+    "tolerance_absolute": {
+      "maxLength": 50,
+      "title": "Tolerance Absolute",
+      "type": "string"
+    },
+    "tolerance_relative": {
+      "maxLength": 50,
+      "title": "Tolerance Relative",
+      "type": "string"
+    },
+    "matching": {
+      "$ref": "#/$defs/Matching"
+    },
+    "versions": {
+      "items": {
+        "$ref": "#/$defs/Version"
+      },
+      "maxItems": 200,
+      "minItems": 1,
+      "title": "Versions",
+      "type": "array"
+    },
+    "detect_missing": {
+      "default": false,
+      "title": "Detect Missing",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "carrier",
+    "currency",
+    "date_field",
+    "scale",
+    "rounding",
+    "tolerance_absolute",
+    "tolerance_relative",
+    "matching",
+    "versions"
+  ],
+  "title": "Agreement",
+  "type": "object"
+}

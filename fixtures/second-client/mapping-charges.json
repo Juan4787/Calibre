@@ -1,0 +1,58 @@
+{
+  "id": "omega-invoice",
+  "version": "1",
+  "entity": "charges",
+  "sheet": "Invoice detail",
+  "decimal_separator": ".",
+  "thousands_separator": "",
+  "columns": [
+    {
+      "source": "Row key",
+      "target": "id",
+      "type": "text"
+    },
+    {
+      "source": "Lot",
+      "target": "reference",
+      "type": "text"
+    },
+    {
+      "source": "Lot",
+      "target": "attributes.batch",
+      "type": "text"
+    },
+    {
+      "target": "carrier",
+      "type": "text",
+      "constant": "FICTITIOUS-OMEGA"
+    },
+    {
+      "target": "settlement",
+      "type": "text",
+      "constant": "INV-EXAMPLE"
+    },
+    {
+      "target": "agreement",
+      "type": "text",
+      "constant": "D"
+    },
+    {
+      "target": "currency",
+      "type": "text",
+      "constant": "USD"
+    },
+    {
+      "source": "Net USD",
+      "target": "amount",
+      "type": "decimal"
+    },
+    {
+      "source": "Charge label",
+      "target": "concept",
+      "type": "text"
+    }
+  ],
+  "concept_map": {
+    "Consolidated movement": "movement"
+  }
+}

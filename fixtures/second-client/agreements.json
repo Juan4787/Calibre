@@ -1,0 +1,79 @@
+[
+  {
+    "id": "D",
+    "name": "Acuerdo FICTICIO D",
+    "carrier": "FICTITIOUS-OMEGA",
+    "currency": "USD",
+    "date_field": "pickup",
+    "scale": 2,
+    "rounding": "ROUND_HALF_UP",
+    "tolerance_absolute": "0.01",
+    "tolerance_relative": "0",
+    "matching": {
+      "keys": [
+        {
+          "charge": "attributes.batch",
+          "shipment": "attributes.batch"
+        }
+      ],
+      "cardinality": "group"
+    },
+    "versions": [
+      {
+        "id": "D-1",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "rules": [
+          {
+            "id": "D-VOLUME",
+            "concept": "movement",
+            "description": "Regla ficticia: movement",
+            "expression": {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "max",
+                  "args": [
+                    {
+                      "op": "sum",
+                      "field": "mass",
+                      "unit": "kg"
+                    },
+                    {
+                      "op": "mul",
+                      "args": [
+                        {
+                          "op": "sum",
+                          "field": "cube",
+                          "unit": "m3"
+                        },
+                        {
+                          "op": "const",
+                          "value": {
+                            "type": "decimal",
+                            "value": "140",
+                            "unit": "kg/m3"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "op": "const",
+                  "value": {
+                    "type": "decimal",
+                    "value": "0.37",
+                    "unit": "USD/kg"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "tables": {},
+        "source_note": "Ejemplo totalmente ficticio. Sin valor contractual ni evidencia de prácticas del mercado."
+      }
+    ]
+  }
+]

@@ -1,0 +1,50 @@
+{
+  "id": "omega-ops",
+  "version": "1",
+  "entity": "shipments",
+  "delimiter": "\t",
+  "decimal_separator": ".",
+  "thousands_separator": "",
+  "date_formats": [
+    "%Y-%m-%d"
+  ],
+  "columns": [
+    {
+      "source": "Movement key",
+      "target": "id",
+      "type": "text"
+    },
+    {
+      "source": "Waybill",
+      "target": "reference",
+      "type": "text"
+    },
+    {
+      "target": "carrier",
+      "type": "text",
+      "constant": "FICTITIOUS-OMEGA"
+    },
+    {
+      "source": "Picked up",
+      "target": "attributes.pickup",
+      "type": "date"
+    },
+    {
+      "source": "Lot",
+      "target": "attributes.batch",
+      "type": "text"
+    },
+    {
+      "source": "Mass",
+      "target": "attributes.mass",
+      "type": "decimal",
+      "unit": "kg"
+    },
+    {
+      "source": "Cube",
+      "target": "attributes.cube",
+      "type": "decimal",
+      "unit": "m3"
+    }
+  ]
+}

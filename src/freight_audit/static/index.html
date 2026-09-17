@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Freight Audit · Control respaldado</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+    <link rel="stylesheet" href="/static/app.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Saltar al contenido</a>
+    <aside class="sidebar">
+      <a href="/" class="brand"
+        ><span class="mark">F<span>∕</span>A</span
+        ><span>FREIGHT<br /><strong>AUDIT</strong></span></a
+      >
+      <p class="eyebrow nav-label">ESPACIO DE TRABAJO</p>
+      <nav aria-label="Principal">
+        <button class="nav active" data-view="audits">
+          <span>▤</span> Auditorías</button
+        ><button class="nav" data-view="new">
+          <span>＋</span> Nueva auditoría</button
+        ><button class="nav" data-view="configs">
+          <span>☷</span> Acuerdos y formatos</button
+        ><button class="nav" data-view="guide">
+          <span>ⓘ</span> Guía de trabajo
+        </button>
+      </nav>
+      <div class="local">
+        <span class="dot"></span><strong>En este equipo</strong>
+        <p>Archivos y cálculos locales.<br />Sin conexión obligatoria.</p>
+      </div>
+    </aside>
+    <div class="workspace">
+      <header class="topbar">
+        <span>Control de cargos de transporte</span
+        ><span class="tag">PROTOTIPO LOCAL</span>
+      </header>
+      <main id="main" tabindex="-1"></main>
+      <footer>
+        La conclusión del motor y la decisión humana se conservan por separado.
+      </footer>
+    </div>
+    <div
+      id="notice"
+      class="notice"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></div>
+    <dialog id="detail" aria-labelledby="detail-title">
+      <div id="detail-content"></div>
+    </dialog>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+# Registro de revisión adversarial
+
+La suite inicial pasó 118 tests. La segunda pasada añadió reproducciones independientes de casos límite. El registro original de ejecución está en `output/adversarial-before.txt` (artefacto local, no requerido para ejecutar el producto).
+
+| Hallazgo reproducido | Riesgo | Corrección y prueba permanente |
+|---|---|---|
+| Una línea ambigua podía completar una línea asignada de 40 frente a esperado 100 | FAIL falso sobre un grupo parcial | Propagación de incertidumbre a grupos que comparten candidatos; `test_ambiguous_allocation_also_blocks_related_partial_group` |
+| Sumar dos importes válidos podía superar el límite de 36 dígitos de un input | Interrupción del lote | Separar validación de entrada y decimales internos de agregados; `test_aggregate_amount_can_exceed_individual_input_digit_bound` |
+| Multiplicar una tolerancia relativa por un resultado extremo podía ser inexacto fuera del intérprete | Excepción sin clasificar | Captura de precisión en comparación y UNDETERMINABLE; `test_inexact_comparison_becomes_undeterminable` |
+| Pydantic convertía el entero 1 a booleano | Coerción no declarada | Modelos estrictos; `test_no_boolean_coercion` |
+| Un campo CSV entrecomillado con salto de línea desplazaba la procedencia de la fila siguiente | Procedencia incorrecta | Conservar línea física de inicio del registro; `test_csv_multiline_provenance_uses_actual_line` |
+| Cobertura de conceptos ausentes agregaba otro hallazgo cuando ya había un cargo sin versión | Doble conteo de hallazgos y cobertura distorsionada | No duplicar un alcance observado; `test_missing_coverage_must_not_duplicate_existing_undetermined_charge` |
+| El alcance podía incluir operaciones de otro transportista y omitirlas silenciosamente | Cobertura falsa | Validación cruzada de alcance y transportista; `test_coverage_cannot_silently_drop_wrong_carrier` |
+| CSV con más valores que encabezados podía ignorar celdas fuera de rango | Pérdida silenciosa de datos | Rechazo explícito de fila; `test_oversized_unmapped_cells_not_silently_shifted` |
+
+También se probaron versiones y tablas superpuestas, huecos de tramos, moneda incorrecta, unidades incompatibles, reglas desconocidas, fuentes repetidas, duplicados candidatos, consolidación, condiciones incompletas, errores de Excel, archivos corruptos, inyección de fórmulas en reportes, HTML malicioso, alteración de originales/snapshots/decisiones, backups, requests desde otro origen y ejecución sin red.
+
+La prueba del segundo cliente importa `fixtures/second-client/project.json` sin ramas de cliente en el motor: columnas en inglés, CSV tabulado, XLSX con otro layout, punto decimal, USD, fecha `pickup`, consolidación 3→1 y fórmula con masa/volumen. Los cambios son archivos de configuración y datos. Es una prueba técnica de generalidad, no evidencia de cómo factura un transportista real.
+
+Durante el primer benchmark de 50.000 cargos se detectó que la serialización copiaba dos veces las trazas anidadas. Se reemplazó por recorrido de modelos con extracción superficial de campos. La equivalencia de hashes de resultados se contrasta en los benchmarks posteriores. Se indexaron las tablas lookup por versión para evitar un recorrido completo por cada cargo.
+
+Límites de esta revisión: datos sintéticos, una máquina Linux, sin instalación Windows real y sin contrato de cliente validado. Los tests verifican los contratos implementados; no demuestran que el acuerdo configurado sea comercialmente correcto.
+
+La pasada final añadió controles de tamaño y de ejecución: muchos requisitos documentales podían producir mensajes que no admitían una deserialización posterior. Se acotó la descripción humana, conservando los faltantes y requisitos completos en la traza; dos tests verifican el roundtrip. Excel trunca textos superiores a 32.767 caracteres: ahora se rechaza esa planilla y el paquete conserva JSON, originales y una advertencia explícita. También se bloquea guardar/reproducir si el código en disco cambió desde que se abrió el proceso; el operador debe reiniciarlo para que la huella corresponda al motor realmente cargado. Se agregaron tres tests para estos límites y para el cambio de código en ejecución.
+
+Otra prueba extrema confirmó que un nombre de atributo inválido de 10.000 caracteres podía exceder el contrato de salida. El error visible queda acotado y su texto íntegro sigue en la traza. Finalmente, una configuración de 1.001 aliases se repetía por hallazgo: ahora la traza registra su hash y las claves/aliases realmente utilizados; el snapshot conserva la tabla completa. El test comprueba tanto el alias aplicado como la ausencia de aliases ajenos al cargo en su traza. Antes de actualizar los golden se verificó programáticamente que sólo cambió la traza de matching: importes, estados, reglas, evidencia y demás cálculos permanecieron idénticos.
+
+La última revisión de importación reprodujo pérdida de precisión antes del motor: openpyxl convertía el literal XLSX `1000000000000000.01` a un float que perdía la fracción. Ahora se recuperan los tokens numéricos del XML original, fila por fila con parsing protegido, y se convierten directamente a Decimal; la procedencia conserva ese token. Se limita tamaño, cantidad de dígitos y exponente antes de expandir notación científica. Siete pruebas cubren la reproducción original, exponente extremo, tres notaciones científicas válidas, un identificador fraccionario que el float aparentaba entero y filas dispersas. Los golden anteriores siguen pasando sin cambios. El defecto inicial está reproducido en `output/adversarial-xlsx-precision-before.txt`.

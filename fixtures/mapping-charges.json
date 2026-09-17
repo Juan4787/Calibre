@@ -1,0 +1,53 @@
+{
+  "id": "cargos-demo",
+  "version": "1",
+  "entity": "charges",
+  "columns": [
+    {
+      "source": "Línea",
+      "target": "id",
+      "type": "text"
+    },
+    {
+      "source": "Liquidación",
+      "target": "settlement",
+      "type": "text"
+    },
+    {
+      "source": "Transportista",
+      "target": "carrier",
+      "type": "text"
+    },
+    {
+      "source": "Contrato",
+      "target": "agreement",
+      "type": "text"
+    },
+    {
+      "source": "Remito",
+      "target": "reference",
+      "type": "text"
+    },
+    {
+      "source": "Servicio",
+      "target": "concept",
+      "type": "text"
+    },
+    {
+      "source": "Importe",
+      "target": "amount",
+      "type": "decimal"
+    },
+    {
+      "source": "Moneda",
+      "target": "currency",
+      "type": "text"
+    }
+  ],
+  "concept_map": {
+    "Flete": "base",
+    "Demora": "wait",
+    "Pallet": "pallet",
+    "Especial": "special"
+  }
+}

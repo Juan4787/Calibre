@@ -1,0 +1,62 @@
+{
+  "id": "operaciones-demo",
+  "version": "1",
+  "entity": "shipments",
+  "sheet": "Despachos",
+  "header_row": 2,
+  "columns": [
+    {
+      "source": "Registro",
+      "target": "id",
+      "type": "text"
+    },
+    {
+      "source": "Numero Rem.",
+      "target": "reference",
+      "type": "text"
+    },
+    {
+      "source": "Empresa transporte",
+      "target": "carrier",
+      "type": "text"
+    },
+    {
+      "source": "Fecha Despacho",
+      "target": "attributes.service_date",
+      "type": "date"
+    },
+    {
+      "source": "Peso KG",
+      "target": "attributes.weight",
+      "type": "decimal",
+      "unit": "kg",
+      "required": false
+    },
+    {
+      "source": "Zona entrega",
+      "target": "attributes.zone",
+      "type": "text"
+    },
+    {
+      "source": "Vehículo",
+      "target": "attributes.vehicle",
+      "type": "text"
+    },
+    {
+      "source": "Pallets",
+      "target": "attributes.pallets",
+      "type": "decimal",
+      "unit": "pallet"
+    },
+    {
+      "source": "Origen",
+      "target": "attributes.origin",
+      "type": "text"
+    },
+    {
+      "source": "Destino",
+      "target": "attributes.destination",
+      "type": "text"
+    }
+  ]
+}

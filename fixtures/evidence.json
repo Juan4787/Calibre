@@ -1,0 +1,19 @@
+[
+  {
+    "id": "EV-10",
+    "kind": "signed_event",
+    "shipment_ids": [
+      "S-010"
+    ],
+    "note": "Declaración ficticia de autorización; sin documento adjunto requerido en este ejemplo."
+  },
+  {
+    "id": "EV-26",
+    "kind": "authorization",
+    "shipment_ids": [
+      "S-026"
+    ],
+    "note": "Autorización ficticia en documento de demostración.",
+    "document_hash": null
+  }
+]

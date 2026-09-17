@@ -1,0 +1,24 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.hypothesis/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+build/
+dist/
+.local/
+output/
+.playwright-cli/
+
+# Local databases, credentials and coverage artifacts.
+*.db
+*.sqlite
+*.sqlite3
+.env
+.env.*
+!.env.example
+.coverage
+coverage.xml
+htmlcov/

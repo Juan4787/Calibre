@@ -1,0 +1,12 @@
+{
+  "label": "Segundo cliente FICTICIO · consolidado / USD",
+  "shipments": {
+    "file": "movements.csv",
+    "mapping": "mapping-shipments.json"
+  },
+  "charges": {
+    "file": "invoice.xlsx",
+    "mapping": "mapping-charges.json"
+  },
+  "agreements": "agreements.json"
+}

@@ -1,0 +1,520 @@
+[
+  {
+    "id": "A",
+    "name": "Acuerdo FICTICIO A",
+    "carrier": "FICTICIO-ALFA",
+    "currency": "ARS",
+    "date_field": "service_date",
+    "scale": 2,
+    "rounding": "ROUND_HALF_UP",
+    "tolerance_absolute": "0.01",
+    "tolerance_relative": "0",
+    "matching": {
+      "keys": [
+        {
+          "charge": "reference",
+          "shipment": "reference"
+        }
+      ],
+      "cardinality": "one",
+      "duplicate_fields": [
+        "reference",
+        "concept",
+        "amount"
+      ]
+    },
+    "versions": [
+      {
+        "id": "A-2026-H1",
+        "valid_from": "2026-01-01",
+        "valid_to": "2026-06-30",
+        "rules": [
+          {
+            "id": "A-BASE",
+            "concept": "base",
+            "description": "Regla ficticia: base",
+            "expression": {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "max",
+                  "args": [
+                    {
+                      "op": "mul",
+                      "args": [
+                        {
+                          "op": "attr",
+                          "field": "weight",
+                          "unit": "kg"
+                        },
+                        {
+                          "op": "const",
+                          "value": {
+                            "type": "decimal",
+                            "value": "2",
+                            "unit": "ARS/kg"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "op": "const",
+                      "value": {
+                        "type": "decimal",
+                        "value": "300",
+                        "unit": "ARS"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "op": "const",
+                  "value": {
+                    "type": "decimal",
+                    "value": "1.05",
+                    "unit": null
+                  }
+                }
+              ]
+            },
+            "expected": true
+          },
+          {
+            "id": "A-WAIT",
+            "concept": "wait",
+            "description": "Regla ficticia: wait",
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "80",
+                "unit": "ARS"
+              }
+            },
+            "evidence": [
+              {
+                "any_of": [
+                  "authorization",
+                  "signed_event"
+                ],
+                "scope": "each_shipment"
+              }
+            ]
+          }
+        ],
+        "tables": {},
+        "source_note": "Ejemplo totalmente ficticio. Sin valor contractual ni evidencia de prácticas del mercado."
+      },
+      {
+        "id": "A-2026-H2",
+        "valid_from": "2026-07-01",
+        "valid_to": null,
+        "rules": [
+          {
+            "id": "A-BASE-2",
+            "concept": "base",
+            "description": "Regla ficticia: base",
+            "expression": {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "mul",
+                  "args": [
+                    {
+                      "op": "max",
+                      "args": [
+                        {
+                          "op": "mul",
+                          "args": [
+                            {
+                              "op": "attr",
+                              "field": "weight",
+                              "unit": "kg"
+                            },
+                            {
+                              "op": "const",
+                              "value": {
+                                "type": "decimal",
+                                "value": "2",
+                                "unit": "ARS/kg"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "op": "const",
+                          "value": {
+                            "type": "decimal",
+                            "value": "300",
+                            "unit": "ARS"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "op": "const",
+                      "value": {
+                        "type": "decimal",
+                        "value": "1.05",
+                        "unit": null
+                      }
+                    }
+                  ]
+                },
+                {
+                  "op": "const",
+                  "value": {
+                    "type": "decimal",
+                    "value": "1.1",
+                    "unit": null
+                  }
+                }
+              ]
+            },
+            "expected": true
+          },
+          {
+            "id": "A-WAIT",
+            "concept": "wait",
+            "description": "Regla ficticia: wait",
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "80",
+                "unit": "ARS"
+              }
+            },
+            "evidence": [
+              {
+                "any_of": [
+                  "authorization",
+                  "signed_event"
+                ],
+                "scope": "each_shipment"
+              }
+            ]
+          }
+        ],
+        "tables": {},
+        "source_note": "Ejemplo totalmente ficticio. Sin valor contractual ni evidencia de prácticas del mercado."
+      },
+      {
+        "id": "A-SOLAPADA",
+        "valid_from": "2026-07-15",
+        "valid_to": "2026-07-20",
+        "rules": [
+          {
+            "id": "A-BASE",
+            "concept": "base",
+            "description": "Regla ficticia: base",
+            "expression": {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "max",
+                  "args": [
+                    {
+                      "op": "mul",
+                      "args": [
+                        {
+                          "op": "attr",
+                          "field": "weight",
+                          "unit": "kg"
+                        },
+                        {
+                          "op": "const",
+                          "value": {
+                            "type": "decimal",
+                            "value": "2",
+                            "unit": "ARS/kg"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "op": "const",
+                      "value": {
+                        "type": "decimal",
+                        "value": "300",
+                        "unit": "ARS"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "op": "const",
+                  "value": {
+                    "type": "decimal",
+                    "value": "1.05",
+                    "unit": null
+                  }
+                }
+              ]
+            },
+            "expected": true
+          },
+          {
+            "id": "A-WAIT",
+            "concept": "wait",
+            "description": "Regla ficticia: wait",
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "80",
+                "unit": "ARS"
+              }
+            },
+            "evidence": [
+              {
+                "any_of": [
+                  "authorization",
+                  "signed_event"
+                ],
+                "scope": "each_shipment"
+              }
+            ]
+          }
+        ],
+        "tables": {},
+        "source_note": "Ejemplo totalmente ficticio. Sin valor contractual ni evidencia de prácticas del mercado."
+      }
+    ],
+    "detect_missing": true
+  },
+  {
+    "id": "B",
+    "name": "Acuerdo FICTICIO B",
+    "carrier": "FICTICIO-BETA",
+    "currency": "ARS",
+    "date_field": "service_date",
+    "scale": 2,
+    "rounding": "ROUND_HALF_UP",
+    "tolerance_absolute": "0.01",
+    "tolerance_relative": "0",
+    "matching": {
+      "keys": [
+        {
+          "charge": "reference",
+          "shipment": "reference"
+        }
+      ],
+      "cardinality": "one",
+      "duplicate_fields": [
+        "reference",
+        "concept",
+        "amount"
+      ]
+    },
+    "versions": [
+      {
+        "id": "B-1",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "rules": [
+          {
+            "id": "B-ZONA",
+            "concept": "base",
+            "description": "Regla ficticia: base",
+            "expression": {
+              "op": "lookup",
+              "args": [
+                {
+                  "op": "attr",
+                  "field": "zone"
+                },
+                {
+                  "op": "attr",
+                  "field": "vehicle"
+                }
+              ],
+              "table": "zones"
+            }
+          }
+        ],
+        "tables": {
+          "zones": {
+            "kind": "lookup",
+            "rows": [
+              {
+                "keys": [
+                  "Norte",
+                  "Furgón"
+                ],
+                "value": {
+                  "type": "decimal",
+                  "value": "900",
+                  "unit": "ARS"
+                }
+              },
+              {
+                "keys": [
+                  "Sur",
+                  "Furgón"
+                ],
+                "value": {
+                  "type": "decimal",
+                  "value": "1100",
+                  "unit": "ARS"
+                }
+              },
+              {
+                "keys": [
+                  "Norte",
+                  "Camión"
+                ],
+                "value": {
+                  "type": "decimal",
+                  "value": "1500",
+                  "unit": "ARS"
+                }
+              },
+              {
+                "keys": [
+                  "Sur",
+                  "Camión"
+                ],
+                "value": {
+                  "type": "decimal",
+                  "value": "1700",
+                  "unit": "ARS"
+                }
+              }
+            ]
+          }
+        },
+        "source_note": "Ejemplo totalmente ficticio. Sin valor contractual ni evidencia de prácticas del mercado."
+      }
+    ]
+  },
+  {
+    "id": "C",
+    "name": "Acuerdo FICTICIO C",
+    "carrier": "FICTICIO-GAMMA",
+    "currency": "ARS",
+    "date_field": "service_date",
+    "scale": 2,
+    "rounding": "ROUND_HALF_UP",
+    "tolerance_absolute": "0.01",
+    "tolerance_relative": "0",
+    "matching": {
+      "keys": [
+        {
+          "charge": "reference",
+          "shipment": "reference"
+        }
+      ],
+      "cardinality": "one",
+      "duplicate_fields": [
+        "reference",
+        "concept",
+        "amount"
+      ]
+    },
+    "versions": [
+      {
+        "id": "C-1",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "rules": [
+          {
+            "id": "C-BANDA",
+            "concept": "base",
+            "description": "Regla ficticia: base",
+            "expression": {
+              "op": "band",
+              "args": [
+                {
+                  "op": "attr",
+                  "field": "weight",
+                  "unit": "kg"
+                }
+              ],
+              "table": "weights"
+            }
+          },
+          {
+            "id": "C-PALLET",
+            "concept": "pallet",
+            "description": "Regla ficticia: pallet",
+            "expression": {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "attr",
+                  "field": "pallets",
+                  "unit": "pallet"
+                },
+                {
+                  "op": "const",
+                  "value": {
+                    "type": "decimal",
+                    "value": "30",
+                    "unit": "ARS/pallet"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "C-EXTRA",
+            "concept": "special",
+            "description": "Regla ficticia: special",
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "120",
+                "unit": "ARS"
+              }
+            },
+            "evidence": [
+              {
+                "any_of": [
+                  "authorization"
+                ],
+                "document_required": true
+              }
+            ]
+          }
+        ],
+        "tables": {
+          "weights": {
+            "kind": "band",
+            "unit": "kg",
+            "bands": [
+              {
+                "lower": "0",
+                "upper": "500",
+                "value": {
+                  "type": "decimal",
+                  "value": "400",
+                  "unit": "ARS"
+                }
+              },
+              {
+                "lower": "500",
+                "upper": "1500",
+                "value": {
+                  "type": "decimal",
+                  "value": "700",
+                  "unit": "ARS"
+                }
+              },
+              {
+                "lower": "1500",
+                "value": {
+                  "type": "decimal",
+                  "value": "1000",
+                  "unit": "ARS"
+                }
+              }
+            ]
+          }
+        },
+        "source_note": "Ejemplo totalmente ficticio. Sin valor contractual ni evidencia de prácticas del mercado."
+      }
+    ]
+  }
+]

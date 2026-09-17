@@ -1,0 +1,221 @@
+{
+  "$defs": {
+    "ColumnMapping": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source"
+        },
+        "target": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Target",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "text",
+            "decimal",
+            "date",
+            "boolean"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "constant": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Constant"
+        },
+        "numeric_text": {
+          "default": "reject",
+          "enum": [
+            "reject",
+            "formatted"
+          ],
+          "title": "Numeric Text",
+          "type": "string"
+        },
+        "true_values": {
+          "items": {
+            "type": "string"
+          },
+          "title": "True Values",
+          "type": "array"
+        },
+        "false_values": {
+          "items": {
+            "type": "string"
+          },
+          "title": "False Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "target",
+        "type"
+      ],
+      "title": "ColumnMapping",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "id": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "version": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    },
+    "entity": {
+      "enum": [
+        "shipments",
+        "charges"
+      ],
+      "title": "Entity",
+      "type": "string"
+    },
+    "sheet": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Sheet"
+    },
+    "header_row": {
+      "default": 1,
+      "maximum": 1000,
+      "minimum": 1,
+      "title": "Header Row",
+      "type": "integer"
+    },
+    "delimiter": {
+      "default": ";",
+      "enum": [
+        ",",
+        ";",
+        "\t",
+        "|"
+      ],
+      "title": "Delimiter",
+      "type": "string"
+    },
+    "encoding": {
+      "default": "utf-8-sig",
+      "enum": [
+        "utf-8-sig",
+        "cp1252"
+      ],
+      "title": "Encoding",
+      "type": "string"
+    },
+    "decimal_separator": {
+      "default": ",",
+      "enum": [
+        ".",
+        ","
+      ],
+      "title": "Decimal Separator",
+      "type": "string"
+    },
+    "thousands_separator": {
+      "default": ".",
+      "enum": [
+        ".",
+        ",",
+        "",
+        " "
+      ],
+      "title": "Thousands Separator",
+      "type": "string"
+    },
+    "date_formats": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Date Formats",
+      "type": "array"
+    },
+    "columns": {
+      "items": {
+        "$ref": "#/$defs/ColumnMapping"
+      },
+      "minItems": 1,
+      "title": "Columns",
+      "type": "array"
+    },
+    "concept_map": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Concept Map",
+      "type": "object"
+    },
+    "allow_xls_cached_values": {
+      "default": false,
+      "title": "Allow Xls Cached Values",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "entity",
+    "columns"
+  ],
+  "title": "ImportMapping",
+  "type": "object"
+}

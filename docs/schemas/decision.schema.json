@@ -1,0 +1,77 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "finding_id": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Finding Id",
+      "type": "string"
+    },
+    "action": {
+      "enum": [
+        "APPROVED",
+        "REJECTED",
+        "INFORMATION_REQUESTED",
+        "EXCEPTION_ACCEPTED",
+        "IGNORED"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "actor": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Actor",
+      "type": "string"
+    },
+    "note": {
+      "maxLength": 10000,
+      "minLength": 3,
+      "title": "Note",
+      "type": "string"
+    },
+    "evidence_ids": {
+      "items": {
+        "maxLength": 200,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "known_to_client": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Known To Client"
+    },
+    "review_minutes": {
+      "anyOf": [
+        {
+          "maximum": 100000,
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Review Minutes"
+    }
+  },
+  "required": [
+    "finding_id",
+    "action",
+    "actor",
+    "note"
+  ],
+  "title": "Decision",
+  "type": "object"
+}
