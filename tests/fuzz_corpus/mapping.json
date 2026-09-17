@@ -1,0 +1,11 @@
+{
+  "id": "qa-corpus", "version": "1", "entity": "shipments",
+  "delimiter": ";", "decimal_separator": ",", "thousands_separator": ".",
+  "columns": [
+    {"source":"id","target":"id","type":"text"},
+    {"source":"ref","target":"reference","type":"text"},
+    {"constant":"C","target":"carrier","type":"text"},
+    {"source":"weight","target":"attributes.weight","type":"decimal","unit":"kg"},
+    {"source":"date","target":"attributes.service_date","type":"date"}
+  ]
+}

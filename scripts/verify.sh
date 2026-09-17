@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-.venv/bin/ruff check src tests scripts
-.venv/bin/ruff format --check src tests scripts
+.venv/bin/ruff check src tests scripts qa
+.venv/bin/ruff format --check src tests scripts qa
 .venv/bin/mypy src
+.venv/bin/python scripts/qa.py matrix --check
 node --check src/freight_audit/static/app.js
 .venv/bin/pytest -q
 .venv/bin/python -m compileall -q src

@@ -1,0 +1,5 @@
+[
+  {"file": "valid-argentine.csv", "sha256": "e10783e9e9b6fe3ecc0b368dcca2181e2576bb4f22380fbb6eb550a0c204338a", "accepted": 1, "rejected": [], "weight": "1234.56"},
+  {"file": "bad-grouping.csv", "sha256": "c312ea7743ba5e5b4c7157c1c784b91f503d70e2ad4efc021f23c87e199f7eae", "accepted": 0, "rejected": [2]},
+  {"file": "multiline.csv", "sha256": "9e33ed6c858b60e43995b8ba81acff814b426e138fadb3e880671ba4bb8a80f2", "accepted": 2, "rejected": [], "second_reference_row": 4}
+]

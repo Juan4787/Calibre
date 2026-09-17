@@ -1,6 +1,7 @@
 include README.md requirements.lock
 recursive-include docs *.md *.json *.csv
 recursive-include fixtures *.json *.csv *.xlsx *.txt
-recursive-include tests *.py *.json
+recursive-include tests *.py *.json *.csv *.md
+recursive-include qa *.py *.json
 recursive-include scripts *.py *.sh *.ps1
 recursive-include src/freight_audit/static *.html *.css *.js *.svg
