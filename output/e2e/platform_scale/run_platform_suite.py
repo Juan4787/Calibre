@@ -441,19 +441,31 @@ print('UNLOCKED', flush=True)
 
         # Process B attempts write with 0.2s timeout -> must fail with database is locked
         writer_blocked = False
+        conn_b = None
         try:
             conn_b = sqlite3.connect(str(db_path), timeout=0.2)
             conn_b.execute("BEGIN IMMEDIATE")
             conn_b.execute("INSERT INTO runs (id) VALUES ('fail')")
             conn_b.commit()
-            conn_b.close()
         except sqlite3.OperationalError as e:
             if "locked" in str(e).lower():
                 writer_blocked = True
+        finally:
+            if conn_b is not None:
+                conn_b.close()
 
         p_holder.wait(timeout=5)
+        if p_holder.stdout:
+            p_holder.stdout.close()
+        if p_holder.stderr:
+            p_holder.stderr.close()
+
         with store.connect() as conn:
             integrity = conn.execute("PRAGMA integrity_check").fetchone()[0]
+
+        del store
+        import gc
+        gc.collect()
 
         results["WIN-17"] = {
             "status": "PASSED" if writer_blocked and integrity == "ok" else "FAILED",
