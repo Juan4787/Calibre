@@ -1,0 +1,6 @@
+{
+  "incident_id": "PERF-01",
+  "component": "reporting.workbook_bytes",
+  "expected_behavior": "Linear O(R) time complexity with respect to row count when appending rows to openpyxl worksheets. 10,000 rows should complete in under 1 second.",
+  "expected_complexity": "O(R)"
+}

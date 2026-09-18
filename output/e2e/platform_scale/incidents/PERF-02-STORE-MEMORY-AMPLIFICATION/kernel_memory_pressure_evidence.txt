@@ -1,0 +1,18 @@
+=== JOURNALCTL LOGS PRIOR TO REBOOT (Boot -1) ===
+Command: journalctl -b -1 --since "2026-09-18 16:50:00"
+
+sep 18 16:54:16 usuario-All-Series systemd-journald[294]: Under memory pressure, flushing caches.
+sep 18 16:57:26 usuario-All-Series systemd-journald[294]: Under memory pressure, flushing caches.
+
+=== REBOOT RECORD ===
+Command: who -b && last reboot
+arranque del sistema 2026-09-18 17:05
+reboot   system boot  6.8.0-136-generi Fri Sep 18 17:05   still running
+
+=== SYSTEM MEMORY PROFILE AT BASELINE ===
+Total Physical RAM: 11,900 MB
+Total Swap: 2,047 MB
+Baseline In-Use by OS/Desktop: ~6,000 MB
+Available RAM for Benchmarks: ~5,600 MB
+50k Measured Peak RSS: 5,802.3 MB
+100k Projected RSS Demand: >11,000 MB (Exceeds available RAM and triggers swap thrash)

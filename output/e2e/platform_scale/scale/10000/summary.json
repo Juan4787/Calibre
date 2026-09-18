@@ -1,0 +1,217 @@
+{
+  "reps": 5,
+  "total_wall": {
+    "median": 26.3611,
+    "min": 25.6303,
+    "max": 26.6552,
+    "mean": 26.1888,
+    "stdev": 0.4112
+  },
+  "total_cpu": {
+    "median": 26.1134,
+    "min": 25.5156,
+    "max": 26.2003,
+    "mean": 25.9446
+  },
+  "peak_rss_mb": 1322.44,
+  "stages": {
+    "1_input_read": {
+      "wall": {
+        "median": 0.0006,
+        "min": 0.0005,
+        "max": 0.0009,
+        "mean": 0.0007,
+        "stdev": 0.0001
+      },
+      "cpu": {
+        "median": 0.0006,
+        "min": 0.0005,
+        "max": 0.0009,
+        "mean": 0.0007
+      },
+      "peak_rss_mb": 1322.44
+    },
+    "2_import": {
+      "wall": {
+        "median": 2.2805,
+        "min": 2.2493,
+        "max": 2.6153,
+        "mean": 2.3776,
+        "stdev": 0.1673
+      },
+      "cpu": {
+        "median": 2.2792,
+        "min": 2.2476,
+        "max": 2.5823,
+        "mean": 2.3652
+      },
+      "peak_rss_mb": 1322.44
+    },
+    "3_normalization": {
+      "wall": {
+        "median": 0.9383,
+        "min": 0.8986,
+        "max": 0.9937,
+        "mean": 0.9439,
+        "stdev": 0.0401
+      },
+      "cpu": {
+        "median": 0.9378,
+        "min": 0.8984,
+        "max": 0.9932,
+        "mean": 0.9435
+      },
+      "peak_rss_mb": 1322.44
+    },
+    "4_audit": {
+      "wall": {
+        "median": 2.1964,
+        "min": 2.0711,
+        "max": 2.2846,
+        "mean": 2.1845,
+        "stdev": 0.0802
+      },
+      "cpu": {
+        "median": 2.196,
+        "min": 2.0706,
+        "max": 2.2834,
+        "mean": 2.1838
+      },
+      "peak_rss_mb": 1322.44,
+      "charges_per_sec": 4828.4,
+      "findings_per_sec": 4828.4
+    },
+    "5_store_save": {
+      "wall": {
+        "median": 5.9166,
+        "min": 5.8186,
+        "max": 6.8607,
+        "mean": 6.0844,
+        "stdev": 0.4376
+      },
+      "cpu": {
+        "median": 5.7728,
+        "min": 5.7117,
+        "max": 6.3668,
+        "mean": 5.8759
+      },
+      "peak_rss_mb": 1322.44,
+      "db_size_bytes": 47411200
+    },
+    "6_store_load": {
+      "wall": {
+        "median": 1.8741,
+        "min": 1.8396,
+        "max": 1.9479,
+        "mean": 1.8925,
+        "stdev": 0.0472
+      },
+      "cpu": {
+        "median": 1.8738,
+        "min": 1.839,
+        "max": 1.9462,
+        "mean": 1.8915
+      },
+      "peak_rss_mb": 1322.44
+    },
+    "7_replay": {
+      "wall": {
+        "median": 4.3313,
+        "min": 4.3143,
+        "max": 5.0242,
+        "mean": 4.6021,
+        "stdev": 0.3797
+      },
+      "cpu": {
+        "median": 4.3296,
+        "min": 4.3087,
+        "max": 5.0108,
+        "mean": 4.5966
+      },
+      "peak_rss_mb": 1322.44
+    },
+    "8_export_json": {
+      "wall": {
+        "median": 0.6482,
+        "min": 0.6376,
+        "max": 0.6694,
+        "mean": 0.6504,
+        "stdev": 0.0138
+      },
+      "cpu": {
+        "median": 0.648,
+        "min": 0.6375,
+        "max": 0.6692,
+        "mean": 0.6503
+      },
+      "peak_rss_mb": 1322.44,
+      "size_bytes": 45820587
+    },
+    "9_export_xlsx": {
+      "wall": {
+        "median": "BOUNDED_BY_INCIDENT_PERF_01"
+      },
+      "cpu": {
+        "median": "BOUNDED_BY_INCIDENT_PERF_01"
+      },
+      "status": "BOUNDED_BY_INCIDENT_PERF_01",
+      "note": "Documented in output/e2e/platform_scale/incidents/PERF-01-XLSX-QUADRATIC",
+      "peak_rss_mb": 1322.44
+    },
+    "10_export_html": {
+      "wall": {
+        "median": 0.0358,
+        "min": 0.0344,
+        "max": 0.037,
+        "mean": 0.0357,
+        "stdev": 0.0012
+      },
+      "cpu": {
+        "median": 0.035,
+        "min": 0.0344,
+        "max": 0.037,
+        "mean": 0.0356
+      },
+      "peak_rss_mb": 1322.44,
+      "size_bytes": 1820913
+    },
+    "11_bundle_zip": {
+      "wall": {
+        "median": "BOUNDED_BY_INCIDENT_PERF_01"
+      },
+      "cpu": {
+        "median": "BOUNDED_BY_INCIDENT_PERF_01"
+      },
+      "status": "BOUNDED_BY_INCIDENT_PERF_01",
+      "note": "Depends on workbook_bytes()",
+      "peak_rss_mb": 1322.44
+    },
+    "12_verify_bundle": {
+      "wall": {
+        "median": "BOUNDED_BY_INCIDENT_PERF_01"
+      },
+      "cpu": {
+        "median": "BOUNDED_BY_INCIDENT_PERF_01"
+      },
+      "status": "BOUNDED_BY_INCIDENT_PERF_01",
+      "note": "Documented in PERF-01-XLSX-QUADRATIC",
+      "peak_rss_mb": 1322.44
+    },
+    "13_api_retrieval": {
+      "wall": {
+        "median": 7.548,
+        "min": 6.7606,
+        "max": 8.0865,
+        "mean": 7.417,
+        "stdev": 0.5658
+      },
+      "cpu": {
+        "median": 7.5473,
+        "min": 6.755,
+        "max": 8.0263,
+        "mean": 7.4015
+      },
+      "peak_rss_mb": 1322.44
+    }
+  }
+}

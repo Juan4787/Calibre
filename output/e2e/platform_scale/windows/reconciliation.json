@@ -1,0 +1,23 @@
+{
+  "parity": true,
+  "total_datasets_compared": 3,
+  "total_divergences": 0,
+  "divergences": [],
+  "datasets": [
+    {
+      "dataset_label": "Demostraci\u00f3n ficticia \u00b7 3 acuerdos / 32 operaciones",
+      "status": "PARITY",
+      "divergences": []
+    },
+    {
+      "dataset_label": "G5 N:1 & 1:N Settlements",
+      "status": "PARITY",
+      "divergences": []
+    },
+    {
+      "dataset_label": "Segundo cliente FICTICIO \u00b7 consolidado / USD",
+      "status": "PARITY",
+      "divergences": []
+    }
+  ]
+}

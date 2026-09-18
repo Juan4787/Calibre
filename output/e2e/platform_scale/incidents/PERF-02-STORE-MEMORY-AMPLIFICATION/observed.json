@@ -1,0 +1,16 @@
+{
+  "case_id": "SCALE-04",
+  "target_volume": 100000,
+  "observed_status": "RESOURCE_EXHAUSTION_AND_SYSTEM_REBOOT",
+  "intermediate_measurements": {
+    "50k_peak_rss_mb": 5802.3,
+    "100k_warmup_status": "HALTED_BEFORE_COMPLETION",
+    "kernel_events": [
+      "2026-09-18T16:54:16 Under memory pressure, flushing caches",
+      "2026-09-18T16:57:26 Under memory pressure, flushing caches",
+      "2026-09-18T17:05:00 Kernel reboot"
+    ]
+  },
+  "gate_status": "OPEN",
+  "classification": "PERFORMANCE_LIMIT / PLATFORM_LIMITATION"
+}

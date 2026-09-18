@@ -1,0 +1,21 @@
+{
+  "incident_id": "PERF-01",
+  "classification": "PRODUCT_BUG",
+  "category": "UNEXPECTED_QUADRATIC_COMPLEXITY",
+  "file": "src/freight_audit/reporting.py",
+  "line": 80,
+  "code_snippet": "if ws.max_row >= MAX_XLSX_ROWS or any(len(value) > MAX_XLSX_CELL_CHARS for value in values):",
+  "observed_behavior": "Evaluating ws.max_row on every row inside `for values in rows:` causes openpyxl to scan all existing cells via `max(self._cells)[0]`, turning the loop into quadratic O(R^2).",
+  "observed_timings": {
+    "1k_rows": "0.100s",
+    "3k_rows": "0.822s (8.2x for 3x rows)",
+    "10k_rows": "9.867s (98.7x for 10x rows)",
+    "80k_rows_extrapolated": "> 600s (10 minutes)",
+    "400k_rows_extrapolated": "> 16,000s (4.4 hours)"
+  },
+  "blocked_operations": [
+    "reporting.workbook_bytes",
+    "reporting.bundle_bytes",
+    "reporting.export_run"
+  ]
+}

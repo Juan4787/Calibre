@@ -1,0 +1,37 @@
+{
+  "COMPLEX-01": {
+    "case_id": "COMPLEX-01",
+    "profile": "dense_matching",
+    "charges_count": 1000,
+    "shipments_count": 20000,
+    "candidates_per_group": 20,
+    "wall_sec": 0.465,
+    "cpu_sec": 0.4601,
+    "peak_rss_mb": 660.78,
+    "throughput_charges_sec": 2150.68,
+    "all_passed": true
+  },
+  "COMPLEX-02": {
+    "case_id": "COMPLEX-02",
+    "profile": "versions_and_lookups",
+    "charges_count": 2500,
+    "versions_count": 25,
+    "lookup_rows_per_version": 50,
+    "wall_sec": 0.5062,
+    "cpu_sec": 0.506,
+    "peak_rss_mb": 660.78,
+    "throughput_charges_sec": 4938.65,
+    "all_passed": true
+  },
+  "COMPLEX-03": {
+    "case_id": "COMPLEX-03",
+    "profile": "heavy_consolidation",
+    "charges_count": 520,
+    "shipments_count": 1050,
+    "findings_count": 70,
+    "wall_sec": 0.0318,
+    "cpu_sec": 0.0318,
+    "peak_rss_mb": 660.78,
+    "throughput_charges_sec": 16347.29
+  }
+}

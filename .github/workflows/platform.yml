@@ -1,0 +1,174 @@
+name: Platform & Windows Portability Gate (9W)
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: platform-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-platform:
+    name: Linux Baseline Platform Execution
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies & Playwright Chromium
+        run: |
+          python -m pip install --upgrade pip build
+          pip install -e ".[dev]"
+          pip install playwright
+          playwright install --with-deps chromium
+
+      - name: Execute Linux Platform Suite (WIN-01..WIN-24 & Semantic Fingerprint)
+        run: |
+          python output/e2e/platform_scale/run_platform_suite.py --platform linux
+
+      - name: Upload Linux Platform Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-platform-artifacts
+          path: |
+            output/e2e/platform_scale/windows/linux-result.json
+            output/e2e/platform_scale/windows/linux-semantic-fingerprint.json
+          if-no-files-found: error
+
+  windows-platform:
+    name: Native Windows Clean-Room Execution (windows-latest)
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build wheel package in checkout
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build --wheel --sdist
+          ls -la dist/
+
+      - name: Create isolated clean-room virtualenv outside checkout
+        run: |
+          CLEANROOM_DIR="$RUNNER_TEMP/calibre_cleanroom"
+          python -m venv "$CLEANROOM_DIR"
+          echo "Cleanroom venv created at: $CLEANROOM_DIR"
+
+          # Determine python executable in cleanroom
+          if [ -f "$CLEANROOM_DIR/Scripts/python.exe" ]; then
+            CLEAN_PY="$CLEANROOM_DIR/Scripts/python.exe"
+          else
+            CLEAN_PY="$CLEANROOM_DIR/bin/python"
+          fi
+          echo "CLEAN_PY=$CLEAN_PY" >> $GITHUB_ENV
+
+      - name: Install exclusively wheel into clean-room environment
+        run: |
+          $CLEAN_PY -m pip install --upgrade pip
+          WHEEL_FILE=$(ls dist/*.whl | head -n 1)
+          echo "Installing wheel: $WHEEL_FILE"
+          $CLEAN_PY -m pip install "$WHEEL_FILE"
+          $CLEAN_PY -m pip install openpyxl xlrd pydantic fastapi httpx uvicorn playwright
+
+      - name: Install Playwright Chromium on Windows
+        run: |
+          $CLEAN_PY -m playwright install chromium
+
+      - name: Clean-room verification & metadata logging
+        run: |
+          # Verify freight_audit is imported from cleanroom site-packages, NOT from repo checkout
+          $CLEAN_PY -c "
+          import freight_audit, os, sys
+          loc = os.path.abspath(freight_audit.__file__)
+          print('freight_audit imported from:', loc)
+          assert 'site-packages' in loc, f'Not in site-packages: {loc}'
+          assert not loc.startswith(os.getcwd()), f'Imported from repo checkout: {loc}'
+          print('Clean-room wheel verification: SUCCESS')
+          "
+
+          # Record clean-room metadata
+          $CLEAN_PY -c "
+          import platform, sys, hashlib, glob
+          from pathlib import Path
+          whl = glob.glob('dist/*.whl')[0]
+          sdist = glob.glob('dist/*.tar.gz')[0]
+          print('Python:', sys.version)
+          print('Platform:', platform.platform())
+          print('Architecture:', platform.machine())
+          print('Wheel SHA-256:', hashlib.sha256(Path(whl).read_bytes()).hexdigest())
+          print('Sdist SHA-256:', hashlib.sha256(Path(sdist).read_bytes()).hexdigest())
+          "
+
+      - name: Execute Native Windows Platform Suite (WIN-01..WIN-24 & Semantic Fingerprint)
+        run: |
+          # Run suite without PYTHONPATH leaking repo src/
+          export PYTHONPATH=""
+          $CLEAN_PY output/e2e/platform_scale/run_platform_suite.py --platform windows --cleanroom
+
+      - name: Upload Windows Platform Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-platform-artifacts
+          path: |
+            output/e2e/platform_scale/windows/windows-result.json
+            output/e2e/platform_scale/windows/windows-semantic-fingerprint.json
+          if-no-files-found: error
+
+  compare-platform-results:
+    name: Cross-Platform Parity Verification & Reconciliation
+    needs: [linux-platform, windows-platform]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-platform-artifacts
+          path: output/e2e/platform_scale/windows/
+
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-platform-artifacts
+          path: output/e2e/platform_scale/windows/
+
+      - name: Reconcile and Compare Linux vs Windows Semantic Fingerprints
+        run: |
+          python output/e2e/platform_scale/compare_fingerprints.py \
+            --linux output/e2e/platform_scale/windows/linux-semantic-fingerprint.json \
+            --windows output/e2e/platform_scale/windows/windows-semantic-fingerprint.json \
+            --output output/e2e/platform_scale/windows/reconciliation.json
+
+      - name: Upload Cross-Platform Reconciliation Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: platform-reconciliation-artifacts
+          path: |
+            output/e2e/platform_scale/windows/
+          if-no-files-found: error

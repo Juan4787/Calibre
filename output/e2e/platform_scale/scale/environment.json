@@ -1,0 +1,15 @@
+{
+  "system": "Linux",
+  "release": "6.8.0-136-generic",
+  "version": "#136-Ubuntu SMP PREEMPT_DYNAMIC Wed Jul  1 21:53:05 UTC 2026",
+  "machine": "x86_64",
+  "cpu_model": "Intel(R) Core(TM) i3-4170 CPU @ 3.70GHz",
+  "cpu_count": 4,
+  "mem_total_mb": 11900.38,
+  "python_version": "3.12.3",
+  "sqlite_version": "3.45.1",
+  "filesystem": "ext4",
+  "git_commit": "0127b9d85c90febbd9ca067d4e67ca313685240a",
+  "git_clean": false,
+  "rss_unit": "kilobytes"
+}

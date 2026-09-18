@@ -1,0 +1,166 @@
+[
+  {
+    "id": "AGR-SCALE-ARS",
+    "name": "Acuerdo Escala ARS",
+    "carrier": "EXPRESO-SUR",
+    "currency": "ARS",
+    "date_field": "attributes.fecha",
+    "scale": 2,
+    "rounding": "ROUND_HALF_EVEN",
+    "tolerance_absolute": "0.05",
+    "tolerance_relative": "0.001",
+    "matching": {
+      "keys": [
+        {
+          "charge": "reference",
+          "shipment": "reference"
+        }
+      ],
+      "cardinality": "group"
+    },
+    "versions": [
+      {
+        "id": "V1",
+        "valid_from": "2026-01-01",
+        "valid_to": "2026-06-30",
+        "source_note": "Tarifas H1 2026",
+        "rules": [
+          {
+            "id": "R-BASE-V1",
+            "concept": "FLETE_BASE",
+            "description": "Tarifa plana H1",
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "1000.00",
+                "unit": "ARS"
+              }
+            }
+          },
+          {
+            "id": "R-SEGURO-V1",
+            "concept": "SEGURO",
+            "description": "Tarifa seguro con requisito de remito firmado",
+            "evidence": [
+              {
+                "any_of": [
+                  "remito_firmado"
+                ],
+                "scope": "group",
+                "document_required": false
+              }
+            ],
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "200.00",
+                "unit": "ARS"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "V2",
+        "valid_from": "2026-07-01",
+        "valid_to": "2026-12-31",
+        "source_note": "Tarifas H2 2026",
+        "rules": [
+          {
+            "id": "R-BASE-V2",
+            "concept": "FLETE_BASE",
+            "description": "Tarifa plana H2",
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "1200.00",
+                "unit": "ARS"
+              }
+            }
+          },
+          {
+            "id": "R-SEGURO-V2",
+            "concept": "SEGURO",
+            "description": "Tarifa seguro con requisito de remito firmado",
+            "evidence": [
+              {
+                "any_of": [
+                  "remito_firmado"
+                ],
+                "scope": "group",
+                "document_required": false
+              }
+            ],
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "200.00",
+                "unit": "ARS"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "AGR-SCALE-USD",
+    "name": "Acuerdo Escala USD",
+    "carrier": "GLOBAL-CARGO",
+    "currency": "USD",
+    "date_field": "attributes.fecha",
+    "scale": 2,
+    "rounding": "ROUND_HALF_EVEN",
+    "tolerance_absolute": "0.05",
+    "tolerance_relative": "0.001",
+    "matching": {
+      "keys": [
+        {
+          "charge": "reference",
+          "shipment": "reference"
+        }
+      ],
+      "cardinality": "group"
+    },
+    "versions": [
+      {
+        "id": "V1",
+        "valid_from": "2026-01-01",
+        "valid_to": "2026-12-31",
+        "source_note": "Tarifas Mar\u00edtimas 2026",
+        "rules": [
+          {
+            "id": "R-OCEAN",
+            "concept": "FLETE_MARITIMO",
+            "description": "Tarifa mar\u00edtima plana",
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "500.00",
+                "unit": "USD"
+              }
+            }
+          },
+          {
+            "id": "R-PORT",
+            "concept": "GASTOS_PUERTO",
+            "description": "Tarifa portuaria",
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "150.00",
+                "unit": "USD"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

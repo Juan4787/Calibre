@@ -1,0 +1,12 @@
+{
+  "case_id": "COMPLEX-02",
+  "profile": "versions_and_lookups",
+  "charges_count": 2500,
+  "versions_count": 25,
+  "lookup_rows_per_version": 50,
+  "wall_sec": 0.5062,
+  "cpu_sec": 0.506,
+  "peak_rss_mb": 660.78,
+  "throughput_charges_sec": 4938.65,
+  "all_passed": true
+}

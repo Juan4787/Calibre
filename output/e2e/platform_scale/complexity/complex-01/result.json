@@ -1,0 +1,12 @@
+{
+  "case_id": "COMPLEX-01",
+  "profile": "dense_matching",
+  "charges_count": 1000,
+  "shipments_count": 20000,
+  "candidates_per_group": 20,
+  "wall_sec": 0.465,
+  "cpu_sec": 0.4601,
+  "peak_rss_mb": 660.78,
+  "throughput_charges_sec": 2150.68,
+  "all_passed": true
+}

@@ -1,0 +1,1 @@
+.venv/bin/python output/e2e/platform_scale/benchmark_runner.py --sizes 100000 --skip-curve --reps 5

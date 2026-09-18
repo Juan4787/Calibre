@@ -33,6 +33,9 @@ output/e2e/adversarial/observed/
 output/e2e/clean_room/observed/
 output/e2e/generality/observed/
 output/e2e/qa56/observed/
+output/e2e/platform_scale/scale/**/*.csv
+output/e2e/platform_scale/scale/**/evidence.json
+output/e2e/platform_scale/scale/100000/
 .playwright-cli/
 
 # Local databases, credentials and coverage artifacts.

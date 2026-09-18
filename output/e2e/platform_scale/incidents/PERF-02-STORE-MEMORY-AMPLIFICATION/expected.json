@@ -1,0 +1,6 @@
+{
+  "case_id": "SCALE-04",
+  "target_volume": 100000,
+  "expected_behavior": "Complete full pipeline benchmark (1 warm-up + 5 measured reps) within reference host resources (<8 GB RSS, no OOM, no OS freeze, no findings loss, deterministic replay)",
+  "guardrail": "Engineering guardrail on 12GB reference host: Peak RSS < 8192 MB"
+}

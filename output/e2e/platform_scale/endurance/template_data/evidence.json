@@ -1,0 +1,227 @@
+[
+  {
+    "id": "EV-POD-000000",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000000"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000001",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000001"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000002",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000002"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000003",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000003"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000004",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000004"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000005",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000005"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000006",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000006"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000007",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000007"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000008",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000008"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000009",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000009"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000010",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000010"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000011",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000011"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000012",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000012"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000013",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000013"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000014",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000014"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000015",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000015"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000016",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000016"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000017",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000017"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000018",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000018"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000019",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000019"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000020",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000020"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000021",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000021"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000022",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000022"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000023",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000023"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  },
+  {
+    "id": "EV-POD-000024",
+    "kind": "remito_firmado",
+    "shipment_ids": [
+      "SH-1N-000024"
+    ],
+    "charge_ids": [],
+    "note": "Remito firmado conforme"
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "iterations": 50,
+  "batch_size": 500,
+  "initial_rss_mb": 39.3,
+  "final_rss_mb": 124.91,
+  "peak_rss_mb": 135.97,
+  "initial_fds": 88,
+  "final_fds": 88,
+  "fd_leak_detected": false,
+  "first_5_median_sec": 11.5429,
+  "last_5_median_sec": 10.3358,
+  "time_degradation_ratio": 0.9,
+  "evaluation": "STABLE",
+  "restart_verification": {
+    "passed": true,
+    "last_run_id": "f635f168af4765b32d7ef98b0027b12e671fbe434b0221ba4099d4bef8bd1e41",
+    "exit_code": 0
+  }
+}

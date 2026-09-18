@@ -1,0 +1,1199 @@
+{
+  "runs": [
+    {
+      "run_id": "26415a6ed9f81657448c936fe2398150e2c5ff574906151296b4741cbcc0d07a",
+      "dataset_label": "Demostraci\u00f3n ficticia \u00b7 3 acuerdos / 32 operaciones",
+      "counts": {
+        "FAIL": 2,
+        "PASS": 34,
+        "REVIEW": 6,
+        "UNDETERMINABLE": 4
+      },
+      "currencies": {
+        "ARS": {
+          "actual": "43719.4",
+          "expected": "0",
+          "confirmed_excess": "50",
+          "confirmed_defect": "-75",
+          "review": "3431",
+          "undeterminable": "3582"
+        }
+      },
+      "findings": [
+        {
+          "id": "2c86ea9f45b25e71d45ae37e35c4df3e8eff785423864ad93b795b31d8af7254",
+          "status": "FAIL",
+          "currency": "ARS",
+          "actual": "1625",
+          "expected": "1700",
+          "difference": "-75",
+          "confirmed_difference": "-75",
+          "charge_ids": [
+            "C-021"
+          ],
+          "shipment_ids": [
+            "S-018"
+          ],
+          "rule": "B-ZONA",
+          "version": "B-1",
+          "reasons": [
+            "El importe difiere del c\u00e1lculo respaldado por el acuerdo y los datos disponibles."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "e4c8a9b38bbb7bcf60c51b99adc04115eff244fcecd3b6de87e7955e4c142a8d",
+          "status": "FAIL",
+          "currency": "ARS",
+          "actual": "596",
+          "expected": "546",
+          "difference": "50",
+          "confirmed_difference": "50",
+          "charge_ids": [
+            "C-002"
+          ],
+          "shipment_ids": [
+            "S-002"
+          ],
+          "rule": "A-BASE",
+          "version": "A-2026-H1",
+          "reasons": [
+            "El importe difiere del c\u00e1lculo respaldado por el acuerdo y los datos disponibles."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "ab7972340bfbc1bcefa4bc7a61427fc86c034fb13e60293a94ef260ec3fdce4d",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1000",
+          "expected": "1000",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-028"
+          ],
+          "shipment_ids": [
+            "S-025"
+          ],
+          "rule": "C-BANDA",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "0df54867908c8f35933a1f6ac2ed912f15f6d0aaa388683cce0fceb3196cc85b",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1000",
+          "expected": "1000",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-031"
+          ],
+          "shipment_ids": [
+            "S-026"
+          ],
+          "rule": "C-BANDA",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "ab148bd6f45b9f8c036fdb17cbb17f4961883c37ffd0cb792f355217be69fe8b",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1000",
+          "expected": "1000",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-034"
+          ],
+          "shipment_ids": [
+            "S-027"
+          ],
+          "rule": "C-BANDA",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "ace077839ed7dcde9b1ea71477f99f7975538feeb5e81bcb20fff8e12f577943",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1000",
+          "expected": "1000",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-036"
+          ],
+          "shipment_ids": [
+            "S-028"
+          ],
+          "rule": "C-BANDA",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "3f7fa4639fbc2427714433381402639d42c55c730f9df611d364e1fa1345d69e",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1000",
+          "expected": "1000",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-038"
+          ],
+          "shipment_ids": [
+            "S-029"
+          ],
+          "rule": "C-BANDA",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "bce914c2121644b2b5db2186831587d599c984e5e6e2948f464dcf92383ba115",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1000",
+          "expected": "1000",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-040"
+          ],
+          "shipment_ids": [
+            "S-030"
+          ],
+          "rule": "C-BANDA",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "d8450a20dbc8c6d5b44272b56551febcaabcb5f885ab28cee6fd260d0ecf8df4",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1000",
+          "expected": "1000",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-042"
+          ],
+          "shipment_ids": [
+            "S-031"
+          ],
+          "rule": "C-BANDA",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "fa479e21bcaf0d41d18c5a5d9cae4825c66aa5d65f59a47f26624222d440e8e8",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1000",
+          "expected": "1000",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-044"
+          ],
+          "shipment_ids": [
+            "S-032"
+          ],
+          "rule": "C-BANDA",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "c1b04c7a65edd9ee264035aa7f1b46bbb5130bdb56f9b899f3899be720886fc7",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1100",
+          "expected": "1100",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-023"
+          ],
+          "shipment_ids": [
+            "S-020"
+          ],
+          "rule": "B-ZONA",
+          "version": "B-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "a31a703c11b5937dfbc2602f168531104d570511d0acc27bd6154c491ad67b77",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1100",
+          "expected": "1100",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-025"
+          ],
+          "shipment_ids": [
+            "S-022"
+          ],
+          "rule": "B-ZONA",
+          "version": "B-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "33238bc23f3bf430d4ec51eacf886ab86515e34cf53d6ddb4a11a7cd2ad2b939",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "120",
+          "expected": "120",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-033"
+          ],
+          "shipment_ids": [
+            "S-026"
+          ],
+          "rule": "C-EXTRA",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "e7066d606821d1e64ee5f57075a204440e553669384d72b1d7293e32318a9835",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "120",
+          "expected": "120",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-035"
+          ],
+          "shipment_ids": [
+            "S-027"
+          ],
+          "rule": "C-PALLET",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "e420dafb9653566ebec84408cb6e3682247e9c16ab3baf7afccc9a691ca80307",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "120",
+          "expected": "120",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-043"
+          ],
+          "shipment_ids": [
+            "S-031"
+          ],
+          "rule": "C-PALLET",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "c0f03d07570d927af49696cfe777e6b2dced8bf08988df49b7470284ce64c856",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1500",
+          "expected": "1500",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-024"
+          ],
+          "shipment_ids": [
+            "S-021"
+          ],
+          "rule": "B-ZONA",
+          "version": "B-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "770b64b9065416b367a5fa218c1fa880653e0a7c7d504557448f71c385c8bb65",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1700",
+          "expected": "1700",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-027"
+          ],
+          "shipment_ids": [
+            "S-024"
+          ],
+          "rule": "B-ZONA",
+          "version": "B-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "6733493ef057b58d43b1cb6ee3e7bf8fca580da1e5cef57fc619516aa74256de",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1722",
+          "expected": "1722",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-011",
+            "C-012"
+          ],
+          "shipment_ids": [
+            "S-009"
+          ],
+          "rule": "A-BASE",
+          "version": "A-2026-H1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "cea591e347c2a9f84ed9011890001660e39b1760fb316b77ef3cdf1bedf3ce6e",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1890",
+          "expected": "1890",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-013"
+          ],
+          "shipment_ids": [
+            "S-010"
+          ],
+          "rule": "A-BASE",
+          "version": "A-2026-H1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "47f0b03a8a212a0292a04caed457b5381b380c9828ea1e32e97eefeac8b07cba",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "2058",
+          "expected": "2058",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-015"
+          ],
+          "shipment_ids": [
+            "S-011"
+          ],
+          "rule": "A-BASE",
+          "version": "A-2026-H1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "13c737b44762a7da62664c24c23c0d000377220220673568702e21ac1fe1d9aa",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "2562",
+          "expected": "2562",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-017"
+          ],
+          "shipment_ids": [
+            "S-014"
+          ],
+          "rule": "A-BASE",
+          "version": "A-2026-H1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "c9578b500369b9369dde6f0216f42a1a3e6b33e0e2195d9d9c2565ea75c88f79",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "2633.4",
+          "expected": "2633.4",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-016"
+          ],
+          "shipment_ids": [
+            "S-013"
+          ],
+          "rule": "A-BASE-2",
+          "version": "A-2026-H2",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "bab38ed8ef9d7f5e05c1da6e7ea8b88d21d5aaa61fe4b86d200db5efa8a896c5",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "2730",
+          "expected": "2730",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-018"
+          ],
+          "shipment_ids": [
+            "S-015"
+          ],
+          "rule": "A-BASE",
+          "version": "A-2026-H1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "6b537b31298668f45b3388acbd08c57533ee3c2f28fc990df79410e63de7f4c3",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "2898",
+          "expected": "2898",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-019"
+          ],
+          "shipment_ids": [
+            "S-016"
+          ],
+          "rule": "A-BASE",
+          "version": "A-2026-H1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "77a0522448564e91a666bbd969af9b86dbe686cf5eadb4151a76122814a79d6e",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "30",
+          "expected": "30",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-037"
+          ],
+          "shipment_ids": [
+            "S-028"
+          ],
+          "rule": "C-PALLET",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "885690f09490bfc6455ccef7fbb8ca76056349badbab250105ba56acfc9f1c8c",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "30",
+          "expected": "30",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-045"
+          ],
+          "shipment_ids": [
+            "S-032"
+          ],
+          "rule": "C-PALLET",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "afd905d6eb0722e11b7db7e8e7009a210142102cab5a1c4c99e4edd5207d5f16",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "378",
+          "expected": "378",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-001"
+          ],
+          "shipment_ids": [
+            "S-001"
+          ],
+          "rule": "A-BASE",
+          "version": "A-2026-H1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "8a364e35d2571c6f4356f52432b297aa0e20ae83319cfc393d279fc787e3d1a6",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "60",
+          "expected": "60",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-029"
+          ],
+          "shipment_ids": [
+            "S-025"
+          ],
+          "rule": "C-PALLET",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "755096d456c92594d867f44c1f7dd1caadf4197c165cfdc34929813f219be246",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "60",
+          "expected": "60",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-039"
+          ],
+          "shipment_ids": [
+            "S-029"
+          ],
+          "rule": "C-PALLET",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "1fb6916241bd1a2038aedf0369c9ddacfcb5522440d838741c6d32b2fc5f145c",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "714",
+          "expected": "714",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-003"
+          ],
+          "shipment_ids": [
+            "S-003"
+          ],
+          "rule": "A-BASE",
+          "version": "A-2026-H1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "049708dbc6c9cc781d0f3d39d87d6b1b3c566bf4a03f85557cbfd656b7c5ef71",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "80",
+          "expected": "80",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-014"
+          ],
+          "shipment_ids": [
+            "S-010"
+          ],
+          "rule": "A-WAIT",
+          "version": "A-2026-H1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "bdf3175e24c6f970d79dece4009882aead9f3a5284c34d37b070df639ed668bb",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "90",
+          "expected": "90",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-032"
+          ],
+          "shipment_ids": [
+            "S-026"
+          ],
+          "rule": "C-PALLET",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "645c36902e8a608c1cd2617a924b2bb88515659ece5192a66b7b9fa99dfd0b64",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "90",
+          "expected": "90",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-041"
+          ],
+          "shipment_ids": [
+            "S-030"
+          ],
+          "rule": "C-PALLET",
+          "version": "C-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "512ce22fc8d416b1b67bcf4953a951bbd476870eae749829861327a4ee05bee9",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "900",
+          "expected": "900",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-020"
+          ],
+          "shipment_ids": [
+            "S-017"
+          ],
+          "rule": "B-ZONA",
+          "version": "B-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "52334de4d262b5e09b3e95ea59b1876f047203233b48e77b54442dce9d04b009",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "900",
+          "expected": "900",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-022"
+          ],
+          "shipment_ids": [
+            "S-019"
+          ],
+          "rule": "B-ZONA",
+          "version": "B-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "b2632eb88506642811c5bbfdf5ef9c3377342e0ca78941ca7874034b80709082",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "900",
+          "expected": "900",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-026"
+          ],
+          "shipment_ids": [
+            "S-023"
+          ],
+          "rule": "B-ZONA",
+          "version": "B-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "4ab2da9f1b7d7990b2ae155196f0311c36779550dc9463009cc335c1737eb902",
+          "status": "REVIEW",
+          "currency": "ARS",
+          "actual": "0",
+          "expected": "1386",
+          "difference": "-1386",
+          "confirmed_difference": "0",
+          "charge_ids": [],
+          "shipment_ids": [
+            "S-007"
+          ],
+          "rule": "A-BASE",
+          "version": "A-2026-H1",
+          "reasons": [
+            "El acuerdo espera este concepto y no se encontraron cargos en el alcance declarado; confirmar que la liquidaci\u00f3n est\u00e9 completa."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "d583c680f430fa5df6f0560dd6ba845fc679e220fd0180d918185b54c2c09184",
+          "status": "REVIEW",
+          "currency": "ARS",
+          "actual": "0",
+          "expected": "2226",
+          "difference": "-2226",
+          "confirmed_difference": "0",
+          "charge_ids": [],
+          "shipment_ids": [
+            "S-012"
+          ],
+          "rule": "A-BASE",
+          "version": "A-2026-H1",
+          "reasons": [
+            "El acuerdo espera este concepto y no se encontraron cargos en el alcance declarado; confirmar que la liquidaci\u00f3n est\u00e9 completa."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "aa36e5035f3ebde64091eb1ecd1e56b10efdbfbdf236377a60f49101234cb735",
+          "status": "REVIEW",
+          "currency": "ARS",
+          "actual": "120",
+          "expected": "120",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-030"
+          ],
+          "shipment_ids": [
+            "S-025"
+          ],
+          "rule": "C-EXTRA",
+          "version": "C-1",
+          "reasons": [
+            "Falta evidencia requerida: grupo: authorization con documento conservado. Solicitar el respaldo antes de resolver."
+          ],
+          "missing_evidence": [
+            "grupo: authorization con documento conservado"
+          ],
+          "issues": []
+        },
+        {
+          "id": "ff215422e5103eb2b6c4d024dc0136324809b02f0304705b8b116d20f1019e27",
+          "status": "REVIEW",
+          "currency": "ARS",
+          "actual": "123",
+          "expected": null,
+          "difference": null,
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-046"
+          ],
+          "shipment_ids": [],
+          "rule": null,
+          "version": null,
+          "reasons": [
+            "No se encontr\u00f3 la operaci\u00f3n con las claves configuradas; confirmar la referencia o aportar el registro."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "e46370ce23c6647effe064ea182a9abfec9ea558dbe16eef54b4c5d5bee8c912",
+          "status": "REVIEW",
+          "currency": "ARS",
+          "actual": "3108",
+          "expected": "1554",
+          "difference": "1554",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-009",
+            "C-010"
+          ],
+          "shipment_ids": [
+            "S-008"
+          ],
+          "rule": "A-BASE",
+          "version": "A-2026-H1",
+          "reasons": [
+            "Hay l\u00edneas que coinciden con la clave de posible duplicaci\u00f3n configurada; confirmar si corresponden a servicios distintos."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "61322755c48d7be73aef0271752bce426d06c3033449702144b22b9dbee71237",
+          "status": "REVIEW",
+          "currency": "ARS",
+          "actual": "80",
+          "expected": "80",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-004"
+          ],
+          "shipment_ids": [
+            "S-003"
+          ],
+          "rule": "A-WAIT",
+          "version": "A-2026-H1",
+          "reasons": [
+            "Falta evidencia requerida: S-003: authorization o signed_event. Solicitar el respaldo antes de resolver."
+          ],
+          "missing_evidence": [
+            "S-003: authorization o signed_event"
+          ],
+          "issues": []
+        },
+        {
+          "id": "8b79230c7449e21ff13377a9ad018fcc6e90869198fa76f9438ed1848fa906f0",
+          "status": "UNDETERMINABLE",
+          "currency": "ARS",
+          "actual": "1050",
+          "expected": null,
+          "difference": null,
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-006"
+          ],
+          "shipment_ids": [
+            "S-005"
+          ],
+          "rule": null,
+          "version": null,
+          "reasons": [
+            "La fecha 2025-05-15 tiene 0 versiones aplicables; se requiere una sola."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "1066995abfb2a1a6a984ae540668282a509a30cc23d59c36b091dd8dee9477ee",
+          "status": "UNDETERMINABLE",
+          "currency": "ARS",
+          "actual": "1218",
+          "expected": null,
+          "difference": null,
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-007"
+          ],
+          "shipment_ids": [
+            "S-006"
+          ],
+          "rule": null,
+          "version": null,
+          "reasons": [
+            "La fecha 2026-07-16 tiene 2 versiones aplicables; se requiere una sola."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "e9a661ce9e35b61bd9187aef7920eee5ad8cf8b4ec41c64bcae2f6570102fb3a",
+          "status": "UNDETERMINABLE",
+          "currency": "ARS",
+          "actual": "432",
+          "expected": null,
+          "difference": null,
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-008"
+          ],
+          "shipment_ids": [
+            "S-007"
+          ],
+          "rule": null,
+          "version": "A-2026-H1",
+          "reasons": [
+            "El concepto tiene 0 reglas aplicables; no se puede determinar un \u00fanico importe."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "3e964c1b3144de9ae0f386c32489f9a1eb61e5a5fa566694351cf8a6d2c0b738",
+          "status": "UNDETERMINABLE",
+          "currency": "ARS",
+          "actual": "882",
+          "expected": null,
+          "difference": null,
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-005"
+          ],
+          "shipment_ids": [
+            "S-004"
+          ],
+          "rule": "A-BASE",
+          "version": "A-2026-H1",
+          "reasons": [
+            "Falta el dato 'weight' en la operaci\u00f3n '00004'."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        }
+      ]
+    },
+    {
+      "run_id": "8ead7e87f9e4c9645cc4eca663914c2684976f53df128ccfa44519ed32f5b3c2",
+      "dataset_label": "G5 N:1 & 1:N Settlements",
+      "counts": {
+        "FAIL": 0,
+        "PASS": 3,
+        "REVIEW": 0,
+        "UNDETERMINABLE": 0
+      },
+      "currencies": {
+        "ARS": {
+          "actual": "31200",
+          "expected": "0",
+          "confirmed_excess": "0",
+          "confirmed_defect": "0",
+          "review": "0",
+          "undeterminable": "0"
+        }
+      },
+      "findings": [
+        {
+          "id": "2252630c189182cbae90f954a730e2e8defc7f1c947123bb2d2d1da30457f4e8",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "1200",
+          "expected": "1200",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-G5-03"
+          ],
+          "shipment_ids": [
+            "S-G5-04"
+          ],
+          "rule": "R-G5-SEGURO",
+          "version": "V1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "8169df7cc944bd5107658f1a9db297a8543227a0bdf827570cf55308b8706e1d",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "22000",
+          "expected": "22000",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-G5-01"
+          ],
+          "shipment_ids": [
+            "S-G5-01",
+            "S-G5-02",
+            "S-G5-03"
+          ],
+          "rule": "R-G5-CONSOL",
+          "version": "V1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "4008096a9e13281d477e940fcbeee37b47d2e6fc01810ec2e9118c03a1aa972e",
+          "status": "PASS",
+          "currency": "ARS",
+          "actual": "8000",
+          "expected": "8000",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "C-G5-02"
+          ],
+          "shipment_ids": [
+            "S-G5-04"
+          ],
+          "rule": "R-G5-TRAMO",
+          "version": "V1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        }
+      ]
+    },
+    {
+      "run_id": "a499d8f097fd4d262c394f39891015af83941bacd8d988f04328e274367135b6",
+      "dataset_label": "Segundo cliente FICTICIO \u00b7 consolidado / USD",
+      "counts": {
+        "FAIL": 1,
+        "PASS": 1,
+        "REVIEW": 0,
+        "UNDETERMINABLE": 0
+      },
+      "currencies": {
+        "USD": {
+          "actual": "398.5",
+          "expected": "0",
+          "confirmed_excess": "10",
+          "confirmed_defect": "0",
+          "review": "0",
+          "undeterminable": "0"
+        }
+      },
+      "findings": [
+        {
+          "id": "ed3a39dc282b017230c2d52d5083275e0864ff255b68c11c31c1939a2cb88545",
+          "status": "FAIL",
+          "currency": "USD",
+          "actual": "204.25",
+          "expected": "194.25",
+          "difference": "10",
+          "confirmed_difference": "10",
+          "charge_ids": [
+            "INV-2"
+          ],
+          "shipment_ids": [
+            "M4",
+            "M5",
+            "M6"
+          ],
+          "rule": "D-VOLUME",
+          "version": "D-1",
+          "reasons": [
+            "El importe difiere del c\u00e1lculo respaldado por el acuerdo y los datos disponibles."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        },
+        {
+          "id": "38d33c901cf378923bb096f84fe4f2396377bf23af60fcbc1645d62938d2978f",
+          "status": "PASS",
+          "currency": "USD",
+          "actual": "194.25",
+          "expected": "194.25",
+          "difference": "0",
+          "confirmed_difference": "0",
+          "charge_ids": [
+            "INV-1"
+          ],
+          "shipment_ids": [
+            "M1",
+            "M2",
+            "M3"
+          ],
+          "rule": "D-VOLUME",
+          "version": "D-1",
+          "reasons": [
+            "El importe coincide dentro de la tolerancia configurada."
+          ],
+          "missing_evidence": [],
+          "issues": []
+        }
+      ]
+    }
+  ],
+  "digest": "51b0b3c6b950c508d1b701f78462f85835811f1f0d0dd5da85e141fe4bd59815"
+}

@@ -1,0 +1,402 @@
+[
+  {
+    "iteration": 1,
+    "wall_sec": 10.4683,
+    "rss_mb": 97.99,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 2420736
+  },
+  {
+    "iteration": 2,
+    "wall_sec": 10.7172,
+    "rss_mb": 104.78,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 4722688
+  },
+  {
+    "iteration": 3,
+    "wall_sec": 11.5802,
+    "rss_mb": 111.22,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 7024640
+  },
+  {
+    "iteration": 4,
+    "wall_sec": 11.5429,
+    "rss_mb": 134.58,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 9334784
+  },
+  {
+    "iteration": 5,
+    "wall_sec": 11.5494,
+    "rss_mb": 120.09,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 11636736
+  },
+  {
+    "iteration": 6,
+    "wall_sec": 10.6572,
+    "rss_mb": 121.93,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 13938688
+  },
+  {
+    "iteration": 7,
+    "wall_sec": 10.8123,
+    "rss_mb": 123.82,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 16244736
+  },
+  {
+    "iteration": 8,
+    "wall_sec": 11.8879,
+    "rss_mb": 124.24,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 18546688
+  },
+  {
+    "iteration": 9,
+    "wall_sec": 11.0702,
+    "rss_mb": 130.77,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 20848640
+  },
+  {
+    "iteration": 10,
+    "wall_sec": 11.1429,
+    "rss_mb": 122.47,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 23158784
+  },
+  {
+    "iteration": 11,
+    "wall_sec": 11.0168,
+    "rss_mb": 125.99,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 25468928
+  },
+  {
+    "iteration": 12,
+    "wall_sec": 10.9395,
+    "rss_mb": 124.4,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 27779072
+  },
+  {
+    "iteration": 13,
+    "wall_sec": 11.4279,
+    "rss_mb": 122.09,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 30089216
+  },
+  {
+    "iteration": 14,
+    "wall_sec": 11.0518,
+    "rss_mb": 132.5,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 32399360
+  },
+  {
+    "iteration": 15,
+    "wall_sec": 11.3211,
+    "rss_mb": 123.38,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 34709504
+  },
+  {
+    "iteration": 16,
+    "wall_sec": 10.6411,
+    "rss_mb": 133.8,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 37019648
+  },
+  {
+    "iteration": 17,
+    "wall_sec": 10.6172,
+    "rss_mb": 131.79,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 39329792
+  },
+  {
+    "iteration": 18,
+    "wall_sec": 10.5347,
+    "rss_mb": 133.77,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 41639936
+  },
+  {
+    "iteration": 19,
+    "wall_sec": 10.5205,
+    "rss_mb": 127.14,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 43950080
+  },
+  {
+    "iteration": 20,
+    "wall_sec": 10.6006,
+    "rss_mb": 130.23,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 46260224
+  },
+  {
+    "iteration": 21,
+    "wall_sec": 10.4792,
+    "rss_mb": 133.77,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 48570368
+  },
+  {
+    "iteration": 22,
+    "wall_sec": 11.6554,
+    "rss_mb": 122.95,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 50880512
+  },
+  {
+    "iteration": 23,
+    "wall_sec": 11.0969,
+    "rss_mb": 123.02,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 53190656
+  },
+  {
+    "iteration": 24,
+    "wall_sec": 10.9962,
+    "rss_mb": 123.64,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 55500800
+  },
+  {
+    "iteration": 25,
+    "wall_sec": 10.9057,
+    "rss_mb": 126.83,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 57810944
+  },
+  {
+    "iteration": 26,
+    "wall_sec": 11.1008,
+    "rss_mb": 133.53,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 60121088
+  },
+  {
+    "iteration": 27,
+    "wall_sec": 11.1993,
+    "rss_mb": 135.73,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 62431232
+  },
+  {
+    "iteration": 28,
+    "wall_sec": 10.9541,
+    "rss_mb": 130.27,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 64741376
+  },
+  {
+    "iteration": 29,
+    "wall_sec": 11.1915,
+    "rss_mb": 123.12,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 67051520
+  },
+  {
+    "iteration": 30,
+    "wall_sec": 11.107,
+    "rss_mb": 131.89,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 69361664
+  },
+  {
+    "iteration": 31,
+    "wall_sec": 11.7569,
+    "rss_mb": 134.85,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 71671808
+  },
+  {
+    "iteration": 32,
+    "wall_sec": 11.5438,
+    "rss_mb": 124.02,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 73981952
+  },
+  {
+    "iteration": 33,
+    "wall_sec": 11.0287,
+    "rss_mb": 126.18,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 76292096
+  },
+  {
+    "iteration": 34,
+    "wall_sec": 11.2698,
+    "rss_mb": 125.96,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 78602240
+  },
+  {
+    "iteration": 35,
+    "wall_sec": 11.2834,
+    "rss_mb": 132.65,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 80912384
+  },
+  {
+    "iteration": 36,
+    "wall_sec": 11.313,
+    "rss_mb": 134.85,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 83222528
+  },
+  {
+    "iteration": 37,
+    "wall_sec": 11.5106,
+    "rss_mb": 124.03,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 85532672
+  },
+  {
+    "iteration": 38,
+    "wall_sec": 10.3953,
+    "rss_mb": 124.01,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 87842816
+  },
+  {
+    "iteration": 39,
+    "wall_sec": 11.2092,
+    "rss_mb": 132.19,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 90152960
+  },
+  {
+    "iteration": 40,
+    "wall_sec": 11.0373,
+    "rss_mb": 135.73,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 92463104
+  },
+  {
+    "iteration": 41,
+    "wall_sec": 10.5508,
+    "rss_mb": 124.91,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 94773248
+  },
+  {
+    "iteration": 42,
+    "wall_sec": 10.5296,
+    "rss_mb": 135.33,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 97083392
+  },
+  {
+    "iteration": 43,
+    "wall_sec": 10.4151,
+    "rss_mb": 133.52,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 99393536
+  },
+  {
+    "iteration": 44,
+    "wall_sec": 10.3094,
+    "rss_mb": 135.97,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 101703680
+  },
+  {
+    "iteration": 45,
+    "wall_sec": 10.4092,
+    "rss_mb": 124.02,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 104013824
+  },
+  {
+    "iteration": 46,
+    "wall_sec": 10.3227,
+    "rss_mb": 133.54,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 106323968
+  },
+  {
+    "iteration": 47,
+    "wall_sec": 10.3101,
+    "rss_mb": 129.11,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 108634112
+  },
+  {
+    "iteration": 48,
+    "wall_sec": 10.3358,
+    "rss_mb": 125.98,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 110944256
+  },
+  {
+    "iteration": 49,
+    "wall_sec": 10.3655,
+    "rss_mb": 134.86,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 113254400
+  },
+  {
+    "iteration": 50,
+    "wall_sec": 10.4481,
+    "rss_mb": 124.91,
+    "open_fds": 88,
+    "temp_files": 46,
+    "db_size_bytes": 115564544
+  }
+]
