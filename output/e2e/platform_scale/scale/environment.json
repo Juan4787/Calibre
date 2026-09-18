@@ -1,15 +1,15 @@
 {
   "system": "Linux",
-  "release": "6.8.0-136-generic",
-  "version": "#136-Ubuntu SMP PREEMPT_DYNAMIC Wed Jul  1 21:53:05 UTC 2026",
+  "release": "6.17.0-1022-azure",
+  "version": "#22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
   "machine": "x86_64",
-  "cpu_model": "Intel(R) Core(TM) i3-4170 CPU @ 3.70GHz",
+  "cpu_model": "AMD EPYC 9V74 80-Core Processor",
   "cpu_count": 4,
-  "mem_total_mb": 11900.38,
-  "python_version": "3.12.3",
+  "mem_total_mb": 15989.7,
+  "python_version": "3.12.14",
   "sqlite_version": "3.45.1",
   "filesystem": "ext4",
-  "git_commit": "1ddebb36317dc8ee3f2b0c25a9ea659996a53cf8",
-  "git_clean": false,
+  "git_commit": "f3820c35a57ca2403cbef534bb03dd59c58b6aef",
+  "git_clean": true,
   "rss_unit": "kilobytes"
 }

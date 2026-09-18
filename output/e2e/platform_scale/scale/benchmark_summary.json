@@ -453,15 +453,249 @@
   "100000": {
     "reps": 1,
     "status": "RESOURCE_LIMIT",
-    "reason": "RESOURCE_LIMIT: Host MemAvailable dropped to 1991.5 MB (safety floor 2000.0 MB)",
-    "peak_rss_mb": 3682.15,
+    "reason": "RESOURCE_LIMIT: Host MemAvailable dropped to 1985.0 MB (safety floor 2000.0 MB)",
+    "peak_rss_mb": 3679.39,
     "correctness_verified": false
   },
   "100000": {
     "reps": 1,
-    "status": "RESOURCE_LIMIT",
-    "reason": "RESOURCE_LIMIT: Host MemAvailable dropped to 1985.0 MB (safety floor 2000.0 MB)",
-    "peak_rss_mb": 3679.39,
-    "correctness_verified": false
+    "total_wall": {
+      "median": 535.0394,
+      "min": 535.0394,
+      "max": 535.0394,
+      "mean": 535.0394,
+      "stdev": 0.0
+    },
+    "total_cpu": {
+      "median": 532.6888,
+      "min": 532.6888,
+      "max": 532.6888,
+      "mean": 532.6888
+    },
+    "peak_rss_mb": 11355.38,
+    "stages": {
+      "1_input_read": {
+        "wall": {
+          "median": 0.0042,
+          "min": 0.0042,
+          "max": 0.0042,
+          "mean": 0.0042,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.0042,
+          "min": 0.0042,
+          "max": 0.0042,
+          "mean": 0.0042
+        },
+        "peak_rss_mb": 69.48
+      },
+      "2_import": {
+        "wall": {
+          "median": 13.6717,
+          "min": 13.6717,
+          "max": 13.6717,
+          "mean": 13.6717,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 13.6453,
+          "min": 13.6453,
+          "max": 13.6453,
+          "mean": 13.6453
+        },
+        "peak_rss_mb": 849.12
+      },
+      "3_normalization": {
+        "wall": {
+          "median": 11.3323,
+          "min": 11.3323,
+          "max": 11.3323,
+          "mean": 11.3323,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 11.3301,
+          "min": 11.3301,
+          "max": 11.3301,
+          "mean": 11.3301
+        },
+        "peak_rss_mb": 2441.68
+      },
+      "4_audit": {
+        "wall": {
+          "median": 17.6507,
+          "min": 17.6507,
+          "max": 17.6507,
+          "mean": 17.6507,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 17.6476,
+          "min": 17.6476,
+          "max": 17.6476,
+          "mean": 17.6476
+        },
+        "peak_rss_mb": 3830.64,
+        "charges_per_sec": 5665.5,
+        "findings_per_sec": 5665.5
+      },
+      "5_store_save": {
+        "wall": {
+          "median": 52.5007,
+          "min": 52.5007,
+          "max": 52.5007,
+          "mean": 52.5007,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 50.2485,
+          "min": 50.2485,
+          "max": 50.2485,
+          "mean": 50.2485
+        },
+        "peak_rss_mb": 4959.61,
+        "db_size_bytes": 474877952
+      },
+      "6_store_load": {
+        "wall": {
+          "median": 18.0948,
+          "min": 18.0948,
+          "max": 18.0948,
+          "mean": 18.0948,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 18.0918,
+          "min": 18.0918,
+          "max": 18.0918,
+          "mean": 18.0918
+        },
+        "peak_rss_mb": 4959.61
+      },
+      "7_replay": {
+        "wall": {
+          "median": 42.0721,
+          "min": 42.0721,
+          "max": 42.0721,
+          "mean": 42.0721,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 42.0643,
+          "min": 42.0643,
+          "max": 42.0643,
+          "mean": 42.0643
+        },
+        "peak_rss_mb": 6398.47
+      },
+      "8_export_json": {
+        "wall": {
+          "median": 4.2275,
+          "min": 4.2275,
+          "max": 4.2275,
+          "mean": 4.2275,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 4.2263,
+          "min": 4.2263,
+          "max": 4.2263,
+          "mean": 4.2263
+        },
+        "peak_rss_mb": 6398.47,
+        "size_bytes": 459341636
+      },
+      "9_export_xlsx": {
+        "wall": {
+          "median": 138.8663,
+          "min": 138.8663,
+          "max": 138.8663,
+          "mean": 138.8663,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 138.8435,
+          "min": 138.8435,
+          "max": 138.8435,
+          "mean": 138.8435
+        },
+        "peak_rss_mb": 7369.93,
+        "size_bytes": null,
+        "status": "EXCEL_ROW_LIMIT_EXCEEDED",
+        "note": "El detalle supera los l\u00edmites de filas o de texto por celda de Excel. Exportar el paquete completo: audit.json conserva todos los datos sin truncar."
+      },
+      "10_export_html": {
+        "wall": {
+          "median": 0.2853,
+          "min": 0.2853,
+          "max": 0.2853,
+          "mean": 0.2853,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.2853,
+          "min": 0.2853,
+          "max": 0.2853,
+          "mean": 0.2853
+        },
+        "peak_rss_mb": 7369.93,
+        "size_bytes": 18191925,
+        "status": "PASS"
+      },
+      "11_bundle_zip": {
+        "wall": {
+          "median": 180.2361,
+          "min": 180.2361,
+          "max": 180.2361,
+          "mean": 180.2361,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 180.2121,
+          "min": 180.2121,
+          "max": 180.2121,
+          "mean": 180.2121
+        },
+        "peak_rss_mb": 11354.93,
+        "size_bytes": 28340614,
+        "status": "PASS"
+      },
+      "12_verify_bundle": {
+        "wall": {
+          "median": 0.0006,
+          "min": 0.0006,
+          "max": 0.0006,
+          "mean": 0.0006,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.0006,
+          "min": 0.0006,
+          "max": 0.0006,
+          "mean": 0.0006
+        },
+        "peak_rss_mb": 11354.93,
+        "status": "BUNDLE_SIZE_LIMIT_EXCEEDED",
+        "note": "El paquete contiene entradas repetidas o supera el tama\u00f1o admitido.",
+        "verified": false
+      },
+      "13_api_retrieval": {
+        "wall": {
+          "median": 56.0972,
+          "min": 56.0972,
+          "max": 56.0972,
+          "mean": 56.0972,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 56.0893,
+          "min": 56.0893,
+          "max": 56.0893,
+          "mean": 56.0893
+        },
+        "peak_rss_mb": 11354.93
+      }
+    }
   }
 }
