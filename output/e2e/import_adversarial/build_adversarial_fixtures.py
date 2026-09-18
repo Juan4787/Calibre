@@ -10,8 +10,9 @@ from pathlib import Path
 from openpyxl import Workbook
 from freight_audit.importing import ImportMapping
 
-FIXTURES_DIR = Path("/home/usuario/CascadeProjects/CALIBRE/output/e2e/import_adversarial/fixtures")
-MAPPINGS_DIR = Path("/home/usuario/CascadeProjects/CALIBRE/output/e2e/import_adversarial/mappings")
+BASE_DIR = Path(__file__).resolve().parent
+FIXTURES_DIR = BASE_DIR / "fixtures"
+MAPPINGS_DIR = BASE_DIR / "mappings"
 
 FIXTURES_DIR.mkdir(parents=True, exist_ok=True)
 MAPPINGS_DIR.mkdir(parents=True, exist_ok=True)

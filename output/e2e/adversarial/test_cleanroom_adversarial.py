@@ -43,7 +43,7 @@ OBSERVED_DIR = CLEAN_ROOT / "observed"
 
 PORT = 8770
 BASE_URL = f"http://127.0.0.1:{PORT}"
-WORKSPACE_PATH = "/home/usuario/CascadeProjects/CALIBRE"
+WORKSPACE_PATH = str(Path(__file__).resolve().parents[3])
 
 
 def verify_clean_environment():

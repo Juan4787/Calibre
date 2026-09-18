@@ -16,7 +16,7 @@ import traceback
 import sys
 from pathlib import Path
 
-ROOT = Path("/home/usuario/CascadeProjects/CALIBRE")
+ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -25,7 +25,7 @@ from output.e2e.fault_injection.fault_generator import INJECTORS
 
 
 def run_all_faults():
-    root = Path("/home/usuario/CascadeProjects/CALIBRE")
+    root = ROOT
     catalog_path = root / "output/e2e/fault_injection/expected_detectors.json"
     raw_meta = json.loads(catalog_path.read_text(encoding="utf-8")) if catalog_path.exists() else {}
     expected_detectors = raw_meta.get("faults", raw_meta)

@@ -13,6 +13,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
+export PYTHONPATH="${ROOT_DIR}:${ROOT_DIR}/src${PYTHONPATH:+:$PYTHONPATH}"
 
 if [ -x "${ROOT_DIR}/.venv/bin/python" ]; then
     PYTHON="${ROOT_DIR}/.venv/bin/python"
@@ -20,10 +21,10 @@ if [ -x "${ROOT_DIR}/.venv/bin/python" ]; then
     RUFF="${ROOT_DIR}/.venv/bin/ruff"
     MYPY="${ROOT_DIR}/.venv/bin/mypy"
 else
-    PYTHON="$(command -v python3 || command -v python)"
-    PYTEST="$(command -v pytest)"
-    RUFF="$(command -v ruff)"
-    MYPY="$(command -v mypy)"
+    PYTHON="$(command -v python3 || command -v python || true)"
+    PYTEST="$(command -v pytest || true)"
+    RUFF="$(command -v ruff || true)"
+    MYPY="$(command -v mypy || true)"
 fi
 
 tier="${1:-pr}"

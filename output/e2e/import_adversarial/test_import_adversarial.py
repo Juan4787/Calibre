@@ -30,7 +30,7 @@ from freight_audit.importing import (
 )
 from freight_audit.models import Charge, Shipment
 
-BASE_DIR = Path("/home/usuario/CascadeProjects/CALIBRE/output/e2e/import_adversarial")
+BASE_DIR = Path(__file__).resolve().parent
 FIXTURES_DIR = BASE_DIR / "fixtures"
 MAPPINGS_DIR = BASE_DIR / "mappings"
 OBSERVED_DIR = BASE_DIR / "observed"

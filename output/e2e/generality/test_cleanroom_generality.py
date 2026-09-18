@@ -25,7 +25,7 @@ from decimal import Decimal
 from pathlib import Path
 
 ROOT = Path("/tmp/calibre-e2e-generality")
-REPO_FIXTURES = Path("/home/usuario/CascadeProjects/CALIBRE/output/e2e/generality")
+REPO_FIXTURES = Path(__file__).resolve().parent
 DB_DIR = ROOT / "db"
 EXPORTS_DIR = ROOT / "exports"
 SCREENSHOTS_DIR = ROOT / "screenshots"
