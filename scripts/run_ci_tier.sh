@@ -128,9 +128,8 @@ run_tier_release() {
     rm -rf "$TEMP_VENV"
     python3 -m venv "$TEMP_VENV"
     
-    WHEEL_FILE="$(ls dist/freight_audit-*.whl | head -n 1)"
+    WHEEL_FILE="$(ls "${ROOT_DIR}"/dist/freight_audit-*.whl | head -n 1)"
     echo "    Installing wheel: $WHEEL_FILE into isolated clean-room..."
-    "$TEMP_VENV/bin/pip" install --quiet --upgrade pip
     "$TEMP_VENV/bin/pip" install --quiet "$WHEEL_FILE" httpx
 
     echo "[5/5] Executing smoke test against installed wheel without checkout access..."
