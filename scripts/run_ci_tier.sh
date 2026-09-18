@@ -126,11 +126,11 @@ run_tier_release() {
     echo "[4/5] Creating isolated clean-room virtualenv in /tmp..."
     TEMP_VENV="/tmp/calibre-release-verify-$$"
     rm -rf "$TEMP_VENV"
-    python3 -m venv "$TEMP_VENV"
+    "$PYTHON" -m venv "$TEMP_VENV"
     
     WHEEL_FILE="$(ls "${ROOT_DIR}"/dist/freight_audit-*.whl | head -n 1)"
     echo "    Installing wheel: $WHEEL_FILE into isolated clean-room..."
-    "$TEMP_VENV/bin/pip" install --quiet "$WHEEL_FILE" httpx
+    "$TEMP_VENV/bin/pip" install --no-cache-dir --force-reinstall "$WHEEL_FILE" httpx
 
     echo "[5/5] Executing smoke test against installed wheel without checkout access..."
     SITE_PACKAGES="$("$TEMP_VENV/bin/python" -c "import site; print(site.getsitepackages()[0])")"
