@@ -137,7 +137,7 @@ run_tier_release() {
     SITE_PACKAGES="$("$TEMP_VENV/bin/python" -c "import site; print(site.getsitepackages()[0])")"
     (
         cd /tmp
-        "$TEMP_VENV/bin/python" "$ROOT_DIR/scripts/smoke_wheel.py" --installed-root "$SITE_PACKAGES"
+        env -u PYTHONPATH "$TEMP_VENV/bin/python" "$ROOT_DIR/scripts/smoke_wheel.py" --installed-root "$SITE_PACKAGES"
     )
 
     rm -rf "$TEMP_VENV"
