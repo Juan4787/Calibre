@@ -134,7 +134,7 @@ def get_host_available_mem_mb() -> float:
     return 0.0
 
 
-def run_single_pipeline_benchmark(data_dir: Path, oracle: dict) -> dict:
+def run_single_pipeline_benchmark(data_dir: Path, oracle: dict, all_exports: bool = False) -> dict:
     """Executes full pipeline and measures each stage separately."""
     gc.collect()
     start_rss = get_peak_rss_mb()
@@ -156,6 +156,7 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict) -> dict:
         "cpu_sec": t_read_cpu,
         "peak_rss_mb": get_peak_rss_mb(),
     }
+    print(f"  [Stage 1/13] Input read: {t_read_wall:.2f}s | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
 
     # 2. Import
     t0_wall, t0_cpu = time.perf_counter(), time.process_time()
@@ -175,6 +176,7 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict) -> dict:
         "charges_imported": len(charges_records),
         "shipments_imported": len(shipments_records),
     }
+    print(f"  [Stage 2/13] Import: {t_import_wall:.2f}s | Imported {len(charges_records)} charges | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
 
     # 3. Normalization (Dataset model validation)
     t0_wall, t0_cpu = time.perf_counter(), time.process_time()
@@ -199,6 +201,7 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict) -> dict:
         "cpu_sec": t_norm_cpu,
         "peak_rss_mb": get_peak_rss_mb(),
     }
+    print(f"  [Stage 3/13] Normalization: {t_norm_wall:.2f}s | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
 
     # 4. Engine Audit
     t0_wall, t0_cpu = time.perf_counter(), time.process_time()
@@ -213,6 +216,7 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict) -> dict:
         "charges_per_sec": round(len(charges_records) / max(t_audit_wall, 0.0001), 2),
         "findings_per_sec": round(len(audit_res.findings) / max(t_audit_wall, 0.0001), 2),
     }
+    print(f"  [Stage 4/13] Engine audit: {t_audit_wall:.2f}s ({len(audit_res.findings)} findings) | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
 
     # 5. Store.save
     with tempfile.TemporaryDirectory() as td:
@@ -235,6 +239,7 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict) -> dict:
             "db_size_bytes": db_size,
             "peak_rss_mb": get_peak_rss_mb(),
         }
+        print(f"  [Stage 5/13] Store.save: {t_save_wall:.2f}s | DB: {db_size / (1024 * 1024):.1f} MB | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
 
         # 6. Store.load
         t0_wall, t0_cpu = time.perf_counter(), time.process_time()
@@ -247,6 +252,7 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict) -> dict:
             "cpu_sec": t_load_cpu,
             "peak_rss_mb": get_peak_rss_mb(),
         }
+        print(f"  [Stage 6/13] Store.load: {t_load_wall:.2f}s | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
 
         # 7. Replay
         t0_wall, t0_cpu = time.perf_counter(), time.process_time()
@@ -263,6 +269,7 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict) -> dict:
             "identical": replay_ok,
             "peak_rss_mb": get_peak_rss_mb(),
         }
+        print(f"  [Stage 7/13] Replay: {t_replay_wall:.2f}s | Verified: {replay_ok} | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
         del replayed_d, replayed_res
         gc.collect()
 
@@ -281,26 +288,31 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict) -> dict:
             "size_bytes": sz_json,
             "peak_rss_mb": get_peak_rss_mb(),
         }
+        print(f"  [Stage 8/13] Export JSON: {t_json_wall:.2f}s | Size: {sz_json / (1024 * 1024):.1f} MB | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
 
         # 9. Export XLSX
-        if len(charges_records) <= 10000:
+        if len(charges_records) <= 10000 or all_exports:
             t0_wall, t0_cpu = time.perf_counter(), time.process_time()
             xlsx_bytes = workbook_bytes(run)
             t_xlsx_wall = time.perf_counter() - t0_wall
             t_xlsx_cpu = time.process_time() - t0_cpu
+            sz_xlsx = len(xlsx_bytes)
+            del xlsx_bytes
+            gc.collect()
 
             metrics["9_export_xlsx"] = {
                 "wall_sec": t_xlsx_wall,
                 "cpu_sec": t_xlsx_cpu,
-                "size_bytes": len(xlsx_bytes),
+                "size_bytes": sz_xlsx,
                 "peak_rss_mb": get_peak_rss_mb(),
             }
+            print(f"  [Stage 9/13] Export XLSX: {t_xlsx_wall:.2f}s | Size: {sz_xlsx / (1024 * 1024):.1f} MB | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
         else:
             metrics["9_export_xlsx"] = {
                 "wall_sec": None,
                 "cpu_sec": None,
                 "status": "BOUNDED_AT_SCALE",
-                "note": "Linear O(N) verified up to 10k; skipped at >10k to isolate engine/persistence memory profile",
+                "note": "Linear O(N) verified up to 10k; skipped at >10k unless --all-exports is specified",
                 "peak_rss_mb": get_peak_rss_mb(),
             }
 
@@ -319,20 +331,23 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict) -> dict:
             "size_bytes": sz_html,
             "peak_rss_mb": get_peak_rss_mb(),
         }
+        print(f"  [Stage 10/13] Export HTML: {t_html_wall:.2f}s | Size: {sz_html / (1024 * 1024):.1f} MB | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
 
         # 11. Bundle ZIP
-        if len(charges_records) <= 10000:
+        if len(charges_records) <= 10000 or all_exports:
             t0_wall, t0_cpu = time.perf_counter(), time.process_time()
             zip_bytes = bundle_bytes(store, run_id)
             t_zip_wall = time.perf_counter() - t0_wall
             t_zip_cpu = time.process_time() - t0_cpu
+            sz_zip = len(zip_bytes)
 
             metrics["11_bundle_zip"] = {
                 "wall_sec": t_zip_wall,
                 "cpu_sec": t_zip_cpu,
-                "size_bytes": len(zip_bytes),
+                "size_bytes": sz_zip,
                 "peak_rss_mb": get_peak_rss_mb(),
             }
+            print(f"  [Stage 11/13] Bundle ZIP: {t_zip_wall:.2f}s | Size: {sz_zip / (1024 * 1024):.1f} MB | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
 
             # 12. Verify Bundle
             t0_wall, t0_cpu = time.perf_counter(), time.process_time()
@@ -340,6 +355,8 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict) -> dict:
             verify_ok = verified_run["id"] == run_id
             t_verify_wall = time.perf_counter() - t0_wall
             t_verify_cpu = time.process_time() - t0_cpu
+            del zip_bytes
+            gc.collect()
 
             assert verify_ok, "Bundle verification failed!"
             metrics["12_verify_bundle"] = {
@@ -348,12 +365,13 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict) -> dict:
                 "verified": verify_ok,
                 "peak_rss_mb": get_peak_rss_mb(),
             }
+            print(f"  [Stage 12/13] Verify Bundle: {t_verify_wall:.2f}s | Verified: {verify_ok} | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
         else:
             metrics["11_bundle_zip"] = {
                 "wall_sec": None,
                 "cpu_sec": None,
                 "status": "BOUNDED_AT_SCALE",
-                "note": "Depends on workbook_bytes()",
+                "note": "Skipped at >10k unless --all-exports is specified",
                 "peak_rss_mb": get_peak_rss_mb(),
             }
             metrics["12_verify_bundle"] = {
@@ -381,6 +399,7 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict) -> dict:
             "cpu_sec": t_api_cpu,
             "peak_rss_mb": get_peak_rss_mb(),
         }
+        print(f"  [Stage 13/13] API retrieval: {t_api_wall:.2f}s | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
 
     # Verify Correctness against Mathematical Oracle
     assert len(audit_res.findings) == oracle["total_findings"], (
@@ -406,6 +425,8 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict) -> dict:
             assert Decimal(str(s[k])) == Decimal(str(o[k])), (
                 f"Mismatch in {curr} field {k}: actual={s[k]} vs oracle={o[k]}"
             )
+
+    print(f"  [Correctness Check] Oracle verification 100% matched: findings={len(audit_res.findings)}, currencies=ARS/USD exact", flush=True)
 
     total_wall = sum(m["wall_sec"] for m in metrics.values() if m.get("wall_sec") is not None)
     total_cpu = sum(m["cpu_sec"] for m in metrics.values() if m.get("cpu_sec") is not None)
@@ -490,13 +511,17 @@ def run_pipeline_subprocess_with_watchdog(
     oracle_file: Path,
     max_child_rss_mb: float = 8000.0,
     min_host_mem_mb: float = 2000.0,
+    all_exports: bool = False,
 ) -> dict:
     """Executes a single pipeline run in a dedicated, isolated child process.
     
     The parent actively polls child RSS and host MemAvailable.
-    If child RSS >= 8 GB or host MemAvailable <= 2 GB, the child is immediately
+    If child RSS >= max_child_rss_mb or host MemAvailable <= min_host_mem_mb, the child is immediately
     aborted to prevent swap thrashing, system freeze, or OS reboot.
     """
+    max_child_rss_mb = float(os.getenv("CALIBRE_MAX_CHILD_RSS_MB", max_child_rss_mb))
+    min_host_mem_mb = float(os.getenv("CALIBRE_MIN_HOST_MEM_MB", min_host_mem_mb))
+
     with tempfile.TemporaryDirectory() as td:
         out_json = Path(td) / "worker_metrics.json"
         cmd = [
@@ -507,18 +532,27 @@ def run_pipeline_subprocess_with_watchdog(
             "--oracle-path", str(oracle_file),
             "--output-file", str(out_json),
         ]
+        if all_exports:
+            cmd.append("--all-exports")
 
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        proc = subprocess.Popen(cmd)
         peak_child_rss = 0.0
         aborted_reason = None
+        t_start = time.time()
+        last_log = t_start
 
         while proc.poll() is None:
-            time.sleep(0.1)
+            time.sleep(0.2)
             rss = get_pid_rss_mb(proc.pid)
             if rss > peak_child_rss:
                 peak_child_rss = rss
 
             avail = get_host_available_mem_mb()
+            now = time.time()
+            if now - last_log >= 10.0:
+                print(f"  [WATCHDOG TELEMETRY] Elapsed: {now - t_start:.1f}s | Child RSS: {rss:.1f} MB (Peak: {peak_child_rss:.1f} MB) | Host Available: {avail:.1f} MB", flush=True)
+                last_log = now
+
             if rss >= max_child_rss_mb:
                 aborted_reason = f"RESOURCE_LIMIT: Child RSS reached {rss:.1f} MB (ceiling {max_child_rss_mb} MB)"
                 break
@@ -543,22 +577,30 @@ def run_pipeline_subprocess_with_watchdog(
                 "total_cpu_sec": None,
             }
 
-        stdout, stderr = proc.communicate()
+        proc.wait()
         if proc.returncode != 0:
-            raise RuntimeError(f"Subprocess worker failed (exit code {proc.returncode}):\nStdout: {stdout}\nStderr: {stderr}")
+            raise RuntimeError(f"Subprocess worker failed with exit code {proc.returncode}")
 
         if not out_json.exists():
-            raise RuntimeError(f"Subprocess worker did not produce output file:\nStdout: {stdout}\nStderr: {stderr}")
+            raise RuntimeError("Subprocess worker did not produce output file")
 
         res = json.loads(out_json.read_text(encoding="utf-8"))
         res["peak_rss_mb"] = max(peak_child_rss, res.get("peak_rss_mb", 0.0))
         return res
 
 
-def execute_size_benchmark(size: int, reps: int, scale_dir: Path) -> dict:
+def execute_size_benchmark(
+    size: int,
+    reps: int,
+    scale_dir: Path,
+    max_child_rss_mb: float = 8000.0,
+    min_host_mem_mb: float = 2000.0,
+    all_exports: bool = False,
+) -> dict:
     data_dir = scale_dir / str(size)
     print(f"\n=================================================================")
     print(f"BENCHMARK SIZE: {size} charges (reps={reps}, isolated subprocess mode)")
+    print(f"Watchdog config: max_child_rss={max_child_rss_mb} MB, min_host_mem={min_host_mem_mb} MB, all_exports={all_exports}")
     print(f"=================================================================")
 
     if not (data_dir / "cargos.csv").exists():
@@ -573,7 +615,13 @@ def execute_size_benchmark(size: int, reps: int, scale_dir: Path) -> dict:
     if reps == 1:
         print("Executing single isolated benchmark run...", flush=True)
         t0 = time.time()
-        run_res = run_pipeline_subprocess_with_watchdog(data_dir, oracle_path)
+        run_res = run_pipeline_subprocess_with_watchdog(
+            data_dir,
+            oracle_path,
+            max_child_rss_mb=max_child_rss_mb,
+            min_host_mem_mb=min_host_mem_mb,
+            all_exports=all_exports,
+        )
         elapsed = time.time() - t0
 
         if run_res.get("status") == "RESOURCE_LIMIT":
@@ -595,7 +643,13 @@ def execute_size_benchmark(size: int, reps: int, scale_dir: Path) -> dict:
     # Warm-up run in independent subprocess
     print("Executing warm-up run in isolated subprocess...", flush=True)
     t0 = time.time()
-    warmup = run_pipeline_subprocess_with_watchdog(data_dir, oracle_path)
+    warmup = run_pipeline_subprocess_with_watchdog(
+        data_dir,
+        oracle_path,
+        max_child_rss_mb=max_child_rss_mb,
+        min_host_mem_mb=min_host_mem_mb,
+        all_exports=all_exports,
+    )
     print(f"Warm-up complete in {time.time() - t0:.2f}s (Peak RSS: {warmup.get('peak_rss_mb', 0)} MB).", flush=True)
 
     if warmup.get("status") == "RESOURCE_LIMIT":
@@ -613,7 +667,13 @@ def execute_size_benchmark(size: int, reps: int, scale_dir: Path) -> dict:
     for rep in range(1, reps + 1):
         print(f"  Run {rep}/{reps} in fresh subprocess...", end="", flush=True)
         t0 = time.time()
-        run_res = run_pipeline_subprocess_with_watchdog(data_dir, oracle_path)
+        run_res = run_pipeline_subprocess_with_watchdog(
+            data_dir,
+            oracle_path,
+            max_child_rss_mb=max_child_rss_mb,
+            min_host_mem_mb=min_host_mem_mb,
+            all_exports=all_exports,
+        )
         if run_res.get("status") == "RESOURCE_LIMIT":
             print(f" ABORTED: {run_res['reason']}", flush=True)
             summary = {
@@ -690,6 +750,9 @@ def main():
     parser.add_argument("--reps", type=int, default=5, help="Number of measured repetitions")
     parser.add_argument("--skip-curve", action="store_true", help="Skip growth curve")
     parser.add_argument("--curve-only", action="store_true", help="Run only growth curve")
+    parser.add_argument("--all-exports", action="store_true", help="Run all exports (XLSX, Bundle) even for large sizes")
+    parser.add_argument("--max-child-rss", type=float, default=float(os.getenv("CALIBRE_MAX_CHILD_RSS_MB", 8000.0)), help="Max child RSS ceiling in MB")
+    parser.add_argument("--min-host-mem", type=float, default=float(os.getenv("CALIBRE_MIN_HOST_MEM_MB", 2000.0)), help="Min host MemAvailable floor in MB")
     # Subprocess worker flags
     parser.add_argument("--worker", action="store_true", help="Run as isolated single-run worker")
     parser.add_argument("--data-dir", type=Path, help="Data directory for worker")
@@ -701,7 +764,7 @@ def main():
     if args.worker:
         assert args.data_dir and args.oracle_path and args.output_file, "Worker requires --data-dir, --oracle-path, and --output-file"
         oracle = json.loads(args.oracle_path.read_text(encoding="utf-8"))
-        res = run_single_pipeline_benchmark(args.data_dir, oracle)
+        res = run_single_pipeline_benchmark(args.data_dir, oracle, all_exports=args.all_exports)
         args.output_file.write_text(json.dumps(res, indent=2), encoding="utf-8")
         sys.exit(0)
 
@@ -723,7 +786,14 @@ def main():
     # Run Benchmark Sizes (10k, 50k, 100k)
     if not args.curve_only:
         for sz in args.sizes:
-            summary = execute_size_benchmark(sz, reps=args.reps, scale_dir=scale_dir)
+            summary = execute_size_benchmark(
+                sz,
+                reps=args.reps,
+                scale_dir=scale_dir,
+                max_child_rss_mb=args.max_child_rss,
+                min_host_mem_mb=args.min_host_mem,
+                all_exports=args.all_exports,
+            )
             benchmark_summary[sz] = summary
             (scale_dir / "benchmark_summary.json").write_text(json.dumps(benchmark_summary, indent=2), encoding="utf-8")
 

@@ -1,0 +1,84 @@
+name: Scale 100k Gate Verification
+
+on:
+  workflow_dispatch:
+    inputs:
+      all_exports:
+        description: "Run all exports (XLSX, Bundle, HTML) at 100k"
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  scale-100k:
+    name: Scale 100k Isolated Single-Run (16 GB Host)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Package & Dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -e ".[dev]"
+
+      - name: Capture Runner Hardware & Memory Telemetry
+        run: |
+          echo "================================================================="
+          echo "RUNNER HARDWARE AND MEMORY ENVIRONMENT"
+          echo "================================================================="
+          echo "--- Memory Overview (free -h) ---"
+          free -h
+          echo ""
+          echo "--- Detailed /proc/meminfo ---"
+          cat /proc/meminfo | grep -E 'MemTotal|MemAvailable|SwapTotal|SwapFree'
+          echo ""
+          echo "--- Available CPU Cores (nproc) ---"
+          nproc
+          echo ""
+          echo "--- Disk Space (df -h) ---"
+          df -h
+          echo "================================================================="
+
+      - name: Execute 100k Isolated Benchmark Run
+        run: |
+          EXPORT_FLAG=""
+          if [ "${{ github.event.inputs.all_exports }}" = "true" ]; then
+            EXPORT_FLAG="--all-exports"
+          fi
+
+          python output/e2e/platform_scale/benchmark_runner.py \
+            --sizes 100000 \
+            --reps 1 \
+            --skip-curve \
+            $EXPORT_FLAG \
+            --max-child-rss 14000 \
+            --min-host-mem 1500
+
+      - name: Display Benchmark Summary JSON
+        if: always()
+        run: |
+          if [ -f output/e2e/platform_scale/scale/100000/summary.json ]; then
+            echo "================================================================="
+            echo "100K SUMMARY.JSON"
+            echo "================================================================="
+            cat output/e2e/platform_scale/scale/100000/summary.json
+          fi
+
+      - name: Upload Scale 100k Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scale-100k-results
+          path: output/e2e/platform_scale/scale/
