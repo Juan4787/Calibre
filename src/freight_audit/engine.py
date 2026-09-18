@@ -263,7 +263,13 @@ def _audit(dataset: Dataset) -> AuditResult:
             signature = tuple(field_value(charge, field) for field in agreement.matching.duplicate_fields)
             if all(value is not None and value != "" for value in signature):
                 seen_duplicates[(agreement.id, *signature)].append(charge.id)
-        group_key = (agreement.id, tuple(s.id for s in matched), charge.concept, charge.currency)
+        group_key = (
+            agreement.id,
+            tuple(s.id for s in matched),
+            charge.concept,
+            charge.currency,
+            charge.settlement,
+        )
         groups[group_key].append(charge)
         group_shipments[group_key] = matched
     for ids in seen_duplicates.values():
@@ -293,14 +299,24 @@ def _audit(dataset: Dataset) -> AuditResult:
                 version, _ = select_version(agreement, matched)
                 for rule in sorted(version.rules, key=lambda r: r.id):
                     if rule.expected:
-                        group_key = (
-                            agreement.id,
-                            tuple(s.id for s in matched),
-                            rule.concept,
-                            agreement.currency,
+                        already_billed = any(
+                            key[0] == agreement.id
+                            and key[1] == tuple(s.id for s in matched)
+                            and key[2] == rule.concept
+                            and key[3] == agreement.currency
+                            and len(groups[key]) > 0
+                            for key in groups
                         )
-                        groups.setdefault(group_key, [])
-                        group_shipments[group_key] = matched
+                        if not already_billed:
+                            group_key = (
+                                agreement.id,
+                                tuple(s.id for s in matched),
+                                rule.concept,
+                                agreement.currency,
+                                "",
+                            )
+                            groups.setdefault(group_key, [])
+                            group_shipments[group_key] = matched
             except EvaluationError:
                 if (agreement.id, tuple(s.id for s in matched)) in observed_scopes:
                     continue
@@ -309,23 +325,24 @@ def _audit(dataset: Dataset) -> AuditResult:
                     tuple(s.id for s in matched),
                     "(cobertura sin versión)",
                     agreement.currency,
+                    "",
                 )
                 groups.setdefault(group_key, [])
                 group_shipments[group_key] = matched
     # Overlapping allocations of a single concept cannot independently assert full expected totals.
     allocations = defaultdict(set)
     for group_key in groups:
-        aid, sids, concept, currency = group_key
+        aid, sids, concept, currency, settlement = group_key
         for sid in sids:
-            allocations[(aid, sid, concept, currency)].add(group_key)
+            allocations[(aid, sid, concept, currency, settlement)].add(group_key)
     overlapping = {
         group_key
         for allocation_key, group_set in allocations.items()
-        if len(group_set) > 1 or allocation_key in uncertain_allocations
+        if len(group_set) > 1 or allocation_key[:4] in uncertain_allocations
         for group_key in group_set
     }
     for group_key in sorted(groups):
-        agreement_id, _, concept, currency = group_key
+        agreement_id, _, concept, currency, settlement = group_key
         agreement = agreements[agreement_id]
         charges = groups[group_key]
         matched = group_shipments[group_key]
