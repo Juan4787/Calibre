@@ -296,3 +296,11 @@ def test_original_numeric_tokens_follow_sparse_sheet_coordinates():
     assert result["accepted"] == 1
     provenance = result["records"][0]["provenance"]["attributes.weight"]
     assert provenance["row"] == 3 and provenance["raw"] == "12.5"
+
+
+def test_xlsx_populated_cell_under_blank_header_is_rejected():
+    data = xlsx_data([["id", "ref", "weight", "date"], ["S1", "0001", 12.5, "01/09/2026", "EXTRA"]])
+    result = import_data(data, "extra.xlsx", mapping())
+    assert result["accepted"] == 0
+    assert result["rejected"] == [2]
+    assert any("fuera de las columnas declaradas" in issue["message"] for issue in result["issues"])

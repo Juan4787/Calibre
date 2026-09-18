@@ -404,7 +404,12 @@ def import_data(data: bytes, filename: str, mapping: ImportMapping) -> dict:
             )
         record: dict = {"attributes": {}, "provenance": {}}
         row_issues = []
-        if len(row) > len(headers) and any(cell.value not in (None, "") for cell in row[len(headers) :]):
+        has_extra_columns = (
+            len(row) > len(headers) and any(cell.value not in (None, "") for cell in row[len(headers) :])
+        ) or any(
+            i < len(headers) and not headers[i] and cell.value not in (None, "") for i, cell in enumerate(row)
+        )
+        if has_extra_columns:
             row_issues.append(
                 DataIssue(
                     category="row",
