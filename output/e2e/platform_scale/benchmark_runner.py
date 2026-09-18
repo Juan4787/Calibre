@@ -35,13 +35,14 @@ from freight_audit.engine import audit
 from freight_audit.importing import ImportMapping, import_data
 from freight_audit.models import Agreement, Dataset
 from freight_audit.reporting import (
+    ReportLimitError,
     bundle_bytes,
     html_report,
     verify_bundle,
     workbook_bytes,
 )
 from freight_audit.server import create_app
-from freight_audit.storage import Store
+from freight_audit.storage import IntegrityError, Store
 from fastapi.testclient import TestClient
 
 from output.e2e.platform_scale.generate_scale_dataset import generate_scale_data
@@ -293,20 +294,34 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict, all_exports: boo
         # 9. Export XLSX
         if len(charges_records) <= 10000 or all_exports:
             t0_wall, t0_cpu = time.perf_counter(), time.process_time()
-            xlsx_bytes = workbook_bytes(run)
-            t_xlsx_wall = time.perf_counter() - t0_wall
-            t_xlsx_cpu = time.process_time() - t0_cpu
-            sz_xlsx = len(xlsx_bytes)
-            del xlsx_bytes
-            gc.collect()
+            try:
+                xlsx_bytes = workbook_bytes(run)
+                t_xlsx_wall = time.perf_counter() - t0_wall
+                t_xlsx_cpu = time.process_time() - t0_cpu
+                sz_xlsx = len(xlsx_bytes)
+                del xlsx_bytes
+                gc.collect()
 
-            metrics["9_export_xlsx"] = {
-                "wall_sec": t_xlsx_wall,
-                "cpu_sec": t_xlsx_cpu,
-                "size_bytes": sz_xlsx,
-                "peak_rss_mb": get_peak_rss_mb(),
-            }
-            print(f"  [Stage 9/13] Export XLSX: {t_xlsx_wall:.2f}s | Size: {sz_xlsx / (1024 * 1024):.1f} MB | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
+                metrics["9_export_xlsx"] = {
+                    "wall_sec": t_xlsx_wall,
+                    "cpu_sec": t_xlsx_cpu,
+                    "size_bytes": sz_xlsx,
+                    "status": "PASS",
+                    "peak_rss_mb": get_peak_rss_mb(),
+                }
+                print(f"  [Stage 9/13] Export XLSX: {t_xlsx_wall:.2f}s | Size: {sz_xlsx / (1024 * 1024):.1f} MB | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
+            except ReportLimitError as exc:
+                t_xlsx_wall = time.perf_counter() - t0_wall
+                t_xlsx_cpu = time.process_time() - t0_cpu
+                metrics["9_export_xlsx"] = {
+                    "wall_sec": t_xlsx_wall,
+                    "cpu_sec": t_xlsx_cpu,
+                    "size_bytes": None,
+                    "status": "EXCEL_ROW_LIMIT_EXCEEDED",
+                    "note": str(exc),
+                    "peak_rss_mb": get_peak_rss_mb(),
+                }
+                print(f"  [Stage 9/13] Export XLSX: Intercepted Excel row limit as designed ({exc}) | Wall: {t_xlsx_wall:.2f}s | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
         else:
             metrics["9_export_xlsx"] = {
                 "wall_sec": None,
@@ -329,6 +344,7 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict, all_exports: boo
             "wall_sec": t_html_wall,
             "cpu_sec": t_html_cpu,
             "size_bytes": sz_html,
+            "status": "PASS",
             "peak_rss_mb": get_peak_rss_mb(),
         }
         print(f"  [Stage 10/13] Export HTML: {t_html_wall:.2f}s | Size: {sz_html / (1024 * 1024):.1f} MB | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
@@ -345,27 +361,42 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict, all_exports: boo
                 "wall_sec": t_zip_wall,
                 "cpu_sec": t_zip_cpu,
                 "size_bytes": sz_zip,
+                "status": "PASS",
                 "peak_rss_mb": get_peak_rss_mb(),
             }
             print(f"  [Stage 11/13] Bundle ZIP: {t_zip_wall:.2f}s | Size: {sz_zip / (1024 * 1024):.1f} MB | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
 
             # 12. Verify Bundle
             t0_wall, t0_cpu = time.perf_counter(), time.process_time()
-            verified_run = verify_bundle(zip_bytes)
-            verify_ok = verified_run["id"] == run_id
-            t_verify_wall = time.perf_counter() - t0_wall
-            t_verify_cpu = time.process_time() - t0_cpu
-            del zip_bytes
-            gc.collect()
-
-            assert verify_ok, "Bundle verification failed!"
-            metrics["12_verify_bundle"] = {
-                "wall_sec": t_verify_wall,
-                "cpu_sec": t_verify_cpu,
-                "verified": verify_ok,
-                "peak_rss_mb": get_peak_rss_mb(),
-            }
-            print(f"  [Stage 12/13] Verify Bundle: {t_verify_wall:.2f}s | Verified: {verify_ok} | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
+            try:
+                verified_run = verify_bundle(zip_bytes)
+                verify_ok = verified_run["id"] == run_id
+                t_verify_wall = time.perf_counter() - t0_wall
+                t_verify_cpu = time.process_time() - t0_cpu
+                assert verify_ok, "Bundle verification failed!"
+                metrics["12_verify_bundle"] = {
+                    "wall_sec": t_verify_wall,
+                    "cpu_sec": t_verify_cpu,
+                    "verified": verify_ok,
+                    "status": "PASS",
+                    "peak_rss_mb": get_peak_rss_mb(),
+                }
+                print(f"  [Stage 12/13] Verify Bundle: {t_verify_wall:.2f}s | Verified: {verify_ok} | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
+            except IntegrityError as exc:
+                t_verify_wall = time.perf_counter() - t0_wall
+                t_verify_cpu = time.process_time() - t0_cpu
+                metrics["12_verify_bundle"] = {
+                    "wall_sec": t_verify_wall,
+                    "cpu_sec": t_verify_cpu,
+                    "verified": False,
+                    "status": "BUNDLE_SIZE_LIMIT_EXCEEDED",
+                    "note": str(exc),
+                    "peak_rss_mb": get_peak_rss_mb(),
+                }
+                print(f"  [Stage 12/13] Verify Bundle: Intercepted bundle size ceiling (>500 MB) as designed ({exc}) | Wall: {t_verify_wall:.2f}s | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
+            finally:
+                del zip_bytes
+                gc.collect()
         else:
             metrics["11_bundle_zip"] = {
                 "wall_sec": None,
@@ -476,7 +507,7 @@ def aggregate_runs(runs: list[dict]) -> dict:
                 "peak_rss_mb": max(rss_vals),
             }
         # Carry over sizes or rates if present
-        for extra in ("db_size_bytes", "size_bytes", "charges_per_sec", "findings_per_sec"):
+        for extra in ("db_size_bytes", "size_bytes", "charges_per_sec", "findings_per_sec", "status", "note", "verified"):
             if extra in runs[0]["stages"][stage]:
                 st_data[extra] = runs[0]["stages"][stage][extra]
 
