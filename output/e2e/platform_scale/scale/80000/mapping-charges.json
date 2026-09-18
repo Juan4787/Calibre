@@ -1,0 +1,51 @@
+{
+  "id": "MAP-SCALE-CHARGES",
+  "version": "1",
+  "entity": "charges",
+  "header_row": 1,
+  "delimiter": ",",
+  "decimal_separator": ".",
+  "thousands_separator": "",
+  "columns": [
+    {
+      "source": "id_cargo",
+      "target": "id",
+      "type": "text"
+    },
+    {
+      "source": "liquidacion",
+      "target": "settlement",
+      "type": "text"
+    },
+    {
+      "source": "transportista",
+      "target": "carrier",
+      "type": "text"
+    },
+    {
+      "source": "acuerdo",
+      "target": "agreement",
+      "type": "text"
+    },
+    {
+      "source": "referencia",
+      "target": "reference",
+      "type": "text"
+    },
+    {
+      "source": "concepto",
+      "target": "concept",
+      "type": "text"
+    },
+    {
+      "source": "monto",
+      "target": "amount",
+      "type": "decimal"
+    },
+    {
+      "source": "moneda",
+      "target": "currency",
+      "type": "text"
+    }
+  ]
+}

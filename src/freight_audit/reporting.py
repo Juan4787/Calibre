@@ -72,17 +72,19 @@ def workbook_bytes(run: dict) -> bytes:
     def sheet(name, headings, rows):
         ws = workbook.create_sheet(name)
         ws.append(headings)
+        row_count = 1
         for row in rows:
             values = [
                 "" if value is None else ("Sí" if value else "No") if isinstance(value, bool) else str(value)
                 for value in row
             ]
-            if ws.max_row >= MAX_XLSX_ROWS or any(len(value) > MAX_XLSX_CELL_CHARS for value in values):
+            if row_count >= MAX_XLSX_ROWS or any(len(value) > MAX_XLSX_CELL_CHARS for value in values):
                 workbook.close()
                 raise ReportLimitError(
                     "El detalle supera los límites de filas o de texto por celda de Excel. Exportar el paquete completo: audit.json conserva todos los datos sin truncar."
                 )
             ws.append(values)
+            row_count += 1
         # All imported text and exact decimal money are explicit strings, never formulas.
         for row in ws:
             for cell in row:

@@ -1,0 +1,39 @@
+{
+  "points": {
+    "10000": {
+      "audit_wall_median": 2.4017,
+      "total_wall_median": 157.0282,
+      "peak_rss_mb": 1434.41
+    },
+    "20000": {
+      "audit_wall_median": 4.5712,
+      "total_wall_median": 51.2905,
+      "peak_rss_mb": 1586.0
+    },
+    "40000": {
+      "audit_wall_median": 9.2103,
+      "total_wall_median": 101.2843,
+      "peak_rss_mb": 2910.78
+    }
+  },
+  "ratios": [
+    {
+      "from_size": 10000,
+      "to_size": 20000,
+      "multiplier": 2.0,
+      "audit_time_ratio": 1.9,
+      "total_time_ratio": 0.33,
+      "rss_ratio": 1.11,
+      "evaluation": "LINEAR_OR_SUBQUADRATIC"
+    },
+    {
+      "from_size": 20000,
+      "to_size": 40000,
+      "multiplier": 2.0,
+      "audit_time_ratio": 2.01,
+      "total_time_ratio": 1.97,
+      "rss_ratio": 1.84,
+      "evaluation": "LINEAR_OR_SUBQUADRATIC"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "reps": 1,
+  "status": "RESOURCE_LIMIT",
+  "reason": "RESOURCE_LIMIT: Host MemAvailable dropped to 1996.7 MB (safety floor 2000.0 MB)",
+  "peak_rss_mb": 3618.75,
+  "correctness_verified": false
+}

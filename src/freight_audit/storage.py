@@ -1,5 +1,6 @@
 """Local immutable snapshots, content-addressed originals, append-only decisions."""
 
+import gc
 import importlib.metadata
 import json
 import platform
@@ -109,12 +110,29 @@ class Store:
                 "El programa cambió mientras estaba abierto. Cerrar y reiniciar el servicio local antes de guardar una nueva auditoría."
             )
         # The result must belong to exactly these inputs; callers cannot persist an edited finding.
-        if result.engine_version != ENGINE_VERSION or canonical(audit(dataset)) != canonical(result):
+        if result.engine_version != ENGINE_VERSION:
             raise IntegrityError("El resultado no corresponde a estos datos y a esta versión del motor.")
+
+        # Serialize result once and compute hash directly
+        result_json = canonical(result)
+        result_hash = bytes_hash(result_json.encode())
+
+        # Validate that the result belongs to exactly these inputs.
+        # Passing audit(dataset) as an anonymous temporary ensures the re-audited result tree
+        # is discarded immediately upon calculating its digest, avoiding concurrent trees in memory.
+        expected_result_hash = digest(audit(dataset))
+        if expected_result_hash != result_hash:
+            raise IntegrityError("El resultado no corresponde a estos datos y a esta versión del motor.")
+        del expected_result_hash
+        gc.collect()
+
         for source_hash in self.source_hashes(dataset):
             self.source(source_hash)
-        input_hash = digest(dataset)
-        result_hash = digest(result)
+
+        # Serialize dataset once and compute hash directly
+        dataset_json = canonical(dataset)
+        input_hash = bytes_hash(dataset_json.encode())
+
         artifact_hash = engine_artifact_hash()
         run_id = digest([input_hash, result_hash, artifact_hash])
         with self.connect() as conn:
@@ -125,12 +143,14 @@ class Store:
                     input_hash,
                     result_hash,
                     artifact_hash,
-                    canonical(dataset),
-                    canonical(result),
+                    dataset_json,
+                    result_json,
                     canonical(environment()),
                     datetime.now(UTC).isoformat(),
                 ),
             )
+        del dataset_json, result_json
+        gc.collect()
         return run_id
 
     @staticmethod

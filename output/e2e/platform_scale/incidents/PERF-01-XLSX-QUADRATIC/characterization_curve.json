@@ -1,0 +1,26 @@
+{
+  "1000": {
+    "n_findings": 1000,
+    "wall_sec": 6.4396,
+    "cpu_sec": 6.3975,
+    "size_bytes": 790043
+  },
+  "2000": {
+    "n_findings": 2000,
+    "wall_sec": 13.5034,
+    "cpu_sec": 13.2685,
+    "size_bytes": 1571013
+  },
+  "5000": {
+    "n_findings": 5000,
+    "wall_sec": 34.8263,
+    "cpu_sec": 34.2441,
+    "size_bytes": 3922672
+  },
+  "10000": {
+    "n_findings": 10000,
+    "wall_sec": 70.5431,
+    "cpu_sec": 69.3999,
+    "size_bytes": 7818475
+  }
+}

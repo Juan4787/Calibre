@@ -1,0 +1,224 @@
+{
+  "10000": {
+    "n": 10000,
+    "stages": {
+      "1_dataset_built": {
+        "wall_sec": 3.205,
+        "cpu_sec": 3.2004,
+        "rss_before_mb": 38.36,
+        "rss_after_mb": 276.8,
+        "rss_delta_mb": 238.44,
+        "peak_rss_mb": 276.48
+      },
+      "2_first_audit": {
+        "wall_sec": 2.1206,
+        "cpu_sec": 2.1134,
+        "rss_before_mb": 276.8,
+        "rss_after_mb": 311.71,
+        "rss_delta_mb": 34.91,
+        "peak_rss_mb": 364.73
+      },
+      "3_canonical_dataset": {
+        "wall_sec": 0.6383,
+        "cpu_sec": 0.6382,
+        "rss_before_mb": 310.74,
+        "rss_after_mb": 340.79,
+        "rss_delta_mb": 30.05,
+        "peak_rss_mb": 364.73,
+        "string_bytes": 29982596
+      },
+      "4_canonical_result": {
+        "wall_sec": 0.4014,
+        "cpu_sec": 0.4013,
+        "rss_before_mb": 340.79,
+        "rss_after_mb": 352.91,
+        "rss_delta_mb": 12.12,
+        "peak_rss_mb": 369.23,
+        "string_bytes": 15837489
+      },
+      "5_second_audit_in_memory": {
+        "wall_sec": 2.5275,
+        "cpu_sec": 2.5257,
+        "rss_before_mb": 352.91,
+        "rss_after_mb": 432.94,
+        "rss_delta_mb": 80.03,
+        "peak_rss_mb": 481.91
+      },
+      "6_canonical_second_audit": {
+        "wall_sec": 0.4295,
+        "cpu_sec": 0.4295,
+        "rss_before_mb": 431.96,
+        "rss_after_mb": 438.53,
+        "rss_delta_mb": 6.57,
+        "peak_rss_mb": 481.91,
+        "string_bytes": 15837489
+      },
+      "7_canonical_comparison": {
+        "wall_sec": 0.0021,
+        "cpu_sec": 0.0021,
+        "rss_before_mb": 438.53,
+        "rss_after_mb": 438.53,
+        "rss_delta_mb": 0.0,
+        "peak_rss_mb": 481.91
+      },
+      "8_sqlite_write": {
+        "wall_sec": 6.1498,
+        "cpu_sec": 2.6003,
+        "rss_before_mb": 438.53,
+        "rss_after_mb": 527.11,
+        "rss_delta_mb": 88.58,
+        "peak_rss_mb": 570.58,
+        "db_size_bytes": 47411200
+      }
+    },
+    "final_peak_rss_mb": 570.58
+  },
+  "20000": {
+    "n": 20000,
+    "stages": {
+      "1_dataset_built": {
+        "wall_sec": 6.8281,
+        "cpu_sec": 6.7823,
+        "rss_before_mb": 39.2,
+        "rss_after_mb": 516.74,
+        "rss_delta_mb": 477.54,
+        "peak_rss_mb": 516.38
+      },
+      "2_first_audit": {
+        "wall_sec": 4.2738,
+        "cpu_sec": 4.263,
+        "rss_before_mb": 516.74,
+        "rss_after_mb": 590.97,
+        "rss_delta_mb": 74.23,
+        "peak_rss_mb": 691.01
+      },
+      "3_canonical_dataset": {
+        "wall_sec": 1.3101,
+        "cpu_sec": 1.3098,
+        "rss_before_mb": 589.99,
+        "rss_after_mb": 650.77,
+        "rss_delta_mb": 60.78,
+        "peak_rss_mb": 691.01,
+        "string_bytes": 60091104
+      },
+      "4_canonical_result": {
+        "wall_sec": 0.8241,
+        "cpu_sec": 0.824,
+        "rss_before_mb": 650.77,
+        "rss_after_mb": 681.61,
+        "rss_delta_mb": 30.84,
+        "peak_rss_mb": 707.83,
+        "string_bytes": 31674005
+      },
+      "5_second_audit_in_memory": {
+        "wall_sec": 5.0119,
+        "cpu_sec": 4.9655,
+        "rss_before_mb": 681.61,
+        "rss_after_mb": 822.55,
+        "rss_delta_mb": 140.94,
+        "peak_rss_mb": 925.57
+      },
+      "6_canonical_second_audit": {
+        "wall_sec": 1.0983,
+        "cpu_sec": 0.9775,
+        "rss_before_mb": 821.57,
+        "rss_after_mb": 836.68,
+        "rss_delta_mb": 15.11,
+        "peak_rss_mb": 925.57,
+        "string_bytes": 31674005
+      },
+      "7_canonical_comparison": {
+        "wall_sec": 0.0036,
+        "cpu_sec": 0.0036,
+        "rss_before_mb": 836.68,
+        "rss_after_mb": 836.68,
+        "rss_delta_mb": 0.0,
+        "peak_rss_mb": 925.57
+      },
+      "8_sqlite_write": {
+        "wall_sec": 6.0496,
+        "cpu_sec": 5.5072,
+        "rss_before_mb": 836.68,
+        "rss_after_mb": 954.87,
+        "rss_delta_mb": 118.19,
+        "peak_rss_mb": 1099.25,
+        "db_size_bytes": 94904320
+      }
+    },
+    "final_peak_rss_mb": 1099.25
+  },
+  "30000": {
+    "n": 30000,
+    "stages": {
+      "1_dataset_built": {
+        "wall_sec": 14.3951,
+        "cpu_sec": 13.3335,
+        "rss_before_mb": 39.49,
+        "rss_after_mb": 756.32,
+        "rss_delta_mb": 716.83,
+        "peak_rss_mb": 755.82
+      },
+      "2_first_audit": {
+        "wall_sec": 7.4431,
+        "cpu_sec": 7.3551,
+        "rss_before_mb": 756.33,
+        "rss_after_mb": 850.85,
+        "rss_delta_mb": 94.52,
+        "peak_rss_mb": 1021.45
+      },
+      "3_canonical_dataset": {
+        "wall_sec": 2.1688,
+        "cpu_sec": 2.1653,
+        "rss_before_mb": 849.88,
+        "rss_after_mb": 944.88,
+        "rss_delta_mb": 95.0,
+        "peak_rss_mb": 1021.45,
+        "string_bytes": 90201604
+      },
+      "4_canonical_result": {
+        "wall_sec": 1.6934,
+        "cpu_sec": 1.6218,
+        "rss_before_mb": 944.88,
+        "rss_after_mb": 990.72,
+        "rss_delta_mb": 45.84,
+        "peak_rss_mb": 1030.53,
+        "string_bytes": 47510505
+      },
+      "5_second_audit_in_memory": {
+        "wall_sec": 8.3259,
+        "cpu_sec": 8.1332,
+        "rss_before_mb": 990.72,
+        "rss_after_mb": 1207.92,
+        "rss_delta_mb": 217.2,
+        "peak_rss_mb": 1373.21
+      },
+      "6_canonical_second_audit": {
+        "wall_sec": 1.4908,
+        "cpu_sec": 1.4874,
+        "rss_before_mb": 1205.96,
+        "rss_after_mb": 1254.01,
+        "rss_delta_mb": 48.05,
+        "peak_rss_mb": 1373.21,
+        "string_bytes": 47510505
+      },
+      "7_canonical_comparison": {
+        "wall_sec": 0.006,
+        "cpu_sec": 0.006,
+        "rss_before_mb": 1254.01,
+        "rss_after_mb": 1254.01,
+        "rss_delta_mb": 0.0,
+        "peak_rss_mb": 1373.21
+      },
+      "8_sqlite_write": {
+        "wall_sec": 10.8971,
+        "cpu_sec": 8.7504,
+        "rss_before_mb": 1254.01,
+        "rss_after_mb": 1385.82,
+        "rss_delta_mb": 131.81,
+        "peak_rss_mb": 1648.08,
+        "db_size_bytes": 142397440
+      }
+    },
+    "final_peak_rss_mb": 1648.08
+  }
+}

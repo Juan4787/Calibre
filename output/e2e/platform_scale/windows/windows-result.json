@@ -1,20 +1,20 @@
 {
   "platform": {
-    "system": "Linux",
-    "release": "6.17.0-1022-azure",
-    "version": "#22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
-    "machine": "x86_64",
-    "python_version": "3.12.14",
-    "sqlite_version": "3.45.1",
-    "cwd": "/home/runner/work/Calibre/Calibre",
-    "executable": "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python"
+    "system": "Windows",
+    "release": "2025Server",
+    "version": "10.0.26100",
+    "machine": "AMD64",
+    "python_version": "3.12.10",
+    "sqlite_version": "3.49.1",
+    "cwd": "D:\\a\\Calibre\\Calibre",
+    "executable": "D:\\a\\_temp\\calibre_cleanroom\\Scripts\\python.exe"
   },
-  "timestamp": 1789762831.5153728,
+  "timestamp": 1789762871.2660606,
   "cases": {
     "WIN-01": {
       "status": "PASSED",
-      "file": "/home/runner/work/Calibre/Calibre/src/freight_audit/__init__.py",
-      "note": "Running in repo mode; remote runner verifies clean-room installation."
+      "file": "D:\\a\\_temp\\calibre_cleanroom\\Lib\\site-packages\\freight_audit\\__init__.py",
+      "in_site_packages": true
     },
     "WIN-02": {
       "status": "PASSED",
@@ -45,7 +45,7 @@
     },
     "WIN-08": {
       "status": "PASSED",
-      "size": 60054
+      "size": 60060
     },
     "WIN-09": {
       "status": "PASSED",
@@ -53,15 +53,15 @@
     },
     "WIN-10": {
       "status": "PASSED",
-      "bundle_id": "26415a6ed9f81657448c936fe2398150e2c5ff574906151296b4741cbcc0d07a"
+      "bundle_id": "29c86e69c0b6ab339bc97cc0ce451a792c0cbd59187cba981cce8be1d25302a2"
     },
     "WIN-11": {
       "status": "PASSED",
-      "path": "/tmp/tmp928hn2fi/Calibre QA/Auditoria de Fletes"
+      "path": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\tmpkuz1qmfd\\Calibre QA\\Auditoria de Fletes"
     },
     "WIN-12": {
       "status": "PASSED",
-      "path": "/tmp/tmpdsnaj9ba/Calibre QA/Auditor\u00eda \u00d1and\u00fa"
+      "path": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\tmpqcifx732\\Calibre QA\\Auditor\u00eda \u00d1and\u00fa"
     },
     "WIN-13": {
       "status": "PASSED",
@@ -95,17 +95,17 @@
     },
     "WIN-21": {
       "status": "PASSED",
-      "path_length": 162
+      "path_length": 194
     },
     "WIN-22": {
       "status": "PASSED",
       "first_run_ok": true,
       "second_run_ok": true,
-      "port": 33629
+      "port": 56517
     },
     "WIN-23": {
       "status": "PASSED",
-      "run_id": "26415a6ed9f81657448c936fe2398150e2c5ff574906151296b4741cbcc0d07a"
+      "run_id": "a08f56926e3ccf904e00b16912ebcdea8ec9548be1b2a3a49f631d18f105bbb3"
     },
     "WIN-24": {
       "status": "PASSED",
