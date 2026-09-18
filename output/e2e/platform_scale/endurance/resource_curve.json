@@ -1,402 +1,402 @@
 [
   {
     "iteration": 1,
-    "wall_sec": 10.4683,
-    "rss_mb": 97.99,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 2420736
+    "wall_sec": 9.345,
+    "rss_mb": 138.25,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 4792320
   },
   {
     "iteration": 2,
-    "wall_sec": 10.7172,
-    "rss_mb": 104.78,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 4722688
+    "wall_sec": 9.3858,
+    "rss_mb": 186.07,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 9400320
   },
   {
     "iteration": 3,
-    "wall_sec": 11.5802,
-    "rss_mb": 111.22,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 7024640
+    "wall_sec": 8.6902,
+    "rss_mb": 197.54,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 14004224
   },
   {
     "iteration": 4,
-    "wall_sec": 11.5429,
-    "rss_mb": 134.58,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 9334784
+    "wall_sec": 8.8271,
+    "rss_mb": 211.54,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 18608128
   },
   {
     "iteration": 5,
-    "wall_sec": 11.5494,
-    "rss_mb": 120.09,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 11636736
+    "wall_sec": 8.8495,
+    "rss_mb": 218.54,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 23212032
   },
   {
     "iteration": 6,
-    "wall_sec": 10.6572,
-    "rss_mb": 121.93,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 13938688
+    "wall_sec": 8.8042,
+    "rss_mb": 219.5,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 27815936
   },
   {
     "iteration": 7,
-    "wall_sec": 10.8123,
-    "rss_mb": 123.82,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 16244736
+    "wall_sec": 8.831,
+    "rss_mb": 227.5,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 32419840
   },
   {
     "iteration": 8,
-    "wall_sec": 11.8879,
-    "rss_mb": 124.24,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 18546688
+    "wall_sec": 8.8219,
+    "rss_mb": 233.5,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 37023744
   },
   {
     "iteration": 9,
-    "wall_sec": 11.0702,
-    "rss_mb": 130.77,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 20848640
+    "wall_sec": 8.8172,
+    "rss_mb": 233.5,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 41627648
   },
   {
     "iteration": 10,
-    "wall_sec": 11.1429,
-    "rss_mb": 122.47,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 23158784
+    "wall_sec": 8.7096,
+    "rss_mb": 234.7,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 46243840
   },
   {
     "iteration": 11,
-    "wall_sec": 11.0168,
-    "rss_mb": 125.99,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 25468928
+    "wall_sec": 8.7499,
+    "rss_mb": 233.68,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 50860032
   },
   {
     "iteration": 12,
-    "wall_sec": 10.9395,
-    "rss_mb": 124.4,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 27779072
+    "wall_sec": 8.7622,
+    "rss_mb": 234.68,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 55476224
   },
   {
     "iteration": 13,
-    "wall_sec": 11.4279,
-    "rss_mb": 122.09,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 30089216
+    "wall_sec": 8.8146,
+    "rss_mb": 235.68,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 60092416
   },
   {
     "iteration": 14,
-    "wall_sec": 11.0518,
-    "rss_mb": 132.5,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 32399360
+    "wall_sec": 8.7085,
+    "rss_mb": 236.69,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 64708608
   },
   {
     "iteration": 15,
-    "wall_sec": 11.3211,
-    "rss_mb": 123.38,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 34709504
+    "wall_sec": 8.7658,
+    "rss_mb": 237.68,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 69324800
   },
   {
     "iteration": 16,
-    "wall_sec": 10.6411,
-    "rss_mb": 133.8,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 37019648
+    "wall_sec": 8.8411,
+    "rss_mb": 237.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 73940992
   },
   {
     "iteration": 17,
-    "wall_sec": 10.6172,
-    "rss_mb": 131.79,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 39329792
+    "wall_sec": 8.7343,
+    "rss_mb": 236.68,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 78557184
   },
   {
     "iteration": 18,
-    "wall_sec": 10.5347,
-    "rss_mb": 133.77,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 41639936
+    "wall_sec": 8.7663,
+    "rss_mb": 237.68,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 83173376
   },
   {
     "iteration": 19,
-    "wall_sec": 10.5205,
-    "rss_mb": 127.14,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 43950080
+    "wall_sec": 8.8024,
+    "rss_mb": 237.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 87789568
   },
   {
     "iteration": 20,
-    "wall_sec": 10.6006,
-    "rss_mb": 130.23,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 46260224
+    "wall_sec": 8.9283,
+    "rss_mb": 237.68,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 92405760
   },
   {
     "iteration": 21,
-    "wall_sec": 10.4792,
-    "rss_mb": 133.77,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 48570368
+    "wall_sec": 8.7938,
+    "rss_mb": 237.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 97021952
   },
   {
     "iteration": 22,
-    "wall_sec": 11.6554,
-    "rss_mb": 122.95,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 50880512
+    "wall_sec": 8.748,
+    "rss_mb": 237.68,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 101638144
   },
   {
     "iteration": 23,
-    "wall_sec": 11.0969,
-    "rss_mb": 123.02,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 53190656
+    "wall_sec": 8.7696,
+    "rss_mb": 237.68,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 106254336
   },
   {
     "iteration": 24,
-    "wall_sec": 10.9962,
-    "rss_mb": 123.64,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 55500800
+    "wall_sec": 8.9776,
+    "rss_mb": 237.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 110870528
   },
   {
     "iteration": 25,
-    "wall_sec": 10.9057,
-    "rss_mb": 126.83,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 57810944
+    "wall_sec": 8.8538,
+    "rss_mb": 237.68,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 115486720
   },
   {
     "iteration": 26,
-    "wall_sec": 11.1008,
-    "rss_mb": 133.53,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 60121088
+    "wall_sec": 8.9894,
+    "rss_mb": 237.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 120102912
   },
   {
     "iteration": 27,
-    "wall_sec": 11.1993,
-    "rss_mb": 135.73,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 62431232
+    "wall_sec": 8.8982,
+    "rss_mb": 237.68,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 124719104
   },
   {
     "iteration": 28,
-    "wall_sec": 10.9541,
-    "rss_mb": 130.27,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 64741376
+    "wall_sec": 8.9211,
+    "rss_mb": 237.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 129335296
   },
   {
     "iteration": 29,
-    "wall_sec": 11.1915,
-    "rss_mb": 123.12,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 67051520
+    "wall_sec": 8.8333,
+    "rss_mb": 237.64,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 133951488
   },
   {
     "iteration": 30,
-    "wall_sec": 11.107,
-    "rss_mb": 131.89,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 69361664
+    "wall_sec": 8.9857,
+    "rss_mb": 237.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 138567680
   },
   {
     "iteration": 31,
-    "wall_sec": 11.7569,
-    "rss_mb": 134.85,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 71671808
+    "wall_sec": 8.79,
+    "rss_mb": 237.67,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 143183872
   },
   {
     "iteration": 32,
-    "wall_sec": 11.5438,
-    "rss_mb": 124.02,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 73981952
+    "wall_sec": 8.804,
+    "rss_mb": 237.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 147800064
   },
   {
     "iteration": 33,
-    "wall_sec": 11.0287,
-    "rss_mb": 126.18,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 76292096
+    "wall_sec": 8.7643,
+    "rss_mb": 237.69,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 152416256
   },
   {
     "iteration": 34,
-    "wall_sec": 11.2698,
-    "rss_mb": 125.96,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 78602240
+    "wall_sec": 8.8416,
+    "rss_mb": 237.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 157032448
   },
   {
     "iteration": 35,
-    "wall_sec": 11.2834,
-    "rss_mb": 132.65,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 80912384
+    "wall_sec": 8.8484,
+    "rss_mb": 237.69,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 161648640
   },
   {
     "iteration": 36,
-    "wall_sec": 11.313,
-    "rss_mb": 134.85,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 83222528
+    "wall_sec": 8.8555,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 166264832
   },
   {
     "iteration": 37,
-    "wall_sec": 11.5106,
-    "rss_mb": 124.03,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 85532672
+    "wall_sec": 8.9767,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 170881024
   },
   {
     "iteration": 38,
-    "wall_sec": 10.3953,
-    "rss_mb": 124.01,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 87842816
+    "wall_sec": 8.9365,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 175497216
   },
   {
     "iteration": 39,
-    "wall_sec": 11.2092,
-    "rss_mb": 132.19,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 90152960
+    "wall_sec": 8.7665,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 180113408
   },
   {
     "iteration": 40,
-    "wall_sec": 11.0373,
-    "rss_mb": 135.73,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 92463104
+    "wall_sec": 8.8887,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 184729600
   },
   {
     "iteration": 41,
-    "wall_sec": 10.5508,
-    "rss_mb": 124.91,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 94773248
+    "wall_sec": 8.8126,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 189345792
   },
   {
     "iteration": 42,
-    "wall_sec": 10.5296,
-    "rss_mb": 135.33,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 97083392
+    "wall_sec": 8.747,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 193961984
   },
   {
     "iteration": 43,
-    "wall_sec": 10.4151,
-    "rss_mb": 133.52,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 99393536
+    "wall_sec": 8.9541,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 198578176
   },
   {
     "iteration": 44,
-    "wall_sec": 10.3094,
-    "rss_mb": 135.97,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 101703680
+    "wall_sec": 8.8761,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 203194368
   },
   {
     "iteration": 45,
-    "wall_sec": 10.4092,
-    "rss_mb": 124.02,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 104013824
+    "wall_sec": 8.8377,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 207810560
   },
   {
     "iteration": 46,
-    "wall_sec": 10.3227,
-    "rss_mb": 133.54,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 106323968
+    "wall_sec": 8.8149,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 212426752
   },
   {
     "iteration": 47,
-    "wall_sec": 10.3101,
-    "rss_mb": 129.11,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 108634112
+    "wall_sec": 8.8283,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 217042944
   },
   {
     "iteration": 48,
-    "wall_sec": 10.3358,
-    "rss_mb": 125.98,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 110944256
+    "wall_sec": 8.8578,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 221659136
   },
   {
     "iteration": 49,
-    "wall_sec": 10.3655,
-    "rss_mb": 134.86,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 113254400
+    "wall_sec": 8.8178,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 226275328
   },
   {
     "iteration": 50,
-    "wall_sec": 10.4481,
-    "rss_mb": 124.91,
-    "open_fds": 88,
-    "temp_files": 46,
-    "db_size_bytes": 115564544
+    "wall_sec": 8.9291,
+    "rss_mb": 238.48,
+    "open_fds": 85,
+    "temp_files": 24,
+    "db_size_bytes": 230891520
   }
 ]

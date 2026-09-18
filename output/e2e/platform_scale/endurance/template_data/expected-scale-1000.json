@@ -1,0 +1,40 @@
+{
+  "seed": 42,
+  "total_charges": 1000,
+  "total_shipments": 950,
+  "total_findings": 1000,
+  "counts": {
+    "PASS": 700,
+    "FAIL": 200,
+    "REVIEW": 50,
+    "UNDETERMINABLE": 50
+  },
+  "currencies": {
+    "ARS": {
+      "actual": "762500.00",
+      "confirmed_overcharge": "25000.00",
+      "confirmed_undercharge": "-12500.00",
+      "confirmed_net_difference": "12500.00",
+      "pass": "540000.00",
+      "review": "10000.00",
+      "undeterminable": "50000.00",
+      "determinable": "702500.00"
+    },
+    "USD": {
+      "actual": "88500.00",
+      "confirmed_overcharge": "6000.00",
+      "confirmed_undercharge": "0.00",
+      "confirmed_net_difference": "6000.00",
+      "pass": "57500.00",
+      "review": "0.00",
+      "undeterminable": "0.00",
+      "determinable": "88500.00"
+    }
+  },
+  "invariants": {
+    "no_currency_leakage": true,
+    "charges_conservation": true,
+    "ars_actual_conservation": false,
+    "usd_actual_conservation": true
+  }
+}

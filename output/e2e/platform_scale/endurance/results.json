@@ -1,19 +1,19 @@
 {
   "iterations": 50,
-  "batch_size": 500,
-  "initial_rss_mb": 39.3,
-  "final_rss_mb": 124.91,
-  "peak_rss_mb": 135.97,
-  "initial_fds": 88,
-  "final_fds": 88,
+  "batch_size": 1000,
+  "initial_rss_mb": 39.76,
+  "final_rss_mb": 238.48,
+  "peak_rss_mb": 238.48,
+  "initial_fds": 85,
+  "final_fds": 85,
   "fd_leak_detected": false,
-  "first_5_median_sec": 11.5429,
-  "last_5_median_sec": 10.3358,
-  "time_degradation_ratio": 0.9,
+  "first_5_median_sec": 8.8495,
+  "last_5_median_sec": 8.8283,
+  "time_degradation_ratio": 1.0,
   "evaluation": "STABLE",
   "restart_verification": {
     "passed": true,
-    "last_run_id": "f635f168af4765b32d7ef98b0027b12e671fbe434b0221ba4099d4bef8bd1e41",
+    "last_run_id": "c528b0d2d6c584946b905586f6d9d9a749bd139289634c09382756397af32794",
     "exit_code": 0
   }
 }
