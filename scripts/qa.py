@@ -10,7 +10,14 @@ from pathlib import Path
 from zipfile import BadZipFile
 
 ROOT = Path(__file__).resolve().parents[1]
+scripts_dir = str(ROOT / "scripts")
+while scripts_dir in sys.path:
+    sys.path.remove(scripts_dir)
+while str(ROOT) in sys.path:
+    sys.path.remove(str(ROOT))
 sys.path.insert(0, str(ROOT))
+if "qa" in sys.modules and not hasattr(sys.modules["qa"], "__path__"):
+    del sys.modules["qa"]
 
 
 def main():

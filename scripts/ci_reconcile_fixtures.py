@@ -17,6 +17,15 @@ from freight_audit.reporting import bundle_bytes
 from freight_audit.storage import Store
 
 ROOT = Path(__file__).resolve().parents[1]
+scripts_dir = str(ROOT / "scripts")
+while scripts_dir in sys.path:
+    sys.path.remove(scripts_dir)
+while str(ROOT) in sys.path:
+    sys.path.remove(str(ROOT))
+sys.path.insert(0, str(ROOT))
+if "qa" in sys.modules and not hasattr(sys.modules["qa"], "__path__"):
+    del sys.modules["qa"]
+
 OFFICIAL_FIXTURES = [
     ROOT / "fixtures/project.json",
     ROOT / "fixtures/second-client/project.json",
@@ -24,8 +33,6 @@ OFFICIAL_FIXTURES = [
 
 
 def run_check() -> int:
-    if str(ROOT) not in sys.path:
-        sys.path.insert(0, str(ROOT))
     from qa.invariants import check_run
     from qa.reconcile import reconcile
 
