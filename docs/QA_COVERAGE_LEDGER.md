@@ -1,7 +1,8 @@
 # QA Coverage Ledger: Reconciliación de las 58 Familias de Verificación (Fase 7 y 7.5)
 
-**Commit Base**: `ed278d72c93312caaaa5d490ee4af21388c905e1`  
-**Wheel Distribuible**: `dist/freight_audit-0.1.0-py3-none-any.whl` (SHA-256: `ffe5d4cfa9073a147d4640086c71d1b4126885dfef6c06c3f220c048cb66baf4`)  
+**Commit Base**: `0aa9bea92d7496c1f3e53d79debeca8f13b5d364`  
+**Wheel Distribuible**: `dist/freight_audit-0.1.0-py3-none-any.whl` (SHA-256: `5cbd1d5f3a0b16ac57f5edb8fff3cd7ffcb25aa42fe45a767804261bd717afdd`)  
+**Source Tarball**: `dist/freight_audit-0.1.0.tar.gz` (SHA-256: `c5f44178be5fb3d591e45c6f5d846c89a0c78240afaeadaf73ff3d28e6194a6a`)  
 **Estado Global**: **GATE S CERRADO (100.0% SATISFIED - 51/51)**  
 
 ---
@@ -837,7 +838,7 @@ Este documento constituye el inventario auditable definitivo de las **58 familia
 - **Obligación / Requisito**: Empaquetado limpio con pip/build; hash de wheel y tarball inmutables; instalación en clean-room probada.
 - **Fases con Evidencia**: Fase 0, Fase 1, Fase 5
 - **Artefactos de Respaldo**:
-  - `dist/freight_audit-0.1.0-py3-none-any.whl (SHA-256: ffe5d4cfa9073a147d4640086c71d1b4126885dfef6c06c3f220c048cb66baf4)`
+  - `dist/freight_audit-0.1.0-py3-none-any.whl (SHA-256: 5cbd1d5f3a0b16ac57f5edb8fff3cd7ffcb25aa42fe45a767804261bd717afdd)`
   - `scripts/verify.sh`
 - **Comando de Verificación**: `bash scripts/verify.sh`
 - **Resultado Observado**: `PASS (100% build verification)`

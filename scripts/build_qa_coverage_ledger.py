@@ -19,8 +19,9 @@ ROOT = Path(__file__).resolve().parents[1]
 try:
     COMMIT_HASH = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
 except Exception:
-    COMMIT_HASH = "ace3425aa4c73f6a4a104971323e4bd207ecbd5c"
-WHEEL_SHA = "ffe5d4cfa9073a147d4640086c71d1b4126885dfef6c06c3f220c048cb66baf4"
+    COMMIT_HASH = "0aa9bea92d7496c1f3e53d79debeca8f13b5d364"
+WHEEL_SHA = "5cbd1d5f3a0b16ac57f5edb8fff3cd7ffcb25aa42fe45a767804261bd717afdd"
+TARBALL_SHA = "c5f44178be5fb3d591e45c6f5d846c89a0c78240afaeadaf73ff3d28e6194a6a"
 
 # Mapping of all 58 families with rigorous status and evidence trail
 FAMILY_LEDGER = {
@@ -939,6 +940,7 @@ def build_ledger():
     ledger_data = {
         "commit": COMMIT_HASH,
         "wheel_sha256": WHEEL_SHA,
+        "tarball_sha256": TARBALL_SHA,
         "total_families": total,
         "status_distribution": status_counts,
         "p0_distribution": p0_counts,
@@ -965,6 +967,7 @@ def build_ledger():
         "",
         f"**Commit Base**: `{COMMIT_HASH}`  ",
         f"**Wheel Distribuible**: `dist/freight_audit-0.1.0-py3-none-any.whl` (SHA-256: `{WHEEL_SHA}`)  ",
+        f"**Source Tarball**: `dist/freight_audit-0.1.0.tar.gz` (SHA-256: `{TARBALL_SHA}`)  ",
         "**Estado Global**: **GATE S CERRADO (100.0% SATISFIED - 51/51)**  ",
         "",
         "---",

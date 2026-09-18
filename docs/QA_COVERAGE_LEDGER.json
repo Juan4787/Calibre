@@ -1,6 +1,7 @@
 {
-  "commit": "ed278d72c93312caaaa5d490ee4af21388c905e1",
-  "wheel_sha256": "ffe5d4cfa9073a147d4640086c71d1b4126885dfef6c06c3f220c048cb66baf4",
+  "commit": "0aa9bea92d7496c1f3e53d79debeca8f13b5d364",
+  "wheel_sha256": "5cbd1d5f3a0b16ac57f5edb8fff3cd7ffcb25aa42fe45a767804261bd717afdd",
+  "tarball_sha256": "c5f44178be5fb3d591e45c6f5d846c89a0c78240afaeadaf73ff3d28e6194a6a",
   "total_families": 58,
   "status_distribution": {
     "SATISFIED": 51,
@@ -1053,7 +1054,7 @@
         "Fase 5"
       ],
       "artifacts": [
-        "dist/freight_audit-0.1.0-py3-none-any.whl (SHA-256: ffe5d4cfa9073a147d4640086c71d1b4126885dfef6c06c3f220c048cb66baf4)",
+        "dist/freight_audit-0.1.0-py3-none-any.whl (SHA-256: 5cbd1d5f3a0b16ac57f5edb8fff3cd7ffcb25aa42fe45a767804261bd717afdd)",
         "scripts/verify.sh"
       ],
       "command": "bash scripts/verify.sh",
