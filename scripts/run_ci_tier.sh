@@ -127,7 +127,7 @@ run_tier_release() {
     WHEEL_FILE="$(ls dist/freight_audit-*.whl | head -n 1)"
     echo "    Installing wheel: $WHEEL_FILE into isolated clean-room..."
     "$TEMP_VENV/bin/pip" install --quiet --upgrade pip
-    "$TEMP_VENV/bin/pip" install --quiet "$WHEEL_FILE"
+    "$TEMP_VENV/bin/pip" install --quiet "$WHEEL_FILE" httpx
 
     echo "[5/5] Executing smoke test against installed wheel without checkout access..."
     SITE_PACKAGES="$("$TEMP_VENV/bin/python" -c "import site; print(site.getsitepackages()[0])")"
