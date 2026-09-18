@@ -1,0 +1,90 @@
+{
+  "id": "AGR-G4",
+  "name": "Acuerdo G4: Bandas de Peso USD",
+  "carrier": "GLOBAL-CARGO-INTL",
+  "currency": "USD",
+  "date_field": "attributes.date",
+  "scale": 2,
+  "rounding": "ROUND_HALF_EVEN",
+  "tolerance_absolute": "0.05",
+  "tolerance_relative": "0.001",
+  "matching": {
+    "keys": [
+      {
+        "charge": "reference",
+        "shipment": "reference"
+      }
+    ],
+    "cardinality": "one"
+  },
+  "versions": [
+    {
+      "id": "V1",
+      "valid_from": "2026-01-01",
+      "valid_to": "2026-12-31",
+      "source_note": "Tarifas por Bandas USD",
+      "rules": [
+        {
+          "id": "R-G4-BAND",
+          "concept": "AIR_FREIGHT",
+          "description": "Tarifación por bandas semiabiertas [lower, upper)",
+          "expression": {
+            "op": "band",
+            "table": "peso_bandas",
+            "args": [
+              {
+                "op": "attr",
+                "field": "attributes.weight_kg",
+                "unit": "kg"
+              }
+            ]
+          }
+        }
+      ],
+      "tables": {
+        "peso_bandas": {
+          "kind": "band",
+          "unit": "kg",
+          "bands": [
+            {
+              "lower": "0.00",
+              "upper": "100.00",
+              "value": {
+                "type": "decimal",
+                "value": "45.00",
+                "unit": "USD"
+              }
+            },
+            {
+              "lower": "100.00",
+              "upper": "500.00",
+              "value": {
+                "type": "decimal",
+                "value": "110.00",
+                "unit": "USD"
+              }
+            },
+            {
+              "lower": "500.00",
+              "upper": "1000.00",
+              "value": {
+                "type": "decimal",
+                "value": "240.00",
+                "unit": "USD"
+              }
+            },
+            {
+              "lower": "1000.00",
+              "upper": null,
+              "value": {
+                "type": "decimal",
+                "value": "420.00",
+                "unit": "USD"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

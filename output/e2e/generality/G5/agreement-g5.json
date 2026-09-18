@@ -1,0 +1,80 @@
+{
+  "id": "AGR-G5",
+  "name": "Acuerdo G5: Consolidación Multiremito (N:1 y 1:N)",
+  "carrier": "CONSOLIDADOS-DEL-SUR",
+  "currency": "ARS",
+  "date_field": "attributes.fecha",
+  "scale": 2,
+  "rounding": "ROUND_HALF_EVEN",
+  "tolerance_absolute": "0.05",
+  "tolerance_relative": "0.001",
+  "matching": {
+    "keys": [
+      {
+        "charge": "reference",
+        "shipment": "reference"
+      }
+    ],
+    "cardinality": "group"
+  },
+  "versions": [
+    {
+      "id": "V1",
+      "valid_from": "2026-01-01",
+      "valid_to": "2026-12-31",
+      "source_note": "Tarifas Consolidadas",
+      "rules": [
+        {
+          "id": "R-G5-CONSOL",
+          "concept": "FLETE_CONSOLIDADO",
+          "description": "Suma de peso de remitos en viaje * 22 ARS/kg",
+          "expression": {
+            "op": "mul",
+            "args": [
+              {
+                "op": "sum",
+                "field": "attributes.peso_kg",
+                "unit": "kg"
+              },
+              {
+                "op": "const",
+                "value": {
+                  "type": "decimal",
+                  "value": "22.00",
+                  "unit": "ARS/kg"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "R-G5-TRAMO",
+          "concept": "FLETE_TRAMO",
+          "description": "Tarifa fija por tramo individual",
+          "expression": {
+            "op": "const",
+            "value": {
+              "type": "decimal",
+              "value": "8000.00",
+              "unit": "ARS"
+            }
+          }
+        },
+        {
+          "id": "R-G5-SEGURO",
+          "concept": "SEGURO_CARGA",
+          "description": "Seguro de carga individual",
+          "expression": {
+            "op": "const",
+            "value": {
+              "type": "decimal",
+              "value": "1200.00",
+              "unit": "ARS"
+            }
+          }
+        }
+      ],
+      "tables": {}
+    }
+  ]
+}

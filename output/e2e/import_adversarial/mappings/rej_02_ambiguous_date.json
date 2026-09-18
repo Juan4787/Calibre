@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "id": "map_shipments_std",
+  "version": "1",
+  "entity": "shipments",
+  "delimiter": ";",
+  "encoding": "utf-8-sig",
+  "decimal_separator": ",",
+  "thousands_separator": ".",
+  "date_formats": [
+    "%d/%m/%Y",
+    "%m/%d/%Y"
+  ],
+  "columns": [
+    {
+      "source": "id",
+      "target": "id",
+      "type": "text"
+    },
+    {
+      "source": "ref",
+      "target": "reference",
+      "type": "text"
+    },
+    {
+      "source": null,
+      "target": "carrier",
+      "type": "text",
+      "constant": "CAMIONERA_CENTRAL"
+    },
+    {
+      "source": "weight",
+      "target": "attributes.weight",
+      "type": "decimal",
+      "unit": "kg"
+    },
+    {
+      "source": "date",
+      "target": "attributes.service_date",
+      "type": "date"
+    }
+  ]
+}

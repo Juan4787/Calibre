@@ -1,0 +1,194 @@
+{
+  "id": "AGR-G2",
+  "name": "Acuerdo G2: Origen/Destino + Vehículo + Semestre",
+  "carrier": "LOGISTICA-TRUCK",
+  "currency": "ARS",
+  "date_field": "attributes.dispatch_date",
+  "scale": 2,
+  "rounding": "ROUND_HALF_EVEN",
+  "tolerance_absolute": "0.05",
+  "tolerance_relative": "0.001",
+  "matching": {
+    "keys": [
+      {
+        "charge": "reference",
+        "shipment": "reference"
+      }
+    ],
+    "cardinality": "one"
+  },
+  "versions": [
+    {
+      "id": "V1-SEM1",
+      "valid_from": "2026-01-01",
+      "valid_to": "2026-06-30",
+      "source_note": "Tarifas Semestre 1",
+      "rules": [
+        {
+          "id": "R-G2-RUTA-V1",
+          "concept": "FLETE_VIAJE",
+          "description": "Lookup por ruta y vehículo Semestre 1",
+          "expression": {
+            "op": "lookup",
+            "table": "tarifas_rutas",
+            "args": [
+              {
+                "op": "attr",
+                "field": "attributes.origin"
+              },
+              {
+                "op": "attr",
+                "field": "attributes.destination"
+              },
+              {
+                "op": "attr",
+                "field": "attributes.truck_type"
+              }
+            ]
+          }
+        }
+      ],
+      "tables": {
+        "tarifas_rutas": {
+          "kind": "lookup",
+          "rows": [
+            {
+              "keys": [
+                "BUE",
+                "ROS",
+                "SEMIRREMOLQUE"
+              ],
+              "value": {
+                "type": "decimal",
+                "value": "450000.00",
+                "unit": "ARS"
+              }
+            },
+            {
+              "keys": [
+                "BUE",
+                "ROS",
+                "CHASIS"
+              ],
+              "value": {
+                "type": "decimal",
+                "value": "280000.00",
+                "unit": "ARS"
+              }
+            },
+            {
+              "keys": [
+                "BUE",
+                "COR",
+                "SEMIRREMOLQUE"
+              ],
+              "value": {
+                "type": "decimal",
+                "value": "680000.00",
+                "unit": "ARS"
+              }
+            },
+            {
+              "keys": [
+                "BUE",
+                "COR",
+                "CHASIS"
+              ],
+              "value": {
+                "type": "decimal",
+                "value": "420000.00",
+                "unit": "ARS"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V2-SEM2",
+      "valid_from": "2026-07-01",
+      "valid_to": "2026-12-31",
+      "source_note": "Tarifas Semestre 2 (+20%)",
+      "rules": [
+        {
+          "id": "R-G2-RUTA-V2",
+          "concept": "FLETE_VIAJE",
+          "description": "Lookup por ruta y vehículo Semestre 2",
+          "expression": {
+            "op": "lookup",
+            "table": "tarifas_rutas",
+            "args": [
+              {
+                "op": "attr",
+                "field": "attributes.origin"
+              },
+              {
+                "op": "attr",
+                "field": "attributes.destination"
+              },
+              {
+                "op": "attr",
+                "field": "attributes.truck_type"
+              }
+            ]
+          }
+        }
+      ],
+      "tables": {
+        "tarifas_rutas": {
+          "kind": "lookup",
+          "rows": [
+            {
+              "keys": [
+                "BUE",
+                "ROS",
+                "SEMIRREMOLQUE"
+              ],
+              "value": {
+                "type": "decimal",
+                "value": "540000.00",
+                "unit": "ARS"
+              }
+            },
+            {
+              "keys": [
+                "BUE",
+                "ROS",
+                "CHASIS"
+              ],
+              "value": {
+                "type": "decimal",
+                "value": "336000.00",
+                "unit": "ARS"
+              }
+            },
+            {
+              "keys": [
+                "BUE",
+                "COR",
+                "SEMIRREMOLQUE"
+              ],
+              "value": {
+                "type": "decimal",
+                "value": "816000.00",
+                "unit": "ARS"
+              }
+            },
+            {
+              "keys": [
+                "BUE",
+                "COR",
+                "CHASIS"
+              ],
+              "value": {
+                "type": "decimal",
+                "value": "504000.00",
+                "unit": "ARS"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "id": "AGR-G6",
+  "name": "Acuerdo G6: Composición (Zona + Vehículo + Mínimo + Evidencia + Vigencia)",
+  "carrier": "INTEGRAL-LOGISTICS",
+  "currency": "ARS",
+  "date_field": "attributes.date",
+  "scale": 2,
+  "rounding": "ROUND_HALF_EVEN",
+  "tolerance_absolute": "0.05",
+  "tolerance_relative": "0.001",
+  "matching": {
+    "keys": [
+      {
+        "charge": "reference",
+        "shipment": "reference"
+      }
+    ],
+    "cardinality": "one"
+  },
+  "versions": [
+    {
+      "id": "V1",
+      "valid_from": "2026-01-01",
+      "valid_to": "2026-06-30",
+      "source_note": "Semestre 1",
+      "rules": [
+        {
+          "id": "R-G6-COMPOSITE",
+          "concept": "FLETE_COMPUESTO",
+          "description": "Max(100k, lookup) con evidencia obligatoria V1",
+          "expression": {
+            "op": "max",
+            "args": [
+              {
+                "op": "const",
+                "value": {
+                  "type": "decimal",
+                  "value": "100000.00",
+                  "unit": "ARS"
+                }
+              },
+              {
+                "op": "lookup",
+                "table": "tarifas_zonas",
+                "args": [
+                  {
+                    "op": "attr",
+                    "field": "attributes.origin"
+                  },
+                  {
+                    "op": "attr",
+                    "field": "attributes.destination"
+                  },
+                  {
+                    "op": "attr",
+                    "field": "attributes.vehicle"
+                  }
+                ]
+              }
+            ]
+          },
+          "evidence": [
+            {
+              "any_of": [
+                "REMITO_CONFORME"
+              ],
+              "scope": "each_shipment",
+              "document_required": true
+            }
+          ]
+        }
+      ],
+      "tables": {
+        "tarifas_zonas": {
+          "kind": "lookup",
+          "rows": [
+            {
+              "keys": [
+                "NORTE",
+                "SUR",
+                "CHASIS"
+              ],
+              "value": {
+                "type": "decimal",
+                "value": "120000.00",
+                "unit": "ARS"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "V2",
+      "valid_from": "2026-07-01",
+      "valid_to": "2026-12-31",
+      "source_note": "Semestre 2",
+      "rules": [
+        {
+          "id": "R-G6-COMPOSITE",
+          "concept": "FLETE_COMPUESTO",
+          "description": "Max(100k, lookup) con evidencia obligatoria V2",
+          "expression": {
+            "op": "max",
+            "args": [
+              {
+                "op": "const",
+                "value": {
+                  "type": "decimal",
+                  "value": "100000.00",
+                  "unit": "ARS"
+                }
+              },
+              {
+                "op": "lookup",
+                "table": "tarifas_zonas",
+                "args": [
+                  {
+                    "op": "attr",
+                    "field": "attributes.origin"
+                  },
+                  {
+                    "op": "attr",
+                    "field": "attributes.destination"
+                  },
+                  {
+                    "op": "attr",
+                    "field": "attributes.vehicle"
+                  }
+                ]
+              }
+            ]
+          },
+          "evidence": [
+            {
+              "any_of": [
+                "REMITO_CONFORME"
+              ],
+              "scope": "each_shipment",
+              "document_required": true
+            }
+          ]
+        }
+      ],
+      "tables": {
+        "tarifas_zonas": {
+          "kind": "lookup",
+          "rows": [
+            {
+              "keys": [
+                "NORTE",
+                "SUR",
+                "CHASIS"
+              ],
+              "value": {
+                "type": "decimal",
+                "value": "150000.00",
+                "unit": "ARS"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+[
+  {
+    "id": "AGR-E2E",
+    "name": "Acuerdo Ficticio E2E Productivo",
+    "carrier": "EXPRESS",
+    "currency": "ARS",
+    "date_field": "service_date",
+    "scale": 2,
+    "rounding": "ROUND_HALF_UP",
+    "tolerance_absolute": "0.01",
+    "tolerance_relative": "0",
+    "matching": {
+      "keys": [
+        {
+          "charge": "reference",
+          "shipment": "reference"
+        }
+      ],
+      "cardinality": "one",
+      "duplicate_fields": [
+        "reference",
+        "concept",
+        "amount"
+      ]
+    },
+    "versions": [
+      {
+        "id": "V1",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "source_note": "Acuerdo ficticio para validación E2E productiva.",
+        "tables": {},
+        "rules": [
+          {
+            "id": "R-BASE",
+            "concept": "FLETE",
+            "description": "Flete base: peso en kg multiplicado por 10 ARS/kg",
+            "expression": {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "attr",
+                  "field": "weight",
+                  "unit": "kg"
+                },
+                {
+                  "op": "const",
+                  "value": {
+                    "type": "decimal",
+                    "value": "10",
+                    "unit": "ARS/kg"
+                  }
+                }
+              ]
+            },
+            "expected": true
+          },
+          {
+            "id": "R-SPECIAL",
+            "concept": "ESPECIAL",
+            "description": "Servicio especial de tarifa fija que requiere autorización documentada",
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "100",
+                "unit": "ARS"
+              }
+            },
+            "evidence": [
+              {
+                "any_of": [
+                  "authorization"
+                ],
+                "scope": "each_shipment",
+                "document_required": false
+              }
+            ],
+            "expected": false
+          }
+        ]
+      }
+    ]
+  }
+]

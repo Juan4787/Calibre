@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "MAP-C-G4",
+  "version": "1.0",
+  "entity": "charges",
+  "delimiter": "|",
+  "decimal_separator": ".",
+  "thousands_separator": ",",
+  "columns": [
+    {
+      "source": "invoice_line_id",
+      "target": "id",
+      "type": "text"
+    },
+    {
+      "source": "tracking_ref",
+      "target": "reference",
+      "type": "text"
+    },
+    {
+      "source": "carrier",
+      "target": "carrier",
+      "type": "text"
+    },
+    {
+      "constant": "AGR-G4",
+      "target": "agreement",
+      "type": "text"
+    },
+    {
+      "constant": "LIQ-2026-G4",
+      "target": "settlement",
+      "type": "text"
+    },
+    {
+      "source": "service_code",
+      "target": "concept",
+      "type": "text"
+    },
+    {
+      "source": "line_total_usd",
+      "target": "amount",
+      "type": "decimal"
+    },
+    {
+      "source": "curr",
+      "target": "currency",
+      "type": "text"
+    }
+  ]
+}

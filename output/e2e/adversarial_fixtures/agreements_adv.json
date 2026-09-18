@@ -1,0 +1,172 @@
+[
+  {
+    "id": "AGR-ADV",
+    "name": "Acuerdo Adversarial E2E",
+    "carrier": "EXPRESS",
+    "currency": "ARS",
+    "date_field": "service_date",
+    "scale": 2,
+    "rounding": "ROUND_HALF_UP",
+    "tolerance_absolute": "0.01",
+    "tolerance_relative": "0",
+    "matching": {
+      "keys": [
+        {
+          "charge": "reference",
+          "shipment": "reference"
+        }
+      ],
+      "cardinality": "one",
+      "duplicate_fields": [
+        "reference",
+        "concept",
+        "amount"
+      ],
+      "explicit": {
+        "C10A": ["S10A"],
+        "C10B": ["S10A", "S10B"]
+      }
+    },
+    "versions": [
+      {
+        "id": "V-BASE",
+        "valid_from": "2026-01-01",
+        "valid_to": "2026-06-30",
+        "source_note": "Vigencia base primer semestre",
+        "tables": {},
+        "rules": [
+          {
+            "id": "R-BASE",
+            "concept": "FLETE",
+            "description": "Flete base 10 ARS/kg",
+            "expression": {
+              "op": "mul",
+              "args": [
+                {
+                  "op": "attr",
+                  "field": "weight",
+                  "unit": "kg"
+                },
+                {
+                  "op": "const",
+                  "value": {
+                    "type": "decimal",
+                    "value": "10",
+                    "unit": "ARS/kg"
+                  }
+                }
+              ]
+            },
+            "expected": true
+          },
+          {
+            "id": "R-SPECIAL",
+            "concept": "ESPECIAL",
+            "description": "Servicio especial con autorización requerida",
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "100",
+                "unit": "ARS"
+              }
+            },
+            "evidence": [
+              {
+                "any_of": [
+                  "authorization"
+                ],
+                "scope": "each_shipment",
+                "document_required": false
+              }
+            ],
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "V-OVERLAP-1",
+        "valid_from": "2026-07-01",
+        "valid_to": "2026-08-31",
+        "source_note": "Vigencia solapada 1",
+        "tables": {},
+        "rules": [
+          {
+            "id": "R-JUL",
+            "concept": "FLETE",
+            "description": "Flete julio y agosto",
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "100",
+                "unit": "ARS"
+              }
+            },
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "V-OVERLAP-2",
+        "valid_from": "2026-08-01",
+        "valid_to": "2026-09-30",
+        "source_note": "Vigencia solapada 2 (conflicto en agosto)",
+        "tables": {},
+        "rules": [
+          {
+            "id": "R-AUG",
+            "concept": "FLETE",
+            "description": "Flete agosto y septiembre",
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "100",
+                "unit": "ARS"
+              }
+            },
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "V-AMBIGUOUS",
+        "valid_from": "2026-10-01",
+        "valid_to": "2026-10-31",
+        "source_note": "Vigencia con reglas ambiguas sin discriminador",
+        "tables": {},
+        "rules": [
+          {
+            "id": "R-AMB-1",
+            "concept": "FLETE",
+            "description": "Regla ambigua 1",
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "100",
+                "unit": "ARS"
+              }
+            },
+            "expected": false
+          },
+          {
+            "id": "R-AMB-2",
+            "concept": "FLETE",
+            "description": "Regla ambigua 2",
+            "expression": {
+              "op": "const",
+              "value": {
+                "type": "decimal",
+                "value": "120",
+                "unit": "ARS"
+              }
+            },
+            "expected": false
+          }
+        ]
+      }
+    ]
+  }
+]

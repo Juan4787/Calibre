@@ -69,6 +69,7 @@ Para garantizar un ciclo de desarrollo ágil sin comprometer la exhaustividad de
   2. `python scripts/qa.py mutate --execute`: Inyección y ejecución activa de mutaciones semánticas (`M01` a `M10`), exigiendo 100% de aniquilación (`killed`).
   3. `python output/e2e/fault_injection/run_directed_faults.py`: Suite dirigida de 41 fallas (33 P0 y 8 P1) a través de detectores agnósticos independientes (`invariants`, `reconcile`, `manifest_verifier`), exigiendo 100% de detección.
   4. `python output/e2e/import_adversarial/test_import_adversarial.py`: Batería de 62 vectores adversariales de importación (CSV, XLSX, fórmulas, XML, desplazamientos y límites).
+  5. `python output/e2e/test_e2e_productive.py`: Ciclo de vida completo E2E en Chromium headless con Playwright, auditoría real, decisiones humanas, inmutabilidad de runs, replay y reconciliación exacta de 6 canales (SQLite = API = JSON = XLSX = HTML = UI).
 
 ### Tier 4: Release Gate (`release`)
 * **Disparador:** Push de tags con formato `v*` (ej. `v0.1.0`) o disparo manual de release.

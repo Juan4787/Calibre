@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "id": "MAP-S-G5",
+  "version": "1.0",
+  "entity": "shipments",
+  "delimiter": ";",
+  "decimal_separator": ",",
+  "thousands_separator": ".",
+  "date_formats": [
+    "%Y-%m-%d"
+  ],
+  "columns": [
+    {
+      "source": "Remito_ID",
+      "target": "id",
+      "type": "text"
+    },
+    {
+      "source": "Viaje_ID",
+      "target": "reference",
+      "type": "text"
+    },
+    {
+      "constant": "CONSOLIDADOS-DEL-SUR",
+      "target": "carrier",
+      "type": "text"
+    },
+    {
+      "source": "Fecha_Remito",
+      "target": "attributes.fecha",
+      "type": "date"
+    },
+    {
+      "source": "Peso_Kg",
+      "target": "attributes.peso_kg",
+      "type": "decimal",
+      "unit": "kg"
+    }
+  ]
+}

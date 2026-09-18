@@ -1,0 +1,79 @@
+{
+  "id": "AGR-G1",
+  "name": "Acuerdo G1: Peso + Mínimo + Combustible",
+  "carrier": "EXPRESS-CARGO",
+  "currency": "ARS",
+  "date_field": "attributes.fecha",
+  "scale": 2,
+  "rounding": "ROUND_HALF_EVEN",
+  "tolerance_absolute": "0.05",
+  "tolerance_relative": "0.001",
+  "matching": {
+    "keys": [
+      {
+        "charge": "reference",
+        "shipment": "reference"
+      }
+    ],
+    "cardinality": "one"
+  },
+  "versions": [
+    {
+      "id": "V1",
+      "valid_from": "2026-01-01",
+      "valid_to": "2026-12-31",
+      "source_note": "Tarifario Anual G1",
+      "rules": [
+        {
+          "id": "R-G1-FLETE",
+          "concept": "FLETE_TOTAL",
+          "description": "Max(500, kg * 15) * 1.085 (recargo combustible 8.5%)",
+          "expression": {
+            "op": "mul",
+            "args": [
+              {
+                "op": "max",
+                "args": [
+                  {
+                    "op": "const",
+                    "value": {
+                      "type": "decimal",
+                      "value": "500.00",
+                      "unit": "ARS"
+                    }
+                  },
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "op": "attr",
+                        "field": "attributes.peso_kg",
+                        "unit": "kg"
+                      },
+                      {
+                        "op": "const",
+                        "value": {
+                          "type": "decimal",
+                          "value": "15.00",
+                          "unit": "ARS/kg"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "op": "const",
+                "value": {
+                  "type": "decimal",
+                  "value": "1.085"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "tables": {}
+    }
+  ]
+}

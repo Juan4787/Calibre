@@ -9,7 +9,30 @@ __pycache__/
 build/
 dist/
 .local/
-output/
+# Temporary files in output/
+output/*
+!output/e2e/
+output/e2e/isolated_env/
+output/e2e/**/__pycache__/
+output/e2e/clean_room/test_db/
+output/e2e/clean_room/work/
+output/e2e/fault_injection/blind/
+output/e2e/fault_injection/controls/
+output/e2e/fault_injection/incidents/
+output/e2e/fault_injection/observed/
+output/e2e/persistence/crash_cases/
+output/e2e/persistence/crash_tests/
+output/e2e/persistence/db/
+output/e2e/persistence/restored_db/
+output/e2e/persistence/backups/
+output/e2e/persistence/exports/
+output/e2e/persistence/observed/
+output/e2e/import_adversarial/observed/
+output/e2e/exports/
+output/e2e/adversarial/observed/
+output/e2e/clean_room/observed/
+output/e2e/generality/observed/
+output/e2e/qa56/observed/
 .playwright-cli/
 
 # Local databases, credentials and coverage artifacts.

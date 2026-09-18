@@ -10,3 +10,4 @@
 *.js text eol=lf
 *.svg text eol=lf
 *.xlsx binary
+output/e2e/import_adversarial/fixtures/* -text

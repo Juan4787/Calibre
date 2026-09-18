@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "id": "map_bool",
+  "version": "1",
+  "entity": "shipments",
+  "sheet": null,
+  "header_row": 1,
+  "delimiter": ";",
+  "encoding": "utf-8-sig",
+  "decimal_separator": ",",
+  "thousands_separator": ".",
+  "date_formats": [
+    "%d/%m/%Y"
+  ],
+  "columns": [
+    {
+      "source": "id",
+      "target": "id",
+      "type": "text",
+      "unit": null,
+      "required": true,
+      "constant": null,
+      "numeric_text": "reject",
+      "true_values": [
+        "true"
+      ],
+      "false_values": [
+        "false"
+      ]
+    },
+    {
+      "source": "ref",
+      "target": "reference",
+      "type": "text",
+      "unit": null,
+      "required": true,
+      "constant": null,
+      "numeric_text": "reject",
+      "true_values": [
+        "true"
+      ],
+      "false_values": [
+        "false"
+      ]
+    },
+    {
+      "source": null,
+      "target": "carrier",
+      "type": "text",
+      "unit": null,
+      "required": true,
+      "constant": "C",
+      "numeric_text": "reject",
+      "true_values": [
+        "true"
+      ],
+      "false_values": [
+        "false"
+      ]
+    },
+    {
+      "source": "flag",
+      "target": "attributes.urgent",
+      "type": "boolean",
+      "unit": null,
+      "required": true,
+      "constant": null,
+      "numeric_text": "reject",
+      "true_values": [
+        "si"
+      ],
+      "false_values": [
+        "no"
+      ]
+    }
+  ],
+  "concept_map": {},
+  "allow_xls_cached_values": false
+}

@@ -1,0 +1,4 @@
+shipment_id,date,origin,destination,vehicle,weight_kg
+OP-G6-01,2026-03-20,NORTE,SUR,CHASIS,350.00
+OP-G6-02,2026-04-15,NORTE,SUR,CHASIS,350.00
+OP-G6-03,2026-08-10,NORTE,SUR,CHASIS,350.00

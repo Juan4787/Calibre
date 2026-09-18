@@ -1,0 +1,19 @@
+{
+  "id": "mapping-charges-e2e",
+  "version": "1",
+  "entity": "charges",
+  "delimiter": ";",
+  "decimal_separator": ",",
+  "thousands_separator": ".",
+  "header_row": 1,
+  "columns": [
+    {"source": "id", "target": "id", "type": "text"},
+    {"source": "reference", "target": "reference", "type": "text"},
+    {"source": "carrier", "target": "carrier", "type": "text"},
+    {"source": "agreement", "target": "agreement", "type": "text"},
+    {"source": "settlement", "target": "settlement", "type": "text"},
+    {"source": "concept", "target": "concept", "type": "text"},
+    {"source": "amount", "target": "amount", "type": "decimal"},
+    {"source": "currency", "target": "currency", "type": "text"}
+  ]
+}

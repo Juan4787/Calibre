@@ -1,0 +1,63 @@
+{
+  "id": "AGR-G3",
+  "name": "Acuerdo G3: Pallets + Evidencia Obligatoria",
+  "carrier": "PALLET-DISTRIB",
+  "currency": "ARS",
+  "date_field": "attributes.fecha",
+  "scale": 2,
+  "rounding": "ROUND_HALF_EVEN",
+  "tolerance_absolute": "0.05",
+  "tolerance_relative": "0.001",
+  "matching": {
+    "keys": [
+      {
+        "charge": "reference",
+        "shipment": "reference"
+      }
+    ],
+    "cardinality": "one"
+  },
+  "versions": [
+    {
+      "id": "V1",
+      "valid_from": "2026-01-01",
+      "valid_to": "2026-12-31",
+      "source_note": "Tarifas Pallets con Evidencia",
+      "rules": [
+        {
+          "id": "R-G3-PALLET",
+          "concept": "FLETE_PALLET",
+          "description": "Tarifa por pallet con remito conformado obligatorio",
+          "expression": {
+            "op": "mul",
+            "args": [
+              {
+                "op": "attr",
+                "field": "attributes.pallets",
+                "unit": "pallet"
+              },
+              {
+                "op": "const",
+                "value": {
+                  "type": "decimal",
+                  "value": "85.00",
+                  "unit": "ARS/pallet"
+                }
+              }
+            ]
+          },
+          "evidence": [
+            {
+              "any_of": [
+                "REMITO_FIRMA_RECEPCION"
+              ],
+              "scope": "each_shipment",
+              "document_required": true
+            }
+          ]
+        }
+      ],
+      "tables": {}
+    }
+  ]
+}

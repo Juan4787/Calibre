@@ -1,0 +1,13 @@
+id;reference;carrier;service_date;weight;comentarios_chofer;codigo_deposito
+S_PASS;REM-PASS;EXPRESS;01/03/2026;10,00;Camionero de turno 1;DEP-099
+S_FAIL;REM-FAIL;EXPRESS;01/03/2026;10,00;Camionero de turno 2;DEP-099
+S1A;REM-001;EXPRESS;01/03/2026;10,00;Camionero de turno 3;DEP-099
+S1B;REM-001;EXPRESS;01/03/2026;10,00;Camionero de turno 4;DEP-099
+S2;REM-002;EXPRESS;01/03/2026;10,00;Camionero de turno 5;DEP-099
+S3;REM-003;EXPRESS;01/03/2026;10,00;Camionero de turno 6;DEP-099
+S4;REM-004;EXPRESS;15/08/2026;10,00;Camionero de turno 7;DEP-099
+S5;REM-005;EXPRESS;;10,00;Camionero de turno 8;DEP-099
+S6;REM-006;EXPRESS;15/10/2026;10,00;Camionero de turno 9;DEP-099
+S8;REM-008;EXPRESS;01/03/2026;10,00;Camionero de turno 10;DEP-099
+S10A;REM-010A;EXPRESS;01/03/2026;10,00;Camionero de turno 11;DEP-099
+S10B;REM-010B;EXPRESS;01/03/2026;10,00;Camionero de turno 12;DEP-099

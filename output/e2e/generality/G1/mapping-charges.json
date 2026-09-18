@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "MAP-C-G1",
+  "version": "1.0",
+  "entity": "charges",
+  "delimiter": ";",
+  "decimal_separator": ",",
+  "thousands_separator": ".",
+  "columns": [
+    {
+      "source": "Liquidacion_Nro",
+      "target": "id",
+      "type": "text"
+    },
+    {
+      "source": "Remito_Ref",
+      "target": "reference",
+      "type": "text"
+    },
+    {
+      "source": "Carrier_Id",
+      "target": "carrier",
+      "type": "text"
+    },
+    {
+      "constant": "AGR-G1",
+      "target": "agreement",
+      "type": "text"
+    },
+    {
+      "constant": "LIQ-2026-G1",
+      "target": "settlement",
+      "type": "text"
+    },
+    {
+      "source": "Concepto_Cobro",
+      "target": "concept",
+      "type": "text"
+    },
+    {
+      "source": "Importe_ARS",
+      "target": "amount",
+      "type": "decimal"
+    },
+    {
+      "source": "Moneda",
+      "target": "currency",
+      "type": "text"
+    }
+  ]
+}

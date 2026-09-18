@@ -1,0 +1,164 @@
+{
+  "total_controls": 12,
+  "passed": 12,
+  "false_positives": 0,
+  "false_positive_rate": 0.0,
+  "details": {
+    "CTRL-01": {
+      "description": "Standard clean baseline run (PASS, FAIL, REVIEW, UNDETERMINABLE)",
+      "status": "PASS",
+      "verdict": "TRUSTED",
+      "violations": [],
+      "passed_checks": [
+        "invariants",
+        "manifest_verifier",
+        "provenance_verifier",
+        "reconcile",
+        "replay"
+      ]
+    },
+    "CTRL-02": {
+      "description": "Legitimate PASS finding verified",
+      "status": "PASS",
+      "verdict": "TRUSTED",
+      "violations": [],
+      "passed_checks": [
+        "invariants",
+        "manifest_verifier",
+        "provenance_verifier",
+        "reconcile",
+        "replay"
+      ]
+    },
+    "CTRL-03": {
+      "description": "Legitimate FAIL finding verified",
+      "status": "PASS",
+      "verdict": "TRUSTED",
+      "violations": [],
+      "passed_checks": [
+        "invariants",
+        "manifest_verifier",
+        "provenance_verifier",
+        "reconcile",
+        "replay"
+      ]
+    },
+    "CTRL-04": {
+      "description": "Legitimate REVIEW finding verified",
+      "status": "PASS",
+      "verdict": "TRUSTED",
+      "violations": [],
+      "passed_checks": [
+        "invariants",
+        "manifest_verifier",
+        "provenance_verifier",
+        "reconcile",
+        "replay"
+      ]
+    },
+    "CTRL-05": {
+      "description": "Legitimate UNDETERMINABLE finding verified",
+      "status": "PASS",
+      "verdict": "TRUSTED",
+      "violations": [],
+      "passed_checks": [
+        "invariants",
+        "manifest_verifier",
+        "provenance_verifier",
+        "reconcile",
+        "replay"
+      ]
+    },
+    "CTRL-06": {
+      "description": "Legitimate added evidence and subsequent audit",
+      "status": "PASS",
+      "verdict": "TRUSTED",
+      "violations": [],
+      "passed_checks": [
+        "invariants",
+        "manifest_verifier",
+        "provenance_verifier",
+        "reconcile",
+        "replay"
+      ]
+    },
+    "CTRL-07": {
+      "description": "Valid contractual version validity window",
+      "status": "PASS",
+      "verdict": "TRUSTED",
+      "violations": [],
+      "passed_checks": [
+        "invariants",
+        "manifest_verifier",
+        "provenance_verifier",
+        "reconcile",
+        "replay"
+      ]
+    },
+    "CTRL-08": {
+      "description": "Document filename variation with identical content",
+      "status": "PASS",
+      "verdict": "TRUSTED",
+      "violations": [],
+      "passed_checks": [
+        "invariants",
+        "manifest_verifier",
+        "provenance_verifier",
+        "reconcile",
+        "replay"
+      ]
+    },
+    "CTRL-09": {
+      "description": "Valid reordered columns during import",
+      "status": "PASS",
+      "verdict": "TRUSTED",
+      "violations": [],
+      "passed_checks": [
+        "invariants",
+        "manifest_verifier",
+        "provenance_verifier",
+        "reconcile",
+        "replay"
+      ]
+    },
+    "CTRL-10": {
+      "description": "Process restart and reload from SQLite DB",
+      "status": "PASS",
+      "verdict": "TRUSTED",
+      "violations": [],
+      "passed_checks": [
+        "invariants",
+        "manifest_verifier",
+        "provenance_verifier",
+        "reconcile",
+        "replay"
+      ]
+    },
+    "CTRL-11": {
+      "description": "Repeated idempotent export of identical run",
+      "status": "PASS",
+      "verdict": "TRUSTED",
+      "violations": [],
+      "passed_checks": [
+        "invariants",
+        "manifest_verifier",
+        "provenance_verifier",
+        "reconcile",
+        "replay"
+      ]
+    },
+    "CTRL-12": {
+      "description": "Human decision recorded legitimately and preserved in chain",
+      "status": "PASS",
+      "verdict": "TRUSTED",
+      "violations": [],
+      "passed_checks": [
+        "invariants",
+        "manifest_verifier",
+        "provenance_verifier",
+        "reconcile",
+        "replay"
+      ]
+    }
+  }
+}

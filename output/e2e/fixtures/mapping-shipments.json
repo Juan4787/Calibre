@@ -1,0 +1,19 @@
+{
+  "id": "mapping-shipments-e2e",
+  "version": "1",
+  "entity": "shipments",
+  "delimiter": ";",
+  "decimal_separator": ",",
+  "thousands_separator": ".",
+  "date_formats": ["%d/%m/%Y"],
+  "header_row": 1,
+  "columns": [
+    {"source": "id", "target": "id", "type": "text"},
+    {"source": "reference", "target": "reference", "type": "text"},
+    {"source": "carrier", "target": "carrier", "type": "text"},
+    {"source": "service_date", "target": "attributes.service_date", "type": "date"},
+    {"source": "weight", "target": "attributes.weight", "type": "decimal", "unit": "kg"},
+    {"source": "origin", "target": "attributes.origin", "type": "text"},
+    {"source": "destination", "target": "attributes.destination", "type": "text"}
+  ]
+}

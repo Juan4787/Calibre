@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "id": "MAP-S-G2",
+  "version": "1.0",
+  "entity": "shipments",
+  "delimiter": ",",
+  "decimal_separator": ".",
+  "thousands_separator": "",
+  "date_formats": [
+    "%Y-%m-%d"
+  ],
+  "columns": [
+    {
+      "source": "shipment_code",
+      "target": "id",
+      "type": "text"
+    },
+    {
+      "source": "shipment_code",
+      "target": "reference",
+      "type": "text"
+    },
+    {
+      "constant": "LOGISTICA-TRUCK",
+      "target": "carrier",
+      "type": "text"
+    },
+    {
+      "source": "dispatch_date",
+      "target": "attributes.dispatch_date",
+      "type": "date"
+    },
+    {
+      "source": "origin_code",
+      "target": "attributes.origin",
+      "type": "text"
+    },
+    {
+      "source": "destination_code",
+      "target": "attributes.destination",
+      "type": "text"
+    },
+    {
+      "source": "truck_type",
+      "target": "attributes.truck_type",
+      "type": "text"
+    }
+  ]
+}

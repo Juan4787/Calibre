@@ -1,0 +1,8 @@
+AUTORIZACIÓN DE SERVICIO ESPECIAL
+Operación: S3 (REM-003)
+Cargo: C3
+Transportista: EXPRESS
+Concepto: ESPECIAL
+Importe autorizado: 100,00 ARS
+Motivo: Maniobra especial autorizada para prueba adversarial.
+Fecha: 01/03/2026

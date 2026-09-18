@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "id": "MAP-S-G1",
+  "version": "1.0",
+  "entity": "shipments",
+  "delimiter": ";",
+  "decimal_separator": ",",
+  "thousands_separator": ".",
+  "date_formats": [
+    "%Y-%m-%d"
+  ],
+  "columns": [
+    {
+      "source": "Remito_Nro",
+      "target": "id",
+      "type": "text"
+    },
+    {
+      "source": "Remito_Nro",
+      "target": "reference",
+      "type": "text"
+    },
+    {
+      "constant": "EXPRESS-CARGO",
+      "target": "carrier",
+      "type": "text"
+    },
+    {
+      "source": "Fecha_Despacho",
+      "target": "attributes.fecha",
+      "type": "date"
+    },
+    {
+      "source": "Peso_Facturado_Kg",
+      "target": "attributes.peso_kg",
+      "type": "decimal",
+      "unit": "kg"
+    }
+  ]
+}

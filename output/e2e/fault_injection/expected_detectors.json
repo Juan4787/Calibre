@@ -1,0 +1,334 @@
+{
+  "version": 2,
+  "description": "Pre-registered mapping of faults to calibrated severity, justifications, and expected detectors",
+  "faults": {
+    "FI-I01": {
+      "layer": "importer",
+      "severity": "P0",
+      "justification": "Altera directamente el importe económico de un cargo (+0.01) tras la lectura documental.",
+      "primary_detector": "provenance_verifier",
+      "secondary_detectors": ["reconcile", "replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-I02": {
+      "layer": "importer",
+      "severity": "P0",
+      "justification": "Invierte el signo del cargo económico (100 -> -100), transformando un cobro en crédito.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["reconcile", "replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-I03": {
+      "layer": "importer",
+      "severity": "P0",
+      "justification": "Muta la moneda del cargo (ARS -> USD), alterando la denominación y balance financiero.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["reconcile", "replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-I04": {
+      "layer": "importer",
+      "severity": "P0",
+      "justification": "Desplaza la fecha de servicio a través de una frontera de vigencia contractual, cambiando la tarifa aplicable.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-I05": {
+      "layer": "importer",
+      "severity": "P0",
+      "justification": "Altera la referencia documental, provocando matching inválido o asociación con shipment erróneo.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-I06": {
+      "layer": "importer",
+      "severity": "P1",
+      "justification": "El valor económico es correcto pero la celda/fila de procedencia es falsa, degradando la auditabilidad sin variar el saldo.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["provenance_verifier", "reconcile"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-E01": {
+      "layer": "engine",
+      "severity": "P0",
+      "justification": "Invierte la fórmula de diferencia (actual - expected -> expected - actual), invirtiendo el reclamo económico.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-E02": {
+      "layer": "engine",
+      "severity": "P0",
+      "justification": "Convierte tolerancia inclusiva en exclusiva, alterando el estado de certeza (PASS a FAIL dentro de tolerancia).",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-E03": {
+      "layer": "engine",
+      "severity": "P0",
+      "justification": "Confirma dinero indebidamente estando en estado REVIEW, violando el principio de incertidumbre.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-E04": {
+      "layer": "engine",
+      "severity": "P0",
+      "justification": "Confirma diferencia y expectativa en estado UNDETERMINABLE sin regla contractual aplicable.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-E05": {
+      "layer": "engine",
+      "severity": "P0",
+      "justification": "Certifica como PASS un cargo con evidencia contractual requerida ausente.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-E06": {
+      "layer": "engine",
+      "severity": "P0",
+      "justification": "Selecciona arbitrariamente la primera versión ante solapamiento de vigencias en lugar de declarar indeterminación.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-E07": {
+      "layer": "engine",
+      "severity": "P0",
+      "justification": "Selecciona arbitrariamente la primera regla ante ambigüedad tarifaria en vez de UNDETERMINABLE.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-E08": {
+      "layer": "engine",
+      "severity": "P0",
+      "justification": "Selecciona arbitrariamente el primer shipment ante ambigüedad de matching en vez de REVIEW.",
+      "primary_detector": "manifest_verifier",
+      "secondary_detectors": ["reconcile", "replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-E09": {
+      "layer": "engine",
+      "severity": "P0",
+      "justification": "Mezcla o corrompe totales por moneda en el resumen económico de la auditoría.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["reconcile", "replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-E10": {
+      "layer": "engine",
+      "severity": "P0",
+      "justification": "Pérdida silenciosa de un cargo en los hallazgos (N -> N-1), omitiendo una obligación financiera.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["reconcile", "replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-E11": {
+      "layer": "engine",
+      "severity": "P0",
+      "justification": "Duplica indebidamente un hallazgo económico en los resultados (N -> N+1), duplicando el cobro.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["reconcile", "replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-E12": {
+      "layer": "engine",
+      "severity": "P0",
+      "justification": "Redondeo prematuro que altera los centavos del valor esperado contractualmente.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-P01": {
+      "layer": "persistence",
+      "severity": "P0",
+      "justification": "Sustituye el resultado de una corrida válida por el de otra, persistiendo una conclusión falsa.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["manifest_verifier", "replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-P02": {
+      "layer": "persistence",
+      "severity": "P1",
+      "justification": "El cálculo numérico es correcto pero la decisión humana queda huérfana al referenciar un finding inexistente.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["manifest_verifier", "reconcile"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-P03": {
+      "layer": "persistence",
+      "severity": "P1",
+      "justification": "No altera saldos directos pero destruye la verificabilidad criptográfica secuencial de la cadena de decisiones.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["manifest_verifier", "reconcile"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-P04": {
+      "layer": "persistence",
+      "severity": "P1",
+      "justification": "No altera importes pero falsifica el digest SHA-256 de identidad del motor de auditoría.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["manifest_verifier", "reconcile"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-P05": {
+      "layer": "persistence",
+      "severity": "P1",
+      "justification": "Los resultados económicos persisten intactos pero la evidencia documental original es eliminada del bundle.",
+      "primary_detector": "manifest_verifier",
+      "secondary_detectors": ["provenance_verifier", "reconcile"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-R01": {
+      "layer": "reporting",
+      "severity": "P0",
+      "justification": "Muestra 'Coincide' (PASS) en el archivo Excel cuando el motor determinó revisión humana pendiente.",
+      "primary_detector": "manifest_verifier",
+      "secondary_detectors": ["reconcile"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-R02": {
+      "layer": "reporting",
+      "severity": "P0",
+      "justification": "Muestra 'Discrepancia' (FAIL) en HTML cuando el motor determinó que el caso es indeterminado.",
+      "primary_detector": "manifest_verifier",
+      "secondary_detectors": ["reconcile"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-R03": {
+      "layer": "reporting",
+      "severity": "P0",
+      "justification": "Altera la diferencia económica en la planilla Excel visible para el cliente (20 -> 99999).",
+      "primary_detector": "manifest_verifier",
+      "secondary_detectors": ["reconcile"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-R04": {
+      "layer": "reporting",
+      "severity": "P0",
+      "justification": "Elimina físicamente una fila de hallazgo del Excel, distorsionando la conciliación del reporte.",
+      "primary_detector": "manifest_verifier",
+      "secondary_detectors": ["reconcile"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-R05": {
+      "layer": "reporting",
+      "severity": "P0",
+      "justification": "Altera la columna de moneda en el reporte Excel (ARS -> USD) sin convertir el importe numérico.",
+      "primary_detector": "manifest_verifier",
+      "secondary_detectors": ["reconcile"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-R06": {
+      "layer": "reporting",
+      "severity": "P1",
+      "justification": "Conserva el estado REVIEW y los importes pero elimina la justificación causal y evidencia ausente del Excel.",
+      "primary_detector": "manifest_verifier",
+      "secondary_detectors": ["reconcile"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-A01": {
+      "layer": "api",
+      "severity": "P0",
+      "justification": "La API devuelve estado de conformidad (PASS) para un hallazgo que en base de datos es FAIL.",
+      "primary_detector": "reconcile",
+      "secondary_detectors": [],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-A02": {
+      "layer": "api",
+      "severity": "P0",
+      "justification": "La API omite un hallazgo en la respuesta JSON, entregando saldos y conteos incompletos.",
+      "primary_detector": "reconcile",
+      "secondary_detectors": [],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-A03": {
+      "layer": "api",
+      "severity": "P0",
+      "justification": "La API altera el importe auditado (actual) en el payload JSON consumido por integradores.",
+      "primary_detector": "reconcile",
+      "secondary_detectors": [],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-A04": {
+      "layer": "api",
+      "severity": "P1",
+      "justification": "La API entrega importes y estados correctos pero suprime la trazabilidad documental hacia las fuentes.",
+      "primary_detector": "reconcile",
+      "secondary_detectors": [],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-U01": {
+      "layer": "ui",
+      "severity": "P0",
+      "justification": "El DOM de la interfaz muestra 'Coincide' para un hallazgo en REVIEW, engañando al operador humano.",
+      "primary_detector": "reconcile",
+      "secondary_detectors": [],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-U02": {
+      "layer": "ui",
+      "severity": "P0",
+      "justification": "El DOM muestra una diferencia distorsionada (+2,00 en vez de +20,00), engañando sobre el recupero.",
+      "primary_detector": "reconcile",
+      "secondary_detectors": [],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-U03": {
+      "layer": "ui",
+      "severity": "P0",
+      "justification": "El DOM muestra símbolo de moneda USD en vez de ARS para importes en moneda local.",
+      "primary_detector": "reconcile",
+      "secondary_detectors": [],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-U04": {
+      "layer": "ui",
+      "severity": "P1",
+      "justification": "Los datos numéricos coinciden pero el DOM omite la advertencia visual de importación incompleta.",
+      "primary_detector": "reconcile",
+      "secondary_detectors": [],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-X01": {
+      "layer": "cross_layer",
+      "severity": "P0",
+      "justification": "Manipulación coordinada de importe en importador y Excel para enmascarar desvío financiero.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["reconcile", "replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-X02": {
+      "layer": "cross_layer",
+      "severity": "P0",
+      "justification": "Cascada de suavizado cosmético: Core REVIEW -> HTML PASS -> UI Coincide.",
+      "primary_detector": "manifest_verifier",
+      "secondary_detectors": ["reconcile"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-X03": {
+      "layer": "cross_layer",
+      "severity": "P0",
+      "justification": "Falsificación coordinada en snapshot y resultado preservando el archivo documental original.",
+      "primary_detector": "invariants",
+      "secondary_detectors": ["provenance_verifier", "replay"],
+      "expected_outcome": "DETECTED"
+    },
+    "FI-X04": {
+      "layer": "cross_layer",
+      "severity": "P0",
+      "justification": "Corrupción directa de bytes en audit.json sin reflejo en el manifest criptográfico.",
+      "primary_detector": "manifest_verifier",
+      "secondary_detectors": ["reconcile"],
+      "expected_outcome": "DETECTED"
+    }
+  }
+}

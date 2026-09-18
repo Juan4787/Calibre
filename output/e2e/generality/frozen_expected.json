@@ -1,0 +1,251 @@
+{
+  "status": "INDEPENDENT_ORACLES_FROZEN",
+  "description": "Resultados esperados calculados de forma 100% independiente con Decimal puro.",
+  "G1": [
+    {
+      "charge_id": "CH-OP-G1-01",
+      "shipment_id": "OP-G1-01",
+      "concept": "FLETE_TOTAL",
+      "currency": "ARS",
+      "expected": "1953.00",
+      "actual": "1953.00",
+      "difference": "0.00",
+      "status": "PASS",
+      "formula": "quantize(max(500, kg * 15) * 1.085, 2)"
+    },
+    {
+      "charge_id": "CH-OP-G1-02",
+      "shipment_id": "OP-G1-02",
+      "concept": "FLETE_TOTAL",
+      "currency": "ARS",
+      "expected": "542.50",
+      "actual": "570.00",
+      "difference": "27.50",
+      "status": "FAIL",
+      "formula": "quantize(max(500, kg * 15) * 1.085, 2)"
+    },
+    {
+      "charge_id": "CH-OP-G1-03",
+      "shipment_id": "OP-G1-03",
+      "concept": "FLETE_TOTAL",
+      "currency": "ARS",
+      "expected": "813.75",
+      "actual": "813.75",
+      "difference": "0.00",
+      "status": "PASS",
+      "formula": "quantize(max(500, kg * 15) * 1.085, 2)"
+    }
+  ],
+  "G2": [
+    {
+      "charge_id": "CH-OP-G2-01",
+      "shipment_id": "OP-G2-01",
+      "concept": "FLETE_VIAJE",
+      "currency": "ARS",
+      "expected": "450000.00",
+      "actual": "450000.00",
+      "difference": "0.00",
+      "status": "PASS",
+      "version_used": "V1"
+    },
+    {
+      "charge_id": "CH-OP-G2-02",
+      "shipment_id": "OP-G2-02",
+      "concept": "FLETE_VIAJE",
+      "currency": "ARS",
+      "expected": "540000.00",
+      "actual": "450000.00",
+      "difference": "-90000.00",
+      "status": "FAIL",
+      "version_used": "V2"
+    },
+    {
+      "charge_id": "CH-OP-G2-03",
+      "shipment_id": "OP-G2-03",
+      "concept": "FLETE_VIAJE",
+      "currency": "ARS",
+      "expected": "504000.00",
+      "actual": "504000.00",
+      "difference": "0.00",
+      "status": "PASS",
+      "version_used": "V2"
+    },
+    {
+      "charge_id": "CH-OP-G2-04",
+      "shipment_id": "OP-G2-04",
+      "concept": "FLETE_VIAJE",
+      "currency": "ARS",
+      "expected": null,
+      "actual": "350000.00",
+      "difference": null,
+      "status": "UNDETERMINABLE",
+      "reason": "Ruta/vehículo no encontrado en tabla de búsqueda"
+    }
+  ],
+  "G3": [
+    {
+      "charge_id": "CH-OP-G3-01",
+      "shipment_id": "OP-G3-01",
+      "concept": "FLETE_PALLET",
+      "currency": "ARS",
+      "expected": "2040.00",
+      "actual": "2040.00",
+      "difference": "0.00",
+      "status": "PASS",
+      "evidence_valid": true,
+      "reason": null
+    },
+    {
+      "charge_id": "CH-OP-G3-02",
+      "shipment_id": "OP-G3-02",
+      "concept": "FLETE_PALLET",
+      "currency": "ARS",
+      "expected": "850.00",
+      "actual": "850.00",
+      "difference": "0.00",
+      "status": "REVIEW",
+      "evidence_valid": false,
+      "reason": "Falta evidencia requerida (remito firmado)"
+    },
+    {
+      "charge_id": "CH-OP-G3-03",
+      "shipment_id": "OP-G3-03",
+      "concept": "FLETE_PALLET",
+      "currency": "ARS",
+      "expected": "1275.00",
+      "actual": "1500.00",
+      "difference": "225.00",
+      "status": "FAIL",
+      "evidence_valid": true,
+      "reason": null
+    }
+  ],
+  "G4": [
+    {
+      "charge_id": "CH-OP-G4-01",
+      "shipment_id": "OP-G4-01",
+      "concept": "AIR_FREIGHT",
+      "currency": "USD",
+      "weight_kg": "50.00",
+      "expected": "45.00",
+      "actual": "45.00",
+      "difference": "0.00",
+      "status": "PASS"
+    },
+    {
+      "charge_id": "CH-OP-G4-02",
+      "shipment_id": "OP-G4-02",
+      "concept": "AIR_FREIGHT",
+      "currency": "USD",
+      "weight_kg": "100.00",
+      "expected": "110.00",
+      "actual": "110.00",
+      "difference": "0.00",
+      "status": "PASS"
+    },
+    {
+      "charge_id": "CH-OP-G4-03",
+      "shipment_id": "OP-G4-03",
+      "concept": "AIR_FREIGHT",
+      "currency": "USD",
+      "weight_kg": "500.00",
+      "expected": "240.00",
+      "actual": "110.00",
+      "difference": "-130.00",
+      "status": "FAIL"
+    },
+    {
+      "charge_id": "CH-OP-G4-04",
+      "shipment_id": "OP-G4-04",
+      "concept": "AIR_FREIGHT",
+      "currency": "USD",
+      "weight_kg": "1500.00",
+      "expected": "420.00",
+      "actual": "420.00",
+      "difference": "0.00",
+      "status": "PASS"
+    }
+  ],
+  "G5": [
+    {
+      "charge_id": "C-G5-01",
+      "shipment_ids": [
+        "S-G5-01",
+        "S-G5-02",
+        "S-G5-03"
+      ],
+      "cardinality": "N:1",
+      "concept": "FLETE_CONSOLIDADO",
+      "currency": "ARS",
+      "total_weight_kg": "1000.00",
+      "expected": "22000.00",
+      "actual": "22000.00",
+      "difference": "0.00",
+      "status": "PASS"
+    },
+    {
+      "charge_id": "C-G5-02",
+      "shipment_ids": [
+        "S-G5-04"
+      ],
+      "cardinality": "1:N",
+      "concept": "FLETE_TRAMO",
+      "currency": "ARS",
+      "expected": "8000.00",
+      "actual": "8000.00",
+      "difference": "0.00",
+      "status": "PASS"
+    },
+    {
+      "charge_id": "C-G5-03",
+      "shipment_ids": [
+        "S-G5-04"
+      ],
+      "cardinality": "1:N",
+      "concept": "SEGURO_CARGA",
+      "currency": "ARS",
+      "expected": "1200.00",
+      "actual": "1200.00",
+      "difference": "0.00",
+      "status": "PASS"
+    }
+  ],
+  "G6": [
+    {
+      "charge_id": "CH-OP-G6-01",
+      "shipment_id": "OP-G6-01",
+      "concept": "FLETE_COMPUESTO",
+      "currency": "ARS",
+      "expected": "120000.00",
+      "actual": "120000.00",
+      "difference": "0.00",
+      "status": "PASS",
+      "evidence_valid": true,
+      "reason": null
+    },
+    {
+      "charge_id": "CH-OP-G6-02",
+      "shipment_id": "OP-G6-02",
+      "concept": "FLETE_COMPUESTO",
+      "currency": "ARS",
+      "expected": "120000.00",
+      "actual": "120000.00",
+      "difference": "0.00",
+      "status": "REVIEW",
+      "evidence_valid": false,
+      "reason": "Falta evidencia requerida (remito conforme)"
+    },
+    {
+      "charge_id": "CH-OP-G6-03",
+      "shipment_id": "OP-G6-03",
+      "concept": "FLETE_COMPUESTO",
+      "currency": "ARS",
+      "expected": "150000.00",
+      "actual": "120000.00",
+      "difference": "-30000.00",
+      "status": "FAIL",
+      "evidence_valid": true,
+      "reason": null
+    }
+  ]
+}

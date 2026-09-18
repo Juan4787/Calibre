@@ -83,17 +83,20 @@ run_tier_nightly() {
     echo "== TIER 3: NIGHTLY (Exhaustive & Adversarial Defense Sweep)   =="
     echo "================================================================"
 
-    echo "[1/4] Hypothesis intensive fuzzing (QA_PROFILE=nightly, 1000 ex)..."
+    echo "[1/5] Hypothesis intensive fuzzing (QA_PROFILE=nightly, 1000 ex)..."
     QA_PROFILE=nightly "$PYTEST" -q tests/test_qa_infrastructure.py
 
-    echo "[2/4] Semantic mutation suite execution (M01..M08)..."
+    echo "[2/5] Semantic mutation suite execution (M01..M10)..."
     "$PYTHON" scripts/qa.py mutate --execute
 
-    echo "[3/4] Directed fault injection detection (33 P0 + 8 P1)..."
+    echo "[3/5] Directed fault injection detection (33 P0 + 8 P1)..."
     "$PYTHON" output/e2e/fault_injection/run_directed_faults.py
 
-    echo "[4/4] Adversarial import edge cases (62 cases)..."
+    echo "[4/5] Adversarial import edge cases (62 cases)..."
     "$PYTHON" output/e2e/import_adversarial/test_import_adversarial.py
+
+    echo "[5/5] E2E Chromium Playwright UI & multichannel lifecycle..."
+    "$PYTHON" output/e2e/test_e2e_productive.py
 
     echo "[✓] TIER 3 PASSED: All heavy adversarial and defense sweeps clean."
 }

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "MAP-C-G2",
+  "version": "1.0",
+  "entity": "charges",
+  "delimiter": ",",
+  "decimal_separator": ".",
+  "thousands_separator": "",
+  "columns": [
+    {
+      "source": "charge_id",
+      "target": "id",
+      "type": "text"
+    },
+    {
+      "source": "shipment_ref",
+      "target": "reference",
+      "type": "text"
+    },
+    {
+      "source": "carrier_code",
+      "target": "carrier",
+      "type": "text"
+    },
+    {
+      "constant": "AGR-G2",
+      "target": "agreement",
+      "type": "text"
+    },
+    {
+      "constant": "LIQ-2026-G2",
+      "target": "settlement",
+      "type": "text"
+    },
+    {
+      "source": "concept_name",
+      "target": "concept",
+      "type": "text"
+    },
+    {
+      "source": "invoiced_amount",
+      "target": "amount",
+      "type": "decimal"
+    },
+    {
+      "source": "currency_code",
+      "target": "currency",
+      "type": "text"
+    }
+  ]
+}

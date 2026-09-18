@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "MAP-C-G5",
+  "version": "1.0",
+  "entity": "charges",
+  "delimiter": ";",
+  "decimal_separator": ",",
+  "thousands_separator": ".",
+  "columns": [
+    {
+      "source": "Cargo_ID",
+      "target": "id",
+      "type": "text"
+    },
+    {
+      "source": "Referencia_Matching",
+      "target": "reference",
+      "type": "text"
+    },
+    {
+      "source": "Carrier",
+      "target": "carrier",
+      "type": "text"
+    },
+    {
+      "constant": "AGR-G5",
+      "target": "agreement",
+      "type": "text"
+    },
+    {
+      "constant": "LIQ-2026-G5",
+      "target": "settlement",
+      "type": "text"
+    },
+    {
+      "source": "Concepto",
+      "target": "concept",
+      "type": "text"
+    },
+    {
+      "source": "Importe",
+      "target": "amount",
+      "type": "decimal"
+    },
+    {
+      "source": "Moneda",
+      "target": "currency",
+      "type": "text"
+    }
+  ]
+}

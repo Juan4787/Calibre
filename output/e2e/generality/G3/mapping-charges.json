@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "id": "MAP-C-G3",
+  "version": "1.0",
+  "entity": "charges",
+  "sheet": "Liquidacion",
+  "columns": [
+    {
+      "source": "ID Factura",
+      "target": "id",
+      "type": "text"
+    },
+    {
+      "source": "Ref Operacion",
+      "target": "reference",
+      "type": "text"
+    },
+    {
+      "source": "Empresa",
+      "target": "carrier",
+      "type": "text"
+    },
+    {
+      "constant": "AGR-G3",
+      "target": "agreement",
+      "type": "text"
+    },
+    {
+      "constant": "LIQ-2026-G3",
+      "target": "settlement",
+      "type": "text"
+    },
+    {
+      "source": "Concepto Servicio",
+      "target": "concept",
+      "type": "text"
+    },
+    {
+      "source": "Importe Liquidado",
+      "target": "amount",
+      "type": "decimal"
+    },
+    {
+      "source": "Moneda Fact",
+      "target": "currency",
+      "type": "text"
+    }
+  ]
+}
