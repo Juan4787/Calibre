@@ -206,11 +206,11 @@ function renderRunsList() {
         <p style="margin:2px 0 0;">Una diferencia determinada requiere reglas y datos suficientes. La revisión humana y los casos indeterminados no representan ahorro.</p>
       </div>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap:16px;">
-      <input id="search-runs" type="text" placeholder="Buscar por transportista, período o identificador…" value="${esc(state.runSearch)}" style="max-width:400px;" />
+    <div class="search-toolbar">
+      <input id="search-runs" type="text" placeholder="Buscar por transportista, período o identificador…" value="${esc(state.runSearch)}" />
       <button class="btn" id="demo">Ejecutar demostración ficticia</button>
     </div>
-    <div class="run-list" style="display:flex; flex-direction:column; gap:14px;">
+    <div class="run-list" style="display:flex; flex-direction:column; gap:16px;">
       ${filteredRuns
         .map((run) => {
           const s = run.summary;
@@ -220,13 +220,10 @@ function renderRunsList() {
           const reviewCount = s.counts?.REVIEW || 0;
           const passCount = s.counts?.PASS || 0;
           const undCount = s.counts?.UNDETERMINABLE || 0;
-          const dateStr = new Date(run.created_at).toLocaleString("es-AR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          });
+          const created = new Date(run.created_at);
+          const dateStr = !isNaN(created.getTime())
+            ? `${created.toLocaleDateString("es-AR", { day: "numeric", month: "short" })} · ${created.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}`
+            : "";
           const isComplete = s.import_complete !== false;
 
           return `
@@ -234,7 +231,7 @@ function renderRunsList() {
               <div class="run-card-top">
                 <div>
                   <h3 class="run-card-title">${esc(run.label)} · ${totalFindings} cargos</h3>
-                  <div class="run-card-sub">Moneda ${esc(currencies)} · ${dateStr}</div>
+                  <div class="run-card-sub">Moneda ${esc(currencies)}${dateStr ? ` · ${dateStr}` : ""}</div>
                 </div>
                 <span class="run-card-cta">Ver auditoría →</span>
               </div>
@@ -480,8 +477,8 @@ function renderFindings() {
           </td>
           <td class="muted">${decision ? esc(actions[decision.payload.action]) : "Sin resolución"}</td>
           <td>
-            <button class="btn small ghost" data-finding="${f.id}" aria-label="Ver explicación de ${esc(references(f))}, ${esc(f.concept)}">
-              Ver explicación →
+            <button class="btn-text" data-finding="${f.id}" aria-label="Ver explicación de ${esc(references(f))}, ${esc(f.concept)}">
+              Ver detalle →
             </button>
           </td>
         </tr>`;
@@ -879,14 +876,17 @@ function renderWizard() {
           <div class="wizard-circle">1</div>
           <div class="wizard-step-name">1. Datos</div>
         </button>
+        <span class="wizard-step-arrow">→</span>
         <button class="wizard-step-item" id="step-nav-2">
           <div class="wizard-circle">2</div>
           <div class="wizard-step-name">2. Acuerdo</div>
         </button>
+        <span class="wizard-step-arrow">→</span>
         <button class="wizard-step-item" id="step-nav-3">
           <div class="wizard-circle">3</div>
           <div class="wizard-step-name">3. Verificación</div>
         </button>
+        <span class="wizard-step-arrow">→</span>
         <button class="wizard-step-item" id="step-nav-4">
           <div class="wizard-circle">4</div>
           <div class="wizard-step-name">4. Ejecutar</div>
@@ -895,27 +895,27 @@ function renderWizard() {
     </div>
 
     <!-- Compact Step Summaries for Completed Steps -->
-    <div id="wizard-summaries" style="margin-bottom:16px;">
+    <div id="wizard-summaries" style="margin-bottom:20px;">
       <div id="step-summary-1" class="step-summary-bar hidden" style="display:none;">
         <div class="step-summary-info">
-          <span class="step-summary-tag">✓ 1. Datos</span>
+          <span class="step-summary-tag">✓ Datos</span>
           <span class="step-summary-desc" id="step-summary-1-text"></span>
         </div>
-        <button type="button" class="btn small subtle" id="reopen-step-1">Modificar datos</button>
+        <button type="button" class="btn small subtle" id="reopen-step-1">Editar</button>
       </div>
       <div id="step-summary-2" class="step-summary-bar hidden" style="display:none;">
         <div class="step-summary-info">
-          <span class="step-summary-tag">✓ 2. Acuerdo</span>
+          <span class="step-summary-tag">✓ Acuerdo</span>
           <span class="step-summary-desc" id="step-summary-2-text"></span>
         </div>
-        <button type="button" class="btn small subtle" id="reopen-step-2">Modificar acuerdo</button>
+        <button type="button" class="btn small subtle" id="reopen-step-2">Editar</button>
       </div>
       <div id="step-summary-3" class="step-summary-bar hidden" style="display:none;">
         <div class="step-summary-info">
-          <span class="step-summary-tag">✓ 3. Verificación</span>
+          <span class="step-summary-tag">✓ Verificación</span>
           <span class="step-summary-desc" id="step-summary-3-text">Integridad del lote verificada</span>
         </div>
-        <button type="button" class="btn small subtle" id="reopen-step-3">Modificar verificación</button>
+        <button type="button" class="btn small subtle" id="reopen-step-3">Editar</button>
       </div>
     </div>
 
@@ -951,25 +951,26 @@ function renderWizard() {
           <h2>Paso 2: Selección del Acuerdo Contractual</h2>
           <p class="muted">Elegí el tarifario pactado con el transportista para auditar los cargos.</p>
 
-          <div class="run-list" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin:18px 0;">
+          <div class="run-list" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin:20px 0;">
             ${state.configs
               .filter((c) => c.kind === "agreement")
               .map(
                 (c) => `
-                <div class="run-card-rich" style="padding:16px 20px;">
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <strong style="font-size:15px;">${esc(c.name)}</strong>
+                <div class="agreement-card" data-hash="${c.hash}">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+                    <div>
+                      <h4 class="agreement-card-title">${esc(c.name)}</h4>
+                      <div class="agreement-card-carrier">Transportista: <strong>${esc(c.payload?.carrier || "Pactado")}</strong></div>
+                    </div>
                     <span class="badge PASS">Válido ✓</span>
                   </div>
-                  <div style="font-size:13px; color:var(--muted); margin-top:4px;">
-                    Transportista: <strong>${esc(c.payload?.carrier || "Transportista pactado")}</strong>
+                  <div class="agreement-card-meta">
+                    <span>Moneda <strong>${esc(c.payload?.currency || "ARS")}</strong></span>
+                    <span>·</span>
+                    <span>${Array.isArray(c.payload?.rules) ? c.payload.rules.length : 1} regla(s)</span>
                   </div>
-                  <div style="font-size:12.5px; color:var(--muted); margin-top:2px;">
-                    Moneda: <strong>${esc(c.payload?.currency || "ARS")}</strong> · Reglas: <strong>${Array.isArray(c.payload?.rules) ? c.payload.rules.length : 1}</strong>
-                  </div>
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                    <code style="font-size:11px; color:var(--muted);">${c.hash.slice(0, 10)}…</code>
-                    <button class="btn small primary select-agreement-btn" data-hash="${c.hash}">Seleccionar</button>
+                  <div style="display:flex; justify-content:flex-end; margin-top:14px;">
+                    <button type="button" class="btn small primary select-agreement-btn" data-hash="${c.hash}">Seleccionar</button>
                   </div>
                 </div>
               `,
@@ -1102,12 +1103,39 @@ function renderWizard() {
   $("#back-to-step-1").onclick = () => goToStep(1);
   $("#goto-step-3").onclick = () => goToStep(3);
 
+  const updateSelectedAgreementCard = (hash) => {
+    document.querySelectorAll(".agreement-card").forEach((card) => {
+      const isSelected = card.dataset.hash === hash;
+      card.classList.toggle("selected", isSelected);
+      const btn = card.querySelector(".select-agreement-btn");
+      if (btn) {
+        btn.textContent = isSelected ? "✓ Seleccionado" : "Seleccionar";
+        btn.className = `btn small ${isSelected ? "subtle" : "primary"} select-agreement-btn`;
+      }
+    });
+  };
+
   document.querySelectorAll(".select-agreement-btn").forEach((btn) => {
-    btn.onclick = () => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
       const found = state.configs.find((c) => c.hash === btn.dataset.hash);
       if (found) {
         $("#agreements").value = JSON.stringify([found.payload], null, 2);
         if ($("#agreement-select")) $("#agreement-select").value = found.hash;
+        updateSelectedAgreementCard(found.hash);
+        notice(`Acuerdo "${found.name}" seleccionado.`);
+      }
+    };
+  });
+
+  document.querySelectorAll(".agreement-card").forEach((card) => {
+    card.onclick = () => {
+      const hash = card.dataset.hash;
+      const found = state.configs.find((c) => c.hash === hash);
+      if (found) {
+        $("#agreements").value = JSON.stringify([found.payload], null, 2);
+        if ($("#agreement-select")) $("#agreement-select").value = found.hash;
+        updateSelectedAgreementCard(found.hash);
         notice(`Acuerdo "${found.name}" seleccionado.`);
       }
     };
@@ -1117,6 +1145,7 @@ function renderWizard() {
     const found = state.configs.find((c) => c.hash === event.target.value);
     if (found) {
       $("#agreements").value = JSON.stringify([found.payload], null, 2);
+      updateSelectedAgreementCard(found.hash);
     }
   };
 
@@ -1222,13 +1251,12 @@ function goToStep(step) {
     if (step > 1) {
       const sImp = state.imports.shipments;
       const cImp = state.imports.charges;
-      const sName = sImp?.filename || "Archivo de operaciones";
-      const sCount = sImp?.accepted !== undefined ? sImp.accepted : "0";
-      const cName = cImp?.filename || "Archivo de cargos";
-      const cCount = cImp?.accepted !== undefined ? cImp.accepted : "0";
+      const sCount = sImp?.accepted !== undefined ? sImp.accepted : 0;
+      const cCount = cImp?.accepted !== undefined ? cImp.accepted : 0;
+      const totalRej = (sImp?.rejected?.length || 0) + (cImp?.rejected?.length || 0);
       const s1Text = $("#step-summary-1-text");
       if (s1Text) {
-        s1Text.innerHTML = `Operaciones: <strong>${esc(sName)}</strong> (${sCount} filas) · Cargos: <strong>${esc(cName)}</strong> (${cCount} filas) · Formatos asignados`;
+        s1Text.innerHTML = `<strong>${sCount} operaciones</strong> · <strong>${cCount} cargos</strong> · ${totalRej} rechazos`;
       }
       sum1.classList.remove("hidden");
       sum1.style.display = "flex";
@@ -1253,7 +1281,7 @@ function goToStep(step) {
       } catch (e) {}
       const s2Text = $("#step-summary-2-text");
       if (s2Text) {
-        s2Text.innerHTML = `Acuerdo: <strong>${esc(agrName)}</strong> (${esc(agrDetail)})`;
+        s2Text.innerHTML = `Acuerdo <strong>${esc(agrName)}</strong> · ${esc(agrDetail)}`;
       }
       sum2.classList.remove("hidden");
       sum2.style.display = "flex";
@@ -1629,7 +1657,7 @@ async function showConfigs() {
       <section class="panel">
         <h2>Acuerdos guardados (${agreements.length})</h2>
         <p class="muted">Términos contractuales y reglas pactadas con los transportistas.</p>
-        <div class="run-list" style="display:flex; flex-direction:column; gap:14px; margin-top:18px;">
+        <div class="run-list" style="display:flex; flex-direction:column; gap:16px; margin-top:18px;">
           ${agreements
             .map(
               (c) => `
@@ -1644,8 +1672,7 @@ async function showConfigs() {
                 <div style="font-size:12.5px; color:var(--muted); margin-top:2px;">
                   Vigencia: <strong>${esc(c.payload?.versions ? `${c.payload.versions[0]?.valid_from || "Inicio"} a ${c.payload.versions[0]?.valid_to || "abierta"}` : "Vigente")}</strong> · Moneda: <strong>${esc(c.payload?.currency || "ARS")}</strong> · <strong>${Array.isArray(c.payload?.rules) ? c.payload.rules.length : 1} regla(s)</strong>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid #edf1eb; padding-top:8px;">
-                  <code style="font-size:11px; color:var(--muted);">hash ${c.hash.slice(0, 8)}…</code>
+                <div style="display:flex; justify-content:flex-end; align-items:center; margin-top:8px; border-top:1px solid #edf1eb; padding-top:8px;">
                   <div class="actions">
                     <button class="btn small" data-view-config="${c.hash}">Ver</button>
                     <button class="btn small" data-clone-config="${c.hash}">Duplicar versión</button>
@@ -1662,7 +1689,7 @@ async function showConfigs() {
       <section class="panel">
         <h2>Formatos de columnas (${mappings.length})</h2>
         <p class="muted">Mapeos de CSV y planillas de cálculo de transportistas.</p>
-        <div class="run-list" style="display:flex; flex-direction:column; gap:14px; margin-top:18px;">
+        <div class="run-list" style="display:flex; flex-direction:column; gap:16px; margin-top:18px;">
           ${mappings
             .map(
               (c) => `
@@ -1674,8 +1701,7 @@ async function showConfigs() {
                 <div style="font-size:12.5px; color:var(--muted); margin-top:2px;">
                   Columnas mapeadas: <strong>${c.payload?.columns?.length || 0}</strong> · Delimitador: <code>${esc(c.payload?.delimiter || ",")}</code>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid #edf1eb; padding-top:8px;">
-                  <code style="font-size:11px; color:var(--muted);">hash ${c.hash.slice(0, 8)}…</code>
+                <div style="display:flex; justify-content:flex-end; align-items:center; margin-top:8px; border-top:1px solid #edf1eb; padding-top:8px;">
                   <button class="btn small" data-view-config="${c.hash}">Ver en editor →</button>
                 </div>
               </div>
