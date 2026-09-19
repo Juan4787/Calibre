@@ -192,83 +192,100 @@ function renderRunsList() {
     return;
   }
 
+  if (!$("#search-runs")) {
+    container.innerHTML = `
+      <div class="banner info">
+        <div style="font-size:22px; line-height:1;">ⓘ</div>
+        <div>
+          <strong>La certeza también se audita.</strong>
+          <p style="margin:2px 0 0;">Una diferencia determinada requiere reglas y datos suficientes. La revisión humana y los casos indeterminados no representan ahorro.</p>
+        </div>
+      </div>
+      <div class="search-toolbar">
+        <input id="search-runs" type="text" placeholder="Buscar por transportista, período o identificador…" value="${esc(state.runSearch || "")}" />
+        <button class="btn" id="demo">Ejecutar demostración ficticia</button>
+      </div>
+      <div id="runs-items" class="run-list" style="display:flex; flex-direction:column; gap:16px;"></div>
+    `;
+
+    $("#search-runs").oninput = (e) => {
+      state.runSearch = e.target.value.toLocaleLowerCase("es").trim();
+      renderRunsItems();
+    };
+
+    $("#demo").onclick = (event) =>
+      busy(event.target, async () => {
+        const result = await post("/api/demo");
+        await openRun(result.run_id);
+      });
+  }
+
+  renderRunsItems();
+}
+
+function renderRunsItems() {
+  const runs = state.allRuns || [];
+  const listContainer = $("#runs-items");
+  if (!listContainer) return;
+
   const filteredRuns = state.runSearch
     ? runs.filter((r) =>
         r.label.toLocaleLowerCase("es").includes(state.runSearch),
       )
     : runs;
 
-  container.innerHTML = `
-    <div class="banner info">
-      <div style="font-size:22px; line-height:1;">ⓘ</div>
-      <div>
-        <strong>La certeza también se audita.</strong>
-        <p style="margin:2px 0 0;">Una diferencia determinada requiere reglas y datos suficientes. La revisión humana y los casos indeterminados no representan ahorro.</p>
-      </div>
-    </div>
-    <div class="search-toolbar">
-      <input id="search-runs" type="text" placeholder="Buscar por transportista, período o identificador…" value="${esc(state.runSearch)}" />
-      <button class="btn" id="demo">Ejecutar demostración ficticia</button>
-    </div>
-    <div class="run-list" style="display:flex; flex-direction:column; gap:16px;">
-      ${filteredRuns
-        .map((run) => {
-          const s = run.summary;
-          const currencies = Object.keys(s.currencies || {}).join(" / ") || "ARS";
-          const totalFindings = s.total_findings || 0;
-          const failCount = s.counts?.FAIL || 0;
-          const reviewCount = s.counts?.REVIEW || 0;
-          const passCount = s.counts?.PASS || 0;
-          const undCount = s.counts?.UNDETERMINABLE || 0;
-          const created = new Date(run.created_at);
-          const dateStr = !isNaN(created.getTime())
-            ? `${created.toLocaleDateString("es-AR", { day: "numeric", month: "short" })} · ${created.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}`
-            : "";
-          const isComplete = s.import_complete !== false;
+  if (!filteredRuns.length) {
+    listContainer.innerHTML = `<div class="panel" style="text-align:center; padding:32px 20px; color:var(--muted);">
+      No se encontraron auditorías que coincidan con "<strong>${esc(state.runSearch)}</strong>".
+    </div>`;
+    return;
+  }
 
-          return `
-            <button class="run-card run-card-rich" data-run="${run.id}">
-              <div class="run-card-top">
-                <div>
-                  <h3 class="run-card-title">${esc(run.label)} · ${totalFindings} cargos</h3>
-                  <div class="run-card-sub">Moneda ${esc(currencies)}${dateStr ? ` · ${dateStr}` : ""}</div>
-                </div>
-                <span class="run-card-cta">Ver auditoría →</span>
-              </div>
-              <div class="run-card-bottom">
-                <div class="run-card-metrics">
-                  ${failCount > 0 ? `<span class="run-card-pill fail">⚠ ${failCount} Discrepancia${failCount === 1 ? "" : "s"}</span>` : ""}
-                  ${reviewCount > 0 ? `<span class="run-card-pill review">⚡ ${reviewCount} Revisión</span>` : ""}
-                  <span class="run-card-pill pass">✓ ${passCount} Coinciden</span>
-                  ${undCount > 0 ? `<span class="run-card-pill undeterminable">? ${undCount} Indeterminados</span>` : ""}
-                </div>
-                <span class="${isComplete ? "import-status-ok" : "muted"}">
-                  ${isComplete ? "✓ Importación completa" : "⚠ Filas observadas"}
-                </span>
-              </div>
-            </button>
-          `;
-        })
-        .join("")}
-    </div>
-  `;
+  listContainer.innerHTML = filteredRuns
+    .map((run) => {
+      const s = run.summary;
+      const currencies = Object.keys(s.currencies || {}).join(" / ") || "ARS";
+      const totalFindings = s.total_findings || 0;
+      const failCount = s.counts?.FAIL || 0;
+      const reviewCount = s.counts?.REVIEW || 0;
+      const passCount = s.counts?.PASS || 0;
+      const undCount = s.counts?.UNDETERMINABLE || 0;
+      const created = new Date(run.created_at);
+      const dateStr = !isNaN(created.getTime())
+        ? `${created.toLocaleDateString("es-AR", { day: "numeric", month: "short" })} · ${created.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}`
+        : "";
+      const isComplete = s.import_complete !== false;
 
-  $("#search-runs").oninput = (e) => {
-    state.runSearch = e.target.value.toLocaleLowerCase("es").trim();
-    renderRunsList();
-  };
+      return `
+        <button class="run-card run-card-rich" data-run="${run.id}">
+          <div class="run-card-top">
+            <div>
+              <h3 class="run-card-title">${esc(run.label)} · ${totalFindings} cargos</h3>
+              <div class="run-card-sub">Moneda ${esc(currencies)}${dateStr ? ` · ${dateStr}` : ""}</div>
+            </div>
+            <span class="run-card-cta">Ver auditoría →</span>
+          </div>
+          <div class="run-card-bottom">
+            <div class="run-card-metrics">
+              ${failCount > 0 ? `<span class="run-card-pill fail">⚠ ${failCount} Discrepancia${failCount === 1 ? "" : "s"}</span>` : ""}
+              ${reviewCount > 0 ? `<span class="run-card-pill review">⚡ ${reviewCount} Revisión</span>` : ""}
+              <span class="run-card-pill pass">✓ ${passCount} Coinciden</span>
+              ${undCount > 0 ? `<span class="run-card-pill undeterminable">? ${undCount} Indeterminados</span>` : ""}
+            </div>
+            <span class="${isComplete ? "import-status-ok" : "muted"}">
+              ${isComplete ? "✓ Importación completa" : "⚠ Filas observadas"}
+            </span>
+          </div>
+        </button>
+      `;
+    })
+    .join("");
 
-  document.querySelectorAll("[data-run]").forEach(
+  listContainer.querySelectorAll("[data-run]").forEach(
     (button) =>
       (button.onclick = () =>
         busy(button, () => openRun(button.dataset.run))),
   );
-
-  $("#demo").onclick = (event) =>
-    busy(event.target, async () => {
-      const result = await post("/api/demo");
-      await openRun(result.run_id);
-    });
 }
 
 /* ==========================================================================
