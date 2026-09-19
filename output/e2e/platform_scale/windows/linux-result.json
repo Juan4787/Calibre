@@ -9,7 +9,7 @@
     "cwd": "/home/runner/work/Calibre/Calibre",
     "executable": "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python"
   },
-  "timestamp": 1789762831.5153728,
+  "timestamp": 1789778513.1586168,
   "cases": {
     "WIN-01": {
       "status": "PASSED",
@@ -45,7 +45,7 @@
     },
     "WIN-08": {
       "status": "PASSED",
-      "size": 60054
+      "size": 60057
     },
     "WIN-09": {
       "status": "PASSED",
@@ -57,11 +57,11 @@
     },
     "WIN-11": {
       "status": "PASSED",
-      "path": "/tmp/tmp928hn2fi/Calibre QA/Auditoria de Fletes"
+      "path": "/tmp/tmph1adcm96/Calibre QA/Auditoria de Fletes"
     },
     "WIN-12": {
       "status": "PASSED",
-      "path": "/tmp/tmpdsnaj9ba/Calibre QA/Auditor\u00eda \u00d1and\u00fa"
+      "path": "/tmp/tmpekngu1kl/Calibre QA/Auditor\u00eda \u00d1and\u00fa"
     },
     "WIN-13": {
       "status": "PASSED",
@@ -101,7 +101,7 @@
       "status": "PASSED",
       "first_run_ok": true,
       "second_run_ok": true,
-      "port": 33629
+      "port": 56143
     },
     "WIN-23": {
       "status": "PASSED",

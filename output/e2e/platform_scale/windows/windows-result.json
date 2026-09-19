@@ -9,7 +9,7 @@
     "cwd": "D:\\a\\Calibre\\Calibre",
     "executable": "D:\\a\\_temp\\calibre_cleanroom\\Scripts\\python.exe"
   },
-  "timestamp": 1789762871.2660606,
+  "timestamp": 1789778541.7669113,
   "cases": {
     "WIN-01": {
       "status": "PASSED",
@@ -45,7 +45,7 @@
     },
     "WIN-08": {
       "status": "PASSED",
-      "size": 60060
+      "size": 60057
     },
     "WIN-09": {
       "status": "PASSED",
@@ -57,11 +57,11 @@
     },
     "WIN-11": {
       "status": "PASSED",
-      "path": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\tmpkuz1qmfd\\Calibre QA\\Auditoria de Fletes"
+      "path": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\tmpy6t3znkl\\Calibre QA\\Auditoria de Fletes"
     },
     "WIN-12": {
       "status": "PASSED",
-      "path": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\tmpqcifx732\\Calibre QA\\Auditor\u00eda \u00d1and\u00fa"
+      "path": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\tmp3n8sgmji\\Calibre QA\\Auditor\u00eda \u00d1and\u00fa"
     },
     "WIN-13": {
       "status": "PASSED",
@@ -101,11 +101,11 @@
       "status": "PASSED",
       "first_run_ok": true,
       "second_run_ok": true,
-      "port": 56517
+      "port": 57619
     },
     "WIN-23": {
       "status": "PASSED",
-      "run_id": "a08f56926e3ccf904e00b16912ebcdea8ec9548be1b2a3a49f631d18f105bbb3"
+      "run_id": "667215fbf2d200dc03a8a28caeda46f5f6d567a700a0ff2b9955d54f76f1c473"
     },
     "WIN-24": {
       "status": "PASSED",
