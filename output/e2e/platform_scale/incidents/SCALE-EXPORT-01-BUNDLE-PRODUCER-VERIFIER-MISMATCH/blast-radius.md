@@ -2,9 +2,11 @@
 
 **Identificador:** `SCALE-EXPORT-01-BUNDLE-PRODUCER-VERIFIER-MISMATCH`  
 **Título:** Portable bundle generated above verifier's own 500 MB limit  
-**Componente Afectado:** `src/freight_audit/reporting.py` (`bundle_bytes` y `verify_bundle`)  
-**Fecha:** 18 de Septiembre de 2026  
+**Componente Afectado:** `src/freight_audit/reporting.py` (`bundle_bytes` y `verify_bundle`), `qa/reconcile.py`  
+**Fecha de Detección:** 18 de Septiembre de 2026  
+**Fecha de Cierre:** 19 de Septiembre de 2026  
 **Severidad:** P1 — Inconsistencia de Contrato Productor ↔ Verificador  
+**Estado:** ✅ **CLOSED** (Resuelto mediante `freight-audit-bundle/v2` y chequeo preventivo de tamaño en productor)  
 
 ---
 
@@ -145,3 +147,26 @@ El límite de 500 MB uncompressed en `verify_bundle()` es una defensa explícita
 > **INVARIANTE FUNDAMENTAL:**  
 > *Todo paquete portable emitido por `bundle_bytes()` o `export_run()` DEBE ser verificado y aceptado incondicionalmente por `verify_bundle()` de la misma versión de Calibre.*  
 > *Todo paquete histórico válido con formato `freight-audit-bundle/v1` DEBE continuar siendo aceptado por `verify_bundle()`.*
+
+---
+
+## 8. Resolución Implementada y Validación Empírica
+
+1. **Constante compartida de presupuesto:**
+   `MAX_BUNDLE_UNCOMPRESSED_BYTES = 500 * 1024 * 1024` (500 MB) compartida entre productor y verificador en `src/freight_audit/reporting.py`.
+2. **Chequeo preventivo en el productor:**
+   `bundle_bytes()` calcula la suma total del tamaño de todos los archivos descomprimidos (incluido `manifest.json`) antes de generar el ZIP. Si supera `MAX_BUNDLE_UNCOMPRESSED_BYTES`, lanza `ReportLimitError` y rehúsa emitir un paquete inválido.
+3. **Formato `freight-audit-bundle/v2`:**
+   Omite el archivo `snapshot.json` redundante. La integridad del snapshot se verifica criptográficamente desde `audit.json["snapshot"]` contra `run["input_hash"]`.
+4. **Verificador multiversión:**
+   `verify_bundle()` admite estrictamente `v1` (exigiendo `snapshot.json`) y `v2` (rechazando `snapshot.json` redundante), rechazando cualquier versión desconocida (`v3`, etc.).
+5. **Reconciliador multicanal:**
+   `qa/reconcile.py` actualizado para procesar tanto `v1` como `v2`.
+6. **Validación en Escala 100k:**
+   Ejecutado en GitHub Actions (`run 35409161226`):
+   - Bundle v2 generado en 139,35 s (20,2 MB comprimido, **469,75 MB descomprimidos**, 93,95% del límite de 500 MB).
+   - `verify_bundle` superado en 35,11 s con `verified: true` y estado `PASS`.
+   - Invariante cumplido: todo bundle emitido por `bundle_bytes` es verificado por `verify_bundle`.
+7. **Suite de tests de contrato (13/13 PASS):**
+   Implementada en `tests/test_bundle_v1_v2.py`.
+
