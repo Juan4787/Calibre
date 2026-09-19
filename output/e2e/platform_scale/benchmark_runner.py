@@ -352,51 +352,80 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict, all_exports: boo
         # 11. Bundle ZIP
         if len(charges_records) <= 10000 or all_exports:
             t0_wall, t0_cpu = time.perf_counter(), time.process_time()
-            zip_bytes = bundle_bytes(store, run_id)
-            t_zip_wall = time.perf_counter() - t0_wall
-            t_zip_cpu = time.process_time() - t0_cpu
-            sz_zip = len(zip_bytes)
-
-            metrics["11_bundle_zip"] = {
-                "wall_sec": t_zip_wall,
-                "cpu_sec": t_zip_cpu,
-                "size_bytes": sz_zip,
-                "status": "PASS",
-                "peak_rss_mb": get_peak_rss_mb(),
-            }
-            print(f"  [Stage 11/13] Bundle ZIP: {t_zip_wall:.2f}s | Size: {sz_zip / (1024 * 1024):.1f} MB | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
-
-            # 12. Verify Bundle
-            t0_wall, t0_cpu = time.perf_counter(), time.process_time()
+            zip_bytes = None
             try:
-                verified_run = verify_bundle(zip_bytes)
-                verify_ok = verified_run["id"] == run_id
-                t_verify_wall = time.perf_counter() - t0_wall
-                t_verify_cpu = time.process_time() - t0_cpu
-                assert verify_ok, "Bundle verification failed!"
-                metrics["12_verify_bundle"] = {
-                    "wall_sec": t_verify_wall,
-                    "cpu_sec": t_verify_cpu,
-                    "verified": verify_ok,
+                zip_bytes = bundle_bytes(store, run_id)
+                t_zip_wall = time.perf_counter() - t0_wall
+                t_zip_cpu = time.process_time() - t0_cpu
+                sz_zip = len(zip_bytes)
+                with zipfile.ZipFile(io.BytesIO(zip_bytes)) as _z:
+                    uncompressed_sz = sum(i.file_size for i in _z.infolist())
+                    manifest_doc = json.loads(_z.read("manifest.json").decode("utf-8"))
+                    bundle_fmt = manifest_doc.get("format", "unknown")
+
+                metrics["11_bundle_zip"] = {
+                    "wall_sec": t_zip_wall,
+                    "cpu_sec": t_zip_cpu,
+                    "size_bytes": sz_zip,
+                    "uncompressed_bytes": uncompressed_sz,
+                    "format": bundle_fmt,
                     "status": "PASS",
                     "peak_rss_mb": get_peak_rss_mb(),
                 }
-                print(f"  [Stage 12/13] Verify Bundle: {t_verify_wall:.2f}s | Verified: {verify_ok} | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
-            except IntegrityError as exc:
-                t_verify_wall = time.perf_counter() - t0_wall
-                t_verify_cpu = time.process_time() - t0_cpu
-                metrics["12_verify_bundle"] = {
-                    "wall_sec": t_verify_wall,
-                    "cpu_sec": t_verify_cpu,
-                    "verified": False,
+                print(f"  [Stage 11/13] Bundle ZIP ({bundle_fmt}): {t_zip_wall:.2f}s | Size: {sz_zip / (1024 * 1024):.1f} MB (uncompressed: {uncompressed_sz / (1024 * 1024):.2f} MB) | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
+            except ReportLimitError as exc:
+                t_zip_wall = time.perf_counter() - t0_wall
+                t_zip_cpu = time.process_time() - t0_cpu
+                metrics["11_bundle_zip"] = {
+                    "wall_sec": t_zip_wall,
+                    "cpu_sec": t_zip_cpu,
+                    "size_bytes": None,
                     "status": "BUNDLE_SIZE_LIMIT_EXCEEDED",
                     "note": str(exc),
                     "peak_rss_mb": get_peak_rss_mb(),
                 }
-                print(f"  [Stage 12/13] Verify Bundle: Intercepted bundle size ceiling (>500 MB) as designed ({exc}) | Wall: {t_verify_wall:.2f}s | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
-            finally:
-                del zip_bytes
-                gc.collect()
+                print(f"  [Stage 11/13] Bundle ZIP: Intercepted uncompressed bundle ceiling (>500 MB) by producer ({exc}) | Wall: {t_zip_wall:.2f}s | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
+
+            # 12. Verify Bundle
+            if zip_bytes is not None:
+                t0_wall, t0_cpu = time.perf_counter(), time.process_time()
+                try:
+                    verified_run = verify_bundle(zip_bytes)
+                    verify_ok = verified_run["id"] == run_id
+                    t_verify_wall = time.perf_counter() - t0_wall
+                    t_verify_cpu = time.process_time() - t0_cpu
+                    assert verify_ok, "Bundle verification failed!"
+                    metrics["12_verify_bundle"] = {
+                        "wall_sec": t_verify_wall,
+                        "cpu_sec": t_verify_cpu,
+                        "verified": verify_ok,
+                        "status": "PASS",
+                        "peak_rss_mb": get_peak_rss_mb(),
+                    }
+                    print(f"  [Stage 12/13] Verify Bundle: {t_verify_wall:.2f}s | Verified: {verify_ok} | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
+                except IntegrityError as exc:
+                    t_verify_wall = time.perf_counter() - t0_wall
+                    t_verify_cpu = time.process_time() - t0_cpu
+                    metrics["12_verify_bundle"] = {
+                        "wall_sec": t_verify_wall,
+                        "cpu_sec": t_verify_cpu,
+                        "verified": False,
+                        "status": "INTEGRITY_ERROR",
+                        "note": str(exc),
+                        "peak_rss_mb": get_peak_rss_mb(),
+                    }
+                    print(f"  [Stage 12/13] Verify Bundle: Failed ({exc}) | Wall: {t_verify_wall:.2f}s | Peak RSS: {get_peak_rss_mb():.1f} MB", flush=True)
+                finally:
+                    del zip_bytes
+                    gc.collect()
+            else:
+                metrics["12_verify_bundle"] = {
+                    "wall_sec": None,
+                    "cpu_sec": None,
+                    "verified": False,
+                    "status": "SKIPPED_PRODUCER_LIMIT",
+                    "peak_rss_mb": get_peak_rss_mb(),
+                }
         else:
             metrics["11_bundle_zip"] = {
                 "wall_sec": None,

@@ -193,7 +193,9 @@ def test_portable_bundle_integrity(tmp_path, make_dataset):
     output = io.BytesIO()
     with zipfile.ZipFile(output, "w") as modified:
         for name in original.namelist():
-            modified.writestr(name, b"changed" if name == "snapshot.json" else original.read(name))
+            modified.writestr(
+                name, b"changed" if name in {"snapshot.json", "audit.json"} else original.read(name)
+            )
     with pytest.raises(IntegrityError):
         verify_bundle(output.getvalue())
 

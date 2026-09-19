@@ -23,6 +23,7 @@ STATUS_LABELS = {
 
 MAX_XLSX_ROWS = 1_048_576
 MAX_XLSX_CELL_CHARS = 32_767
+MAX_BUNDLE_UNCOMPRESSED_BYTES = 500 * 1024 * 1024
 
 
 class ReportLimitError(ValueError):
@@ -287,13 +288,16 @@ def html_report(run: dict) -> str:
     return f"""<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Freight Audit · Informe</title><style>body{{font:14px system-ui;color:#18312e;margin:40px;line-height:1.5}}h1{{font-size:32px}}table{{border-collapse:collapse;width:100%;margin:24px 0;font-size:12px}}th,td{{border-bottom:1px solid #cdd9d4;padding:10px;text-align:left;vertical-align:top}}th{{background:#edf3ef}}.warning{{padding:16px;background:#fff0d5}}small{{overflow-wrap:anywhere}}@media print{{body{{margin:12mm}}thead{{display:table-header-group}}tr{{break-inside:avoid}}}}</style><body><p>FREIGHT AUDIT / INFORME LOCAL</p><h1>{escape(run["snapshot"]["label"])}</h1><p>{summary["determinable_findings"]} de {summary["total_findings"]} hallazgos determinables. Estado técnico y decisión humana se conservan por separado.</p>{warnings}<table><thead><tr><th>Moneda</th><th>Facturado aceptado</th><th>Determinable</th><th>Exceso determinado</th><th>Defecto determinado</th><th>En revisión</th><th>Indeterminado</th></tr></thead><tbody>{totals}</tbody></table><p>{escape(summary["economic_definition"])}</p><table><thead><tr><th>Operaciones</th><th>Concepto</th><th>Estado</th><th>Facturado</th><th>Esperado</th><th>Diferencia confirmada</th><th>Motivo</th></tr></thead><tbody>{rows}</tbody></table><p>Decisiones humanas registradas: {len(run["decisions"])}. El detalle, las fuentes y los cálculos están en el XLSX y en audit.json.</p><small>Auditoría {escape(run["id"])}<br>Resultado {escape(run["result_hash"])}<br>Motor {escape(run["artifact_hash"])}</small></body></html>"""
 
 
-def bundle_bytes(store: Store, run_id: str) -> bytes:
+def bundle_bytes(store: Store, run_id: str, format: str = "freight-audit-bundle/v2") -> bytes:
+    if format not in {"freight-audit-bundle/v1", "freight-audit-bundle/v2"}:
+        raise ValueError(f"Formato de paquete no admitido: {format}")
     run = store.load(run_id)
-    files = {
+    files: dict[str, bytes] = {
         "audit.json": canonical(run).encode(),
-        "snapshot.json": canonical(run["snapshot"]).encode(),
         "reporte.html": html_report(run).encode(),
     }
+    if format == "freight-audit-bundle/v1":
+        files["snapshot.json"] = canonical(run["snapshot"]).encode()
     try:
         files["auditoria.xlsx"] = workbook_bytes(run)
     except ReportLimitError as exc:
@@ -301,9 +305,12 @@ def bundle_bytes(store: Store, run_id: str) -> bytes:
     for source_hash in store.source_hashes(Dataset.model_validate(run["snapshot"])):
         files[f"sources/{source_hash}"] = store.source(source_hash)
     manifest = {name: bytes_hash(data) for name, data in files.items()}
-    files["manifest.json"] = canonical(
-        {"format": "freight-audit-bundle/v1", "run_id": run_id, "files": manifest}
-    ).encode()
+    files["manifest.json"] = canonical({"format": format, "run_id": run_id, "files": manifest}).encode()
+
+    total_uncompressed = sum(len(data) for data in files.values())
+    if total_uncompressed > MAX_BUNDLE_UNCOMPRESSED_BYTES:
+        raise ReportLimitError("El paquete portable supera el límite admitido sin comprimir.")
+
     output = io.BytesIO()
     with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         for name, data in sorted(files.items()):
@@ -317,11 +324,12 @@ def verify_bundle(data: bytes) -> dict:
             infos = archive.infolist()
             if (
                 len({i.filename for i in infos}) != len(infos)
-                or sum(i.file_size for i in infos) > 500 * 1024 * 1024
+                or sum(i.file_size for i in infos) > MAX_BUNDLE_UNCOMPRESSED_BYTES
             ):
                 raise IntegrityError("El paquete contiene entradas repetidas o supera el tamaño admitido.")
             manifest = load_json(archive.read("manifest.json"))
-            if manifest["format"] != "freight-audit-bundle/v1":
+            bundle_format = manifest.get("format")
+            if bundle_format not in {"freight-audit-bundle/v1", "freight-audit-bundle/v2"}:
                 raise IntegrityError("Formato de paquete no admitido.")
             if set(archive.namelist()) != {*manifest["files"], "manifest.json"}:
                 raise IntegrityError("El paquete contiene archivos no declarados o faltantes.")
@@ -340,8 +348,14 @@ def verify_bundle(data: bytes) -> dict:
                 or run["id"] != manifest["run_id"]
             ):
                 raise IntegrityError("Los hashes de auditoría no coinciden.")
-            if canonical(load_json(archive.read("snapshot.json"))) != canonical(run["snapshot"]):
-                raise IntegrityError("El snapshot no coincide con la auditoría.")
+            if bundle_format == "freight-audit-bundle/v1":
+                if "snapshot.json" not in archive.namelist():
+                    raise IntegrityError("El paquete v1 no contiene snapshot.json.")
+                if canonical(load_json(archive.read("snapshot.json"))) != canonical(run["snapshot"]):
+                    raise IntegrityError("El snapshot no coincide con la auditoría.")
+            elif bundle_format == "freight-audit-bundle/v2":
+                if "snapshot.json" in archive.namelist():
+                    raise IntegrityError("El paquete v2 no admite snapshot.json redundante.")
             previous = run["id"]
             for decision in run["decisions"]:
                 if (

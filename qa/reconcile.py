@@ -90,15 +90,26 @@ def reconcile(directory: Path, *, api_run=None, observed_ui=None) -> dict:
         "ui": "not supplied",
     }
     manifest = read_json(directory / "manifest.json")
-    if manifest["run_id"] != run["id"] or manifest["format"] != "freight-audit-bundle/v1":
+    if manifest["run_id"] != run["id"] or manifest.get("format") not in {
+        "freight-audit-bundle/v1",
+        "freight-audit-bundle/v2",
+    }:
         errors.append("INV-28 manifest identity mismatch")
     for name, expected in manifest["files"].items():
         path = _contained(directory, name)
         if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
             errors.append(f"INV-28 export bytes differ: {name}")
-    snapshot = read_json(directory / "snapshot.json")
-    if snapshot != run["snapshot"]:
-        errors.append("INV-20 separate snapshot mismatch")
+    if manifest.get("format") == "freight-audit-bundle/v1":
+        snapshot_path = directory / "snapshot.json"
+        if not snapshot_path.is_file():
+            errors.append("INV-20 missing snapshot.json in v1 bundle")
+            snapshot = run["snapshot"]
+        else:
+            snapshot = read_json(snapshot_path)
+            if snapshot != run["snapshot"]:
+                errors.append("INV-20 separate snapshot mismatch")
+    else:
+        snapshot = run["snapshot"]
     source_hashes = set(snapshot["documents"])
     for entity in ("shipments", "charges"):
         for record in snapshot[entity]:

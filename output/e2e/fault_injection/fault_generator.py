@@ -75,9 +75,10 @@ def inject_fi_i01(target_dir: Path) -> dict[str, Any]:
     audit_json.write_text(json.dumps(data, indent=2), encoding="utf-8")
     
     snapshot_json = bundle_dir / "snapshot.json"
-    snap_data = json.loads(snapshot_json.read_text(encoding="utf-8"))
-    snap_data["charges"][0]["amount"] = "100.01"
-    snapshot_json.write_text(json.dumps(snap_data, indent=2), encoding="utf-8")
+    if snapshot_json.is_file():
+        snap_data = json.loads(snapshot_json.read_text(encoding="utf-8"))
+        snap_data["charges"][0]["amount"] = "100.01"
+        snapshot_json.write_text(json.dumps(snap_data, indent=2), encoding="utf-8")
     
     return {"bundle_dir": bundle_dir, "run_id": run_id}
 
@@ -93,9 +94,10 @@ def inject_fi_i02(target_dir: Path) -> dict[str, Any]:
     audit_json.write_text(json.dumps(data, indent=2), encoding="utf-8")
     
     snapshot_json = bundle_dir / "snapshot.json"
-    snap_data = json.loads(snapshot_json.read_text(encoding="utf-8"))
-    snap_data["charges"][0]["amount"] = data["snapshot"]["charges"][0]["amount"]
-    snapshot_json.write_text(json.dumps(snap_data, indent=2), encoding="utf-8")
+    if snapshot_json.is_file():
+        snap_data = json.loads(snapshot_json.read_text(encoding="utf-8"))
+        snap_data["charges"][0]["amount"] = data["snapshot"]["charges"][0]["amount"]
+        snapshot_json.write_text(json.dumps(snap_data, indent=2), encoding="utf-8")
     
     return {"bundle_dir": bundle_dir, "run_id": run_id}
 
@@ -112,9 +114,10 @@ def inject_fi_i03(target_dir: Path) -> dict[str, Any]:
     audit_json.write_text(json.dumps(data, indent=2), encoding="utf-8")
     
     snapshot_json = bundle_dir / "snapshot.json"
-    snap_data = json.loads(snapshot_json.read_text(encoding="utf-8"))
-    snap_data["charges"][0]["currency"] = new_curr
-    snapshot_json.write_text(json.dumps(snap_data, indent=2), encoding="utf-8")
+    if snapshot_json.is_file():
+        snap_data = json.loads(snapshot_json.read_text(encoding="utf-8"))
+        snap_data["charges"][0]["currency"] = new_curr
+        snapshot_json.write_text(json.dumps(snap_data, indent=2), encoding="utf-8")
     
     return {"bundle_dir": bundle_dir, "run_id": run_id}
 
@@ -131,9 +134,10 @@ def inject_fi_i04(target_dir: Path) -> dict[str, Any]:
     audit_json.write_text(json.dumps(data, indent=2), encoding="utf-8")
     
     snapshot_json = bundle_dir / "snapshot.json"
-    snap_data = json.loads(snapshot_json.read_text(encoding="utf-8"))
-    snap_data["shipments"][0]["attributes"]["service_date"]["value"] = "2026-07-01"
-    snapshot_json.write_text(json.dumps(snap_data, indent=2), encoding="utf-8")
+    if snapshot_json.is_file():
+        snap_data = json.loads(snapshot_json.read_text(encoding="utf-8"))
+        snap_data["shipments"][0]["attributes"]["service_date"]["value"] = "2026-07-01"
+        snapshot_json.write_text(json.dumps(snap_data, indent=2), encoding="utf-8")
     
     return {"bundle_dir": bundle_dir, "run_id": run_id}
 
@@ -148,9 +152,10 @@ def inject_fi_i05(target_dir: Path) -> dict[str, Any]:
     audit_json.write_text(json.dumps(data, indent=2), encoding="utf-8")
     
     snapshot_json = bundle_dir / "snapshot.json"
-    snap_data = json.loads(snapshot_json.read_text(encoding="utf-8"))
-    snap_data["charges"][0]["reference"] = "REM-MUTATED-999"
-    snapshot_json.write_text(json.dumps(snap_data, indent=2), encoding="utf-8")
+    if snapshot_json.is_file():
+        snap_data = json.loads(snapshot_json.read_text(encoding="utf-8"))
+        snap_data["charges"][0]["reference"] = "REM-MUTATED-999"
+        snapshot_json.write_text(json.dumps(snap_data, indent=2), encoding="utf-8")
     
     return {"bundle_dir": bundle_dir, "run_id": run_id}
 
@@ -168,10 +173,11 @@ def inject_fi_i06(target_dir: Path) -> dict[str, Any]:
     audit_json.write_text(json.dumps(data, indent=2), encoding="utf-8")
     
     snapshot_json = bundle_dir / "snapshot.json"
-    snap_data = json.loads(snapshot_json.read_text(encoding="utf-8"))
-    snap_data["charges"][0]["provenance"]["amount"]["row"] = 999
-    snap_data["charges"][0]["provenance"]["amount"]["column"] = ""
-    snapshot_json.write_text(json.dumps(snap_data, indent=2), encoding="utf-8")
+    if snapshot_json.is_file():
+        snap_data = json.loads(snapshot_json.read_text(encoding="utf-8"))
+        snap_data["charges"][0]["provenance"]["amount"]["row"] = 999
+        snap_data["charges"][0]["provenance"]["amount"]["column"] = ""
+        snapshot_json.write_text(json.dumps(snap_data, indent=2), encoding="utf-8")
     
     return {"bundle_dir": bundle_dir, "run_id": run_id}
 
@@ -701,9 +707,10 @@ def inject_fi_x03(target_dir: Path) -> dict[str, Any]:
     audit_json.write_text(json.dumps(data, indent=2), encoding="utf-8")
     
     snapshot_json = bundle_dir / "snapshot.json"
-    snap_data = json.loads(snapshot_json.read_text(encoding="utf-8"))
-    snap_data["charges"][0]["amount"] = "88888.88"
-    snapshot_json.write_text(json.dumps(snap_data, indent=2), encoding="utf-8")
+    if snapshot_json.is_file():
+        snap_data = json.loads(snapshot_json.read_text(encoding="utf-8"))
+        snap_data["charges"][0]["amount"] = "88888.88"
+        snapshot_json.write_text(json.dumps(snap_data, indent=2), encoding="utf-8")
     
     return {"bundle_dir": bundle_dir, "run_id": run_id}
 

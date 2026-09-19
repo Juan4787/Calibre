@@ -490,7 +490,7 @@ def run_e2e():
     # 3. JSON from exported zip
     with zipfile.ZipFile(run1_zip_path, "r") as z:
         json_audit = json.loads(z.read("audit.json").decode("utf-8"))
-        json_snapshot = json.loads(z.read("snapshot.json").decode("utf-8"))
+        json_snapshot = json.loads(z.read("snapshot.json").decode("utf-8")) if "snapshot.json" in z.namelist() else json_audit["snapshot"]
         html_from_zip = z.read("reporte.html").decode("utf-8")
 
     # 4. XLSX from export

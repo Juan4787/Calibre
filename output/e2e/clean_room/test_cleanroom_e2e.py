@@ -419,9 +419,11 @@ def run_cleanroom_e2e():
     # Channel 2: API (already fetched)
     # Channel 3: JSON from export zip
     with zipfile.ZipFile(run1_zip_path, "r") as z:
+        audit_doc = json.loads(z.read("audit.json").decode("utf-8"))
+        snapshot_doc = json.loads(z.read("snapshot.json").decode("utf-8")) if "snapshot.json" in z.namelist() else audit_doc["snapshot"]
         json_observed = {
-            "audit": json.loads(z.read("audit.json").decode("utf-8")),
-            "snapshot": json.loads(z.read("snapshot.json").decode("utf-8")),
+            "audit": audit_doc,
+            "snapshot": snapshot_doc,
         }
 
     # Channel 4: XLSX parsed

@@ -70,7 +70,7 @@
         "replay"
       ],
       "violations_count": 5,
-      "sample_violation": "Byte hash differs for audit.json: expected 89f1bcff4e86fccd405a257b351587a52e24cc9d50d97f192544da7bd1979300, got cd35af78cdb7a1f52d4c219dfe681cc030752f5dc7353fd96e81fa3823e2eaf1",
+      "sample_violation": "Byte hash differs for audit.json: expected cb0b4eb490dd4c8ef4859979c80fe84b7857591d42a358a487c286568baa4fd2, got c3765cee422d5e8722b4a5546c33513c982bab83f8ed42310f5a14fd08ff2f45",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -87,7 +87,7 @@
         "replay"
       ],
       "violations_count": 14,
-      "sample_violation": "Byte hash differs for audit.json: expected 3679ce2080884fc45b4963c81807aab555417104abdee671a52e3a2fa18e1465, got f2ec179bd00ff2e3a34f7538212672281611f9d3592bf3e17e17833783f5177b",
+      "sample_violation": "Byte hash differs for audit.json: expected 3fa04210e36a4d82a34cf28559fdf595a543254e13447ae23a84aa9b0156476f, got 8ac64c4954af36a4735991c91e072119b070e4c18d1d382a5c8d573bc275cd8d",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -104,7 +104,7 @@
         "replay"
       ],
       "violations_count": 7,
-      "sample_violation": "Byte hash differs for audit.json: expected d4a73f634e3251bded17a92435d5859f10065272d4ca3ae990bf0f497a051b9d, got 18e23ac9024ec44f177f04cbe8b8d852a1cc6f9b145b661094d2e013db081b78",
+      "sample_violation": "Byte hash differs for audit.json: expected 0e8ee386ddd780af23e33755ff30d6c82a413bd9a7280358b60caf12c9400c96, got 946d0609c6c108cc0df08f57e7bdee61fb133c6e8666e16be6b545a9042ac47d",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -121,7 +121,7 @@
         "replay"
       ],
       "violations_count": 9,
-      "sample_violation": "Byte hash differs for audit.json: expected e447f5509797b58eb48eed60b61ff9613f597af1b03a97799e4a9e05845bde87, got 8eb2d1a255dd461e165070baa4b9066c06895f4603a3ee35409fc1209214412c",
+      "sample_violation": "Byte hash differs for audit.json: expected 22d6c8f1f0403de5f63b03f6979dc1efbdbde6a3f97f88c15000c5945fc08d62, got 4233aee63f75657076bd7a2af889cf5f9253adc3ee8cebb6d4461e702afbd57c",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -138,7 +138,7 @@
         "replay"
       ],
       "violations_count": 14,
-      "sample_violation": "Byte hash differs for audit.json: expected 86fc580873596f2bbc236cd0763f4740b3f5c5d7419ab27ddad0c778894cbe81, got b39d81c6e1b4af397b83bf38d2a7834df8acd1bfc87ebbdc0c1352e019398501",
+      "sample_violation": "Byte hash differs for audit.json: expected 8e0fc689681c37791348d1f154611add385145d9fcfc3d4d3a144f03caf42cd0, got 422973dcd0ac01207357c1173d74babe01294791b65fd0d6dc824be85b917cc3",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -154,8 +154,8 @@
         "reconcile",
         "replay"
       ],
-      "violations_count": 15,
-      "sample_violation": "Byte hash differs for audit.json: expected d8293cce71e28ff2d7ce254a3e1581713a4a1a541143898522262dde05978df2, got 805e4a4d27459fe5df894385387c69f7a2bceab03c0347538edddf2c104e323d",
+      "violations_count": 14,
+      "sample_violation": "Byte hash differs for audit.json: expected d908990f4661a34d4b712e101d2faeae7b391ae9926e460ac9adfb1f93f300f2, got 4e73348a28530076422c167e3b63ef4925343f106460d0f42986cbdc7802f918",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -172,7 +172,7 @@
         "replay"
       ],
       "violations_count": 15,
-      "sample_violation": "Byte hash differs for audit.json: expected 7c5f3e512a656b21416186bf2380afbf49de6e8c55168fde093ab684246796ef, got 1056aaf2ae70eb98c728dc6f400c5e444d5d73b1757ae48359c79740b92426df",
+      "sample_violation": "Byte hash differs for audit.json: expected 21017fcdb197ef99b6d9f4ebba46259d7845e176746d2560bca2c562a564ba30, got 7a56c3da16619dce8ba47fff9714808a97a4557caf6fa0073ecdef51f19548c6",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -187,7 +187,7 @@
         "reconcile"
       ],
       "violations_count": 2,
-      "sample_violation": "Byte hash differs for audit.json: expected 6f215d50219618913420332cece7a680bf4c762a12cb30c75fb6d5fbfcd7ffc5, got 8bccbce941de7faf9f24e6e195acd0a3b88b19a5357387b8d69bbff1e0c63feb",
+      "sample_violation": "Byte hash differs for audit.json: expected 2d6a578118e2429a13e4744baf286cd45abedbc16ae06f75283e6d68a207027a, got bbcf5df26d7057c6ac4a89463eee53c157df957277eccd049738d23d3ba4459a",
       "expected_detector": "manifest_verifier",
       "independent_detection": true
     },
@@ -203,7 +203,7 @@
         "reconcile"
       ],
       "violations_count": 6,
-      "sample_violation": "Byte hash differs for audit.json: expected bc295696cf6e02243ac63040dd4f740573616b748faf97860876a05ccab0eb59, got 6ae57c153e76e100804bac0fe9ec1b57926c8de2aed1acbc0ad79a10e98d4219",
+      "sample_violation": "Byte hash differs for audit.json: expected f29f72523be77ead1bd4a939447c48c66a476fbd427fc2b777c7e28abb7d25aa, got 1340e8f99d6c003012cc7405c51baff49b0c60933dd1d6c9d93132f2c25fe14c",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -220,7 +220,7 @@
         "replay"
       ],
       "violations_count": 12,
-      "sample_violation": "Byte hash differs for audit.json: expected 6c0858469e0c9dc0ce3162d4d818a7eb23b9e3dffd1c1337ad29a7dc7f86f7f5, got aa9eac5b49239f3a1231dd4e56717d6e4612726c934a5e2d53daf847e79df3d9",
+      "sample_violation": "Byte hash differs for audit.json: expected 5f3bff99ffc2989c8f45aa0e7e3dd8283c0ac328da3011045c0bc9a92f6bdd9e, got 5350f7d6871c66f1bbaff9620a9dd3ad93d85815c83143136aa06fabc842ada8",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -237,7 +237,7 @@
         "replay"
       ],
       "violations_count": 17,
-      "sample_violation": "Byte hash differs for audit.json: expected 9e341f136d7c5640bac0d086a275e95d72457d2ad46c1a48c286bbbab639578b, got d844325eb142d67320c1f8e1b5587f9b33b6447c3c881a5cfc8c5dc57482fffa",
+      "sample_violation": "Byte hash differs for audit.json: expected 482f8c72f6af0cde7738115769ebbcd6abaae70d1dc7f4530664c0efdadfae50, got 917530cbb369aaf0995a21067898ace1e6662b946ab80012e4addf5cf20bfe2a",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -254,7 +254,7 @@
         "replay"
       ],
       "violations_count": 8,
-      "sample_violation": "Byte hash differs for audit.json: expected a96def6a9a42069bd0aa683a2e38320b59bdb9b932fdad29a22c92cbd346b74c, got 0231b77b6168bec5d0f0f8549e6a503c2b52d62ec7f2fdf0bf948931553b2dbb",
+      "sample_violation": "Byte hash differs for audit.json: expected 80745a64973e08b263cd570dbef3978122acab1ff8b67d2b8f699f60f25893e2, got a8213751072fe31224464bae8fea3429deec6bb8c14fb901fa2050ac05a96c8e",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -270,8 +270,8 @@
         "reconcile",
         "replay"
       ],
-      "violations_count": 8,
-      "sample_violation": "Byte hash differs for audit.json: expected 31ceebf4ae6bdf14a32528423b13ca2ae63afef3b9e1d3ef9fb652c4691ab9b2, got b03a141338040f326d5ebc0a4fc195c2eee2b0c69a159a14d9c5c8daa0cb50d2",
+      "violations_count": 6,
+      "sample_violation": "Byte hash differs for audit.json: expected 513300df1d75e752a43bce00d0f016e21be552021d8be79060bcb71d0bb7d96a, got b1bcd12694d8fe49857737105ed923d57a78ead9678bd43a69cb7c3c126a22f2",
       "expected_detector": "provenance_verifier",
       "independent_detection": true
     },
@@ -287,8 +287,8 @@
         "reconcile",
         "replay"
       ],
-      "violations_count": 8,
-      "sample_violation": "Byte hash differs for audit.json: expected 91e8c3b7f0ad2fccba1c59be3c1cd5b3216718a77d9ebd79b8c9c8c45f25d197, got 9d6dd2b341c9b293fc84d75df341afb0aa70d1c9e4efaabab7657fcab820f009",
+      "violations_count": 6,
+      "sample_violation": "Byte hash differs for audit.json: expected 84ec3d0391e2360025a2c795b05c0285ed8c7a79346482d77767914ebe24bd9e, got 41f9a250212dfd22bbbfd334d23950f1df421044944af6606cb9a37a65dc2039",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -304,8 +304,8 @@
         "reconcile",
         "replay"
       ],
-      "violations_count": 8,
-      "sample_violation": "Byte hash differs for audit.json: expected d0596f7ba969b06953f05853fc1da08a7f6b0f079e09649d3e95e454926e63d5, got 58a143a072f4417932c4dbf19c97e80c9735cf515e15b50a913ede9170556527",
+      "violations_count": 6,
+      "sample_violation": "Byte hash differs for audit.json: expected 2e6a50c763a2f7b4194a518a182faaeea10689c2ca1e97f78951eaceaf33d1e3, got 7c69cd8dc21909ded48158b4942b3fdd0fbae1a9cf02822061201b59f714def5",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -321,8 +321,8 @@
         "reconcile",
         "replay"
       ],
-      "violations_count": 7,
-      "sample_violation": "Byte hash differs for audit.json: expected 2fe351c587593c779697923011c15b29025dfcd993190adc0d931cf1229487ac, got cebe6db0216b028297d65e12c6a55f834be4986940dc5f509f7b342d71e62ffe",
+      "violations_count": 5,
+      "sample_violation": "Byte hash differs for audit.json: expected b99ea1d50dfd872f50d6fe85d36bdf85d01188d2f03bef47a92d7683663cae64, got 0f21e9c30d110a56b28ec4d3203f21e1fdd2c1f78d4f5e2ad9b1481624943e58",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -338,8 +338,8 @@
         "reconcile",
         "replay"
       ],
-      "violations_count": 6,
-      "sample_violation": "Byte hash differs for audit.json: expected 5253633ea6a2a8b986a979279a6398fad6c6a132146daf21f03079db7cdc0cd3, got d6328f02202cc63ca7dc5963f82cd6d6204431055ffb71b53ba15e421a455c63",
+      "violations_count": 4,
+      "sample_violation": "Byte hash differs for audit.json: expected ff3d05cede89edd0031701bf1f58804c86ea9f921f455ca7491fba791c711575, got e17c3c48e720c486ffa8628320b0c12dd4acf0bd4e5a05c17fd9a9d9de93e020",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -354,8 +354,8 @@
         "manifest_verifier",
         "reconcile"
       ],
-      "violations_count": 7,
-      "sample_violation": "Byte hash differs for audit.json: expected 614c31cb0c418bfb804ea77c4f878543d8a0d933b8f5ae00ba163398b8d2e9f4, got 1db07c79dc8f0466faee8a1883414fc1ce3a4a00c163323ab8e9288baab6176f",
+      "violations_count": 5,
+      "sample_violation": "Byte hash differs for audit.json: expected 692b181966d301c4a0a9df50df3e9c187b5dacf1df330033b808acd444f636f6, got d7067f731feb4a8528faab81e22379a79cd2a27c3e87b628ddcc8708e6aa89de",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -372,7 +372,7 @@
         "replay"
       ],
       "violations_count": 12,
-      "sample_violation": "Byte hash differs for audit.json: expected 6ae0844ed912365a7ac941b03d227be36a8eee241165f14989b1e8a09b129785, got e7b7080b3d818f9606d84fca90c217f70b9c2a762a0d3cf3855131464204911b",
+      "sample_violation": "Byte hash differs for audit.json: expected 1aa190e1b3b522bf32646564135e2ed06acb418a3301e2280ab7bf633354f706, got 2f0b526cff97074d03904c63ea60fc1bba7ec4815babfa4fb372b8b7e28c9126",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -388,7 +388,7 @@
         "reconcile"
       ],
       "violations_count": 4,
-      "sample_violation": "Byte hash differs for audit.json: expected 91689cf721225078099a665194bcc3e9a72d65a40293cb1f85e3c9110d5aa82f, got 6c6689115342fce0d5c40534f5dc51ccf58faa9dcf8a9c79f39093517dee0c7f",
+      "sample_violation": "Byte hash differs for audit.json: expected 5321c25cf8f5d69c590f901ccfe0f1ddfcbe2f6eeb2e45cf6947376c276f43f3, got 10f08d6de4f7fcf9048e4eed7adeedfe6467aa618010878b3c8db9c4647f3290",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -404,7 +404,7 @@
         "reconcile"
       ],
       "violations_count": 5,
-      "sample_violation": "Byte hash differs for audit.json: expected 57c5e186bcb597a24bf150512a541408d12bfd979c3924980c9b89eb4013186f, got fc184f0578ae21df85a4ab14694913c945eaf8e38fd1fafde7486044019c3e04",
+      "sample_violation": "Byte hash differs for audit.json: expected 4f00a5eb05396db6e17b46064419c1a852b4214cfdc3b3c1e324e09fbf737bad, got b02705f6ad8d22c2f0cc3df6e7deceacd509cef1e01c1734f0249bb504ba2fcd",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -420,7 +420,7 @@
         "reconcile"
       ],
       "violations_count": 4,
-      "sample_violation": "Byte hash differs for audit.json: expected 512a71dc2478916fc77a4e8da5a5e37249c0fbcfe0ef89193a73cce064d7ba5b, got bb7871bfb3eb16a11de36d3a0fe631347b3c9970abc73c4c7cb1d1202327c2a0",
+      "sample_violation": "Byte hash differs for audit.json: expected 365ecc0e6a73ce2c464bb03b9def6bf26850a2a825a1b419b68c0b0d6d6bf984, got c3a738c173f770ffdd149353025aaaca0957fc3c705846ed2649b67bb169c99f",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -450,7 +450,7 @@
         "reconcile"
       ],
       "violations_count": 3,
-      "sample_violation": "Byte hash differs for auditoria.xlsx: expected 517d766aaee99b0fb9ebe68b2bd44fddb3ce06c915b21a16754dbde08d313f16, got a573bf29f8ff9de101fe7fcbfab1b5b8fa033310d85f38ffd7d0c45b73b4ce42",
+      "sample_violation": "Byte hash differs for auditoria.xlsx: expected 33e2d71561a81847dfc91c8b9f6419a016bd286fdcc5a37324625b378ab337ff, got 1e641e1f9539f2c970e3b7d271fbeb1c7affc91a62352b081e1713c9453ab203",
       "expected_detector": "manifest_verifier",
       "independent_detection": true
     },
@@ -465,7 +465,7 @@
         "reconcile"
       ],
       "violations_count": 2,
-      "sample_violation": "Byte hash differs for reporte.html: expected bd968ac85b1f5fddef81a0625bb8e5a1f98af05f3b67a7a7476158849be87000, got 8d1f2cfb3d7246ff835c35ffb2ce994eb3c228bdcee33e55a6cd922bea3a83b2",
+      "sample_violation": "Byte hash differs for reporte.html: expected 7767837d5e94657bf91a498fcd32f62910049d0c0bdf73247a4988a55a577d2f, got 3266f413551a77982587fbc0bbe75067ac752621249382bc7bb82be43b5e9ffc",
       "expected_detector": "manifest_verifier",
       "independent_detection": true
     },
@@ -480,7 +480,7 @@
         "reconcile"
       ],
       "violations_count": 3,
-      "sample_violation": "Byte hash differs for auditoria.xlsx: expected 495464f7e2effe47fd3cc681da5b553a25b17331f0645e7ff2f3f164feea2565, got 3870fd882a637c626a9b01f75ffd7a01843fc3df467cee0652f882d37b18e61b",
+      "sample_violation": "Byte hash differs for auditoria.xlsx: expected c2c609e85185ab796092c6b5295cd494e63d35c789dbf89bbe58e7fad8295095, got 639c93bc94bb8272d98078883523a62d80e385794a5164f3ac8396f1fed94783",
       "expected_detector": "manifest_verifier",
       "independent_detection": true
     },
@@ -495,7 +495,7 @@
         "reconcile"
       ],
       "violations_count": 3,
-      "sample_violation": "Byte hash differs for auditoria.xlsx: expected e9339f26094e2bcb5d22d4feb824747775962c5adf218b2e73fa5731b265f379, got 37e5276af96cf4b746115a22e40d91235d2b72a47d0b0cb3e79075d93334340f",
+      "sample_violation": "Byte hash differs for auditoria.xlsx: expected 9105bc723daaa83c3ee59f5dfe31bd57aa2dd23d88d139912c1323c3e8c91217, got 6008843957dde2c5a81071cd42f84c9b4ae3eb2362414fea2e174d195f60e95f",
       "expected_detector": "manifest_verifier",
       "independent_detection": true
     },
@@ -510,7 +510,7 @@
         "reconcile"
       ],
       "violations_count": 3,
-      "sample_violation": "Byte hash differs for auditoria.xlsx: expected f2d98c7447d61a72bfb688a614cc800437c03262800c223ef62f10560be814b8, got 0c2b135a4f4b04c4890179712f7f3a31931265340307a4848e5a4ce5232b4872",
+      "sample_violation": "Byte hash differs for auditoria.xlsx: expected 16b79db01057b327574552f7595d4500751a7256760b2bc7a2aec2352cd9e5e8, got afa056ddda837a756b09b363458331e9d61656f99f7c29515964a2707ac5b1cb",
       "expected_detector": "manifest_verifier",
       "independent_detection": true
     },
@@ -525,7 +525,7 @@
         "reconcile"
       ],
       "violations_count": 3,
-      "sample_violation": "Byte hash differs for auditoria.xlsx: expected e19b22af49b282cab889a4e387e965197321ffd474bf6b16c725354399dd51c3, got 08b7f20d0252c87bc92d2b5d26db0278427963aa055829152a4309381e4fe219",
+      "sample_violation": "Byte hash differs for auditoria.xlsx: expected 4230d10bcbe04eb4ce42cb80ad54e438b2196afdb625f0992540465817fcc35a, got e7d57d8cb5d5ae8d96bd241d2e5a8d81122f6cce019bb3b1c094dd656cb04e44",
       "expected_detector": "manifest_verifier",
       "independent_detection": true
     },
@@ -597,8 +597,8 @@
         "reconcile",
         "replay"
       ],
-      "violations_count": 10,
-      "sample_violation": "Byte hash differs for audit.json: expected 8b43416427efc05932e873372827d3d05bbba66bf0e12501c76af7c4150dfa4d, got 6cd5cde8e268b9ae05161e58674eb2dba23def935e12e678c73caa27b4bb0420",
+      "violations_count": 9,
+      "sample_violation": "Byte hash differs for audit.json: expected 444a3ee9f55f83ae9f8bd497ab11f89228b25e8b9357c643f670d0be4e28aeb1, got 09112c43a2c0129725e4b123255b70fdcca96e777e63c550ec625959a34ff86e",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -613,7 +613,7 @@
         "reconcile"
       ],
       "violations_count": 4,
-      "sample_violation": "Byte hash differs for reporte.html: expected bd968ac85b1f5fddef81a0625bb8e5a1f98af05f3b67a7a7476158849be87000, got e0bfcf0264ec568118466ddba8ca0091b88c81888cc16aabd1f9c84c1c960697",
+      "sample_violation": "Byte hash differs for reporte.html: expected 7767837d5e94657bf91a498fcd32f62910049d0c0bdf73247a4988a55a577d2f, got 29eb6af76cdaf062c6374b07b8d8ac6557bf11d76e2a8e03cd43aacad8e132f9",
       "expected_detector": "manifest_verifier",
       "independent_detection": true
     },
@@ -629,8 +629,8 @@
         "reconcile",
         "replay"
       ],
-      "violations_count": 17,
-      "sample_violation": "Byte hash differs for audit.json: expected 6fa99d72d32d5e3a73ed2743467ee41eb9465e7be20bc9f9b9aa47844f982a03, got 5be981e43e2632ca3589e0d891ef9fee4244c7804e6e325a5dcbd97669ddb6c2",
+      "violations_count": 15,
+      "sample_violation": "Byte hash differs for audit.json: expected b11d16735108b3581e4982dcb0f6951e87b94c21a992abfdab02c08afae4ce0e, got d060f731d3e0e7e088b28d18a06aa85d1d36d41bb1f9b5648ddb2d28763dfae7",
       "expected_detector": "invariants",
       "independent_detection": true
     },
@@ -645,7 +645,7 @@
         "reconcile"
       ],
       "violations_count": 2,
-      "sample_violation": "Byte hash differs for audit.json: expected aec4a051f91eb75c6e79cceca446d106b8323b405bc0206e53e95c7e47799bb4, got f9cdfa0135fed78f26ba2bf02e08fff3cf31656d0a4c4f6682da9ba4a15c7886",
+      "sample_violation": "Byte hash differs for audit.json: expected d814fb4905492f81e4a8ca9161777663471d61ae2e3838b257add9612c517b20, got 8284fe693a4a6a2e646f01214f17396cbf40c256db337bc9f63ffa7049c988e7",
       "expected_detector": "manifest_verifier",
       "independent_detection": true
     }
