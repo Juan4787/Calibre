@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import gc
+import io
 import json
 import os
 import platform
@@ -21,6 +22,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import zipfile
 from decimal import Decimal
 from pathlib import Path
 
