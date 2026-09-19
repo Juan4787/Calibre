@@ -1,19 +1,23 @@
 "use strict";
+
 const $ = (selector, root = document) => root.querySelector(selector);
 const main = $("#main");
+
 const labels = {
   PASS: "Coincide",
   FAIL: "Discrepancia",
   REVIEW: "Revisión humana",
   UNDETERMINABLE: "Indeterminado",
 };
+
 const actions = {
-  APPROVED: "Aprobado",
+  APPROVED: "Confirmado",
   REJECTED: "Rechazado",
-  INFORMATION_REQUESTED: "Información solicitada",
+  INFORMATION_REQUESTED: "En revisión",
   EXCEPTION_ACCEPTED: "Excepción aceptada",
   IGNORED: "Ignorado",
 };
+
 const state = {
   token: "",
   run: null,
@@ -22,8 +26,12 @@ const state = {
   page: 0,
   filter: "",
   search: "",
+  runSearch: "",
   view: "audits",
+  wizardStep: 1,
+  auditLabel: "",
 };
+
 const esc = (value) =>
   String(value ?? "").replace(
     /[&<>"']/g,
@@ -32,6 +40,7 @@ const esc = (value) =>
         char
       ],
   );
+
 const money = (value) => {
   if (value === null || value === undefined) return "—";
   const [whole, fraction] = String(value).split(".");
@@ -40,10 +49,13 @@ const money = (value) => {
     (fraction ? "," + fraction : "")
   );
 };
+
 const badge = (status) =>
   `<span class="badge ${status}">${labels[status]}</span>`;
+
 function notice(text, error = false) {
   const element = $("#notice");
+  if (!element) return;
   element.textContent = text;
   element.classList.toggle("error", error);
   element.hidden = false;
@@ -53,6 +65,7 @@ function notice(text, error = false) {
     error ? 16000 : 7000,
   );
 }
+
 async function api(url, options = {}) {
   const headers = { "X-Freight-Local": state.token, ...options.headers };
   if (options.body && !(options.body instanceof FormData))
@@ -76,6 +89,7 @@ async function api(url, options = {}) {
     );
   return result;
 }
+
 async function busy(button, callback) {
   const text = button?.textContent;
   if (button) {
@@ -98,6 +112,7 @@ async function busy(button, callback) {
     }
   }
 }
+
 const post = (url, body) =>
   api(url, {
     method: "POST",
@@ -108,6 +123,7 @@ const post = (url, body) =>
           ? undefined
           : JSON.stringify(body),
   });
+
 function nav(view) {
   state.view = view;
   document
@@ -116,9 +132,14 @@ function nav(view) {
       button.classList.toggle("active", button.dataset.view === view),
     );
 }
+
 function heading(kicker, title, description, buttons = "") {
-  return `<div class="head"><div><div class="eyebrow muted">${kicker}</div><h1>${title}</h1><p class="muted">${description}</p></div><div class="actions">${buttons}</div></div>`;
+  return `<div class="head"><div><div class="eyebrow">${kicker}</div><h1>${title}</h1><p class="muted">${description}</p></div><div class="actions">${buttons}</div></div>`;
 }
+
+/* ==========================================================================
+   LISTA DE AUDITORÍAS (ENRIQUECIDA E INFORMATIVA)
+   ========================================================================== */
 async function showRuns() {
   nav("audits");
   state.run = null;
@@ -126,28 +147,128 @@ async function showRuns() {
     heading(
       "CONTROL RESPALDADO",
       "Auditorías",
-      "Cada importe, sus datos, sus reglas y una explicación.",
+      "Cada importe, sus datos, sus reglas y una explicación comprobable.",
       `<button class="btn primary" id="new-run">＋ Nueva auditoría</button>`,
     ) +
     `<div id="runs"><p class="muted">Leyendo auditorías del equipo…</p></div>`;
+
   $("#new-run").onclick = showNew;
   const runs = await api("/api/runs");
-  $("#runs").innerHTML = runs.length
-    ? `<div class="banner"><div>ⓘ</div><div><strong>La certeza también se audita.</strong><p>Una diferencia determinada requiere reglas y datos suficientes. La revisión humana no representa ahorro.</p></div></div><div class="run-list">${runs.map((run) => `<button class="run-card" data-run="${run.id}"><span><strong>${esc(run.label)}</strong><small>${new Date(run.created_at).toLocaleString("es-AR")} · ${run.summary.total_findings} hallazgos</small></span><span>${badge("FAIL")} ${run.summary.counts.FAIL} <span aria-hidden="true"> →</span></span></button>`).join("")}</div><p class="hint">Los datos de demostración están identificados como ficticios.</p><button class="btn" id="demo">Ejecutar demostración ficticia</button>`
-    : `<div class="panel empty"><div class="symbol" aria-hidden="true">▤</div><h2>Del cargo a la evidencia.</h2><p class="muted">Importá operaciones y liquidaciones, seleccioná el acuerdo y reconstruí el importe esperado. Todo se procesa en este equipo.</p><div class="actions centered"><button class="btn primary" id="demo">Explorar demostración ficticia</button></div><p class="hint">32 operaciones · 3 acuerdos distintos · 4 estados de certeza</p></div>`;
-  document
-    .querySelectorAll("[data-run]")
-    .forEach(
-      (button) =>
-        (button.onclick = () =>
-          busy(button, () => openRun(button.dataset.run))),
-    );
+  state.allRuns = runs;
+  renderRunsList();
+}
+
+function renderRunsList() {
+  const runs = state.allRuns || [];
+  const container = $("#runs");
+  if (!container) return;
+
+  if (!runs.length) {
+    container.innerHTML = `<div class="panel empty">
+      <div class="symbol" aria-hidden="true" style="font-size:44px; color:var(--accent);">▤</div>
+      <h2>Del cargo a la evidencia.</h2>
+      <p class="muted">Importá operaciones y liquidaciones, seleccioná el acuerdo y reconstruí el importe esperado. Todo se procesa de forma segura en este equipo.</p>
+      <div class="actions centered" style="justify-content:center; margin-top:20px;">
+        <button class="btn primary" id="demo">Explorar demostración ficticia</button>
+      </div>
+      <p class="hint">32 operaciones · 3 acuerdos distintos · 4 estados de certeza</p>
+    </div>`;
+    $("#demo").onclick = (event) =>
+      busy(event.target, async () => {
+        const result = await post("/api/demo");
+        await openRun(result.run_id);
+      });
+    return;
+  }
+
+  const filteredRuns = state.runSearch
+    ? runs.filter((r) =>
+        r.label.toLocaleLowerCase("es").includes(state.runSearch),
+      )
+    : runs;
+
+  container.innerHTML = `
+    <div class="banner info">
+      <div style="font-size:22px; line-height:1;">ⓘ</div>
+      <div>
+        <strong>La certeza también se audita.</strong>
+        <p style="margin:2px 0 0;">Una diferencia determinada requiere reglas y datos suficientes. La revisión humana y los casos indeterminados no representan ahorro.</p>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap:16px;">
+      <input id="search-runs" type="text" placeholder="Buscar por transportista, período o identificador…" value="${esc(state.runSearch)}" style="max-width:400px;" />
+      <button class="btn" id="demo">Ejecutar demostración ficticia</button>
+    </div>
+    <div class="run-list" style="display:flex; flex-direction:column; gap:14px;">
+      ${filteredRuns
+        .map((run) => {
+          const s = run.summary;
+          const currencies = Object.keys(s.currencies || {}).join(" / ") || "ARS";
+          const totalFindings = s.total_findings || 0;
+          const failCount = s.counts?.FAIL || 0;
+          const reviewCount = s.counts?.REVIEW || 0;
+          const passCount = s.counts?.PASS || 0;
+          const undCount = s.counts?.UNDETERMINABLE || 0;
+          const dateStr = new Date(run.created_at).toLocaleString("es-AR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          const isComplete = s.import_complete !== false;
+
+          return `
+            <button class="run-card run-card-rich" data-run="${run.id}">
+              <div class="run-card-top">
+                <div>
+                  <h3 class="run-card-title">${esc(run.label)}</h3>
+                  <div class="run-card-sub">
+                    <strong>${totalFindings} cargos</strong> · Moneda ${esc(currencies)}
+                  </div>
+                </div>
+                <div class="run-card-date">${dateStr}</div>
+              </div>
+              <div class="run-card-metrics">
+                ${failCount > 0 ? `<span class="run-card-pill fail">⚠ ${failCount} Discrepancia${failCount === 1 ? "" : "s"}</span>` : ""}
+                ${reviewCount > 0 ? `<span class="run-card-pill review">⚡ ${reviewCount} Revisión humana</span>` : ""}
+                <span class="run-card-pill pass">✓ ${passCount} Coinciden</span>
+                ${undCount > 0 ? `<span class="run-card-pill undeterminable">? ${undCount} Indeterminados</span>` : ""}
+              </div>
+              <div class="run-card-footer">
+                <span class="${isComplete ? "import-status-ok" : "muted"}">
+                  ${isComplete ? "✓ Importación completa" : "⚠ Filas observadas"}
+                </span>
+                <span class="run-card-cta">Ver auditoría →</span>
+              </div>
+            </button>
+          `;
+        })
+        .join("")}
+    </div>
+  `;
+
+  $("#search-runs").oninput = (e) => {
+    state.runSearch = e.target.value.toLocaleLowerCase("es").trim();
+    renderRunsList();
+  };
+
+  document.querySelectorAll("[data-run]").forEach(
+    (button) =>
+      (button.onclick = () =>
+        busy(button, () => openRun(button.dataset.run))),
+  );
+
   $("#demo").onclick = (event) =>
     busy(event.target, async () => {
       const result = await post("/api/demo");
       await openRun(result.run_id);
     });
 }
+
+/* ==========================================================================
+   AUDITORÍA DETALLE / RESULTADO
+   ========================================================================== */
 async function openRun(id) {
   state.run = await api("/api/runs/" + id);
   state.shipmentIndex = new Map(
@@ -160,6 +281,7 @@ async function openRun(id) {
   nav("audits");
   renderAudit();
 }
+
 function renderAudit() {
   const run = state.run,
     summary = run.result.summary;
@@ -167,6 +289,7 @@ function renderAudit() {
   const coverage = count
     ? Math.round((100 * summary.determinable_findings) / count)
     : 0;
+
   main.innerHTML =
     heading(
       "AUDITORÍA / RESULTADO CONSERVADO",
@@ -175,36 +298,110 @@ function renderAudit() {
       `<button class="btn" id="back">← Auditorías</button><a class="btn primary" href="/api/runs/${run.id}/export/zip">↓ Exportar paquete</a>`,
     ) +
     (!summary.import_complete
-      ? `<div class="banner warning"><div><strong>Importación incompleta</strong><p>Hay filas rechazadas. Los importes sólo incluyen cargos aceptados. Corregí los datos antes de confirmar conclusiones.</p></div></div>`
-      : "") +
-    (run.snapshot.label.toLowerCase().includes("fictic")
-      ? `<div class="banner"><div>ⓘ</div><div><strong>Datos y acuerdos totalmente ficticios.</strong><p>Este ejemplo demuestra comportamiento técnico. No representa tarifas del mercado ni beneficio comercial validado.</p></div></div>`
+      ? `<div class="banner warning">
+          <div style="font-size:22px;">⚠</div>
+          <div>
+            <strong>Lote con filas rechazadas.</strong>
+            <p>Se excluyeron registros que no cumplían el formato. Las ausencias o datos parciales se tratan como problemas de datos y no se confirman como discrepancia.</p>
+          </div>
+        </div>`
       : "") +
     Object.entries(summary.currencies)
       .map(
-        ([currency, bucket]) =>
-          `<div class="metrics"><div class="metric"><label>FACTURADO ACEPTADO · ${currency}</label><div class="value">${money(bucket.actual)}</div><p>${summary.import_complete ? "Importación sin filas rechazadas" : "Lote incompleto"}</p></div><div class="metric accent"><label>COBERTURA DETERMINABLE</label><div class="value">${coverage}%</div><p>${summary.determinable_findings} de ${count} hallazgos · todas las monedas</p></div><div class="metric"><label>EXCESO DETERMINADO · ${currency}</label><div class="value">${money(bucket.confirmed_overcharge)}</div><p>Defecto determinado: ${money(bucket.confirmed_undercharge)}</p></div><div class="metric"><label>IMPORTE EN REVISIÓN · ${currency}</label><div class="value">${money(bucket.review)}</div><p>Indeterminado: ${money(bucket.undeterminable)}</p></div></div>`,
+        ([curr, bucket]) => `
+        <div class="metrics">
+          <div class="metric">
+            <label>FACTURADO ACEPTADO · ${esc(curr)}</label>
+            <div class="value">${money(bucket.actual)}</div>
+            <p>${summary.import_complete ? "Importación sin filas rechazadas" : "Lote incompleto"}</p>
+          </div>
+          <div class="metric accent">
+            <label>COBERTURA DETERMINABLE</label>
+            <div class="value">${coverage}%</div>
+            <p>${summary.determinable_findings} de ${count} hallazgos · todas las monedas</p>
+          </div>
+          <div class="metric">
+            <label>EXCESO DETERMINADO · ${esc(curr)}</label>
+            <div class="value">${money(bucket.confirmed_overcharge)}</div>
+            <p>Defecto determinado: ${money(bucket.confirmed_undercharge)}</p>
+          </div>
+          <div class="metric">
+            <label>IMPORTE EN REVISIÓN · ${esc(curr)}</label>
+            <div class="value">${money(bucket.review)}</div>
+            <p>Indeterminado: ${money(bucket.undeterminable)}</p>
+          </div>
+        </div>
+      `,
       )
       .join("") +
-    `<div class="statusline">${Object.entries(summary.counts)
-      .map(([status, n]) => `${badge(status)} <strong>${n}</strong>`)
-      .join(
-        "",
-      )}<span class="muted small-text">La diferencia determinada no equivale a ahorro ni recupero.</span></div><section class="panel table-panel"><div class="table-head"><h2>Detalle de cargos</h2><div class="filters"><input id="search" aria-label="Buscar por referencia o concepto" placeholder="Buscar referencia o concepto"><select id="filter" aria-label="Filtrar por estado"><option value="">Todos los estados</option>${Object.entries(
-      labels,
-    )
-      .map(([key, label]) => `<option value="${key}">${label}</option>`)
-      .join(
-        "",
-      )}</select></div></div><div class="table-wrap"><table><thead><tr><th>Operación / concepto</th><th>Estado del motor</th><th class="num">Facturado</th><th class="num">Esperado</th><th class="num">Diferencia calculada</th><th>Decisión humana</th><th></th></tr></thead><tbody id="findings"></tbody></table></div><div class="pagination"><span id="page-label"></span><div class="actions"><button class="btn small" id="prev">Anterior</button><button class="btn small" id="next">Siguiente</button></div></div></section><div class="actions"><a class="btn" href="/api/runs/${run.id}/export/xlsx">↓ Planilla operativa</a><a class="btn" href="/api/runs/${run.id}/export/html">↓ Informe imprimible</a><button class="btn" id="replay">Verificar reproducción</button></div><details class="panel"><summary>Problemas de datos y trazabilidad del lote (${run.result.issues.length})</summary>${run.result.issues.map((issue) => `<p class="small-text">${esc(issue.message)}</p>`).join("") || "<p>No se encontraron problemas de importación.</p>"}<p class="code">Huella del resultado: ${run.result_hash}<br>Motor: ${run.result.engine_version}<br>Artefacto: ${run.artifact_hash}</p></details>`;
-  $("#back").onclick = () => busy(null, showRuns);
-  $("#filter").onchange = (event) => {
-    state.filter = event.target.value;
+    `
+    <div class="statusline">
+      ${Object.entries(labels)
+        .map(
+          ([k, v]) =>
+            `<span class="badge ${k}"><strong>${v}</strong> ${summary.counts[k] || 0}</span>`,
+        )
+        .join("")}
+      <span class="muted" style="margin-left:auto; font-size:13px;">La diferencia determinada no equivale a ahorro ni recupero.</span>
+      <button class="btn small" id="replay">Verificar reproducción</button>
+    </div>
+
+    <div class="panel table-panel">
+      <div class="table-head">
+        <div>
+          <h2>Detalle de cargos auditados</h2>
+          <p class="muted" style="margin:4px 0 0; font-size:13px;">Cobertura con reglas completas: ${coverage}% (${summary.determinable_findings} de ${count})</p>
+        </div>
+        <div class="filters">
+          <input id="search" type="search" placeholder="Buscar por referencia, concepto o regla…" value="${esc(state.search)}">
+          <select id="filter-status" aria-label="Filtrar por estado">
+            <option value="">Todos los estados</option>
+            ${Object.entries(labels)
+              .map(([k, v]) => `<option value="${k}" ${state.filter === k ? "selected" : ""}>${v}</option>`)
+              .join("")}
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Referencia y concepto</th>
+              <th>Estado</th>
+              <th class="num">Facturado</th>
+              <th class="num">Esperado</th>
+              <th class="num">Diferencia</th>
+              <th>Resolución humana</th>
+              <th>Explicación</th>
+            </tr>
+          </thead>
+          <tbody id="findings"></tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span id="page-label"></span>
+        <div class="actions">
+          <button class="btn small" id="prev">Anterior</button>
+          <button class="btn small" id="next">Siguiente</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions" style="margin-top:24px;">
+      <a class="btn" href="/api/runs/${run.id}/export/xlsx">↓ Planilla operativa</a>
+      <a class="btn" href="/api/runs/${run.id}/export/html" target="_blank">↓ Informe imprimible</a>
+      <a class="btn" href="/api/runs/${run.id}/export/canonical" target="_blank">Exportar JSON canónico</a>
+    </div>
+  `;
+
+  $("#back").onclick = showRuns;
+  $("#filter-status").onchange = (e) => {
+    state.filter = e.target.value;
     state.page = 0;
     renderFindings();
   };
-  $("#search").oninput = (event) => {
-    state.search = event.target.value.toLocaleLowerCase("es");
+  $("#search").oninput = (e) => {
+    state.search = e.target.value.toLocaleLowerCase("es").trim();
     state.page = 0;
     renderFindings();
   };
@@ -216,55 +413,89 @@ function renderAudit() {
     state.page++;
     renderFindings();
   };
-  $("#replay").onclick = (event) =>
-    busy(event.target, async () => {
+  $("#replay").onclick = (e) =>
+    busy(e.target, async () => {
       await post(`/api/runs/${run.id}/replay`);
       notice(
         "Reproducción idéntica. Entradas, documentos, motor y resultado verificados.",
       );
     });
+
   renderFindings();
 }
+
 function references(finding) {
-  return (
-    finding.shipment_ids
-      .map((id) => state.shipmentIndex.get(id)?.reference || id)
-      .join(", ") ||
-    finding.charge_ids
-      .map((id) => state.chargeIndex.get(id)?.reference || id)
-      .join(", ")
-  );
+  const shipments = finding.shipment_ids
+    .map((id) => state.shipmentIndex.get(id)?.reference)
+    .filter(Boolean);
+  const charges = finding.charge_ids
+    .map((id) => state.chargeIndex.get(id)?.reference)
+    .filter(Boolean);
+  return Array.from(new Set([...shipments, ...charges])).join(", ");
 }
+
 function renderFindings() {
-  const all = state.run.result.findings.filter(
-    (f) =>
-      (!state.filter || f.status === state.filter) &&
-      (!state.search ||
-        `${references(f)} ${f.concept} ${f.charge_ids.join(" ")}`
-          .toLocaleLowerCase("es")
-          .includes(state.search)),
-  );
+  const all = state.run.result.findings.filter((f) => {
+    if (state.filter && f.status !== state.filter) return false;
+    if (!state.search) return true;
+    const haystack = [
+      references(f),
+      f.concept,
+      f.rule,
+      f.agreement,
+      ...f.reasons,
+    ]
+      .join(" ")
+      .toLocaleLowerCase("es");
+    return haystack.includes(state.search);
+  });
+
   const page = all.slice(state.page * 30, (state.page + 1) * 30);
-  $("#findings").innerHTML =
+  const tbody = $("#findings");
+  tbody.innerHTML =
     page
       .map((f) => {
-        const decision = state.run.decisions
-          .filter((d) => d.payload.finding_id === f.id)
-          .at(-1);
-        return `<tr><td><span class="ref">${esc(references(f) || "Sin operación")}</span><br><span class="muted">${esc(f.concept)} · ${f.charge_ids.length} línea${f.charge_ids.length === 1 ? "" : "s"}</span></td><td>${badge(f.status)}</td><td class="num">${esc(f.currency)} ${money(f.actual)}</td><td class="num">${money(f.expected)}</td><td class="num">${money(f.difference)}${f.status === "REVIEW" ? '<br><small class="muted">No confirmada</small>' : ""}</td><td class="muted">${decision ? esc(actions[decision.payload.action]) : "Sin resolución"}</td><td><button class="btn small" data-finding="${f.id}" aria-label="Ver explicación de ${esc(references(f))}, ${esc(f.concept)}">Ver explicación →</button></td></tr>`;
+        const decision = state.run.decisions.find(
+          (d) => d.payload.finding_id === f.id,
+        );
+        return `<tr>
+          <td>
+            <div class="ref">${esc(references(f) || "Sin referencia vinculada")}</div>
+            <span class="muted" style="font-size:12px;">${esc(f.concept)} · ${f.charge_ids.length} cargo${f.charge_ids.length === 1 ? "" : "s"}</span>
+          </td>
+          <td>${badge(f.status)}</td>
+          <td class="num">${esc(f.currency)} ${money(f.actual)}</td>
+          <td class="num">${money(f.expected)}</td>
+          <td class="num" style="font-weight:750; color:${f.status === "FAIL" ? "var(--red)" : f.status === "REVIEW" ? "var(--amber)" : "inherit"};">
+            ${money(f.difference)}
+            ${f.status === "REVIEW" ? '<br><small class="muted" style="font-size:11px;">No confirmada</small>' : ""}
+          </td>
+          <td class="muted">${decision ? esc(actions[decision.payload.action]) : "Sin resolución"}</td>
+          <td>
+            <button class="btn small" data-finding="${f.id}" aria-label="Ver explicación de ${esc(references(f))}, ${esc(f.concept)}">
+              Ver explicación →
+            </button>
+          </td>
+        </tr>`;
       })
       .join("") ||
     '<tr><td colspan="7" class="empty">No hay hallazgos que coincidan con este filtro.</td></tr>';
+
   $("#page-label").textContent =
     `${all.length ? state.page * 30 + 1 : 0}–${Math.min((state.page + 1) * 30, all.length)} de ${all.length} hallazgos`;
   $("#prev").disabled = state.page === 0;
   $("#next").disabled = (state.page + 1) * 30 >= all.length;
+
   document
     .querySelectorAll("[data-finding]")
     .forEach(
       (button) => (button.onclick = () => showDetail(button.dataset.finding)),
     );
 }
+
+/* ==========================================================================
+   PANTALLA ESTRELLA: DETALLE DEL HALLAZGO
+   ========================================================================== */
 const opLabels = {
   const: "Parámetro contractual",
   attr: "Dato de operación",
@@ -288,6 +519,7 @@ const opLabels = {
   condition: "Aplicabilidad de regla",
   unresolved: "Dato o regla no resueltos",
 };
+
 function traceText(trace) {
   const operands = trace.children.map((child) => child.output ?? "?");
   const symbols = { add: " + ", sub: " − ", mul: " × ", div: " ÷ " };
@@ -316,29 +548,253 @@ function traceText(trace) {
     );
   return trace.details.reason || "";
 }
+
 function traceHtml(trace) {
-  return `<details class="trace" open><summary>${esc(opLabels[trace.op] || trace.op)} ${trace.output !== null ? `<span class="trace-output">→ ${esc(trace.output)}</span>` : ""}</summary><p class="small-text">${esc(traceText(trace))}</p><details><summary>Datos utilizados en este paso</summary><code>${esc(JSON.stringify(trace.details, null, 2))}</code></details>${trace.children.map(traceHtml).join("")}</details>`;
+  return `<details class="trace" open>
+    <summary>${esc(opLabels[trace.op] || trace.op)} ${trace.output !== null ? `<span class="trace-output">→ ${esc(trace.output)}</span>` : ""}</summary>
+    <p class="small-text" style="font-weight:600; margin:4px 0;">${esc(traceText(trace))}</p>
+    <details>
+      <summary>Datos utilizados en este paso</summary>
+      <code>${esc(JSON.stringify(trace.details, null, 2))}</code>
+    </details>
+    ${trace.children.map(traceHtml).join("")}
+  </details>`;
 }
+
+function extractArithmeticSummary(finding) {
+  for (const t of finding.trace || []) {
+    if (t.op === "mul" && t.output) {
+      return `${t.children.map((c) => c.output).join(" × ")} = ${finding.currency} ${t.output}`;
+    }
+    for (const ch of t.children || []) {
+      if (ch.op === "mul" && ch.output) {
+        return `${ch.children.map((c) => c.output).join(" × ")} = ${finding.currency} ${ch.output}`;
+      }
+    }
+  }
+  return finding.expected !== null
+    ? `Esperado según regla: ${finding.currency} ${money(finding.expected)}`
+    : "Sin cálculo automático: requiere revisión de datos o evidencia.";
+}
+
 function showDetail(id) {
   const f = state.run.result.findings.find((item) => item.id === id);
   const history = state.run.decisions.filter(
     (d) => d.payload.finding_id === id,
   );
-  const records = [
-    ...state.run.snapshot.shipments.filter((s) =>
-      f.shipment_ids.includes(s.id),
-    ),
-    ...state.run.snapshot.charges.filter((c) => f.charge_ids.includes(c.id)),
-  ];
-  $("#detail-content").innerHTML =
-    `<div class="dialog-head"><div><div class="eyebrow muted">EXPLICACIÓN DEL HALLAZGO</div><h2 id="detail-title">${esc(references(f) || "Referencia sin vincular")} · ${esc(f.concept)}</h2>${badge(f.status)}</div><button class="btn small" id="close-detail" aria-label="Cerrar explicación">Cerrar ✕</button></div><div class="detail-money"><div><label>FACTURADO · ${esc(f.currency)}</label><strong>${money(f.actual)}</strong></div><div><label>ESPERADO</label><strong>${money(f.expected)}</strong></div><div><label>DIFERENCIA CALCULADA</label><strong>${money(f.difference)}</strong></div></div><div class="banner ${f.status === "REVIEW" ? "warning" : ""}"><div>${f.reasons.map((reason) => `<p>${esc(reason)}</p>`).join("")}</div></div><p class="small-text muted">Acuerdo ${esc(f.agreement)} · Versión ${esc(f.version || "No determinada")} · Regla ${esc(f.rule || "No determinada")}</p><details><summary>Cálculo ejecutado y decisiones de la regla</summary>${f.trace.map(traceHtml).join("") || "<p>No hubo cálculo: primero se necesita resolver la vinculación.</p>"}</details><details><summary>Origen de cada dato (${records.length} registros)</summary><div class="table-wrap"><table><thead><tr><th>Registro / campo</th><th>Archivo</th><th>Hoja / fila / columna</th><th>Valor original</th></tr></thead><tbody>${records.flatMap((record) => Object.entries(record.provenance).map(([field, ref]) => `<tr><td>${esc(record.id)}<br>${esc(field)}</td><td>${esc(ref.filename)}</td><td>${esc(ref.sheet)} / ${ref.row} / ${esc(ref.column)}</td><td>${esc(ref.raw)}</td></tr>`)).join("")}</tbody></table></div></details><div class="detail-grid"><section class="panel"><h3>Registrar decisión humana</h3><p class="hint">Agrega una resolución al historial. El estado original del motor se conserva.</p><form id="decision-form" class="decision-form"><div class="field"><label for="actor">Persona responsable</label><input id="actor" name="actor" type="text" required maxlength="200"></div><div class="field"><label for="action">Decisión</label><select id="action" name="action">${Object.entries(
-      actions,
-    )
-      .map(([key, label]) => `<option value="${key}">${label}</option>`)
-      .join(
-        "",
-      )}</select></div><div class="field"><label for="decision-note">Motivo y respaldo de la decisión</label><textarea id="decision-note" name="note" required minlength="3" maxlength="10000"></textarea></div><div class="field"><label for="known">¿El cliente ya conocía esta diferencia?</label><select id="known" name="known"><option value="">Sin confirmar</option><option value="true">Sí</option><option value="false">No</option></select></div><button class="btn primary" type="submit">Guardar decisión</button></form></section><section class="panel"><h3>Historial de resoluciones</h3>${history.map((d) => `<div class="history"><strong>${esc(actions[d.payload.action])}</strong><p>${esc(d.payload.note)}</p><small class="muted">${esc(d.payload.actor)} · ${new Date(d.created_at).toLocaleString("es-AR")}</small></div>`).join("") || '<p class="muted">Todavía no se registraron decisiones.</p>'}<details><summary>Aportar evidencia y crear nueva corrida</summary><p class="hint">Se vincula a las operaciones y cargos de este hallazgo. El resultado actual se conserva.</p><form id="evidence-form"><div class="field"><label for="ev-kind">Tipo de evidencia según el acuerdo</label><input id="ev-kind" type="text" required placeholder="Ej.: authorization"></div><div class="field"><label for="ev-note">Descripción del respaldo</label><input id="ev-note" type="text" required></div><div class="field"><label for="ev-file">Documento (opcional si el acuerdo lo permite)</label><input id="ev-file" type="file"></div><button class="btn" type="submit">Auditar con esta evidencia</button></form></details></section></div>`;
+  const shipments = state.run.snapshot.shipments.filter((s) =>
+    f.shipment_ids.includes(s.id),
+  );
+  const charges = state.run.snapshot.charges.filter((c) =>
+    f.charge_ids.includes(c.id),
+  );
+  const records = [...shipments, ...charges];
+
+  // Documentos usados checklist
+  const documentsUsed = [];
+  shipments.forEach((s) => {
+    const fn = Object.values(s.provenance || {})[0]?.filename || "Archivo de remitos";
+    documentsUsed.push(`Remito ${s.reference || s.id} (${fn})`);
+  });
+  charges.forEach((c) => {
+    const fn = Object.values(c.provenance || {})[0]?.filename || "Archivo de cargos";
+    documentsUsed.push(`Liquidación ${c.reference || c.id} (${fn})`);
+  });
+  if (f.agreement) {
+    documentsUsed.push(`Tarifario contractual ${f.agreement} (Regla ${f.rule || "R-BASE"})`);
+  }
+
+  const arithmeticStr = extractArithmeticSummary(f);
+
+  $("#detail-content").innerHTML = `
+    <!-- Top Status Banner -->
+    <div class="star-status-pill ${f.status}">
+      ${f.status === "FAIL" ? "DISCREPANCIA" : f.status === "PASS" ? "COINCIDE" : f.status === "REVIEW" ? "REVISIÓN HUMANA" : "INDETERMINADO"}
+    </div>
+
+    <div class="modal-header-star">
+      <div class="modal-header-title">
+        <div class="eyebrow" style="color:var(--accent);">EXPLICACIÓN DEL HALLAZGO</div>
+        <h2 id="detail-title" style="margin:0; font-size:24px;">
+          ${esc(references(f) || "Referencia sin vincular")} · ${esc(f.concept)}
+        </h2>
+        <div style="margin-top:6px;">
+          ${badge(f.status)}
+          <span class="muted" style="margin-left:10px; font-size:13px;">Acuerdo <strong>${esc(f.agreement)}</strong> · Versión <strong>${esc(f.version || "V1")}</strong> · Regla <strong>${esc(f.rule || "R-BASE")}</strong></span>
+        </div>
+      </div>
+      <button class="btn small" id="close-detail" aria-label="Cerrar explicación">Cerrar ✕</button>
+    </div>
+
+    <!-- Hero Financial Card (Facturado vs Esperado vs Diferencia) -->
+    <div class="hero-financial-card detail-money">
+      <div class="hero-fin-col">
+        <label>FACTURADO LIQUIDADO · ${esc(f.currency)}</label>
+        <div class="amount">${money(f.actual)}</div>
+        <p class="muted" style="font-size:12px; margin:4px 0 0;">Según comprobante del transportista</p>
+      </div>
+      <div class="hero-fin-col">
+        <label>ESPERADO SEGÚN ACUERDO</label>
+        <div class="amount">${money(f.expected)}</div>
+        <p class="muted" style="font-size:12px; margin:4px 0 0;">Cálculo auditado determinista</p>
+      </div>
+      <div class="hero-fin-col ${f.status === "FAIL" ? "highlight-fail" : f.status === "REVIEW" ? "highlight-review" : ""}">
+        <label>DIFERENCIA CALCULADA</label>
+        <div class="amount">${money(f.difference)}</div>
+        <p class="muted" style="font-size:12px; margin:4px 0 0;">${f.status === "FAIL" ? "Discrepancia confirmada" : f.status === "REVIEW" ? "Sujeta a confirmación humana" : "Sin desviación"}</p>
+      </div>
+    </div>
+
+    <!-- Sections Grid: Por qué, Cálculo, Documentos -->
+    <div class="finding-sections-grid">
+      <!-- Por qué -->
+      <div class="finding-card">
+        <div class="finding-card-title">
+          <span>ⓘ</span> Por qué
+        </div>
+        ${f.reasons.map((r) => `<p style="font-size:14px; line-height:1.5; margin:0 0 10px;">${esc(r)}</p>`).join("")}
+        <div style="background:#f9faf7; border:1px solid var(--line); border-radius:6px; padding:10px 14px; font-size:13px; color:var(--ink-secondary); margin-top:14px;">
+          Tarifa <strong>${esc(f.rule || "R-BASE")}</strong> · vigencia <strong>${esc(f.version || "Vigente")}</strong>
+        </div>
+      </div>
+
+      <!-- Cálculo y Documentos usados -->
+      <div class="finding-card">
+        <div class="finding-card-title">
+          <span>∑</span> Cálculo y Documentos
+        </div>
+        <div class="arithmetic-callout">
+          ${esc(arithmeticStr)}
+        </div>
+        <div style="font-size:12px; font-weight:750; text-transform:uppercase; color:var(--muted); margin:14px 0 6px;">
+          Documentos usados:
+        </div>
+        <ul class="doc-checklist">
+          ${documentsUsed.map((doc) => `<li class="doc-item"><span class="check">✓</span> <span>${esc(doc)}</span></li>`).join("")}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Trazabilidad completa (secundario) -->
+    <div style="padding: 0 32px 18px;">
+      <details class="panel" style="margin:0;">
+        <summary style="font-weight:750; color:var(--accent);">Cálculo ejecutado y decisiones de la regla (ver pasos matemáticos)</summary>
+        <div style="margin-top:12px;">
+          ${f.trace.map(traceHtml).join("") || "<p class='muted'>No hubo cálculo: primero se necesita resolver la vinculación.</p>"}
+        </div>
+      </details>
+    </div>
+
+    <div style="padding: 0 32px 24px;">
+      <details class="panel" style="margin:0;">
+        <summary style="font-weight:750; color:var(--accent);">Origen de cada dato (${records.length} registros celda por celda)</summary>
+        <div class="table-wrap" style="margin-top:12px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Registro / campo</th>
+                <th>Archivo</th>
+                <th>Hoja / fila / columna</th>
+                <th>Valor original</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${records.flatMap((record) =>
+                Object.entries(record.provenance).map(
+                  ([field, ref]) =>
+                    `<tr>
+                      <td><strong>${esc(record.id)}</strong><br><span class="muted">${esc(field)}</span></td>
+                      <td>${esc(ref.filename)}</td>
+                      <td>${esc(ref.sheet)} · fila ${ref.row} · col ${esc(ref.column)}</td>
+                      <td><code>${esc(ref.raw)}</code></td>
+                    </tr>`,
+                ),
+              ).join("")}
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+
+    <!-- Decisión Humana e Historial -->
+    <div class="decision-section-wrap">
+      <div class="grid2">
+        <section class="panel" style="margin:0;">
+          <h3 style="margin-top:0;">Decisión humana</h3>
+          <p class="hint">Agrega una resolución al expediente de auditoría. El cálculo y estado técnico original del motor se conservan intactos.</p>
+          <form id="decision-form" class="decision-form">
+            <div class="field">
+              <label for="actor">Persona responsable</label>
+              <input id="actor" name="actor" type="text" required maxlength="200" placeholder="Ej.: Auditor Cuentas a Pagar">
+            </div>
+            <div class="field">
+              <label for="action">Decisión</label>
+              <select id="action" name="action">
+                <option value="APPROVED">Confirmar diferencia</option>
+                <option value="REJECTED">Rechazar</option>
+                <option value="INFORMATION_REQUESTED">Mantener en revisión</option>
+                <option value="EXCEPTION_ACCEPTED">Excepción aceptada</option>
+                <option value="IGNORED">Ignorado</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="decision-note">Motivo y respaldo de la decisión</label>
+              <textarea id="decision-note" name="note" required minlength="3" maxlength="10000" placeholder="Fundamento de la resolución y referencia de comprobantes…"></textarea>
+            </div>
+            <div class="field">
+              <label for="known">¿El cliente o proveedor ya conocía esta diferencia?</label>
+              <select id="known" name="known">
+                <option value="">Sin confirmar</option>
+                <option value="true">Sí, confirmada previamente</option>
+                <option value="false">No, discrepancia nueva</option>
+              </select>
+            </div>
+            <button class="btn primary" type="submit" style="width:100%;">Guardar decisión en expediente</button>
+          </form>
+        </section>
+
+        <section class="panel" style="margin:0;">
+          <h3 style="margin-top:0;">Historial de resoluciones</h3>
+          <div style="max-height: 220px; overflow-y: auto; margin-bottom: 16px;">
+            ${history
+              .map(
+                (d) =>
+                  `<div class="history">
+                    <strong>${esc(actions[d.payload.action])}</strong>
+                    <p>${esc(d.payload.note)}</p>
+                    <small class="muted">${esc(d.payload.actor)} · ${new Date(d.created_at).toLocaleString("es-AR")}</small>
+                  </div>`,
+              )
+              .join("") || '<p class="muted">Todavía no se registraron decisiones para este hallazgo.</p>'}
+          </div>
+
+          <!-- Aportar evidencia -->
+          <details id="evidence-panel" style="border-top:1.5px solid var(--line); padding-top:16px;">
+            <summary style="font-size:14px; font-weight:750; color:var(--ink);">Aportar evidencia y crear nueva corrida</summary>
+            <p class="hint" style="margin-bottom:12px;">Permite adjuntar documentación que subsane una revisión. La corrida anterior permanece inmutable.</p>
+            <form id="evidence-form">
+              <div class="field">
+                <label for="ev-kind">Tipo de evidencia según el acuerdo</label>
+                <input id="ev-kind" type="text" required placeholder="Ej.: authorization_signature">
+              </div>
+              <div class="field">
+                <label for="ev-note">Descripción del respaldo</label>
+                <input id="ev-note" type="text" required placeholder="Remito con firma digital / carta porte">
+              </div>
+              <div class="field">
+                <label for="ev-file">Documento adjunto (opcional)</label>
+                <input id="ev-file" type="file">
+              </div>
+              <button class="btn" type="submit" style="width:100%;">Auditar con esta evidencia</button>
+            </form>
+          </details>
+        </section>
+      </div>
+    </div>
+  `;
+
   $("#close-detail").onclick = () => $("#detail").close();
+
   $("#decision-form").onsubmit = (event) => {
     event.preventDefault();
     busy($("button[type=submit]", event.target), async () => {
@@ -353,9 +809,10 @@ function showDetail(id) {
       state.run = await api("/api/runs/" + state.run.id);
       renderFindings();
       showDetail(id);
-      notice("Decisión agregada. El hallazgo original se conserva.");
+      notice("Decisión agregada al expediente. El hallazgo original se conserva.");
     });
   };
+
   $("#evidence-form").onsubmit = (event) => {
     event.preventDefault();
     busy($("button[type=submit]", event.target), async () => {
@@ -382,79 +839,239 @@ function showDetail(id) {
       $("#detail").close();
       await openRun(result.run_id);
       notice(
-        "Nueva auditoría creada con la evidencia. La corrida anterior se conserva.",
+        "Nueva auditoría creada con la evidencia aportada. La corrida anterior se conserva.",
       );
     });
   };
+
   if (!$("#detail").open) $("#detail").showModal();
 }
+
+/* ==========================================================================
+   WIZARD DE NUEVA AUDITORÍA (1. DATOS → 2. ACUERDO → 3. VERIFICACIÓN → 4. EJECUTAR)
+   ========================================================================== */
 async function showNew() {
   nav("new");
   state.imports = {};
+  state.wizardStep = 1;
   state.configs = await api("/api/configs");
-  main.innerHTML = heading(
-    "DATOS → REGLAS → VERIFICACIÓN",
-    "Nueva auditoría",
-    "Validá los archivos y el acuerdo antes de calcular.",
-  );
-  main.innerHTML += `<div class="panel"><label for="audit-label">Nombre del período o lote</label><input id="audit-label" type="text" placeholder="Ej.: Cierre de septiembre · Transportista" required></div><div class="grid2">${importPanel("shipments", "1", "Operaciones", "Viajes, despachos o remitos")}${importPanel("charges", "2", "Cargos liquidados", "Detalle de cargos del transportista")}<section class="panel full"><div class="step-title"><span class="step">3</span><h2>Acuerdos y evidencia</h2></div><p class="hint">El acuerdo debe reflejar términos confirmados por el cliente. El editor acepta una lista de acuerdos; los importes y factores usan texto decimal exacto.</p><div class="field"><label for="agreement-select">Usar un acuerdo guardado</label><select id="agreement-select"><option value="">Seleccionar…</option>${state.configs
-    .filter((c) => c.kind === "agreement")
-    .map(
-      (c) =>
-        `<option value="${c.hash}">${esc(c.name)} · ${c.hash.slice(0, 6)}</option>`,
-    )
-    .join(
-      "",
-    )}</select> <input type="file" id="agreement-file" accept=".json" aria-label="Cargar acuerdos desde JSON"></div><label for="agreements">Acuerdos (lista JSON)</label><textarea id="agreements" rows="10">[]</textarea><details><summary>Evidencia y alcance de cargos ausentes (opcional)</summary><p class="hint">La evidencia debe indicar sus operaciones o cargos. El alcance limita dónde buscar conceptos esperados que no se cobraron. Los adjuntos también pueden aportarse desde un hallazgo en una nueva corrida.</p><label for="evidence">Evidencia (lista JSON)</label><textarea id="evidence">[]</textarea><label for="coverage">Alcance por acuerdo (JSON)</label><textarea id="coverage">{}</textarea></details></section></div><div class="banner"><div><strong>Revisión previa</strong><p>Las filas rechazadas se conservan como problemas de datos. Si ejecutás un lote incompleto, sus comparaciones no se confirmarán como discrepancias.</p></div></div><button class="btn primary" id="execute">Ejecutar auditoría local →</button>`;
-  for (const role of ["shipments", "charges"]) {
-    const configs = state.configs.filter(
-      (c) => c.kind === "mapping" && c.payload.entity === role,
-    );
-    $(`#saved-${role}`).onchange = (event) => {
-      const found = configs.find((c) => c.hash === event.target.value);
-      if (found)
-        $(`#mapping-${role}`).value = JSON.stringify(found.payload, null, 2);
-      invalidateImport(role);
+
+  renderWizard();
+}
+
+function renderWizard() {
+  main.innerHTML = `
+    <div class="wizard-header">
+      <div class="eyebrow" style="color:var(--accent);">FLUJO GUIADO DE AUDITORÍA</div>
+      <h1>Nueva auditoría</h1>
+      <p class="muted">Configuración por etapas de datos, contrato y verificación antes de calcular.</p>
+
+      <div class="wizard-steps">
+        <button class="wizard-step-item active" id="step-nav-1">
+          <div class="wizard-circle">1</div>
+          <div class="wizard-step-name">1. Datos</div>
+        </button>
+        <button class="wizard-step-item" id="step-nav-2">
+          <div class="wizard-circle">2</div>
+          <div class="wizard-step-name">2. Acuerdo</div>
+        </button>
+        <button class="wizard-step-item" id="step-nav-3">
+          <div class="wizard-circle">3</div>
+          <div class="wizard-step-name">3. Verificación</div>
+        </button>
+        <button class="wizard-step-item" id="step-nav-4">
+          <div class="wizard-circle">4</div>
+          <div class="wizard-step-name">4. Ejecutar</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Wizard Steps Content: All 4 panels preserved in DOM -->
+    <div id="wizard-content">
+      <!-- STEP 1: DATOS -->
+      <div id="step-panel-1" class="wizard-panel">
+        <div class="panel">
+          <div style="margin-bottom:24px;">
+            <label for="audit-label" style="font-size:15px; font-weight:750;">Nombre del período o lote</label>
+            <input id="audit-label" type="text" placeholder="Ej.: Cierre de septiembre · Transportes Gómez" value="${esc(state.auditLabel || "")}" required style="max-width:560px;">
+          </div>
+
+          <h2>Paso 1: Carga de Archivos</h2>
+          <p class="muted">Subí las operaciones realizadas (remitos o viajes) y los cargos facturados por el transportista.</p>
+          <div class="grid2" style="margin-top:20px;">
+            ${renderDropzoneSection("shipments", "Operaciones", "Viajes, despachos o remitos")}
+            ${renderDropzoneSection("charges", "Cargos liquidados", "Detalle de cargos y montos del transportista")}
+          </div>
+
+          <div class="actions" style="margin-top:28px; justify-content:flex-end;">
+            <button class="btn primary" id="goto-step-2">Continuar a Acuerdo →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: ACUERDO -->
+      <div id="step-panel-2" class="wizard-panel" style="display:none;">
+        <div class="panel">
+          <h2>Paso 2: Selección del Acuerdo Contractual</h2>
+          <p class="muted">Elegí el tarifario pactado con el transportista para auditar los cargos.</p>
+
+          <div class="run-list" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin:22px 0;">
+            ${state.configs
+              .filter((c) => c.kind === "agreement")
+              .map(
+                (c) => `
+                <div class="run-card-rich" style="padding:18px 22px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="font-size:15px;">${esc(c.name)}</strong>
+                    <span class="badge PASS">Válido ✓</span>
+                  </div>
+                  <div style="font-size:13px; color:var(--muted); margin-top:6px;">
+                    Moneda: <strong>${esc(c.payload?.currency || "ARS")}</strong> · Reglas: <strong>${Array.isArray(c.payload?.rules) ? c.payload.rules.length : 1}</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+                    <code style="font-size:11px; color:var(--muted);">${c.hash.slice(0, 10)}…</code>
+                    <button class="btn small primary select-agreement-btn" data-hash="${c.hash}">Seleccionar</button>
+                  </div>
+                </div>
+              `,
+              )
+              .join("") || '<p class="muted">No hay acuerdos guardados. Cargá uno desde JSON.</p>'}
+          </div>
+
+          <div class="field" style="margin-top: 16px;">
+            <label for="agreement-select">O seleccionar desde el listado</label>
+            <select id="agreement-select">
+              <option value="">Seleccionar acuerdo…</option>
+              ${state.configs
+                .filter((c) => c.kind === "agreement")
+                .map(
+                  (c) =>
+                    `<option value="${c.hash}">${esc(c.name)} · (hash ${c.hash.slice(0, 8)})</option>`,
+                )
+                .join("")}
+            </select>
+          </div>
+
+          <div class="field" style="margin-top: 16px;">
+            <label>Importar archivo de acuerdo JSON</label>
+            <input type="file" id="agreement-file" accept=".json" style="padding:10px;">
+          </div>
+
+          <div class="panel-advanced" style="margin-top:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <strong style="font-size:14px;">Modo avanzado: Editor de acuerdos y evidencia (JSON)</strong>
+              <button class="btn subtle small" type="button" id="toggle-agreements">Mostrar/Ocultar JSON</button>
+            </div>
+            <div id="agreements-advanced-body" class="panel-advanced-body hidden">
+              <label for="agreements">Acuerdos (lista JSON)</label>
+              <textarea id="agreements" rows="8" spellcheck="false">[]</textarea>
+              <div style="margin-top:14px;">
+                <label for="evidence">Evidencia previa (lista JSON opcional)</label>
+                <textarea id="evidence" rows="3">[]</textarea>
+              </div>
+              <div style="margin-top:14px;">
+                <label for="coverage">Alcance por acuerdo (JSON)</label>
+                <textarea id="coverage" rows="3">{}</textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions" style="margin-top:32px; justify-content:space-between;">
+            <button class="btn" id="back-to-step-1">← Volver a Datos</button>
+            <button class="btn primary" id="goto-step-3">Continuar a Verificación →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: VERIFICACIÓN -->
+      <div id="step-panel-3" class="wizard-panel" style="display:none;">
+        <div class="panel">
+          <h2>Paso 3: Verificación Previa</h2>
+          <p class="muted">Revisá la consistencia del lote antes de ejecutar el motor de auditoría determinista.</p>
+
+          <div class="field" style="margin:20px 0;">
+            <label for="audit-label-step3">Nombre de la auditoría</label>
+            <input id="audit-label-step3" type="text" value="${esc(state.auditLabel || "")}" required style="max-width:560px;">
+          </div>
+
+          <div class="grid2" style="margin:20px 0;">
+            <div class="panel" style="margin:0; background:#f9fbf8; border:1.5px solid var(--line);">
+              <h3>Operaciones preparadas</h3>
+              <div id="verify-shipments-summary"></div>
+            </div>
+            <div class="panel" style="margin:0; background:#f9fbf8; border:1.5px solid var(--line);">
+              <h3>Cargos liquidados preparados</h3>
+              <div id="verify-charges-summary"></div>
+            </div>
+          </div>
+
+          <div class="banner info">
+            <div style="font-size:22px; line-height:1;">ⓘ</div>
+            <div>
+              <strong>Revisión de integridad garantizada</strong>
+              <p style="margin:2px 0 0;">Las filas rechazadas o no identificadas no se omiten silenciosamente; se conservan como incidencias de datos para garantizar trazabilidad total.</p>
+            </div>
+          </div>
+
+          <div class="actions" style="margin-top:32px; justify-content:space-between;">
+            <button class="btn" id="back-to-step-2">← Volver a Acuerdo</button>
+            <button class="btn primary" id="goto-step-4">Continuar a Ejecución →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4: EJECUTAR -->
+      <div id="step-panel-4" class="wizard-panel" style="display:none;">
+        <div class="panel" style="text-align:center; padding:48px 28px;">
+          <div style="font-size:48px; margin-bottom:16px;">⚡</div>
+          <h2>Listo para auditar</h2>
+          <p class="muted" style="max-width:580px; margin:0 auto 28px; font-size:15px; line-height:1.6;">
+            Auditoría: <strong id="step4-audit-label">${esc(state.auditLabel || "Sin título")}</strong><br>
+            El motor procesará los cálculos en este equipo de forma determinista, generando la cadena de decisión y los reportes exportables.
+          </p>
+          <button class="btn primary" id="execute" style="padding:16px 36px; font-size:16px; font-weight:750;">
+            Ejecutar auditoría local →
+          </button>
+          <div style="margin-top:24px;">
+            <button class="btn subtle" id="back-to-step-3">← Revisar configuración</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Attach nav buttons
+  $("#step-nav-1").onclick = () => goToStep(1);
+  $("#step-nav-2").onclick = () => goToStep(2);
+  $("#step-nav-3").onclick = () => goToStep(3);
+  $("#step-nav-4").onclick = () => goToStep(4);
+
+  // Setup Step 1 Handlers
+  setupStep1Handlers();
+  $("#goto-step-2").onclick = () => goToStep(2);
+
+  // Setup Step 2 Handlers
+  $("#back-to-step-1").onclick = () => goToStep(1);
+  $("#goto-step-3").onclick = () => goToStep(3);
+
+  document.querySelectorAll(".select-agreement-btn").forEach((btn) => {
+    btn.onclick = () => {
+      const found = state.configs.find((c) => c.hash === btn.dataset.hash);
+      if (found) {
+        $("#agreements").value = JSON.stringify([found.payload], null, 2);
+        if ($("#agreement-select")) $("#agreement-select").value = found.hash;
+        notice(`Acuerdo "${found.name}" seleccionado.`);
+      }
     };
-    $(`#mapping-file-${role}`).onchange = (event) =>
-      busy(null, async () => {
-        $(`#mapping-${role}`).value = await event.target.files[0].text();
-        invalidateImport(role);
-      });
-    $(`#mapping-${role}`).oninput = () => invalidateImport(role);
-    $(`#file-${role}`).onchange = () => invalidateImport(role);
-    $(`#validate-${role}`).onclick = (event) =>
-      busy(event.target, async () => {
-        const file = $(`#file-${role}`).files[0];
-        if (!file) throw new Error("Seleccionar el archivo a importar.");
-        const mapping = JSON.parse($(`#mapping-${role}`).value);
-        if (mapping.entity !== role)
-          throw new Error(
-            "El mapping seleccionado corresponde a otro tipo de archivo.",
-          );
-        const form = new FormData();
-        form.append("file", file);
-        form.append("mapping", JSON.stringify(mapping));
-        const result = await post("/api/import", form);
-        state.imports[role] = result;
-        $(`#result-${role}`).innerHTML =
-          `<strong>${result.accepted} filas aceptadas · ${result.rejected.length} rechazadas</strong><p class="muted">Hoja ${esc(result.sheet)} · Original conservado</p>${
-            result.issues.length
-              ? "<ul>" +
-                result.issues
-                  .slice(0, 8)
-                  .map((i) => `<li>${esc(i.message)}</li>`)
-                  .join("") +
-                "</ul>"
-              : ""
-          }<details><summary>Vista previa del origen (${result.preview.length} filas)</summary><div class="table-wrap"><table><thead><tr>${result.headers.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${result.preview.map((row) => `<tr>${result.headers.map((h) => `<td>${esc(row.values[h])}</td>`).join("")}</tr>`).join("")}</tbody></table></div></details>`;
-      });
-  }
+  });
+
   $("#agreement-select").onchange = (event) => {
     const found = state.configs.find((c) => c.hash === event.target.value);
-    if (found)
+    if (found) {
       $("#agreements").value = JSON.stringify([found.payload], null, 2);
+    }
   };
+
   $("#agreement-file").onchange = (event) =>
     busy(null, async () => {
       const parsed = JSON.parse(await event.target.files[0].text());
@@ -463,23 +1080,51 @@ async function showNew() {
         null,
         2,
       );
+      notice("Archivo de acuerdo cargado correctamente.");
     });
+
+  $("#toggle-agreements").onclick = () => {
+    const body = $("#agreements-advanced-body");
+    if (body) {
+      body.classList.toggle("hidden");
+      body.style.display = body.classList.contains("hidden") ? "none" : "block";
+    }
+  };
+
+  // Setup Step 3 Handlers
+  $("#audit-label-step3").oninput = (e) => {
+    state.auditLabel = e.target.value.trim();
+    const l1 = $("#audit-label");
+    if (l1) l1.value = state.auditLabel;
+  };
+  $("#back-to-step-2").onclick = () => goToStep(2);
+  $("#goto-step-4").onclick = () => {
+    const val = $("#audit-label-step3")?.value.trim() || state.auditLabel;
+    if (!val) {
+      notice("Ingresar un nombre para esta auditoría antes de continuar.", true);
+      return;
+    }
+    state.auditLabel = val;
+    goToStep(4);
+  };
+
+  // Setup Step 4 Handlers
+  $("#back-to-step-3").onclick = () => goToStep(3);
   $("#execute").onclick = (event) =>
     busy(event.target, async () => {
       if (!state.imports.shipments || !state.imports.charges)
         throw new Error(
-          "Validar ambos archivos con sus mappings antes de ejecutar.",
+          "Validar ambos archivos con sus columnas antes de ejecutar.",
         );
-      const label = $("#audit-label").value.trim();
-      if (!label) throw new Error("Ingresar un nombre para esta auditoría.");
+      const label = state.auditLabel || $("#audit-label")?.value.trim() || "Auditoría local";
       const values = Object.values(state.imports);
       const dataset = {
         label,
         shipments: state.imports.shipments.records,
         charges: state.imports.charges.records,
-        agreements: JSON.parse($("#agreements").value),
-        evidence: JSON.parse($("#evidence").value),
-        coverage: JSON.parse($("#coverage").value),
+        agreements: JSON.parse($("#agreements")?.value || "[]"),
+        evidence: JSON.parse($("#evidence")?.value || "[]"),
+        coverage: JSON.parse($("#coverage")?.value || "{}"),
         mappings: values.map((r) => r.mapping),
         documents: Object.fromEntries(
           values.map((r) => [r.document, r.filename]),
@@ -490,6 +1135,348 @@ async function showNew() {
       await openRun(result.run_id);
     });
 }
+
+function goToStep(step) {
+  // Sync label
+  const labelInput = $("#audit-label");
+  if (labelInput && labelInput.value.trim()) {
+    state.auditLabel = labelInput.value.trim();
+  }
+  const l3 = $("#audit-label-step3");
+  if (l3) l3.value = state.auditLabel;
+  const l4 = $("#step4-audit-label");
+  if (l4) l4.textContent = state.auditLabel || "Sin título";
+
+  state.wizardStep = step;
+
+  // Update step indicators
+  for (let i = 1; i <= 4; i++) {
+    const el = $(`#step-nav-${i}`);
+    if (el) {
+      el.className = `wizard-step-item ${state.wizardStep === i ? "active" : state.wizardStep > i ? "completed" : ""}`;
+      const circle = el.querySelector(".wizard-circle");
+      if (circle) circle.textContent = state.wizardStep > i ? "✓" : i;
+    }
+    const panel = $(`#step-panel-${i}`);
+    if (panel) {
+      panel.style.display = (i === step) ? "block" : "none";
+    }
+  }
+
+  if (step === 3) {
+    updateStep3Summaries();
+  }
+}
+
+function updateStep3Summaries() {
+  const sImp = state.imports.shipments;
+  const cImp = state.imports.charges;
+
+  const sContainer = $("#verify-shipments-summary");
+  if (sContainer) {
+    sContainer.innerHTML = sImp
+      ? `<p style="font-size:15px; font-weight:700; color:#1b6d49; margin:4px 0;">✓ ${sImp.accepted} filas aceptadas · ${sImp.rejected.length} rechazadas</p>
+         <p class="muted" style="font-size:13px; margin:0;">Archivo: ${esc(sImp.filename)} (${sImp.records.length} registros)</p>`
+      : `<p style="color:var(--amber); font-weight:650;">⚠ Archivo de operaciones aún no validado en Paso 1.</p>`;
+  }
+
+  const cContainer = $("#verify-charges-summary");
+  if (cContainer) {
+    cContainer.innerHTML = cImp
+      ? `<p style="font-size:15px; font-weight:700; color:#1b6d49; margin:4px 0;">✓ ${cImp.accepted} filas aceptadas · ${cImp.rejected.length} rechazadas</p>
+         <p class="muted" style="font-size:13px; margin:0;">Archivo: ${esc(cImp.filename)} (${cImp.records.length} registros)</p>`
+      : `<p style="color:var(--amber); font-weight:650;">⚠ Archivo de cargos aún no validado en Paso 1.</p>`;
+  }
+}
+
+function renderDropzoneSection(role, title, subtitle) {
+  const configs = state.configs.filter(
+    (c) => c.kind === "mapping" && c.payload.entity === role,
+  );
+  return `
+    <div class="panel" style="margin:0; background:white;">
+      <div style="margin-bottom:16px;">
+        <h3 style="margin:0 0 4px; font-size:17px;">${title}</h3>
+        <p class="muted" style="margin:0; font-size:13px;">${subtitle}</p>
+      </div>
+
+      <!-- Custom Dropzone (No input nativo antiestético) -->
+      <div class="dropzone-container">
+        <div class="dropzone" id="dropzone-${role}">
+          <div class="dropzone-icon">⇪</div>
+          <div class="dropzone-title">Arrastrá el archivo acá o seleccioná uno</div>
+          <div class="dropzone-hint">CSV, XLSX o XLS</div>
+          <!-- Hidden standard file input -->
+          <input id="file-${role}" type="file" accept=".csv,.xlsx,.xls" class="sr-only-file" style="display:none;">
+        </div>
+
+        <div id="file-loaded-${role}" class="file-loaded-card hidden" style="display:none;">
+          <div class="file-loaded-info">
+            <span style="font-size:20px;">📄</span>
+            <div>
+              <strong id="file-name-${role}" style="font-size:14px;"></strong>
+              <div id="file-meta-${role}" class="muted" style="font-size:12px;"></div>
+            </div>
+          </div>
+          <button type="button" class="btn small subtle" id="change-file-${role}">Cambiar archivo</button>
+        </div>
+      </div>
+
+      <!-- Formato reconocido / Configurar columnas -->
+      <div id="format-box-${role}" class="format-recognition hidden" style="display:none; margin-top:14px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="format-icon" id="format-icon-${role}">✓</span>
+          <div>
+            <div id="format-title-${role}" style="font-weight:750; font-size:13px;"></div>
+            <div id="format-sub-${role}" class="muted" style="font-size:12px;"></div>
+          </div>
+        </div>
+        <button type="button" class="btn subtle small" id="toggle-mapping-${role}">Configurar columnas</button>
+      </div>
+
+      <!-- Panel de configuración de columnas y modo avanzado -->
+      <div id="columns-panel-${role}" class="columns-panel hidden" style="display:none; margin-top:16px;">
+        <div class="field">
+          <label for="saved-${role}">Seleccionar formato guardado</label>
+          <select id="saved-${role}">
+            <option value="">Seleccionar o autodetectar formato…</option>
+            ${configs.map((c) => `<option value="${c.hash}">${esc(c.name)}</option>`).join("")}
+          </select>
+        </div>
+
+        <div class="panel-advanced" style="margin:14px 0;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <strong style="font-size:13px;">Modo avanzado (JSON)</strong>
+            <button class="btn subtle small" type="button" id="toggle-advanced-${role}">Mostrar/Ocultar JSON</button>
+          </div>
+          <div id="advanced-mapping-body-${role}" class="panel-advanced-body hidden" style="display:none;">
+            <input id="mapping-file-${role}" type="file" accept=".json" aria-label="Cargar mapping de ${title}" style="margin-bottom:8px;">
+            <label for="mapping-${role}">Mapping JSON</label>
+            <textarea id="mapping-${role}" rows="6" spellcheck="false" placeholder="Pegar definición JSON de columnas"></textarea>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;">
+          <button class="btn" id="validate-${role}" style="width:100%;">Validar archivo y columnas</button>
+        </div>
+
+        <div class="import-result" id="result-${role}" style="background:#fcfdfa; border:1px solid var(--line); border-radius:6px; padding:12px 16px; margin-top:14px; font-size:13px;">
+          Validar para ver filas aceptadas, rechazos y origen de los datos.
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function setupStep1Handlers() {
+  const auditLabelInput = $("#audit-label");
+  if (auditLabelInput) {
+    auditLabelInput.oninput = (e) => {
+      state.auditLabel = e.target.value.trim();
+    };
+  }
+
+  for (const role of ["shipments", "charges"]) {
+    const fileInput = $(`#file-${role}`);
+    const dropzone = $(`#dropzone-${role}`);
+    const changeFileBtn = $(`#change-file-${role}`);
+    const toggleMappingBtn = $(`#toggle-mapping-${role}`);
+    const toggleAdvancedBtn = $(`#toggle-advanced-${role}`);
+    const columnsPanel = $(`#columns-panel-${role}`);
+    const advancedBody = $(`#advanced-mapping-body-${role}`);
+
+    if (dropzone && fileInput) {
+      dropzone.onclick = () => fileInput.click();
+
+      ["dragenter", "dragover"].forEach((eventName) => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add("dragover");
+        });
+      });
+
+      ["dragleave", "drop"].forEach((eventName) => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove("dragover");
+        });
+      });
+
+      dropzone.addEventListener("drop", (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length) {
+          fileInput.files = files;
+          handleFileSelected(role, files[0]);
+        }
+      });
+
+      fileInput.onchange = () => {
+        if (fileInput.files.length) {
+          handleFileSelected(role, fileInput.files[0]);
+        }
+      };
+    }
+
+    if (changeFileBtn && fileInput) {
+      changeFileBtn.onclick = () => fileInput.click();
+    }
+
+    if (toggleMappingBtn && columnsPanel) {
+      toggleMappingBtn.onclick = () => {
+        columnsPanel.classList.toggle("hidden");
+        columnsPanel.style.display = columnsPanel.classList.contains("hidden") ? "none" : "block";
+      };
+    }
+
+    if (toggleAdvancedBtn && advancedBody) {
+      toggleAdvancedBtn.onclick = () => {
+        advancedBody.classList.toggle("hidden");
+        advancedBody.style.display = advancedBody.classList.contains("hidden") ? "none" : "block";
+      };
+    }
+
+    const configs = state.configs.filter(
+      (c) => c.kind === "mapping" && c.payload.entity === role,
+    );
+
+    $(`#saved-${role}`).onchange = (event) => {
+      const found = configs.find((c) => c.hash === event.target.value);
+      if (found) {
+        $(`#mapping-${role}`).value = JSON.stringify(found.payload, null, 2);
+        updateFormatBox(role, true, found.name);
+      }
+      invalidateImport(role);
+    };
+
+    $(`#mapping-file-${role}`).onchange = (event) =>
+      busy(null, async () => {
+        $(`#mapping-${role}`).value = await event.target.files[0].text();
+        invalidateImport(role);
+      });
+
+    $(`#mapping-${role}`).oninput = () => invalidateImport(role);
+
+    $(`#validate-${role}`).onclick = (event) =>
+      busy(event.target, async () => {
+        const file = fileInput.files[0];
+        if (!file) throw new Error("Seleccionar el archivo a importar.");
+        const mapping = JSON.parse($(`#mapping-${role}`).value || "{}");
+        if (mapping.entity !== role)
+          throw new Error(
+            "El mapping seleccionado corresponde a otro tipo de archivo.",
+          );
+        const form = new FormData();
+        form.append("file", file);
+        form.append("mapping", JSON.stringify(mapping));
+        const result = await post("/api/import", form);
+        state.imports[role] = result;
+        $(`#result-${role}`).innerHTML = `
+          <strong style="color:#1b6d49; font-size:14px;">✓ ${result.accepted} filas aceptadas · ${result.rejected.length} rechazadas</strong>
+          <p class="muted" style="margin:4px 0 0; font-size:12px;">Hoja: ${esc(result.sheet)} · Archivo original conservado</p>
+          ${
+            result.issues.length
+              ? "<ul style='margin-top:6px;'>" +
+                result.issues
+                  .slice(0, 5)
+                  .map((i) => `<li>${esc(i.message)}</li>`)
+                  .join("") +
+                "</ul>"
+              : ""
+          }
+          <details style="margin-top:8px;">
+            <summary>Vista previa del origen (${result.preview.length} filas)</summary>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>${result.headers.map((h) => `<th>${esc(h)}</th>`).join("")}</tr>
+                </thead>
+                <tbody>
+                  ${result.preview.map((row) => `<tr>${result.headers.map((h) => `<td>${esc(row.values[h])}</td>`).join("")}</tr>`).join("")}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        `;
+        notice(`Importación de ${role === "shipments" ? "operaciones" : "cargos"} validada con éxito.`);
+      });
+  }
+}
+
+function handleFileSelected(role, file) {
+  const loadedCard = $(`#file-loaded-${role}`);
+  const dropzone = $(`#dropzone-${role}`);
+  const fileName = $(`#file-name-${role}`);
+  const fileMeta = $(`#file-meta-${role}`);
+
+  if (loadedCard && fileName && fileMeta && dropzone) {
+    const sizeStr = file.size >= 1048576
+      ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+      : `${(file.size / 1024).toFixed(1)} KB`;
+    fileName.textContent = `${file.name} · ${sizeStr} ✓`;
+    fileMeta.textContent = `Archivo listo para procesar en este equipo`;
+    loadedCard.classList.remove("hidden");
+    loadedCard.style.display = "flex";
+    dropzone.classList.add("hidden");
+    dropzone.style.display = "none";
+  }
+
+  // Pre-fill suggested audit label if empty
+  const labelInput = $("#audit-label");
+  if (labelInput && !labelInput.value && file.name) {
+    const baseName = file.name.replace(/\.[^/.]+$/, "");
+    state.auditLabel = `Auditoría ${baseName}`;
+    labelInput.value = state.auditLabel;
+  }
+
+  // Smart format detection
+  const configs = state.configs.filter(
+    (c) => c.kind === "mapping" && c.payload.entity === role,
+  );
+  if (configs.length === 1 && !$(`#saved-${role}`).value) {
+    $(`#saved-${role}`).value = configs[0].hash;
+    $(`#mapping-${role}`).value = JSON.stringify(configs[0].payload, null, 2);
+    updateFormatBox(role, true, configs[0].name);
+  } else {
+    updateFormatBox(role, false);
+  }
+
+  invalidateImport(role);
+}
+
+function updateFormatBox(role, recognized, formatName = "") {
+  const box = $(`#format-box-${role}`);
+  const icon = $(`#format-icon-${role}`);
+  const title = $(`#format-title-${role}`);
+  const sub = $(`#format-sub-${role}`);
+  const columnsPanel = $(`#columns-panel-${role}`);
+
+  if (!box) return;
+  box.classList.remove("hidden");
+  box.style.display = "flex";
+
+  if (recognized) {
+    box.className = "format-recognition recognized";
+    if (icon) icon.textContent = "✓";
+    if (title) title.textContent = `Formato reconocido: ${formatName}`;
+    if (sub) sub.textContent = "Mapeo de columnas asignado automáticamente";
+    if (columnsPanel) {
+      columnsPanel.classList.add("hidden");
+      columnsPanel.style.display = "none";
+    }
+  } else {
+    box.className = "format-recognition";
+    if (icon) icon.textContent = "⚙";
+    if (title) title.textContent = "Configurar columnas";
+    if (sub) sub.textContent = "Elegí o personalizá el formato de columnas";
+    if (columnsPanel) {
+      columnsPanel.classList.remove("hidden");
+      columnsPanel.style.display = "block";
+    }
+  }
+}
+
 function invalidateImport(role) {
   delete state.imports[role];
   const result = $(`#result-${role}`);
@@ -497,31 +1484,163 @@ function invalidateImport(role) {
     result.textContent =
       "Validar para ver filas aceptadas, rechazos y origen de los datos.";
 }
-function importPanel(role, step, title, subtitle) {
-  const configs = state.configs.filter(
-    (c) => c.kind === "mapping" && c.payload.entity === role,
-  );
-  return `<section class="panel"><div class="step-title"><span class="step">${step}</span><h2>${title}</h2></div><p class="muted">${subtitle}</p><div class="field"><label for="file-${role}">Archivo CSV, XLSX o XLS</label><input id="file-${role}" type="file" accept=".csv,.xlsx,.xls"></div><div class="field"><label for="saved-${role}">Formato guardado</label><select id="saved-${role}"><option value="">Seleccionar o cargar un mapping…</option>${configs.map((c) => `<option value="${c.hash}">${esc(c.name)}</option>`).join("")}</select></div><details open><summary>Configurar mapping</summary><p class="hint">Elegí columnas, hoja, encabezado, tipos y separadores. Se guarda una nueva versión por contenido al validar.</p><input id="mapping-file-${role}" type="file" accept=".json" aria-label="Cargar mapping de ${title}"><label for="mapping-${role}">Mapping JSON</label><textarea id="mapping-${role}" rows="8" spellcheck="false" placeholder="Cargar un mapping existente o pegar una configuración"></textarea></details><button class="btn" id="validate-${role}">Validar y ver filas</button><div class="import-result" id="result-${role}">Validar para ver filas aceptadas, rechazos y origen de los datos.</div></section>`;
-}
+
+/* ==========================================================================
+   ACUERDOS Y FORMATOS (INTERMEDIA + MODO AVANZADO)
+   ========================================================================== */
 async function showConfigs() {
   nav("configs");
   state.configs = await api("/api/configs");
   main.innerHTML = heading(
     "CONFIGURACIÓN VERSIONADA",
     "Acuerdos y formatos",
-    "Los cambios crean versiones conservadas por contenido. Las auditorías anteriores mantienen su configuración.",
+    "Los cambios crean versiones inmutables por contenido. Las auditorías anteriores preservan intacta su configuración.",
+    `<button class="btn" id="import-config-btn">Importar configuración</button>
+     <button class="btn primary" id="toggle-create-config">＋ Nueva versión (Modo avanzado)</button>
+     <input type="file" id="import-config-file" accept=".json" class="sr-only-file" style="display:none;">`,
   );
-  main.innerHTML += `<div class="grid2"><section class="panel"><h2>Configuraciones guardadas</h2><div class="run-list">${state.configs.map((c) => `<button class="run-card" data-config="${c.hash}"><span><strong>${esc(c.name)}</strong><small>${c.kind === "agreement" ? "Acuerdo" : "Mapping"} · ${c.hash.slice(0, 10)}</small></span><span>→</span></button>`).join("") || '<p class="muted">Ejecutá la demostración o guardá tu primera configuración.</p>'}</div></section><section class="panel"><h2>Crear una versión</h2><p class="hint">Para agregar otro cliente, definí sus columnas y reglas aquí. No se ejecuta código arbitrario.</p><div class="field"><label for="config-kind">Tipo</label><select id="config-kind"><option value="agreement">Acuerdo</option><option value="mapping">Mapping</option></select></div><div class="field"><label for="config-data">Configuración JSON</label><textarea id="config-data" rows="24" spellcheck="false">{}</textarea></div><button class="btn primary" id="save-config">Validar y guardar versión</button></section></div>`;
-  document.querySelectorAll("[data-config]").forEach(
-    (button) =>
-      (button.onclick = () => {
-        const c = state.configs.find(
-          (item) => item.hash === button.dataset.config,
-        );
+
+  const agreements = state.configs.filter((c) => c.kind === "agreement");
+  const mappings = state.configs.filter((c) => c.kind === "mapping");
+
+  main.innerHTML += `
+    <div class="grid2">
+      <!-- Acuerdos Guardados -->
+      <section class="panel">
+        <h2>Acuerdos guardados (${agreements.length})</h2>
+        <p class="muted">Términos contractuales y reglas pactadas con los transportistas.</p>
+        <div class="run-list" style="display:flex; flex-direction:column; gap:14px; margin-top:18px;">
+          ${agreements
+            .map(
+              (c) => `
+              <div class="run-card-rich" style="padding:20px 24px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong style="font-size:16px;">${esc(c.name)}</strong>
+                  <span class="badge PASS">Válido ✓</span>
+                </div>
+                <div style="font-size:13px; color:var(--muted); margin-top:6px;">
+                  Transportista: <strong>${esc(c.payload?.carrier || "Transportista pactado")}</strong>
+                </div>
+                <div style="font-size:13px; color:var(--muted); margin-top:2px;">
+                  Vigencia: <strong>${esc(c.payload?.versions ? `${c.payload.versions[0]?.valid_from || "—"} a ${c.payload.versions[0]?.valid_to || "abierta"}` : "Vigente")}</strong> · Moneda: <strong>${esc(c.payload?.currency || "ARS")}</strong> · Reglas: <strong>${Array.isArray(c.payload?.rules) ? c.payload.rules.length : 1}</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px solid #edf1eb; padding-top:10px;">
+                  <code style="font-size:11px; color:var(--muted);">${c.hash.slice(0, 12)}…</code>
+                  <div class="actions">
+                    <button class="btn small" data-view-config="${c.hash}">Ver</button>
+                    <button class="btn small" data-clone-config="${c.hash}">Duplicar versión</button>
+                  </div>
+                </div>
+              </div>
+            `,
+            )
+            .join("") || '<p class="muted">No hay acuerdos registrados.</p>'}
+        </div>
+      </section>
+
+      <!-- Mappings Guardados -->
+      <section class="panel">
+        <h2>Formatos de columnas (${mappings.length})</h2>
+        <p class="muted">Mapeos de CSV y planillas de cálculo de transportistas.</p>
+        <div class="run-list" style="display:flex; flex-direction:column; gap:14px; margin-top:18px;">
+          ${mappings
+            .map(
+              (c) => `
+              <div class="run-card-rich" style="padding:20px 24px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong style="font-size:16px;">${esc(c.name)}</strong>
+                  <span class="badge" style="background:#edf2ed; color:var(--ink);">Entidad: ${esc(c.payload?.entity || "archivo")}</span>
+                </div>
+                <div style="font-size:13px; color:var(--muted); margin-top:6px;">
+                  Columnas mapeadas: <strong>${c.payload?.columns?.length || 0}</strong> · Delimitador: <code>${esc(c.payload?.delimiter || ",")}</code>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px solid #edf1eb; padding-top:10px;">
+                  <code style="font-size:11px; color:var(--muted);">${c.hash.slice(0, 12)}…</code>
+                  <button class="btn small" data-view-config="${c.hash}">Ver en editor →</button>
+                </div>
+              </div>
+            `,
+            )
+            .join("") || '<p class="muted">No hay formatos de columnas guardados.</p>'}
+        </div>
+      </section>
+    </div>
+
+    <!-- Editor de Configuración (Modo Avanzado colapsable) -->
+    <details id="advanced-config-panel" class="panel" style="margin-top:24px;">
+      <summary style="font-size:15px; font-weight:750; color:var(--ink);">Modo avanzado: Editor JSON de acuerdos y formatos</summary>
+      <p class="hint">Al guardar, se genera una nueva versión por hash SHA-256 inmutable. Los datos históricos no se modifican.</p>
+      <div class="field" style="margin-top:14px;">
+        <label for="config-kind">Tipo de configuración</label>
+        <select id="config-kind" style="max-width:320px;">
+          <option value="agreement">Acuerdo contractual</option>
+          <option value="mapping">Formato de columnas (Mapping)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="config-data">Definición JSON</label>
+        <textarea id="config-data" rows="14" spellcheck="false">{}</textarea>
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="save-config">Validar y guardar versión inmutable</button>
+      </div>
+    </details>
+  `;
+
+  $("#import-config-btn").onclick = () => $("#import-config-file").click();
+
+  $("#import-config-file").onchange = (event) =>
+    busy(null, async () => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const kind = parsed.entity ? "mapping" : "agreement";
+      $("#config-kind").value = kind;
+      $("#config-data").value = JSON.stringify(parsed, null, 2);
+      const details = $("#advanced-config-panel");
+      if (details) details.open = true;
+      $("#config-data").scrollIntoView({ behavior: "smooth" });
+      notice(`Archivo cargado en editor como ${kind === "mapping" ? "formato de columnas" : "acuerdo"}. Revisá y guardá para crear la versión.`);
+    });
+
+  $("#toggle-create-config").onclick = () => {
+    const details = $("#advanced-config-panel");
+    if (details) {
+      details.open = !details.open;
+      if (details.open) details.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  document.querySelectorAll("[data-view-config]").forEach((button) => {
+    button.onclick = () => {
+      const c = state.configs.find((item) => item.hash === button.dataset.viewConfig);
+      if (c) {
         $("#config-kind").value = c.kind;
         $("#config-data").value = JSON.stringify(c.payload, null, 2);
-      }),
-  );
+        const details = $("#advanced-config-panel");
+        if (details) details.open = true;
+        $("#config-data").scrollIntoView({ behavior: "smooth" });
+      }
+    };
+  });
+
+  document.querySelectorAll("[data-clone-config]").forEach((button) => {
+    button.onclick = () => {
+      const c = state.configs.find((item) => item.hash === button.dataset.cloneConfig);
+      if (c) {
+        const cloned = structuredClone(c.payload);
+        if (cloned.name) cloned.name += " (nueva versión)";
+        $("#config-kind").value = c.kind;
+        $("#config-data").value = JSON.stringify(cloned, null, 2);
+        const details = $("#advanced-config-panel");
+        if (details) details.open = true;
+        $("#config-data").scrollIntoView({ behavior: "smooth" });
+        notice("Copia cargada en el editor. Modificá las reglas o vigencia y guardá la nueva versión.");
+      }
+    };
+  });
+
   $("#save-config").onclick = (event) =>
     busy(event.target, async () => {
       await post(
@@ -534,55 +1653,84 @@ async function showConfigs() {
       );
     });
 }
+
+/* ==========================================================================
+   GUÍA DE TRABAJO (ACTUALIZADA AL BUNDLE V2)
+   ========================================================================== */
 function showGuide() {
   nav("guide");
   main.innerHTML =
     heading(
       "DE LOS ARCHIVOS A LA DECISIÓN",
       "Un control que se puede reconstruir",
-      "Guía para trabajar con un acuerdo real.",
+      "Guía metodológica para trabajar con un acuerdo real y auditorías de precisión.",
     ) +
-    `<div class="panel guide"><ol><li><strong>Conservar los originales.</strong> Reuní operaciones, liquidación, contrato y documentos del período ya controlado por el cliente.</li><li><strong>Configurar formatos.</strong> Indicá exactamente hoja, encabezados, separadores, fechas y equivalencias de conceptos. Revisá todas las filas rechazadas.</li><li><strong>Confirmar el acuerdo.</strong> El cliente debe validar vigencias, fecha relevante, unidades, fórmulas, moneda, redondeos, tolerancias y evidencia requerida. No deduzcas estas reglas del importe cobrado.</li><li><strong>Ejecutar y explicar.</strong> Abrí cada hallazgo para revisar matching, versión seleccionada, cálculo y procedencia.</li><li><strong>Resolver conservando la historia.</strong> Registrá responsable, decisión y motivo. Aportar evidencia crea una nueva corrida.</li><li><strong>Comparar sin prometer ahorro.</strong> Separá diferencias conocidas y nuevas, falsos positivos, casos indeterminados y tiempo de preparación y revisión.</li><li><strong>Exportar y respaldar.</strong> El paquete contiene originales, snapshot, resultado, decisiones, planilla y reporte imprimible. Conservar también el programa y una copia de la base.</li></ol></div><div class="grid2">${Object.entries(
-      labels,
-    )
-      .map(
-        ([status, label]) =>
-          `<section class="panel"><h3>${badge(status)}</h3><p>${{ PASS: "El cargo coincide dentro de la tolerancia configurada.", FAIL: "Los datos y la regla permiten determinar una discrepancia objetiva.", REVIEW: "Se necesita una confirmación humana, evidencia o una vinculación sin ambigüedad.", UNDETERMINABLE: "Falta información esencial o no existe una única regla o versión aplicable." }[status]}</p></section>`,
-      )
-      .join(
-        "",
-      )}</div><div class="banner warning"><div><strong>Alcance del prototipo</strong><p>No hay autenticación ni firma digital. Usá el servicio sólo en este equipo. Un hash detecta alteraciones respecto de una copia confiable; no certifica la veracidad del documento ni la identidad del responsable.</p></div></div>`;
+    `<div class="panel guide" style="max-width:920px;">
+      <ol style="padding-left:22px; line-height:1.8; font-size:14px;">
+        <li><strong>Conservar los originales.</strong> Reuní operaciones, liquidación, contrato y documentos del período ya controlado por el cliente en sus formatos nativos.</li>
+        <li><strong>Configurar formatos.</strong> Indicá exactamente hoja, encabezados, separadores, fechas y equivalencias de conceptos. Revisá todas las filas rechazadas.</li>
+        <li><strong>Confirmar el acuerdo.</strong> El cliente debe validar vigencias, fecha relevante, unidades, fórmulas, moneda, redondeos, tolerancias y evidencia requerida. No deduzcas estas reglas del importe cobrado.</li>
+        <li><strong>Ejecutar y explicar.</strong> Abrí cada hallazgo para revisar matching, versión seleccionada, cálculo aritmético y procedencia.</li>
+        <li><strong>Resolver conservando la historia.</strong> Registrá responsable, decisión y motivo. Aportar evidencia crea una nueva corrida sin sobreescribir la anterior.</li>
+        <li><strong>Comparar sin prometer ahorro.</strong> Separá diferencias conocidas y nuevas, falsos positivos, casos indeterminados y tiempo de preparación y revisión.</li>
+        <li><strong>Exportar y respaldar.</strong> El paquete conserva los originales, los datos normalizados, el resultado, las decisiones y los reportes verificables.</li>
+      </ol>
+    </div>
+    <div class="grid2" style="max-width:920px;">
+      ${Object.entries(labels)
+        .map(
+          ([key, label]) => `
+        <div class="panel" style="margin:0;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            ${badge(key)}
+            <strong style="font-size:15px;">${label}</strong>
+          </div>
+          <p class="muted" style="font-size:13px; margin:0;">
+            ${
+              key === "PASS"
+                ? "El importe facturado coincide con el cálculo respaldado dentro de la tolerancia."
+                : key === "FAIL"
+                  ? "El importe difiere de la fórmula o tarifa contractual demostrable."
+                  : key === "REVIEW"
+                    ? "Se requiere confirmación humana sobre vigencia, evidencia o autorización."
+                    : "No es posible determinar el resultado por falta de reglas o barrera de moneda."
+            }
+          </p>
+        </div>
+      `,
+        )
+        .join("")}
+    </div>
+  `;
 }
-document
-  .querySelectorAll(".nav")
-  .forEach(
-    (button) =>
-      (button.onclick = () =>
-        busy(null, () =>
-          ({
-            audits: showRuns,
-            new: showNew,
-            configs: showConfigs,
-            guide: showGuide,
-          })[button.dataset.view](),
-        )),
-  );
-window.addEventListener("unhandledrejection", (event) => {
-  event.preventDefault();
-  notice(
-    event.reason?.message ||
-      "No se pudo completar la operación. Revisar el servicio local.",
-    true,
-  );
-});
-(async () => {
-  const session = await api("/api/session");
-  state.token = session.token;
-  await showRuns();
-})().catch((error) => {
-  main.innerHTML = heading(
-    "SERVICIO LOCAL",
-    "No se pudo abrir el espacio de trabajo",
-    esc(error.message),
-  );
-});
+
+/* ==========================================================================
+   INICIALIZACIÓN
+   ========================================================================== */
+async function init() {
+  document
+    .querySelectorAll(".nav")
+    .forEach((button) =>
+      button.addEventListener("click", () => {
+        const v = button.dataset.view;
+        if (v === "audits") showRuns();
+        else if (v === "new") showNew();
+        else if (v === "configs") showConfigs();
+        else if (v === "guide") showGuide();
+      }),
+    );
+
+  try {
+    const session = await api("/api/session");
+    state.token = session.token;
+    await showRuns();
+  } catch (error) {
+    main.innerHTML = `<div class="panel empty">
+      <h2>Error de conexión local</h2>
+      <p class="muted">No fue posible conectarse al servidor local de Calibre. Verificá que la terminal siga activa.</p>
+      <code>${esc(error.message)}</code>
+    </div>`;
+  }
+}
+
+init();

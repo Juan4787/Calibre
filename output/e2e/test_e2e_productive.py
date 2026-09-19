@@ -153,6 +153,8 @@ def run_e2e():
             print("[*] Uploading shipments and setting mapping...")
             page.set_input_files("#file-shipments", str(FIXTURES_DIR / "operaciones.csv"))
             mapping_s_text = (FIXTURES_DIR / "mapping-shipments.json").read_text(encoding="utf-8")
+            if not page.is_visible("#mapping-shipments"):
+                page.click("#toggle-advanced-shipments")
             page.fill("#mapping-shipments", mapping_s_text)
             page.click("#validate-shipments")
             page.wait_for_selector('#result-shipments:has-text("4 filas aceptadas · 0 rechazadas")')
@@ -162,15 +164,34 @@ def run_e2e():
             print("[*] Uploading charges and setting mapping...")
             page.set_input_files("#file-charges", str(FIXTURES_DIR / "cargos.csv"))
             mapping_c_text = (FIXTURES_DIR / "mapping-charges.json").read_text(encoding="utf-8")
+            if not page.is_visible("#mapping-charges"):
+                page.click("#toggle-advanced-charges")
             page.fill("#mapping-charges", mapping_c_text)
             page.click("#validate-charges")
             page.wait_for_selector('#result-charges:has-text("4 filas aceptadas · 0 rechazadas")')
             print("[✓] Charges validated: 4 accepted, 0 rejected.")
 
+            # Step 1 -> Step 2: Acuerdo
+            print("[*] Advancing to Step 2: Acuerdo...")
+            page.click("#goto-step-2")
+            page.wait_for_selector("#agreements", state="attached")
+
             # Set agreements
             print("[*] Setting agreements JSON...")
             agreements_text = (FIXTURES_DIR / "agreements.json").read_text(encoding="utf-8")
+            if not page.is_visible("#agreements"):
+                page.click("#toggle-agreements")
             page.fill("#agreements", agreements_text)
+
+            # Step 2 -> Step 3: Verificación
+            print("[*] Advancing to Step 3: Verificación...")
+            page.click("#goto-step-3")
+            page.wait_for_selector("#goto-step-4")
+
+            # Step 3 -> Step 4: Ejecutar
+            print("[*] Advancing to Step 4: Ejecutar...")
+            page.click("#goto-step-4")
+            page.wait_for_selector("#execute")
 
             page.screenshot(path=str(SCREENSHOTS_DIR / "02_nueva_auditoria_completa.png"))
 
