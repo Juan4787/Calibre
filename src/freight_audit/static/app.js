@@ -41,13 +41,24 @@ const esc = (value) =>
       ],
   );
 
-const money = (value) => {
-  if (value === null || value === undefined) return "—";
+const money = (value, fallback = "No determinable") => {
+  if (value === null || value === undefined) return fallback;
   const [whole, fraction] = String(value).split(".");
   return (
     whole.replace(/\B(?=(\d{3})+(?!\d))/g, ".") +
     (fraction ? "," + fraction : "")
   );
+};
+
+const moneyOrStatus = (value, status) => {
+  if (value === null || value === undefined) {
+    if (status === "UNDETERMINABLE")
+      return '<span class="status-explicit undeterminable">No determinable</span>';
+    if (status === "REVIEW")
+      return '<span class="status-explicit review">Requiere revisión</span>';
+    return '<span class="status-explicit muted">No totalizable</span>';
+  }
+  return money(value);
 };
 
 const badge = (status) =>
@@ -222,24 +233,21 @@ function renderRunsList() {
             <button class="run-card run-card-rich" data-run="${run.id}">
               <div class="run-card-top">
                 <div>
-                  <h3 class="run-card-title">${esc(run.label)}</h3>
-                  <div class="run-card-sub">
-                    <strong>${totalFindings} cargos</strong> · Moneda ${esc(currencies)}
-                  </div>
+                  <h3 class="run-card-title">${esc(run.label)} · ${totalFindings} cargos</h3>
+                  <div class="run-card-sub">Moneda ${esc(currencies)} · ${dateStr}</div>
                 </div>
-                <div class="run-card-date">${dateStr}</div>
+                <span class="run-card-cta">Ver auditoría →</span>
               </div>
-              <div class="run-card-metrics">
-                ${failCount > 0 ? `<span class="run-card-pill fail">⚠ ${failCount} Discrepancia${failCount === 1 ? "" : "s"}</span>` : ""}
-                ${reviewCount > 0 ? `<span class="run-card-pill review">⚡ ${reviewCount} Revisión humana</span>` : ""}
-                <span class="run-card-pill pass">✓ ${passCount} Coinciden</span>
-                ${undCount > 0 ? `<span class="run-card-pill undeterminable">? ${undCount} Indeterminados</span>` : ""}
-              </div>
-              <div class="run-card-footer">
+              <div class="run-card-bottom">
+                <div class="run-card-metrics">
+                  ${failCount > 0 ? `<span class="run-card-pill fail">⚠ ${failCount} Discrepancia${failCount === 1 ? "" : "s"}</span>` : ""}
+                  ${reviewCount > 0 ? `<span class="run-card-pill review">⚡ ${reviewCount} Revisión</span>` : ""}
+                  <span class="run-card-pill pass">✓ ${passCount} Coinciden</span>
+                  ${undCount > 0 ? `<span class="run-card-pill undeterminable">? ${undCount} Indeterminados</span>` : ""}
+                </div>
                 <span class="${isComplete ? "import-status-ok" : "muted"}">
                   ${isComplete ? "✓ Importación completa" : "⚠ Filas observadas"}
                 </span>
-                <span class="run-card-cta">Ver auditoría →</span>
               </div>
             </button>
           `;
@@ -465,14 +473,14 @@ function renderFindings() {
           </td>
           <td>${badge(f.status)}</td>
           <td class="num">${esc(f.currency)} ${money(f.actual)}</td>
-          <td class="num">${money(f.expected)}</td>
+          <td class="num">${moneyOrStatus(f.expected, f.status)}</td>
           <td class="num" style="font-weight:750; color:${f.status === "FAIL" ? "var(--red)" : f.status === "REVIEW" ? "var(--amber)" : "inherit"};">
-            ${money(f.difference)}
-            ${f.status === "REVIEW" ? '<br><small class="muted" style="font-size:11px;">No confirmada</small>' : ""}
+            ${moneyOrStatus(f.difference, f.status)}
+            ${f.status === "REVIEW" ? '<br><small class="muted" style="font-size:11px;">Requiere revisión</small>' : ""}
           </td>
           <td class="muted">${decision ? esc(actions[decision.payload.action]) : "Sin resolución"}</td>
           <td>
-            <button class="btn small" data-finding="${f.id}" aria-label="Ver explicación de ${esc(references(f))}, ${esc(f.concept)}">
+            <button class="btn small ghost" data-finding="${f.id}" aria-label="Ver explicación de ${esc(references(f))}, ${esc(f.concept)}">
               Ver explicación →
             </button>
           </td>
@@ -635,12 +643,12 @@ function showDetail(id) {
       </div>
       <div class="hero-fin-col">
         <label>ESPERADO SEGÚN ACUERDO</label>
-        <div class="amount">${money(f.expected)}</div>
+        <div class="amount">${money(f.expected, f.status === "REVIEW" ? "Requiere revisión" : "No determinable")}</div>
         <p class="muted" style="font-size:12px; margin:4px 0 0;">Cálculo auditado determinista</p>
       </div>
       <div class="hero-fin-col ${f.status === "FAIL" ? "highlight-fail" : f.status === "REVIEW" ? "highlight-review" : ""}">
         <label>DIFERENCIA CALCULADA</label>
-        <div class="amount">${money(f.difference)}</div>
+        <div class="amount">${money(f.difference, f.status === "REVIEW" ? "Requiere revisión" : "No determinable")}</div>
         <p class="muted" style="font-size:12px; margin:4px 0 0;">${f.status === "FAIL" ? "Discrepancia confirmada" : f.status === "REVIEW" ? "Sujeta a confirmación humana" : "Sin desviación"}</p>
       </div>
     </div>
@@ -886,24 +894,52 @@ function renderWizard() {
       </div>
     </div>
 
+    <!-- Compact Step Summaries for Completed Steps -->
+    <div id="wizard-summaries" style="margin-bottom:16px;">
+      <div id="step-summary-1" class="step-summary-bar hidden" style="display:none;">
+        <div class="step-summary-info">
+          <span class="step-summary-tag">✓ 1. Datos</span>
+          <span class="step-summary-desc" id="step-summary-1-text"></span>
+        </div>
+        <button type="button" class="btn small subtle" id="reopen-step-1">Modificar datos</button>
+      </div>
+      <div id="step-summary-2" class="step-summary-bar hidden" style="display:none;">
+        <div class="step-summary-info">
+          <span class="step-summary-tag">✓ 2. Acuerdo</span>
+          <span class="step-summary-desc" id="step-summary-2-text"></span>
+        </div>
+        <button type="button" class="btn small subtle" id="reopen-step-2">Modificar acuerdo</button>
+      </div>
+      <div id="step-summary-3" class="step-summary-bar hidden" style="display:none;">
+        <div class="step-summary-info">
+          <span class="step-summary-tag">✓ 3. Verificación</span>
+          <span class="step-summary-desc" id="step-summary-3-text">Integridad del lote verificada</span>
+        </div>
+        <button type="button" class="btn small subtle" id="reopen-step-3">Modificar verificación</button>
+      </div>
+    </div>
+
     <!-- Wizard Steps Content: All 4 panels preserved in DOM -->
     <div id="wizard-content">
       <!-- STEP 1: DATOS -->
       <div id="step-panel-1" class="wizard-panel">
         <div class="panel">
-          <div style="margin-bottom:24px;">
-            <label for="audit-label" style="font-size:15px; font-weight:750;">Nombre del período o lote</label>
+          <div style="margin-bottom:20px;">
+            <label for="audit-label" style="font-size:14.5px; font-weight:750;">Nombre del período o lote</label>
             <input id="audit-label" type="text" placeholder="Ej.: Cierre de septiembre · Transportes Gómez" value="${esc(state.auditLabel || "")}" required style="max-width:560px;">
           </div>
 
-          <h2>Paso 1: Carga de Archivos</h2>
-          <p class="muted">Subí las operaciones realizadas (remitos o viajes) y los cargos facturados por el transportista.</p>
-          <div class="grid2" style="margin-top:20px;">
+          <div style="margin-bottom:16px;">
+            <h2 style="margin:0 0 4px; font-size:20px;">Paso 1: Carga de Archivos</h2>
+            <p class="muted" style="margin:0; font-size:13.5px;">Subí las operaciones realizadas (remitos o viajes) y los cargos facturados por el transportista.</p>
+          </div>
+
+          <div class="grid2" style="margin-top:16px;">
             ${renderDropzoneSection("shipments", "Operaciones", "Viajes, despachos o remitos")}
             ${renderDropzoneSection("charges", "Cargos liquidados", "Detalle de cargos y montos del transportista")}
           </div>
 
-          <div class="actions" style="margin-top:28px; justify-content:flex-end;">
+          <div class="actions" style="margin-top:24px; justify-content:flex-end;">
             <button class="btn primary" id="goto-step-2">Continuar a Acuerdo →</button>
           </div>
         </div>
@@ -915,20 +951,23 @@ function renderWizard() {
           <h2>Paso 2: Selección del Acuerdo Contractual</h2>
           <p class="muted">Elegí el tarifario pactado con el transportista para auditar los cargos.</p>
 
-          <div class="run-list" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin:22px 0;">
+          <div class="run-list" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin:18px 0;">
             ${state.configs
               .filter((c) => c.kind === "agreement")
               .map(
                 (c) => `
-                <div class="run-card-rich" style="padding:18px 22px;">
+                <div class="run-card-rich" style="padding:16px 20px;">
                   <div style="display:flex; justify-content:space-between; align-items:center;">
                     <strong style="font-size:15px;">${esc(c.name)}</strong>
                     <span class="badge PASS">Válido ✓</span>
                   </div>
-                  <div style="font-size:13px; color:var(--muted); margin-top:6px;">
+                  <div style="font-size:13px; color:var(--muted); margin-top:4px;">
+                    Transportista: <strong>${esc(c.payload?.carrier || "Transportista pactado")}</strong>
+                  </div>
+                  <div style="font-size:12.5px; color:var(--muted); margin-top:2px;">
                     Moneda: <strong>${esc(c.payload?.currency || "ARS")}</strong> · Reglas: <strong>${Array.isArray(c.payload?.rules) ? c.payload.rules.length : 1}</strong>
                   </div>
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
                     <code style="font-size:11px; color:var(--muted);">${c.hash.slice(0, 10)}…</code>
                     <button class="btn small primary select-agreement-btn" data-hash="${c.hash}">Seleccionar</button>
                   </div>
@@ -938,45 +977,46 @@ function renderWizard() {
               .join("") || '<p class="muted">No hay acuerdos guardados. Cargá uno desde JSON.</p>'}
           </div>
 
-          <div class="field" style="margin-top: 16px;">
-            <label for="agreement-select">O seleccionar desde el listado</label>
-            <select id="agreement-select">
-              <option value="">Seleccionar acuerdo…</option>
-              ${state.configs
-                .filter((c) => c.kind === "agreement")
-                .map(
-                  (c) =>
-                    `<option value="${c.hash}">${esc(c.name)} · (hash ${c.hash.slice(0, 8)})</option>`,
-                )
-                .join("")}
-            </select>
+          <div style="display:flex; gap:14px; align-items:flex-end; margin-top:16px; flex-wrap:wrap;">
+            <div class="field" style="margin:0; flex:1; min-width:260px;">
+              <label for="agreement-select">O seleccionar desde el listado</label>
+              <select id="agreement-select">
+                <option value="">Seleccionar acuerdo…</option>
+                ${state.configs
+                  .filter((c) => c.kind === "agreement")
+                  .map(
+                    (c) =>
+                      `<option value="${c.hash}">${esc(c.name)} · (hash ${c.hash.slice(0, 8)})</option>`,
+                  )
+                  .join("")}
+              </select>
+            </div>
+            <div class="field" style="margin:0;">
+              <label>Importar acuerdo JSON</label>
+              <input type="file" id="agreement-file" accept=".json" style="padding:8px 10px; font-size:13px;">
+            </div>
           </div>
 
-          <div class="field" style="margin-top: 16px;">
-            <label>Importar archivo de acuerdo JSON</label>
-            <input type="file" id="agreement-file" accept=".json" style="padding:10px;">
-          </div>
-
-          <div class="panel-advanced" style="margin-top:24px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-              <strong style="font-size:14px;">Modo avanzado: Editor de acuerdos y evidencia (JSON)</strong>
+          <div class="panel-advanced" style="margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <strong style="font-size:13.5px;">Modo avanzado: Editor de acuerdos y evidencia (JSON)</strong>
               <button class="btn subtle small" type="button" id="toggle-agreements">Mostrar/Ocultar JSON</button>
             </div>
             <div id="agreements-advanced-body" class="panel-advanced-body hidden">
               <label for="agreements">Acuerdos (lista JSON)</label>
-              <textarea id="agreements" rows="8" spellcheck="false">[]</textarea>
-              <div style="margin-top:14px;">
+              <textarea id="agreements" rows="7" spellcheck="false">[]</textarea>
+              <div style="margin-top:10px;">
                 <label for="evidence">Evidencia previa (lista JSON opcional)</label>
                 <textarea id="evidence" rows="3">[]</textarea>
               </div>
-              <div style="margin-top:14px;">
+              <div style="margin-top:10px;">
                 <label for="coverage">Alcance por acuerdo (JSON)</label>
                 <textarea id="coverage" rows="3">{}</textarea>
               </div>
             </div>
           </div>
 
-          <div class="actions" style="margin-top:32px; justify-content:space-between;">
+          <div class="actions" style="margin-top:28px; justify-content:space-between;">
             <button class="btn" id="back-to-step-1">← Volver a Datos</button>
             <button class="btn primary" id="goto-step-3">Continuar a Verificación →</button>
           </div>
@@ -989,31 +1029,31 @@ function renderWizard() {
           <h2>Paso 3: Verificación Previa</h2>
           <p class="muted">Revisá la consistencia del lote antes de ejecutar el motor de auditoría determinista.</p>
 
-          <div class="field" style="margin:20px 0;">
+          <div class="field" style="margin:16px 0;">
             <label for="audit-label-step3">Nombre de la auditoría</label>
             <input id="audit-label-step3" type="text" value="${esc(state.auditLabel || "")}" required style="max-width:560px;">
           </div>
 
-          <div class="grid2" style="margin:20px 0;">
-            <div class="panel" style="margin:0; background:#f9fbf8; border:1.5px solid var(--line);">
-              <h3>Operaciones preparadas</h3>
+          <div class="grid2" style="margin:16px 0;">
+            <div style="padding:16px 18px; background:#f9fbf8; border:1px solid var(--line); border-radius:var(--radius-sm);">
+              <h3 style="margin:0 0 6px; font-size:15px;">Operaciones preparadas</h3>
               <div id="verify-shipments-summary"></div>
             </div>
-            <div class="panel" style="margin:0; background:#f9fbf8; border:1.5px solid var(--line);">
-              <h3>Cargos liquidados preparados</h3>
+            <div style="padding:16px 18px; background:#f9fbf8; border:1px solid var(--line); border-radius:var(--radius-sm);">
+              <h3 style="margin:0 0 6px; font-size:15px;">Cargos liquidados preparados</h3>
               <div id="verify-charges-summary"></div>
             </div>
           </div>
 
-          <div class="banner info">
-            <div style="font-size:22px; line-height:1;">ⓘ</div>
+          <div class="banner info" style="margin:20px 0 0;">
+            <div style="font-size:20px; line-height:1;">ⓘ</div>
             <div>
               <strong>Revisión de integridad garantizada</strong>
               <p style="margin:2px 0 0;">Las filas rechazadas o no identificadas no se omiten silenciosamente; se conservan como incidencias de datos para garantizar trazabilidad total.</p>
             </div>
           </div>
 
-          <div class="actions" style="margin-top:32px; justify-content:space-between;">
+          <div class="actions" style="margin-top:28px; justify-content:space-between;">
             <button class="btn" id="back-to-step-2">← Volver a Acuerdo</button>
             <button class="btn primary" id="goto-step-4">Continuar a Ejecución →</button>
           </div>
@@ -1022,17 +1062,17 @@ function renderWizard() {
 
       <!-- STEP 4: EJECUTAR -->
       <div id="step-panel-4" class="wizard-panel" style="display:none;">
-        <div class="panel" style="text-align:center; padding:48px 28px;">
-          <div style="font-size:48px; margin-bottom:16px;">⚡</div>
+        <div class="panel" style="text-align:center; padding:40px 24px;">
+          <div style="font-size:44px; margin-bottom:12px;">⚡</div>
           <h2>Listo para auditar</h2>
-          <p class="muted" style="max-width:580px; margin:0 auto 28px; font-size:15px; line-height:1.6;">
+          <p class="muted" style="max-width:560px; margin:0 auto 24px; font-size:14.5px; line-height:1.6;">
             Auditoría: <strong id="step4-audit-label">${esc(state.auditLabel || "Sin título")}</strong><br>
             El motor procesará los cálculos en este equipo de forma determinista, generando la cadena de decisión y los reportes exportables.
           </p>
-          <button class="btn primary" id="execute" style="padding:16px 36px; font-size:16px; font-weight:750;">
+          <button class="btn primary" id="execute" style="padding:15px 34px; font-size:15.5px; font-weight:750;">
             Ejecutar auditoría local →
           </button>
-          <div style="margin-top:24px;">
+          <div style="margin-top:20px;">
             <button class="btn subtle" id="back-to-step-3">← Revisar configuración</button>
           </div>
         </div>
@@ -1045,6 +1085,14 @@ function renderWizard() {
   $("#step-nav-2").onclick = () => goToStep(2);
   $("#step-nav-3").onclick = () => goToStep(3);
   $("#step-nav-4").onclick = () => goToStep(4);
+
+  // Attach summary reopen buttons
+  const r1 = $("#reopen-step-1");
+  if (r1) r1.onclick = () => goToStep(1);
+  const r2 = $("#reopen-step-2");
+  if (r2) r2.onclick = () => goToStep(2);
+  const r3 = $("#reopen-step-3");
+  if (r3) r3.onclick = () => goToStep(3);
 
   // Setup Step 1 Handlers
   setupStep1Handlers();
@@ -1134,6 +1182,8 @@ function renderWizard() {
       const result = await post("/api/audit", dataset);
       await openRun(result.run_id);
     });
+
+  goToStep(1);
 }
 
 function goToStep(step) {
@@ -1160,6 +1210,72 @@ function goToStep(step) {
     const panel = $(`#step-panel-${i}`);
     if (panel) {
       panel.style.display = (i === step) ? "block" : "none";
+    }
+  }
+
+  // Update compact step summary bars for completed steps
+  const sum1 = $("#step-summary-1");
+  const sum2 = $("#step-summary-2");
+  const sum3 = $("#step-summary-3");
+
+  if (sum1) {
+    if (step > 1) {
+      const sImp = state.imports.shipments;
+      const cImp = state.imports.charges;
+      const sName = sImp?.filename || "Archivo de operaciones";
+      const sCount = sImp?.accepted !== undefined ? sImp.accepted : "0";
+      const cName = cImp?.filename || "Archivo de cargos";
+      const cCount = cImp?.accepted !== undefined ? cImp.accepted : "0";
+      const s1Text = $("#step-summary-1-text");
+      if (s1Text) {
+        s1Text.innerHTML = `Operaciones: <strong>${esc(sName)}</strong> (${sCount} filas) · Cargos: <strong>${esc(cName)}</strong> (${cCount} filas) · Formatos asignados`;
+      }
+      sum1.classList.remove("hidden");
+      sum1.style.display = "flex";
+    } else {
+      sum1.classList.add("hidden");
+      sum1.style.display = "none";
+    }
+  }
+
+  if (sum2) {
+    if (step > 2) {
+      let agrName = "Acuerdo contractual";
+      let agrDetail = "ARS";
+      try {
+        const rawAgr = JSON.parse($("#agreements")?.value || "[]");
+        if (rawAgr.length > 0) {
+          agrName = rawAgr[0].carrier || rawAgr[0].name || "Acuerdo seleccionado";
+          const rules = Array.isArray(rawAgr[0].rules) ? rawAgr[0].rules.length : 1;
+          const curr = rawAgr[0].currency || "ARS";
+          agrDetail = `${rules} regla(s) · ${curr}`;
+        }
+      } catch (e) {}
+      const s2Text = $("#step-summary-2-text");
+      if (s2Text) {
+        s2Text.innerHTML = `Acuerdo: <strong>${esc(agrName)}</strong> (${esc(agrDetail)})`;
+      }
+      sum2.classList.remove("hidden");
+      sum2.style.display = "flex";
+    } else {
+      sum2.classList.add("hidden");
+      sum2.style.display = "none";
+    }
+  }
+
+  if (sum3) {
+    if (step > 3) {
+      const sCount = state.imports.shipments?.accepted || 0;
+      const cCount = state.imports.charges?.accepted || 0;
+      const s3Text = $("#step-summary-3-text");
+      if (s3Text) {
+        s3Text.innerHTML = `Lote verificado (${sCount} operaciones, ${cCount} cargos listos para auditar)`;
+      }
+      sum3.classList.remove("hidden");
+      sum3.style.display = "flex";
+    } else {
+      sum3.classList.add("hidden");
+      sum3.style.display = "none";
     }
   }
 
@@ -1194,10 +1310,12 @@ function renderDropzoneSection(role, title, subtitle) {
     (c) => c.kind === "mapping" && c.payload.entity === role,
   );
   return `
-    <div class="panel" style="margin:0; background:white;">
-      <div style="margin-bottom:16px;">
-        <h3 style="margin:0 0 4px; font-size:17px;">${title}</h3>
-        <p class="muted" style="margin:0; font-size:13px;">${subtitle}</p>
+    <div class="file-upload-block">
+      <div style="margin-bottom:4px;">
+        <h3 style="margin:0; font-size:16px;">
+          <span>${title}</span>
+          <span class="file-subtitle">${subtitle}</span>
+        </h3>
       </div>
 
       <!-- Custom Dropzone (No input nativo antiestético) -->
@@ -1212,9 +1330,9 @@ function renderDropzoneSection(role, title, subtitle) {
 
         <div id="file-loaded-${role}" class="file-loaded-card hidden" style="display:none;">
           <div class="file-loaded-info">
-            <span style="font-size:20px;">📄</span>
+            <span style="font-size:18px;">📄</span>
             <div>
-              <strong id="file-name-${role}" style="font-size:14px;"></strong>
+              <strong id="file-name-${role}" style="font-size:13.5px;"></strong>
               <div id="file-meta-${role}" class="muted" style="font-size:12px;"></div>
             </div>
           </div>
@@ -1223,7 +1341,7 @@ function renderDropzoneSection(role, title, subtitle) {
       </div>
 
       <!-- Formato reconocido / Configurar columnas -->
-      <div id="format-box-${role}" class="format-recognition hidden" style="display:none; margin-top:14px;">
+      <div id="format-box-${role}" class="format-recognition hidden" style="display:none; margin-top:8px;">
         <div style="display:flex; align-items:center; gap:10px;">
           <span class="format-icon" id="format-icon-${role}">✓</span>
           <div>
@@ -1234,35 +1352,37 @@ function renderDropzoneSection(role, title, subtitle) {
         <button type="button" class="btn subtle small" id="toggle-mapping-${role}">Configurar columnas</button>
       </div>
 
-      <!-- Panel de configuración de columnas y modo avanzado -->
-      <div id="columns-panel-${role}" class="columns-panel hidden" style="display:none; margin-top:16px;">
-        <div class="field">
-          <label for="saved-${role}">Seleccionar formato guardado</label>
-          <select id="saved-${role}">
+      <!-- Panel de configuración de columnas (colapsado por defecto) -->
+      <div id="columns-panel-${role}" class="columns-panel hidden" style="display:none; margin-top:8px;">
+        <div class="field" style="margin:0;">
+          <label for="saved-${role}" style="font-size:12.5px;">Seleccionar formato guardado</label>
+          <select id="saved-${role}" style="font-size:13px; padding:6px 10px;">
             <option value="">Seleccionar o autodetectar formato…</option>
             ${configs.map((c) => `<option value="${c.hash}">${esc(c.name)}</option>`).join("")}
           </select>
         </div>
+      </div>
 
-        <div class="panel-advanced" style="margin:14px 0;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <strong style="font-size:13px;">Modo avanzado (JSON)</strong>
-            <button class="btn subtle small" type="button" id="toggle-advanced-${role}">Mostrar/Ocultar JSON</button>
-          </div>
-          <div id="advanced-mapping-body-${role}" class="panel-advanced-body hidden" style="display:none;">
-            <input id="mapping-file-${role}" type="file" accept=".json" aria-label="Cargar mapping de ${title}" style="margin-bottom:8px;">
-            <label for="mapping-${role}">Mapping JSON</label>
-            <textarea id="mapping-${role}" rows="6" spellcheck="false" placeholder="Pegar definición JSON de columnas"></textarea>
-          </div>
+      <!-- Modo avanzado JSON colapsado -->
+      <div class="advanced-toggle" style="margin-top:4px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <button class="btn subtle small" type="button" id="toggle-advanced-${role}" style="font-size:12px; padding:4px 8px;">
+            ▸ Opciones avanzadas: mapping JSON manual
+          </button>
         </div>
+        <div id="advanced-mapping-body-${role}" class="panel-advanced-body hidden" style="display:none; margin-top:8px;">
+          <input id="mapping-file-${role}" type="file" accept=".json" aria-label="Cargar mapping de ${title}" style="margin-bottom:8px; font-size:12px;">
+          <label for="mapping-${role}" style="font-size:12px;">Mapping JSON</label>
+          <textarea id="mapping-${role}" rows="5" spellcheck="false" placeholder="Pegar definición JSON de columnas" style="font-size:12px; font-family:monospace;"></textarea>
+        </div>
+      </div>
 
-        <div style="margin-top:14px;">
-          <button class="btn" id="validate-${role}" style="width:100%;">Validar archivo y columnas</button>
-        </div>
+      <div style="margin-top:6px;">
+        <button class="btn" id="validate-${role}" style="width:100%;">Validar ${title.toLowerCase()}</button>
+      </div>
 
-        <div class="import-result" id="result-${role}" style="background:#fcfdfa; border:1px solid var(--line); border-radius:6px; padding:12px 16px; margin-top:14px; font-size:13px;">
-          Validar para ver filas aceptadas, rechazos y origen de los datos.
-        </div>
+      <div class="import-result" id="result-${role}" style="background:#fafcfb; border:1px solid #dbe3dc; border-radius:6px; padding:10px 14px; margin-top:4px; font-size:13px;">
+        Validar para ver filas aceptadas, rechazos y origen de los datos.
       </div>
     </div>
   `;
@@ -1513,19 +1633,19 @@ async function showConfigs() {
           ${agreements
             .map(
               (c) => `
-              <div class="run-card-rich" style="padding:20px 24px;">
+              <div class="run-card-rich" style="padding:14px 18px; gap:8px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <strong style="font-size:16px;">${esc(c.name)}</strong>
+                  <strong style="font-size:15px;">${esc(c.name)}</strong>
                   <span class="badge PASS">Válido ✓</span>
                 </div>
-                <div style="font-size:13px; color:var(--muted); margin-top:6px;">
+                <div style="font-size:12.5px; color:var(--muted); margin-top:2px;">
                   Transportista: <strong>${esc(c.payload?.carrier || "Transportista pactado")}</strong>
                 </div>
-                <div style="font-size:13px; color:var(--muted); margin-top:2px;">
-                  Vigencia: <strong>${esc(c.payload?.versions ? `${c.payload.versions[0]?.valid_from || "—"} a ${c.payload.versions[0]?.valid_to || "abierta"}` : "Vigente")}</strong> · Moneda: <strong>${esc(c.payload?.currency || "ARS")}</strong> · Reglas: <strong>${Array.isArray(c.payload?.rules) ? c.payload.rules.length : 1}</strong>
+                <div style="font-size:12.5px; color:var(--muted); margin-top:2px;">
+                  Vigencia: <strong>${esc(c.payload?.versions ? `${c.payload.versions[0]?.valid_from || "Inicio"} a ${c.payload.versions[0]?.valid_to || "abierta"}` : "Vigente")}</strong> · Moneda: <strong>${esc(c.payload?.currency || "ARS")}</strong> · <strong>${Array.isArray(c.payload?.rules) ? c.payload.rules.length : 1} regla(s)</strong>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px solid #edf1eb; padding-top:10px;">
-                  <code style="font-size:11px; color:var(--muted);">${c.hash.slice(0, 12)}…</code>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid #edf1eb; padding-top:8px;">
+                  <code style="font-size:11px; color:var(--muted);">hash ${c.hash.slice(0, 8)}…</code>
                   <div class="actions">
                     <button class="btn small" data-view-config="${c.hash}">Ver</button>
                     <button class="btn small" data-clone-config="${c.hash}">Duplicar versión</button>
@@ -1546,16 +1666,16 @@ async function showConfigs() {
           ${mappings
             .map(
               (c) => `
-              <div class="run-card-rich" style="padding:20px 24px;">
+              <div class="run-card-rich" style="padding:14px 18px; gap:8px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <strong style="font-size:16px;">${esc(c.name)}</strong>
+                  <strong style="font-size:15px;">${esc(c.name)}</strong>
                   <span class="badge" style="background:#edf2ed; color:var(--ink);">Entidad: ${esc(c.payload?.entity || "archivo")}</span>
                 </div>
-                <div style="font-size:13px; color:var(--muted); margin-top:6px;">
+                <div style="font-size:12.5px; color:var(--muted); margin-top:2px;">
                   Columnas mapeadas: <strong>${c.payload?.columns?.length || 0}</strong> · Delimitador: <code>${esc(c.payload?.delimiter || ",")}</code>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; border-top:1px solid #edf1eb; padding-top:10px;">
-                  <code style="font-size:11px; color:var(--muted);">${c.hash.slice(0, 12)}…</code>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; border-top:1px solid #edf1eb; padding-top:8px;">
+                  <code style="font-size:11px; color:var(--muted);">hash ${c.hash.slice(0, 8)}…</code>
                   <button class="btn small" data-view-config="${c.hash}">Ver en editor →</button>
                 </div>
               </div>
