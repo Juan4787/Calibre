@@ -1,6 +1,6 @@
 # FREIGHT AUDIT
 
-Revisión técnica actual: [RIGOR_REVIEW](docs/RIGOR_REVIEW.md). Detalla los fallos encontrados tras las campañas E2E, las correcciones, la evidencia ejecutada y los límites pendientes. El [ledger](docs/QA_COVERAGE_LEDGER.md) conserva las obligaciones completas; no declara cobertura total a partir del número de tests.
+Revisión técnica: [RIGOR_REVIEW](docs/RIGOR_REVIEW.md) y [avance del 23/09/2026](docs/QA_ADVANCEMENT_2026-09-23.md). Detallan los fallos encontrados, las correcciones, la evidencia ejecutada y los límites pendientes. El [ledger](docs/QA_COVERAGE_LEDGER.md) conserva las obligaciones completas; no declara cobertura total a partir del número de tests.
 
 Prototipo B2B local para reconstruir cargos esperados a partir de operaciones, acuerdos versionados y evidencia, compararlos con cargos reales y conservar una explicación reproducible. Todos los fixtures son **completamente ficticios**.
 
@@ -43,7 +43,7 @@ El código es portable; esta sesión verificó Linux, **no una instalación Wind
 .venv/bin/freight-audit verify-bundle output/mi-auditoria/auditoria.zip --replay
 ```
 
-La carpeta `--out` debe estar vacía: no se sustituyen informes anteriores. El comando devuelve el identificador de corrida. Para auditar un dataset ya normalizado: `freight-audit audit-json archivo.json`. Una fuente documental referenciada debe estar conservada en la base.
+La carpeta `--out` **no debe existir**: la exportación crea una carpeta nueva y rechaza enlaces simbólicos en la ruta. Si se interrumpe después de crearla, deja `EXPORTACION_INCOMPLETA.txt`; esos archivos no deben usarse y la operación debe repetirse en otra carpeta. El comando devuelve el identificador de corrida. Para auditar un dataset ya normalizado: `freight-audit audit-json archivo.json`. Una fuente documental referenciada debe estar conservada en la base.
 
 ```bash
 .venv/bin/freight-audit replay IDENTIFICADOR_DE_CORRIDA
@@ -52,11 +52,12 @@ La carpeta `--out` debe estar vacía: no se sustituyen informes anteriores. El c
 ```
 
 La opción global `--db RUTA` se coloca antes del comando. El default es `.local/audit.db`. El backup debe guardarse también fuera del equipo según el procedimiento acordado con el cliente.
+El backup exige un nombre nuevo, rechaza enlaces simbólicos en la ruta y publica una copia íntegra sin sustituir otra. La protección no cubre un proceso concurrente del mismo usuario que cambie directorios durante la escritura ni prueba supervivencia a un corte eléctrico.
 
 ## Qué contiene una exportación
 
 - `audit.json`: resultado, snapshot, metadata e historial de decisiones.
-- `snapshot.json`: datos, acuerdos, mappings, evidencia y procedencia originales de esa corrida.
+- El formato v2 incluye snapshot, acuerdos, mappings, evidencia y procedencia dentro de `audit.json`; `snapshot.json` sólo aparece en paquetes antiguos v1.
 - `auditoria.xlsx`: ocho hojas operativas, importes decimales exactos como texto, filtros y encabezados fijos.
 - `reporte.html`: resumen autocontenido, imprimible a PDF desde el navegador.
 - `sources/`: documentos originales por su hash de contenido.
@@ -73,6 +74,8 @@ Para un cliente nuevo, copiar `fixtures/second-client/` a una carpeta nueva y re
 
 Leer [guía del primer cliente real](docs/FIRST_REAL_CLIENT.md), [reglas e importación](docs/RULES_AND_IMPORTS.md) y [arquitectura](docs/ARCHITECTURE.md). Los schemas están en `docs/schemas/` y se regeneran con `freight-audit schemas`.
 
+Antes de concluir que el lote está completo, contrastar originales, cantidades e importes con un control independiente: [procedimiento y formato del control externo](docs/EXTERNAL_CONTROL.md). El ejemplo del repositorio es ficticio y no acredita que un cliente real haya aportado todos sus documentos.
+
 ## Verificación de desarrollo
 
 Ejecutar secuencialmente:
@@ -87,11 +90,12 @@ node --check src/freight_audit/static/app.js
 .venv/bin/pytest -q
 .venv/bin/python -m compileall -q src
 .venv/bin/python -m build
-.venv/bin/python scripts/benchmark.py --charges 50000 --out output/benchmark-50000.json
-.venv/bin/python scripts/benchmark.py --charges 100000 --out output/benchmark-100000.json
+.venv/bin/python output/e2e/platform_scale/benchmark_runner.py --sizes 1000 --reps 1 --skip-curve --all-exports --output-dir output/qa48-small
+# Con el árbol Git limpio y los cambios confirmados:
+.venv/bin/python scripts/verify_delivery.py --output output/delivery-verification.json
 ```
 
-Node sólo se usa para la comprobación de sintaxis de la UI, no para ejecutar el producto. `scripts/benchmark.py` mide tiempo y RSS en Linux; no mide importación, persistencia o reportes. Sus tablas de 10.000 tarifas permiten verificar que las búsquedas no recorren una tabla completa por cargo.
+Node sólo se usa para la comprobación de sintaxis de la UI, no para ejecutar el producto. El runner de 1.000 cargos mide las etapas del flujo y compara los resultados sintéticos con un oráculo; no acredita 50.000/100.000 cargos ni la UI de navegador a esa escala. Las campañas grandes requieren un equipo con memoria suficiente y controles explícitos de recursos. `verify_delivery.py` reconstruye wheel y sdist en dos copias limpias, compara sus contenidos, instala cada uno fuera del checkout y comprueba recursos, demo, replay, exportación y equivalencia económica LF/CRLF; no prueba Excel de escritorio.
 
 [Revisión adversarial](docs/ADVERSARIAL_REVIEW.md), [verificación y benchmarks](docs/VERIFICATION.md) y [entrega técnica](docs/DELIVERY.md) documentan evidencia, resultados y límites.
 

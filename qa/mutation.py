@@ -13,6 +13,28 @@ from .invariants import read_json
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def causal_assertion_failure(xml, selectors, signal):
+    """A killed mutant needs a selected test's expected assertion, not any red run."""
+    if xml is None or not signal:
+        return False, []
+    selected_names = {selector.split("::")[-1].split("[")[0] for selector in selectors}
+    cases = [case for case in xml.findall(".//testcase") if case.find("failure") is not None]
+    names = [case.get("name", "").split("[")[0] for case in cases]
+    bodies = [
+        (failure.text or "") + failure.get("message", "")
+        for case in cases
+        for failure in case.findall("failure")
+    ]
+    return (
+        bool(cases)
+        and all(name in selected_names for name in names)
+        and all("assert" in body.lower() for body in bodies)
+        and any(signal in body for body in bodies)
+        and not xml.findall(".//error"),
+        names,
+    )
+
+
 def _run_isolated_pytest(report, selectors, isolated, environment, timeout):
     return subprocess.run(
         [sys.executable, "-m", "pytest", "-q", *selectors, f"--junitxml={report}"],
@@ -79,23 +101,23 @@ def run_mutants(ids, *, execute=False, timeout=60):
                 report = isolated / "mutant.xml"
                 changed = _run_isolated_pytest(report, mutant["selectors"], isolated, environment, timeout)
                 xml = ET.parse(report).getroot() if report.exists() else None
-                failures = xml.findall(".//failure") if xml is not None else []
-                errors = xml.findall(".//error") if xml is not None else []
-                assertion_failure = any(
-                    "assert" in ((node.text or "") + node.get("message", "")).lower() for node in failures
+                causal, failed_cases = causal_assertion_failure(
+                    xml, mutant["selectors"], mutant["failure_signal"]
                 )
                 outcome = (
                     "survived"
                     if changed.returncode == 0
                     else "killed"
-                    if changed.returncode == 1 and assertion_failure and not errors
-                    else "inconclusive (not an assertion failure)"
+                    if changed.returncode == 1 and causal
+                    else "inconclusive (no expected causal assertion)"
                 )
                 outcomes.append(
                     {
                         "id": mutant["id"],
                         "outcome": outcome,
                         "selectors": mutant["selectors"],
+                        "failure_signal": mutant["failure_signal"],
+                        "failed_cases": failed_cases,
                         "output": changed.stdout[-5000:] + changed.stderr[-1000:],
                     }
                 )

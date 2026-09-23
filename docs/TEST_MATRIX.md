@@ -46,21 +46,21 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 | [QA-38](#qa-38) | Límites de reportes y contenido activo | CRITICAL | P0 / A | parcial | 60 / 30 |
 | [QA-39](#qa-39) | UI conserva semántica visible y estado actual | CRITICAL | P0 / A | parcial | 60 / 15 |
 | [QA-40](#qa-40) | Barrera de red local | CRITICAL | P0 / A | parcial | 60 / 30 |
-| [QA-41](#qa-41) | Rutas, archivos y sobrescritura | CRITICAL | P0 / A | diseñado | 60 / 15 |
+| [QA-41](#qa-41) | Rutas, archivos y sobrescritura | CRITICAL | P0 / A | parcial | 60 / 15 |
 | [QA-42](#qa-42) | XML/ZIP malicioso acotado | CRITICAL | P0 / A | parcial | 60 / 15 |
 | [QA-43](#qa-43) | Errores de API y consistencia de operación | HIGH | P1 / A | parcial | 48 / 24 |
 | [QA-44](#qa-44) | Auditoría sin servicios externos | HIGH | P1 / A | parcial | 48 / 24 |
 | [QA-45](#qa-45) | Representación contractual y mapping aprobados | CRITICAL | P0 / A | diseñado | 60 / 15 |
 | [QA-46](#qa-46) | Generalidad de cinco arquetipos | HIGH | P1 / A | parcial | 48 / 12 |
-| [QA-47](#qa-47) | Paquete y plataforma real | HIGH | P1 / B | diseñado | 48 / 6 |
-| [QA-48](#qa-48) | Escala, memoria y tiempos de todas las etapas | HIGH | P2 / B | diseñado | 48 / 6 |
+| [QA-47](#qa-47) | Paquete y plataforma real | HIGH | P1 / B | parcial | 48 / 6 |
+| [QA-48](#qa-48) | Escala, memoria y tiempos de todas las etapas | HIGH | P2 / B | parcial | 48 / 6 |
 | [QA-49](#qa-49) | Los verificadores detectan corrupción | CRITICAL | P0 / A | nuevo | 60 / 30 |
 | [QA-50](#qa-50) | Mutantes críticos dirigidos | CRITICAL | P0 / A | nuevo | 60 / 15 |
 | [QA-51](#qa-51) | Validación ciega con cliente | CRITICAL | P0 / B | diseñado | 60 / 7.5 |
 | [QA-52](#qa-52) | Gate de pago sin nuestra supervisión | CRITICAL | P0 / B | diseñado | 60 / 7.5 |
 | [QA-53](#qa-53) | IDs y JSON inequívocos | CRITICAL | P0 / A | parcial | 60 / 30 |
 | [QA-54](#qa-54) | Bundle portable y ancla externa | CRITICAL | P0 / A | parcial | 60 / 30 |
-| [QA-55](#qa-55) | Entrega reproducible y dependencias | HIGH | P1 / B | diseñado | 48 / 12 |
+| [QA-55](#qa-55) | Entrega reproducible y dependencias | HIGH | P1 / B | parcial | 48 / 12 |
 | [QA-56](#qa-56) | Separación de liquidaciones y alcance de obligación | CRITICAL | P0 / A | parcial | 60 / 15 |
 | [QA-57](#qa-57) | Diagnóstico no muta evidencia | CRITICAL | P0 / A | nuevo | 60 / 30 |
 | [QA-58](#qa-58) | Píxel exacto y matrices visuales exhaustivas | LOW | P3 / C | diferido | 2 / 0.25 |
@@ -486,11 +486,11 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
 - **FIXTURE_DATOS:** Libro2hojas/hiddenrows/merged/date styles/formula con cache; ver corpus en QA_CASES
 - **PASOS_EXACTOS:** 1. Especificar sheet. 2. Importar con columnas requeridas vacías/merged. 3. Añadir fórmula cacheada y fila oculta. 4. Cotejar alcance declarado.
-- **RESULTADO_ESPERADO:** Varias hojas sin selección error; fórmula mapeada rechazada; sin fill-forward. Ocultas requieren alcance visible: falta automatizar warning en producto.
+- **RESULTADO_ESPERADO:** Varias hojas sin selección error; fórmula mapeada rechazada; sin fill-forward. Hoja o datos ocultos bloquean la importación hasta hacerlos visibles y revisar el alcance.
 - **ORACULO:** OR-04
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** Fila oculta puede ser legítima; no descartarla por defecto.
-- **FALSOS_NEGATIVOS:** Happy path XLSX no cubre estilos/hidden/cache; deuda explícita.
+- **FALSOS_NEGATIVOS:** Los casos de ocultamiento probados no cubren todos los productores, estilos, merges ni caches reales.
 - **AUTOMATIZABLE:** parcialmente
 - **TIPO_IDEAL:** fuzz; manual
 - **COSTO_EJECUCION:** medio
@@ -500,7 +500,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **CUANDO:** cambio afectado; CI; release; después de incidente
 - **RESPUESTA_SI_FALLA:** IR-07 IR-15 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
-- **SELECTORES:** tests/test_importing.py::test_multisheet_requires_selection; tests/test_importing.py::test_xlsx_formula_never_evaluated_or_taken_as_cache; tests/test_importing.py::test_original_numeric_tokens_follow_sparse_sheet_coordinates
+- **SELECTORES:** tests/test_importing.py::test_multisheet_requires_selection; tests/test_importing.py::test_xlsx_formula_never_evaluated_or_taken_as_cache; tests/test_importing.py::test_original_numeric_tokens_follow_sparse_sheet_coordinates; tests/test_importing.py::test_xlsx_hidden_business_data_blocks_import_until_made_visible; tests/test_importing.py::test_xlsx_hidden_selected_sheet_blocks_import
 - **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
@@ -513,7 +513,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **INTERVENCION_HUMANA:** sí
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_importing.py::test_multisheet_requires_selection tests/test_importing.py::test_xlsx_formula_never_evaluated_or_taken_as_cache tests/test_importing.py::test_original_numeric_tokens_follow_sparse_sheet_coordinates
+.venv/bin/python -m pytest -q tests/test_importing.py::test_multisheet_requires_selection tests/test_importing.py::test_xlsx_formula_never_evaluated_or_taken_as_cache tests/test_importing.py::test_original_numeric_tokens_follow_sparse_sheet_coordinates tests/test_importing.py::test_xlsx_hidden_business_data_blocks_import_until_made_visible tests/test_importing.py::test_xlsx_hidden_selected_sheet_blocks_import
 ```
 
 ## QA-12
@@ -613,7 +613,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **ORACULO:** OR-03 OR-04 OR-01
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** Subtotal/cabecera no es fila económica duplicada.
-- **FALSOS_NEGATIVOS:** Import_complete=true no demuestra documentos completos.
+- **FALSOS_NEGATIVOS:** El comparador sólo detecta omisiones incluidas en un inventario externo independiente; no puede demostrar que ese inventario sea verdadero/completo ni reemplaza la validación humana.
 - **AUTOMATIZABLE:** parcialmente
 - **TIPO_IDEAL:** integration
 - **COSTO_EJECUCION:** bajo
@@ -623,8 +623,8 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **CUANDO:** cambio afectado; CI; release; después de incidente
 - **RESPUESTA_SI_FALLA:** IR-02 IR-07 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
-- **SELECTORES:** tests/test_engine.py::test_import_rejects_block_economic_confirmation; tests/test_integration.py::test_invalid_fixture_rejects_visible_rows
-- **RUNNERS:** Pendiente: sin selector automatizado
+- **SELECTORES:** tests/test_engine.py::test_import_rejects_block_economic_confirmation; tests/test_integration.py::test_invalid_fixture_rejects_visible_rows; tests/test_external_control.py::test_external_inventory_count_and_total_are_independent_blockers; tests/test_external_control.py::test_external_control_cli_exit_codes_and_hash_integrity
+- **RUNNERS:** .venv/bin/python scripts/qa.py external-control ARCHIVO_AUDIT_JSON CONTROL_EXTERNO_JSON
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -636,7 +636,11 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **INTERVENCION_HUMANA:** sí
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_engine.py::test_import_rejects_block_economic_confirmation tests/test_integration.py::test_invalid_fixture_rejects_visible_rows
+.venv/bin/python -m pytest -q tests/test_engine.py::test_import_rejects_block_economic_confirmation tests/test_integration.py::test_invalid_fixture_rejects_visible_rows tests/test_external_control.py::test_external_inventory_count_and_total_are_independent_blockers tests/test_external_control.py::test_external_control_cli_exit_codes_and_hash_integrity
+```
+
+```bash
+.venv/bin/python scripts/qa.py external-control ARCHIVO_AUDIT_JSON CONTROL_EXTERNO_JSON
 ```
 
 ## QA-15
@@ -1679,7 +1683,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **ORACULO:** OR-09
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** Token local no autentica usuarios del mismo equipo.
-- **FALSOS_NEGATIVOS:** TestClient no verifica el socket real, su dirección de escucha ni el comportamiento del navegador.
+- **FALSOS_NEGATIVOS:** El E2E de Chromium/Linux no prueba firewall ni aislamiento frente a otros usuarios del equipo; falta matriz Windows.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** security; E2E
 - **COSTO_EJECUCION:** bajo
@@ -1690,7 +1694,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-14 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_integration.py::test_local_api_security_boundary
-- **RUNNERS:** Pendiente: sin selector automatizado
+- **RUNNERS:** .venv/bin/python scripts/browser_e2e.py --output-dir output/playwright/qa40-new
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1703,6 +1707,10 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 
 ```bash
 .venv/bin/python -m pytest -q tests/test_integration.py::test_local_api_security_boundary
+```
+
+```bash
+.venv/bin/python scripts/browser_e2e.py --output-dir output/playwright/qa40-new
 ```
 
 ## QA-41
@@ -1720,7 +1728,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **ORACULO:** OR-09
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** CLI acepta ruta elegida por operador; no confundirla con ruta controlada por upload.
-- **FALSOS_NEGATIVOS:** Un enlace a una carpeta vacía puede redirigir la exportación sin activar la barrera de sobrescritura.
+- **FALSOS_NEGATIVOS:** La comprobación de enlaces no detiene a otro proceso del mismo usuario que cambie directorios durante la escritura; falta ejecutar la matriz nativa Windows.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** security
 - **COSTO_EJECUCION:** medio
@@ -1729,8 +1737,8 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **GRUPO:** A
 - **CUANDO:** cambio afectado; CI; release; después de incidente
 - **RESPUESTA_SI_FALLA:** IR-14 + IR-COMMON (INCIDENT_RESPONSE.md)
-- **ESTADO_COBERTURA:** diseñado
-- **SELECTORES:** Pendiente: sin selector automatizado
+- **ESTADO_COBERTURA:** parcial
+- **SELECTORES:** tests/test_security_paths.py::test_export_rejects_existing_and_redirected_directories; tests/test_security_paths.py::test_foreign_platform_drive_syntax_is_not_a_local_relative_output; tests/test_security_paths.py::test_backup_publishes_only_completed_copy_without_overwrite; tests/test_security_paths.py::test_export_marks_interrupted_or_invalid_package; tests/test_integration.py::test_upload_filename_is_only_a_label_and_never_an_output_path
 - **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
@@ -1742,7 +1750,9 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **WINDOWS:** sí
 - **INTERVENCION_HUMANA:** no
 
-No hay automatización completa registrada. Implementar/ejecutar los pasos y preservar evidencia antes de cerrar esta familia.
+```bash
+.venv/bin/python -m pytest -q tests/test_security_paths.py::test_export_rejects_existing_and_redirected_directories tests/test_security_paths.py::test_foreign_platform_drive_syntax_is_not_a_local_relative_output tests/test_security_paths.py::test_backup_publishes_only_completed_copy_without_overwrite tests/test_security_paths.py::test_export_marks_interrupted_or_invalid_package tests/test_integration.py::test_upload_filename_is_only_a_label_and_never_an_output_path
+```
 
 ## QA-42
 
@@ -1759,7 +1769,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **ORACULO:** OR-09
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** Rechazo genérico de corrupción es aceptable si no hay efecto y orienta recuperación.
-- **FALSOS_NEGATIVOS:** Generar 500 bytes aleatorios no ejercita DTD, ZIP válido ni expansión.
+- **FALSOS_NEGATIVOS:** DTD y ZIP ambiguo sintéticos no prueban todos los productores XML ni el pico de descompresión real bajo un límite de proceso.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** fuzz; security
 - **COSTO_EJECUCION:** medio
@@ -1769,7 +1779,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **CUANDO:** cambio afectado; CI; release; después de incidente
 - **RESPUESTA_SI_FALLA:** IR-14 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
-- **SELECTORES:** tests/test_importing.py::test_malformed_xlsx_fuzz_is_bounded_and_classified
+- **SELECTORES:** tests/test_importing.py::test_malformed_xlsx_fuzz_is_bounded_and_classified; tests/test_importing.py::test_xlsx_duplicate_or_traversal_entry_is_rejected; tests/test_importing.py::test_xlsx_external_entity_never_becomes_imported_value
 - **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
@@ -1782,7 +1792,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **INTERVENCION_HUMANA:** no
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_importing.py::test_malformed_xlsx_fuzz_is_bounded_and_classified
+.venv/bin/python -m pytest -q tests/test_importing.py::test_malformed_xlsx_fuzz_is_bounded_and_classified tests/test_importing.py::test_xlsx_duplicate_or_traversal_entry_is_rejected tests/test_importing.py::test_xlsx_external_entity_never_becomes_imported_value
 ```
 
 ## QA-43
@@ -1962,7 +1972,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **ORACULO:** OR-04 OR-06 OR-07
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** Fechas ZIP y hashes del build pueden cambiar sin cambio económico; comparar contenido de archivos.
-- **FALSOS_NEGATIVOS:** CI en Linux no valida Windows ni la aplicación Excel.
+- **FALSOS_NEGATIVOS:** Instalar wheel y sdist en Linux no valida rutas ni Excel de escritorio en Windows.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** integration
 - **COSTO_EJECUCION:** alto
@@ -1971,9 +1981,9 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **GRUPO:** B
 - **CUANDO:** release; antes de cliente real
 - **RESPUESTA_SI_FALLA:** IR-07 IR-08 + IR-COMMON (INCIDENT_RESPONSE.md)
-- **ESTADO_COBERTURA:** diseñado
+- **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** Pendiente: sin selector automatizado
-- **RUNNERS:** Pendiente: sin selector automatizado
+- **RUNNERS:** .venv/bin/python scripts/verify_delivery.py --output output/delivery-verification.json
 - **IMPACTO:** 4
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1984,7 +1994,9 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **WINDOWS:** sí
 - **INTERVENCION_HUMANA:** no
 
-No hay automatización completa registrada. Implementar/ejecutar los pasos y preservar evidencia antes de cerrar esta familia.
+```bash
+.venv/bin/python scripts/verify_delivery.py --output output/delivery-verification.json
+```
 
 ## QA-48
 
@@ -2001,7 +2013,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **ORACULO:** OR-03 OR-10
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** Carga concurrente o máquina distinta pueden cambiar tiempos sin regresión causal.
-- **FALSOS_NEGATIVOS:** Un benchmark sin persistencia ni reportes puede omitir el pico real del cierre.
+- **FALSOS_NEGATIVOS:** El pipeline de 1000 cargos no extrapola 50000/100000 ni mide un navegador con esos hallazgos.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** benchmark
 - **COSTO_EJECUCION:** alto
@@ -2010,9 +2022,9 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **GRUPO:** B
 - **CUANDO:** cambio algorítmico; volumen nuevo; release relevante
 - **RESPUESTA_SI_FALLA:** IR-12 + IR-COMMON (INCIDENT_RESPONSE.md)
-- **ESTADO_COBERTURA:** diseñado
+- **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** Pendiente: sin selector automatizado
-- **RUNNERS:** Pendiente: sin selector automatizado
+- **RUNNERS:** .venv/bin/python output/e2e/platform_scale/benchmark_runner.py --sizes 1000 --reps 1 --skip-curve --all-exports --output-dir output/qa48-small
 - **IMPACTO:** 4
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -2023,7 +2035,9 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **WINDOWS:** no
 - **INTERVENCION_HUMANA:** no
 
-No hay automatización completa registrada. Implementar/ejecutar los pasos y preservar evidencia antes de cerrar esta familia.
+```bash
+.venv/bin/python output/e2e/platform_scale/benchmark_runner.py --sizes 1000 --reps 1 --skip-curve --all-exports --output-dir output/qa48-small
+```
 
 ## QA-49
 
@@ -2081,7 +2095,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **ORACULO:** OR-01 OR-05
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** Un cambio de API o ancla puede volver obsoleto al mutante; no demuestra equivalencia semántica.
-- **FALSOS_NEGATIVOS:** Un fallo global de hash puede detectar un mutante sin ejercitar el invariante; revisar la aserción causal.
+- **FALSOS_NEGATIVOS:** La señal causal exigida vale para estos diez mutantes; no demuestra que todas las defensas tengan un mutante dirigido.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** mutation
 - **COSTO_EJECUCION:** medio
@@ -2091,8 +2105,8 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **CUANDO:** cambio de defensa; release; después de incidente
 - **RESPUESTA_SI_FALLA:** IR-06 IR-03 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** nuevo
-- **SELECTORES:** Pendiente: sin selector automatizado
-- **RUNNERS:** Pendiente: sin selector automatizado
+- **SELECTORES:** tests/test_mutation_verdict.py::test_mutant_verdict_requires_selected_causal_assertion
+- **RUNNERS:** .venv/bin/python scripts/qa.py mutate --execute
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -2103,7 +2117,13 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **WINDOWS:** no
 - **INTERVENCION_HUMANA:** no
 
-No hay automatización completa registrada. Implementar/ejecutar los pasos y preservar evidencia antes de cerrar esta familia.
+```bash
+.venv/bin/python -m pytest -q tests/test_mutation_verdict.py::test_mutant_verdict_requires_selected_causal_assertion
+```
+
+```bash
+.venv/bin/python scripts/qa.py mutate --execute
+```
 
 ## QA-51
 
@@ -2280,7 +2300,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **ORACULO:** OR-06 OR-08
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** Normalizar saltos de línea cambia bytes y procedencia; sólo preserva economía si parsing es equivalente.
-- **FALSOS_NEGATIVOS:** Una instalación editable puede ocultar recursos faltantes en wheel.
+- **FALSOS_NEGATIVOS:** Las instalaciones aisladas en Linux no prueban Excel de escritorio, distribución firmada ni hashes de terceros en el lock.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** integration
 - **COSTO_EJECUCION:** medio
@@ -2289,9 +2309,9 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **GRUPO:** B
 - **CUANDO:** release; cambio de dependencias
 - **RESPUESTA_SI_FALLA:** IR-09 IR-07 + IR-COMMON (INCIDENT_RESPONSE.md)
-- **ESTADO_COBERTURA:** diseñado
+- **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** Pendiente: sin selector automatizado
-- **RUNNERS:** Pendiente: sin selector automatizado
+- **RUNNERS:** .venv/bin/python scripts/verify_delivery.py --output output/delivery-verification.json
 - **IMPACTO:** 4
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -2302,7 +2322,9 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **WINDOWS:** no
 - **INTERVENCION_HUMANA:** no
 
-No hay automatización completa registrada. Implementar/ejecutar los pasos y preservar evidencia antes de cerrar esta familia.
+```bash
+.venv/bin/python scripts/verify_delivery.py --output output/delivery-verification.json
+```
 
 ## QA-56
 

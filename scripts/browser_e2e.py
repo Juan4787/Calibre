@@ -3,12 +3,14 @@
 
 import argparse
 import hashlib
+import http.server
 import json
 import os
 import socket
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import zipfile
 from copy import deepcopy
@@ -19,6 +21,84 @@ import httpx
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from qa.reconcile import LABELS, display_money, reconcile  # noqa: E402
+
+
+def assert_ipv4_loopback_listener(port):
+    """Inspect the real Linux listener rather than inferring bind scope from a URL."""
+    table = Path("/proc/net/tcp")
+    if not table.exists():
+        return "Listener inspection unavailable on this OS; browser and HTTP boundary still tested"
+    listening = [
+        row.split()[1]
+        for row in table.read_text().splitlines()[1:]
+        if row.split()[3] == "0A" and int(row.split()[1].split(":")[1], 16) == port
+    ]
+    assert listening == [f"0100007F:{port:04X}"], f"Unexpected listener scope: {listening}"
+    return "127.0.0.1 only, inspected in /proc/net/tcp"
+
+
+def exercise_cross_origin(browser_context, client, token, port):
+    """A real foreign page cannot read the local API or create a run."""
+
+    class ForeignPage(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            body = b"<!doctype html><title>Foreign test origin</title>"
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, *_args):
+            pass
+
+    with http.server.ThreadingHTTPServer(("127.0.0.1", 0), ForeignPage) as foreign:
+        thread = threading.Thread(target=foreign.serve_forever, daemon=True)
+        thread.start()
+        try:
+            foreign_origin = f"http://127.0.0.1:{foreign.server_port}"
+            target = f"http://127.0.0.1:{port}"
+            hostile = browser_context.new_page()
+            try:
+                hostile.goto(foreign_origin)
+                for path, options in (
+                    ("/api/session", {}),
+                    ("/api/demo", {"method": "POST", "headers": {"X-Freight-Local": token}}),
+                ):
+                    observed = hostile.evaluate(
+                        """async ({url, options}) => {
+                            try {
+                                const response = await fetch(url, options);
+                                return {readable: true, status: response.status};
+                            } catch (error) {
+                                return {readable: false, error: String(error)};
+                            }
+                        }""",
+                        {"url": target + path, "options": options},
+                    )
+                    assert not observed["readable"], f"Foreign origin read local API: {observed}"
+            finally:
+                hostile.close()
+            for method, headers in (
+                ("POST", {"Origin": foreign_origin, "X-Freight-Local": token}),
+                (
+                    "OPTIONS",
+                    {
+                        "Origin": foreign_origin,
+                        "Access-Control-Request-Method": "POST",
+                        "Access-Control-Request-Headers": "x-freight-local",
+                    },
+                ),
+            ):
+                response = client.request(method, "/api/demo", headers=headers)
+                assert "access-control-allow-origin" not in response.headers
+                if method == "POST":
+                    assert response.status_code == 403
+            assert client.get("/api/runs").json() == []
+            return {"foreign_origin": foreign_origin, "browser_readable": False, "runs_created": 0}
+        finally:
+            foreign.shutdown()
+            thread.join(timeout=5)
 
 
 def observe(page, run):
@@ -323,6 +403,7 @@ def main():
                         raise AssertionError("Server startup timed out")
                     client.headers["X-Freight-Local"] = token
                     assert client.get("/api/runs").json() == []
+                    listener_scope = assert_ipv4_loopback_listener(port)
                     with sync_playwright() as pw:
                         browser = pw.chromium.launch()
                         context = browser.new_context()
@@ -330,12 +411,15 @@ def main():
                         page = context.new_page()
                         page.on("pageerror", lambda error: errors.append(str(error)))
                         try:
+                            network_boundary = exercise_cross_origin(context, client, token, port)
                             result = exercise(page, client, args.output_dir)
                             assert not errors, errors
                             result.update(
                                 product_path=probe,
                                 ui_sha256=script_hash,
                                 browser=browser.version,
+                                listener_scope=listener_scope,
+                                network_boundary=network_boundary,
                                 passed=True,
                             )
                             (args.output_dir / "result.json").write_text(json.dumps(result, indent=2))

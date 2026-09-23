@@ -45,3 +45,5 @@ Un número arbitrario de períodos o “cero fallos en100 ejemplos” no demuest
 Cambio sólo docs/QA: Gate S y muestra de la herramienta, no repetir benchmark ni E2E entero. Cambio motor: familias causales afectadas + invariantes + diferencial + mutantes del mecanismo + golden revisado. Importador: corpus normalizado+reimportación y trazabilidad, además de downstream económico. Reporting: reconciliación y UI afectada. Schema: backups antes, migration/rollback/crash/restore en copia; prohibido ensayar sobre la única DB del cliente.
 
 Conservar acta de gate: commit/tree/dirty state, huellas, dependencia exacta, comandos/salidas, familias cubiertas y pendientes, mutantes, incidentes, entorno, scope, responsable. No publicar datos reales como artefactos de CI público.
+
+La campaña técnica del 23/09/2026 y sus obligaciones residuales están en `QA_ADVANCEMENT_2026-09-23.md`. Su evidencia acotada no sustituye Gate P ni Gate U.

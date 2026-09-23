@@ -16,7 +16,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from .canonical import canonical, load_json
 from .engine import audit
 from .fixtures import generate, run_demo
-from .importing import MAX_FILE_BYTES, ImportMapping, import_data
+from .importing import MAX_FILE_BYTES, ImportMapping, import_data, source_filename
 from .models import Agreement, Dataset, Decision
 from .reporting import bundle_bytes, html_report, workbook_bytes
 from .storage import Store
@@ -159,7 +159,10 @@ def create_app(db_path: Path) -> FastAPI:
         data = await file.read(MAX_FILE_BYTES + 1)
         if len(data) > MAX_FILE_BYTES:
             raise ValueError("El adjunto supera 25 MB; aportar un archivo más pequeño.")
-        return {"document_hash": store.put_source(data), "filename": Path(file.filename or "adjunto").name}
+        return {
+            "document_hash": store.put_source(data),
+            "filename": source_filename(file.filename or "adjunto"),
+        }
 
     @app.post("/api/audit")
     async def run_audit(request: Request):

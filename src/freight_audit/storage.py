@@ -3,15 +3,18 @@
 import gc
 import importlib.metadata
 import json
+import os
 import platform
 import sqlite3
-from contextlib import contextmanager
+import tempfile
+from contextlib import closing, contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 
 from . import ENGINE_VERSION
 from .canonical import bytes_hash, canonical, digest, load_json
 from .engine import audit
+from .local_paths import checked_output_path
 from .models import AuditResult, Charge, Dataset, Decision, Shipment
 
 
@@ -251,10 +254,26 @@ class Store:
         return result
 
     def backup(self, destination: Path):
-        if destination.exists():
-            raise ValueError(
-                "El destino ya existe; elegir un archivo nuevo para preservar la copia anterior."
-            )
+        destination = checked_output_path(destination)
         destination.parent.mkdir(parents=True, exist_ok=True)
-        with self.connect() as origin, sqlite3.connect(destination) as target:
-            origin.backup(target)
+        checked_output_path(destination)
+        descriptor, temporary_name = tempfile.mkstemp(
+            prefix=".freight-backup-", suffix=".tmp", dir=destination.parent
+        )
+        os.close(descriptor)
+        temporary = Path(temporary_name)
+        try:
+            with self.connect() as origin, closing(sqlite3.connect(temporary)) as target:
+                origin.backup(target)
+                if target.execute("PRAGMA quick_check").fetchone()[0] != "ok":
+                    raise IntegrityError("La copia de la base no superó su control de integridad.")
+            # A hard link in the same directory publishes the completed copy
+            # atomically and fails if any file or symlink already has this name.
+            try:
+                os.link(temporary, destination)
+            except FileExistsError as exc:
+                raise ValueError(
+                    "El destino ya existe; elegir un archivo nuevo para preservar la copia anterior."
+                ) from exc
+        finally:
+            temporary.unlink(missing_ok=True)

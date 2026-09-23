@@ -2,6 +2,7 @@
 
 import html
 import io
+import re
 import zipfile
 from pathlib import Path
 
@@ -10,6 +11,7 @@ from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 
 from .canonical import bytes_hash, canonical, digest, load_json
+from .local_paths import checked_output_path
 from .models import Dataset
 from .storage import IntegrityError, Store
 
@@ -384,11 +386,36 @@ def verify_bundle(data: bytes) -> dict:
 
 
 def export_run(store: Store, run_id: str, destination: Path) -> dict:
-    destination.mkdir(parents=True, exist_ok=True)
-    if any(destination.iterdir()):
-        raise ValueError("La carpeta de salida debe estar vacía para evitar reemplazar un informe previo.")
+    destination = checked_output_path(destination)
+    if destination.exists():
+        raise ValueError("La carpeta de salida ya existe; elegir una carpeta nueva.")
     bundle = bundle_bytes(store, run_id)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    checked_output_path(destination)
+    destination.mkdir(exist_ok=False)
+    incomplete = destination / "EXPORTACION_INCOMPLETA.txt"
+    incomplete.write_text(
+        "La exportación se interrumpió. No usar estos archivos; repetir en una carpeta nueva.\n",
+        encoding="utf-8",
+    )
     with zipfile.ZipFile(io.BytesIO(bundle)) as archive:
-        archive.extractall(destination)  # Names are generated internally, never user-provided ZIP entries.
-    (destination / "auditoria.zip").write_bytes(bundle)
+        for name in archive.namelist():
+            if name not in {
+                "audit.json",
+                "reporte.html",
+                "auditoria.xlsx",
+                "ADVERTENCIA_EXPORTACION.txt",
+                "snapshot.json",
+                "manifest.json",
+            } and not re.fullmatch(r"sources/[0-9a-f]{64}", name):
+                raise IntegrityError("El paquete contiene una ruta de salida no permitida.")
+            target = destination / name
+            if target.parent != destination and not target.parent.exists():
+                target.parent.mkdir(exist_ok=False)
+            checked_output_path(target)
+            with target.open("xb") as output:
+                output.write(archive.read(name))
+    with (destination / "auditoria.zip").open("xb") as output:
+        output.write(bundle)
+    incomplete.unlink()
     return {"directory": str(destination), "run_id": run_id, "bundle_hash": bytes_hash(bundle)}

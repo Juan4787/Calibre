@@ -37,6 +37,9 @@ def main():
     reconcile_parser.add_argument("directory", type=Path)
     reconcile_parser.add_argument("--api-run", type=Path)
     reconcile_parser.add_argument("--observed-ui", type=Path)
+    external = commands.add_parser("external-control")
+    external.add_argument("audit_json", type=Path)
+    external.add_argument("control_json", type=Path)
     impact = commands.add_parser("impact")
     impact.add_argument("--db", type=Path, required=True)
     filters = (
@@ -127,6 +130,11 @@ def main():
             observed_ui=read_json(args.observed_ui) if args.observed_ui else None,
         )
         code = int(bool(result["errors"]))
+    elif args.command == "external-control":
+        from qa.external_control import compare_external_control
+
+        result = compare_external_control(read_json(args.audit_json), read_json(args.control_json))
+        code = int(not result["passed"])
     elif args.command == "impact":
         from qa.impact import inventory
 

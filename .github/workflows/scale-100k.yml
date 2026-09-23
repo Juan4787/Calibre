@@ -8,14 +8,19 @@ on:
         required: true
         type: boolean
         default: true
+      runner_label:
+        description: "Linux runner label; 16 GiB or more required for the full pipeline"
+        required: true
+        type: string
+        default: ubuntu-latest
 
 permissions:
   contents: read
 
 jobs:
   scale-100k:
-    name: Scale 100k Isolated Single-Run (16 GB Host)
-    runs-on: ubuntu-latest
+    name: Scale 100k Isolated Single-Run (capacity checked)
+    runs-on: ${{ inputs.runner_label }}
     timeout-minutes: 45
 
     steps:
@@ -52,6 +57,27 @@ jobs:
           df -h
           echo "================================================================="
 
+      - name: Require actual host and cgroup memory before generating 100k
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          minimum = 16 * 1024**3
+          meminfo = Path('/proc/meminfo').read_text()
+          available_kib = int(next(line.split()[1] for line in meminfo.splitlines() if line.startswith('MemAvailable:')))
+          limits = []
+          for name in ('/sys/fs/cgroup/memory.max', '/sys/fs/cgroup/memory/memory.limit_in_bytes'):
+              path = Path(name)
+              if path.exists():
+                  raw = path.read_text().strip()
+                  if raw.isdigit():
+                      limits.append(int(raw))
+          effective_limit = min(limits) if limits else None
+          print(f'Host available: {available_kib / 1024**2:.2f} GiB; cgroup limit: {effective_limit}', flush=True)
+          if available_kib * 1024 < minimum or (effective_limit is not None and effective_limit < minimum):
+              raise SystemExit('RESOURCE_LIMIT: 100k full pipeline requires a runner with at least 16 GiB available and permitted; no benchmark started')
+          PY
+
       - name: Execute 100k Isolated Benchmark Run
         run: |
           EXPORT_FLAG=""
@@ -64,8 +90,8 @@ jobs:
             --reps 1 \
             --skip-curve \
             $EXPORT_FLAG \
-            --max-child-rss 14000 \
-            --min-host-mem 1500
+            --max-child-rss 12000 \
+            --min-host-mem 4000
 
       - name: Display Benchmark Summary JSON
         if: always()

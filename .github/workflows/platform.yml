@@ -128,6 +128,20 @@ jobs:
           export PYTHONPATH=""
           $CLEAN_PY output/e2e/platform_scale/run_platform_suite.py --platform windows --cleanroom
 
+      - name: Native Windows hostile paths and XLSX boundaries from installed wheel
+        run: |
+          NATIVE_TESTS="$RUNNER_TEMP/calibre_native_tests"
+          mkdir -p "$NATIVE_TESTS"
+          cp tests/conftest.py tests/test_security_paths.py tests/test_importing.py "$NATIVE_TESTS/"
+          cd "$NATIVE_TESTS"
+          export PYTHONPATH=""
+          $CLEAN_PY -m pytest -q \
+            test_security_paths.py \
+            test_importing.py::test_xlsx_hidden_business_data_blocks_import_until_made_visible \
+            test_importing.py::test_xlsx_hidden_selected_sheet_blocks_import \
+            test_importing.py::test_xlsx_duplicate_or_traversal_entry_is_rejected \
+            test_importing.py::test_xlsx_external_entity_never_becomes_imported_value
+
       - name: Upload Windows Platform Artifacts
         uses: actions/upload-artifact@v4
         with:

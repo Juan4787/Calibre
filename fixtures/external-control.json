@@ -1,0 +1,24 @@
+{
+  "schema": "freight-audit-external-control/v1",
+  "source_hashes": [
+    "2505cb3b3dfc0f034ca96fca88ec297bb12c8299811daea79b7673efb1a0d29e",
+    "ced3ad5c8dc1f6c0b7a124ada3d198dfccca630e070a2b2fae7f6fd896cecb19",
+    "1f6c01d30807ff18bd051cba581a3efcda5444d55960df9a33c36ed4072fd532"
+  ],
+  "shipments_by_source": {
+    "2505cb3b3dfc0f034ca96fca88ec297bb12c8299811daea79b7673efb1a0d29e": 32
+  },
+  "charges_by_source": {
+    "ced3ad5c8dc1f6c0b7a124ada3d198dfccca630e070a2b2fae7f6fd896cecb19": 46
+  },
+  "charge_totals_by_source": {
+    "ced3ad5c8dc1f6c0b7a124ada3d198dfccca630e070a2b2fae7f6fd896cecb19": {
+      "ARS": "43719.4"
+    }
+  },
+  "shipment_count": 32,
+  "charge_count": 46,
+  "actual_by_currency": {
+    "ARS": "43719.4"
+  }
+}

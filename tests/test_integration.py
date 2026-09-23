@@ -167,6 +167,30 @@ def test_api_import_with_mapping_and_provenance(tmp_path):
     assert client.get("/api/configs").json()[0]["kind"] == "mapping"
 
 
+def test_upload_filename_is_only_a_label_and_never_an_output_path(tmp_path):
+    client = client_with_token(tmp_path)
+    outside = tmp_path / "sentinel.csv"
+    outside.write_bytes(b"unchanged")
+    mapping = (ROOT / "fixtures/mapping-charges.json").read_text()
+    data = (ROOT / "fixtures/liquidacion.csv").read_bytes()
+    for hostile_name in ("../../sentinel.csv", "..\\..\\sentinel.csv"):
+        response = client.post(
+            "/api/import",
+            files={"file": (hostile_name, data, "text/csv")},
+            data={"mapping": mapping},
+        )
+        assert response.status_code == 200, response.text
+        imported = response.json()
+        assert imported["filename"] == "sentinel.csv"
+        assert imported["records"][0]["provenance"]["amount"]["filename"] == "sentinel.csv"
+    attachment = client.post(
+        "/api/evidence-file", files={"file": ("..\\..\\sentinel.csv", b"evidence", "text/csv")}
+    )
+    assert attachment.status_code == 200
+    assert attachment.json()["filename"] == "sentinel.csv"
+    assert outside.read_bytes() == b"unchanged"
+
+
 def test_api_configuration_errors_use_recoverable_messages(tmp_path):
     client = client_with_token(tmp_path)
     result = client.post("/api/audit", json={"bad": "data"})

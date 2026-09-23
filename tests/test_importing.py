@@ -1,4 +1,6 @@
 import io
+import warnings
+import zipfile
 from datetime import datetime
 
 import pytest
@@ -55,6 +57,85 @@ def xlsx_data(rows, formats=None):
     workbook.save(output)
     workbook.close()
     return output.getvalue()
+
+
+def test_xlsx_hidden_business_data_blocks_import_until_made_visible():
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Data"
+    sheet.append(["id", "ref", "weight", "date"])
+    sheet.append(["S1", "R1", 10, "30/09/2026"])
+    sheet.row_dimensions[2].hidden = True
+    output = io.BytesIO()
+    workbook.save(output)
+    with pytest.raises(ImportErrorDetail, match="filas 2"):
+        import_data(output.getvalue(), "hidden.xlsx", mapping())
+
+    sheet.row_dimensions[2].hidden = False
+    sheet.column_dimensions["C"].hidden = True
+    output = io.BytesIO()
+    workbook.save(output)
+    with pytest.raises(ImportErrorDetail, match="columnas 3"):
+        import_data(output.getvalue(), "hidden.xlsx", mapping())
+
+    sheet.column_dimensions["C"].hidden = False
+    output = io.BytesIO()
+    workbook.save(output)
+    workbook.close()
+    result = import_data(output.getvalue(), "visible.xlsx", mapping())
+    assert result["accepted"] == 1 and result["rejected"] == []
+    record = result["records"][0]
+    assert record["attributes"]["weight"]["value"] == "10"
+    assert record["provenance"]["attributes.weight"]["row"] == 2
+
+
+def test_xlsx_hidden_selected_sheet_blocks_import():
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Data"
+    sheet.append(["id", "ref", "weight", "date"])
+    sheet.append(["S1", "R1", 10, "30/09/2026"])
+    workbook.create_sheet("Visible")
+    sheet.sheet_state = "hidden"
+    output = io.BytesIO()
+    workbook.save(output)
+    workbook.close()
+    with pytest.raises(ImportErrorDetail, match="hoja seleccionada está oculta"):
+        import_data(output.getvalue(), "hidden.xlsx", mapping(sheet="Data"))
+
+
+@pytest.mark.parametrize("hostile_name", ["xl/worksheets/sheet1.xml", "../outside.txt"])
+def test_xlsx_duplicate_or_traversal_entry_is_rejected(hostile_name):
+    valid = xlsx_data([["id", "ref", "weight", "date"], ["S1", "R1", 10, "30/09/2026"]])
+    altered = io.BytesIO()
+    with zipfile.ZipFile(io.BytesIO(valid)) as source, zipfile.ZipFile(altered, "w") as target:
+        for info in source.infolist():
+            target.writestr(info, source.read(info.filename))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            target.writestr(hostile_name, b"ambiguous")
+    with pytest.raises(ImportErrorDetail, match="entradas ZIP repetidas o rutas"):
+        import_data(altered.getvalue(), "hostile.xlsx", mapping())
+
+
+def test_xlsx_external_entity_never_becomes_imported_value(tmp_path):
+    witness = tmp_path / "secret.txt"
+    witness.write_text("SECRET_WITNESS", encoding="utf-8")
+    valid = xlsx_data([["id", "ref", "weight", "date"], ["S1", "R1", 10, "30/09/2026"]])
+    altered = io.BytesIO()
+    doctype = f'<!DOCTYPE worksheet [<!ENTITY xxe SYSTEM "{witness.as_uri()}">]>'.encode()
+    with zipfile.ZipFile(io.BytesIO(valid)) as source, zipfile.ZipFile(altered, "w") as target:
+        for info in source.infolist():
+            content = source.read(info.filename)
+            if info.filename == "xl/worksheets/sheet1.xml":
+                content = content.replace(b"<worksheet ", doctype + b"<worksheet ", 1)
+                content = content.replace(b"<v>10</v>", b"<v>&xxe;</v>", 1)
+                assert b"&xxe;" in content
+            target.writestr(info, content)
+    with pytest.raises(ImportErrorDetail) as error:
+        import_data(altered.getvalue(), "entity.xlsx", mapping())
+    assert "SECRET_WITNESS" not in str(error.value)
+    assert witness.read_text(encoding="utf-8") == "SECRET_WITNESS"
 
 
 def test_csv_argentine_numbers_zeroes_and_provenance():

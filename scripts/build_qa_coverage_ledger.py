@@ -43,6 +43,8 @@ def build_ledger(receipt_paths=()):
         status = (
             "REQUIRES_REAL_CLIENT"
             if item["DATOS_REALES"]
+            else "DEFERRED_NON_BLOCKING"
+            if item["PRIORIDAD"] == "P3" and item["ESTADO_COBERTURA"] == "diferido"
             else "PARTIAL"
             if item["SELECTORES"] or item["RUNNERS"]
             else "NO_REGISTERED_RUNNER"

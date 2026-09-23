@@ -30,6 +30,11 @@ class ImportErrorDetail(ValueError):
     pass
 
 
+def source_filename(filename: str) -> str:
+    """Treat both separator conventions as labels, never as filesystem paths."""
+    return filename.replace("\\", "/").rsplit("/", 1)[-1] or "archivo"
+
+
 class ColumnMapping(Model):
     source: str | None = None
     target: Identifier
@@ -125,7 +130,7 @@ class Tabular:
 
 def preserve_xlsx_numbers(
     data: bytes, worksheet_path: str, rows: list[list[Cell]], *, epoch_1900: bool = True
-) -> None:
+) -> tuple[list[int], list[int]]:
     """Overlay the original numeric tokens, bounded to one XML row at a time.
 
     openpyxl supplies dates, formats and formulas; decimal values must bypass
@@ -135,15 +140,28 @@ def preserve_xlsx_numbers(
     namespace = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
     sheet_data = None
     row_index = 0
+    hidden_rows: list[int] = []
+    hidden_columns: set[int] = set()
     with zipfile.ZipFile(io.BytesIO(data)) as archive, archive.open(worksheet_path.lstrip("/")) as xml:
         for event, element in iterparse(xml, events=("start", "end")):
             if event == "start" and element.tag == namespace + "sheetData":
                 sheet_data = element
+            if event == "end" and element.tag == namespace + "col":
+                if element.get("hidden") in {"1", "true"}:
+                    first = int(element.get("min", "0"))
+                    last = int(element.get("max", "0"))
+                    hidden_columns.update(range(max(first, 1), min(last, MAX_COLUMNS) + 1))
+                element.clear()
+                continue
             if event != "end" or element.tag != namespace + "row":
                 continue
             row_index = int(element.get("r", row_index + 1))
             if not 1 <= row_index <= len(rows):
                 raise ImportErrorDetail("La numeración de filas del libro es inconsistente.")
+            if element.get("hidden") in {"1", "true"} and any(
+                cell.value not in (None, "") for cell in rows[row_index - 1]
+            ):
+                hidden_rows.append(row_index)
             column_index = 0
             for source in element.findall(namespace + "c"):
                 column_index += 1
@@ -173,6 +191,12 @@ def preserve_xlsx_numbers(
             element.clear()
             if sheet_data is not None:
                 sheet_data.clear()
+    populated_hidden_columns = sorted(
+        index
+        for index in hidden_columns
+        if any(index <= len(row) and row[index - 1].value not in (None, "") for row in rows)
+    )
+    return hidden_rows, populated_hidden_columns
 
 
 def excel_number(cell: Cell) -> Decimal:
@@ -196,7 +220,7 @@ def excel_number(cell: Cell) -> Decimal:
 def read_table(data: bytes, filename: str, mapping: ImportMapping) -> Tabular:
     if len(data) > MAX_FILE_BYTES:
         raise ImportErrorDetail("El archivo supera 25 MB; dividirlo en períodos más pequeños.")
-    suffix = Path(filename).suffix.lower()
+    suffix = Path(source_filename(filename)).suffix.lower()
     warnings: list[str] = []
     try:
         if suffix == ".csv":
@@ -215,7 +239,19 @@ def read_table(data: bytes, filename: str, mapping: ImportMapping) -> Tabular:
             return Tabular(["CSV"], "CSV", rows, warnings, physical_lines)
         if suffix == ".xlsx":
             with zipfile.ZipFile(io.BytesIO(data)) as archive:
-                if sum(info.file_size for info in archive.infolist()) > MAX_EXPANDED_BYTES:
+                infos = archive.infolist()
+                names = [info.filename for info in infos]
+                if len(names) != len(set(names)) or any(
+                    name.startswith("/")
+                    or "\\" in name
+                    or ":" in name
+                    or any(part in {"", ".", ".."} for part in name.rstrip("/").split("/"))
+                    for name in names
+                ):
+                    raise ImportErrorDetail(
+                        "El libro contiene entradas ZIP repetidas o rutas no permitidas; obtener una copia válida."
+                    )
+                if sum(info.file_size for info in infos) > MAX_EXPANDED_BYTES:
                     raise ImportErrorDetail("El libro expandido supera 150 MB; dividirlo antes de importar.")
             workbook = openpyxl.load_workbook(
                 io.BytesIO(data), read_only=True, data_only=False, keep_links=False
@@ -233,6 +269,10 @@ def read_table(data: bytes, filename: str, mapping: ImportMapping) -> Tabular:
                         f"No existe la hoja '{sheet_name}'. Disponibles: {', '.join(names)}."
                     )
                 sheet = workbook[sheet_name]
+                if sheet.sheet_state != "visible":
+                    raise ImportErrorDetail(
+                        "La hoja seleccionada está oculta; hacerla visible y revisar su alcance antes de importar."
+                    )
                 if (sheet.max_row or 0) > MAX_ROWS or (sheet.max_column or 0) > MAX_COLUMNS:
                     raise ImportErrorDetail(
                         "La hoja supera el límite de filas o columnas; revisar su rango utilizado."
@@ -247,9 +287,20 @@ def read_table(data: bytes, filename: str, mapping: ImportMapping) -> Tabular:
                             for cell in row
                         ]
                     )
-                preserve_xlsx_numbers(
+                hidden_rows, hidden_columns = preserve_xlsx_numbers(
                     data, sheet._worksheet_path, rows, epoch_1900=workbook.epoch.year != 1904
                 )
+                if hidden_rows or hidden_columns:
+                    details = []
+                    if hidden_rows:
+                        details.append("filas " + ", ".join(map(str, hidden_rows[:10])))
+                    if hidden_columns:
+                        details.append("columnas " + ", ".join(map(str, hidden_columns[:10])))
+                    raise ImportErrorDetail(
+                        "La hoja contiene datos ocultos ("
+                        + "; ".join(details)
+                        + "); hacerlos visibles y revisar el alcance antes de importar."
+                    )
                 return Tabular(names, sheet_name, rows, warnings)
             finally:
                 workbook.close()
@@ -483,7 +534,7 @@ def import_data(data: bytes, filename: str, mapping: ImportMapping) -> dict:
                     record[column.target] = value
                 record["provenance"][column.target] = SourceRef(
                     document=document,
-                    filename=Path(filename).name,
+                    filename=source_filename(filename),
                     sheet=table.sheet,
                     row=row_number,
                     column=column.source or "(constante del mapping)",
@@ -531,7 +582,7 @@ def import_data(data: bytes, filename: str, mapping: ImportMapping) -> dict:
             issues.extend(row_issues)
     return {
         "document": document,
-        "filename": Path(filename).name,
+        "filename": source_filename(filename),
         "sheet": table.sheet,
         "sheets": table.sheets,
         "headers": headers,
