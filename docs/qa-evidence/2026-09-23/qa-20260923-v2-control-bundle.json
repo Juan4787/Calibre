@@ -1,0 +1,19 @@
+{
+  "command": [
+    ".venv/bin/freight-audit",
+    "verify-bundle",
+    "output/control-v2-20260923/auditoria.zip",
+    "--replay"
+  ],
+  "exit_code": 0,
+  "source_before": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
+  "source_after": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+  "started_at_unix": 1790142044.8326793,
+  "elapsed_seconds": 0.508,
+  "log": "docs/qa-evidence/2026-09-23/qa-20260923-v2-control-bundle.log",
+  "log_sha256": "dcb80bf2a1b93f8b96f3d6d3b638836625aa316896fb25f14ef6fbc0442a2629",
+  "original_log": "output/qa-20260923-v2-control-bundle.log",
+  "original_receipt_sha256": "80aad523024e33946ac8f0eb672985809557f95d98516d356ed732f9b4ecfbd2"
+}

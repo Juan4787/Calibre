@@ -1,0 +1,8 @@
+{
+  "parity": false,
+  "total_datasets_compared": 3,
+  "total_divergences": 1,
+  "divergences": [
+    "Dataset Demostraci\u00f3n ficticia \u00b7 3 acuerdos / 32 operaciones: full semantic fingerprint differs"
+  ]
+}

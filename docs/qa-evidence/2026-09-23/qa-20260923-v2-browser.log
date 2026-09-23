@@ -1,0 +1,22 @@
+{
+  "run_id": "aac30f79e006ec88aa60a47f976cbd437f034221413d87dc80157b2d3a5631a5",
+  "result_hash": "5ff2ee1f3a2bc8eda9677677c3a7993b610f2efa0f244a5588fd4fc370f3933f",
+  "rows_observed": 46,
+  "channels": {
+    "json": "checked",
+    "xlsx": "checked",
+    "html": "checked",
+    "api": "checked supplied response",
+    "ui": "46 actual DOM rows; all pages; exact cells and statuses"
+  },
+  "product_path": "/home/usuario/CascadeProjects/CALIBRE/src/freight_audit/__init__.py",
+  "ui_sha256": "e40f65d3bf4c9af293437e8c4f4521556a682682e4f0f37c8ddbe6ddb7f719ef",
+  "browser": "153.0.8010.12",
+  "listener_scope": "127.0.0.1 only, inspected in /proc/net/tcp",
+  "network_boundary": {
+    "foreign_origin": "http://127.0.0.1:36669",
+    "browser_readable": false,
+    "runs_created": 0
+  },
+  "passed": true
+}

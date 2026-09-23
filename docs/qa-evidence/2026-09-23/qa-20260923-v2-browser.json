@@ -1,0 +1,19 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "scripts/browser_e2e.py",
+    "--output-dir",
+    "output/playwright/qa40-v2-20260923"
+  ],
+  "exit_code": 0,
+  "source_before": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
+  "source_after": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+  "started_at_unix": 1790141974.5590641,
+  "elapsed_seconds": 28.413,
+  "log": "docs/qa-evidence/2026-09-23/qa-20260923-v2-browser.log",
+  "log_sha256": "53cee47921e39176d57f7afb2ad1d988d9b242555f3f2fd7122eefe1aab3fcc8",
+  "original_log": "output/qa-20260923-v2-browser.log",
+  "original_receipt_sha256": "8504422ca83a1d672ec50af822367b3743157fab0d9829ac4d3fa6fa19d2d414"
+}

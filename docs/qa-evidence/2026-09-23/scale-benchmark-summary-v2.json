@@ -1,0 +1,242 @@
+{
+  "1000": {
+    "reps": 1,
+    "correctness_verified": true,
+    "total_wall": {
+      "median": 17.5734,
+      "min": 17.5734,
+      "max": 17.5734,
+      "mean": 17.5734,
+      "stdev": 0.0
+    },
+    "total_cpu": {
+      "median": 17.4507,
+      "min": 17.4507,
+      "max": 17.4507,
+      "mean": 17.4507
+    },
+    "peak_rss_mb": 184.95,
+    "stages": {
+      "1_input_read": {
+        "wall": {
+          "median": 0.0004,
+          "min": 0.0004,
+          "max": 0.0004,
+          "mean": 0.0004,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.0004,
+          "min": 0.0004,
+          "max": 0.0004,
+          "mean": 0.0004
+        },
+        "peak_rss_mb": 53.17
+      },
+      "2_import": {
+        "wall": {
+          "median": 0.1824,
+          "min": 0.1824,
+          "max": 0.1824,
+          "mean": 0.1824,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.1823,
+          "min": 0.1823,
+          "max": 0.1823,
+          "mean": 0.1823
+        },
+        "peak_rss_mb": 61.17
+      },
+      "3_normalization": {
+        "wall": {
+          "median": 0.0603,
+          "min": 0.0603,
+          "max": 0.0603,
+          "mean": 0.0603,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.0602,
+          "min": 0.0602,
+          "max": 0.0602,
+          "mean": 0.0602
+        },
+        "peak_rss_mb": 76.67
+      },
+      "4_audit": {
+        "wall": {
+          "median": 0.2195,
+          "min": 0.2195,
+          "max": 0.2195,
+          "mean": 0.2195,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.2192,
+          "min": 0.2192,
+          "max": 0.2192,
+          "mean": 0.2192
+        },
+        "peak_rss_mb": 90.54,
+        "charges_per_sec": 4555.4,
+        "findings_per_sec": 4555.4
+      },
+      "5_store_save": {
+        "wall": {
+          "median": 0.6879,
+          "min": 0.6879,
+          "max": 0.6879,
+          "mean": 0.6879,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.6651,
+          "min": 0.6651,
+          "max": 0.6651,
+          "mean": 0.6651
+        },
+        "peak_rss_mb": 106.7,
+        "db_size_bytes": 4767744
+      },
+      "6_store_load": {
+        "wall": {
+          "median": 0.1693,
+          "min": 0.1693,
+          "max": 0.1693,
+          "mean": 0.1693,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.1691,
+          "min": 0.1691,
+          "max": 0.1691,
+          "mean": 0.1691
+        },
+        "peak_rss_mb": 106.7
+      },
+      "7_replay": {
+        "wall": {
+          "median": 0.431,
+          "min": 0.431,
+          "max": 0.431,
+          "mean": 0.431,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.4308,
+          "min": 0.4308,
+          "max": 0.4308,
+          "mean": 0.4308
+        },
+        "peak_rss_mb": 116.55
+      },
+      "8_export_json": {
+        "wall": {
+          "median": 0.0693,
+          "min": 0.0693,
+          "max": 0.0693,
+          "mean": 0.0693,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.0693,
+          "min": 0.0693,
+          "max": 0.0693,
+          "mean": 0.0693
+        },
+        "peak_rss_mb": 116.55,
+        "size_bytes": 4574639
+      },
+      "9_export_xlsx": {
+        "wall": {
+          "median": 7.0273,
+          "min": 7.0273,
+          "max": 7.0273,
+          "mean": 7.0273,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 6.9602,
+          "min": 6.9602,
+          "max": 6.9602,
+          "mean": 6.9602
+        },
+        "peak_rss_mb": 154.96,
+        "size_bytes": 790044,
+        "status": "PASS"
+      },
+      "10_export_html": {
+        "wall": {
+          "median": 0.0044,
+          "min": 0.0044,
+          "max": 0.0044,
+          "mean": 0.0044,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.0044,
+          "min": 0.0044,
+          "max": 0.0044,
+          "mean": 0.0044
+        },
+        "peak_rss_mb": 154.96,
+        "size_bytes": 183801,
+        "status": "PASS"
+      },
+      "11_bundle_zip": {
+        "wall": {
+          "median": 7.4659,
+          "min": 7.4659,
+          "max": 7.4659,
+          "mean": 7.4659,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 7.438,
+          "min": 7.438,
+          "max": 7.438,
+          "mean": 7.438
+        },
+        "peak_rss_mb": 184.95,
+        "size_bytes": 831025,
+        "status": "PASS"
+      },
+      "12_verify_bundle": {
+        "wall": {
+          "median": 0.4293,
+          "min": 0.4293,
+          "max": 0.4293,
+          "mean": 0.4293,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.4291,
+          "min": 0.4291,
+          "max": 0.4291,
+          "mean": 0.4291
+        },
+        "peak_rss_mb": 184.95,
+        "status": "PASS",
+        "verified": true
+      },
+      "13_api_retrieval": {
+        "wall": {
+          "median": 0.8265,
+          "min": 0.8265,
+          "max": 0.8265,
+          "mean": 0.8265,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.8227,
+          "min": 0.8227,
+          "max": 0.8227,
+          "mean": 0.8227
+        },
+        "peak_rss_mb": 184.95
+      }
+    }
+  }
+}

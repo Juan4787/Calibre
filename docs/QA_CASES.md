@@ -1,5 +1,7 @@
 # Casos de frontera, corpus y generalidad
 
+Esta matriz conserva los procedimientos y supuestos de diseño. Para el estado ejecutado el 23/09/2026, incluidos los nueve casos nuevos en Windows y sus límites, ver [QA_ADVANCEMENT_2026-09-23.md](QA_ADVANCEMENT_2026-09-23.md). Las notas antiguas de “Windows pendiente” dentro de las tablas no describen el runner alojado de esa campaña; sigue pendiente el entorno Windows objetivo del usuario.
+
 Convención común: B es un Dataset nuevo de `qa.generators.base_dataset()`: S1/ref00001/carrier C/service_date 2026-05-01, cargo C1=100 ARS/concept base/acuerdo A, V1 desde 2026-01-01, fijo100, escala2 HALF_UP, tolerancia absoluta0,01, relativa0, sin duplicados/evidencia/cobertura implícita. Cambiar únicamente lo indicado. Validar Dataset y llamar audit; usar OR-01/02/05 para expected. Para importación usar el mapping del corpus y conservar bytes/filas; no fabricar un snapshot a partir del resultado defectuoso.
 
 ## Matriz numérica exacta

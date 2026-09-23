@@ -1,0 +1,16 @@
+{
+  "command": [
+    "scripts/verify.sh"
+  ],
+  "exit_code": 0,
+  "source_before": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
+  "source_after": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+  "started_at_unix": 1790141905.2680593,
+  "elapsed_seconds": 28.98,
+  "log": "docs/qa-evidence/2026-09-23/qa-20260923-v2-verify.log",
+  "log_sha256": "71b69d2ed8ebe50509f8a423a5f7ddb150e2d0e256b546036f3a806724ae2d13",
+  "original_log": "output/qa-20260923-v2-verify.log",
+  "original_receipt_sha256": "698dba9a179d9337043965fc6d861807fd084835eb98bef66a753d643e91d8a9"
+}

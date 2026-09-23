@@ -1,0 +1,48 @@
+{
+  "run_id": "aac30f79e006ec88aa60a47f976cbd437f034221413d87dc80157b2d3a5631a5",
+  "summary": {
+    "counts": {
+      "PASS": 34,
+      "FAIL": 2,
+      "REVIEW": 6,
+      "UNDETERMINABLE": 4
+    },
+    "total_findings": 46,
+    "determinable_findings": 36,
+    "charge_counts": {
+      "PASS": 35,
+      "UNDETERMINABLE": 4,
+      "FAIL": 2,
+      "REVIEW": 5
+    },
+    "import_complete": true,
+    "currencies": {
+      "ARS": {
+        "actual": "43719.4",
+        "determinable": "36706.4",
+        "pass": "34485.4",
+        "review": "3431",
+        "undeterminable": "3582",
+        "confirmed_net_difference": "-25",
+        "confirmed_overcharge": "50",
+        "confirmed_undercharge": "-75"
+      }
+    },
+    "economic_definition": "Diferencia = facturado menos esperado. Sólo FAIL integra la diferencia confirmada. No representa ahorro, recupero ni decisión de pago. Monedas separadas."
+  },
+  "imports": {
+    "shipments": {
+      "accepted": 32,
+      "rejected": []
+    },
+    "charges": {
+      "accepted": 46,
+      "rejected": []
+    }
+  },
+  "export": {
+    "directory": "output/control-v2-20260923",
+    "run_id": "aac30f79e006ec88aa60a47f976cbd437f034221413d87dc80157b2d3a5631a5",
+    "bundle_hash": "08aa8bfe49a6afc39d06feb4be4014f9e5bbcc41ae5d09c67cb1d15b11618009"
+  }
+}

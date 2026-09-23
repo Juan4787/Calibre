@@ -1,0 +1,12 @@
+{
+  "github_run": "https://github.com/Juan4787/Calibre/actions/runs/35822778429",
+  "head_sha": "f3d3ab5fc0828e5ab57eb59d22b9449dfbaae538",
+  "raw_zip_sha256": "d96db3235f2dd2590f35f84f9aeeb27a30f8be5b766e71ffbe2628d5388de0b2",
+  "raw_file_sha256": {
+    "linux-result.json": "c770796e41450755020275fde7bd39fa1b129f85a05e3bbfef4a48a0a7adac3b",
+    "linux-semantic-fingerprint.json": "a47e9d64e09a9d4340011ad02bcb5a9aac4ee9a1dfb5f7de6ad782181c8ae864",
+    "windows-result.json": "09f798d666f4960d532e41ab4a4495a8f6277b9a796db2d741a2ffed28187221",
+    "windows-semantic-fingerprint.json": "00d541f3541ff8676db0786a2cdffd9c6bfddeb1038b970a91729c5cb695d55f"
+  },
+  "readable_json_note": "The separate JSON copies may have LF-normalized line endings in Git; parsed JSON matches raw ZIP members."
+}

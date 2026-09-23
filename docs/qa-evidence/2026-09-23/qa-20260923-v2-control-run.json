@@ -1,0 +1,22 @@
+{
+  "command": [
+    ".venv/bin/freight-audit",
+    "--db",
+    ".local/control-v2-20260923.db",
+    "run",
+    "fixtures/project.json",
+    "--out",
+    "output/control-v2-20260923"
+  ],
+  "exit_code": 0,
+  "source_before": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
+  "source_after": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+  "started_at_unix": 1790142036.7571094,
+  "elapsed_seconds": 1.217,
+  "log": "docs/qa-evidence/2026-09-23/qa-20260923-v2-control-run.log",
+  "log_sha256": "11b3dbb5602a763b3e92781988ab607e3c33e85802cf926dfef6241ca2d9403d",
+  "original_log": "output/qa-20260923-v2-control-run.log",
+  "original_receipt_sha256": "ab4b47f45f704ebc6faf7295ee7089a4352cead64d11fca334d33941a620d832"
+}

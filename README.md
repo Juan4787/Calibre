@@ -32,7 +32,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\freight-audit.exe serve --port 8765
 ```
 
-El código es portable; esta sesión verificó Linux, **no una instalación Windows real**. No se entrega todavía un instalador firmado ni un ejecutable autocontenido.
+El [workflow de portabilidad](https://github.com/Juan4787/Calibre/actions/runs/35823451264) instaló el wheel fuera del checkout en un runner Windows y cotejó sus tres huellas completas con Linux. La instalación en la PC Windows de uso, Excel de escritorio y el procedimiento operativo del cliente siguen pendientes. No se entrega todavía un instalador firmado ni un ejecutable autocontenido.
 
 ## Auditoría sin UI
 

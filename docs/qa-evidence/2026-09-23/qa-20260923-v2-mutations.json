@@ -1,0 +1,19 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "scripts/qa.py",
+    "mutate",
+    "--execute"
+  ],
+  "exit_code": 0,
+  "source_before": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
+  "source_after": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+  "started_at_unix": 1790141948.5363786,
+  "elapsed_seconds": 20.758,
+  "log": "docs/qa-evidence/2026-09-23/qa-20260923-v2-mutations.log",
+  "log_sha256": "bb73a75ba3348535c33c385f4661f6c882563e0033b089af82e1f6924578ccdb",
+  "original_log": "output/qa-20260923-v2-mutations.log",
+  "original_receipt_sha256": "bc097c3efaec9f80165c72766cd83a4872274112826e9dc996ac42d8e941cf69"
+}

@@ -1,0 +1,128 @@
+{
+  "mutants": [
+    {
+      "id": "M01",
+      "outcome": "killed",
+      "selectors": [
+        "tests/test_engine.py::test_tolerance_and_signed_differences"
+      ],
+      "failure_signal": "At index 0 diff: 'FAIL' != 'PASS'",
+      "failed_cases": [
+        "test_tolerance_and_signed_differences"
+      ],
+      "output": "F....                                                                    [100%]\n=================================== FAILURES ===================================\n_____________ test_tolerance_and_signed_differences[100.01-PASS-0] _____________\n\nraw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}\nactual = '100.01', status = 'PASS', diff = '0'\n\n    @pytest.mark.parametrize(\n        (\"actual\", \"status\", \"diff\"),\n        [\n            (\"100.01\", \"PASS\", \"0\"),\n            (\"100.02\", \"FAIL\", \"0.02\"),\n            (\"90\", \"FAIL\", \"-10\"),\n            (\"110\", \"FAIL\", \"10\"),\n            (\"-10\", \"FAIL\", \"-110\"),\n        ],\n    )\n    def test_tolerance_and_signed_differences(raw_dataset, actual, status, diff):\n        raw_dataset[\"charges\"][0][\"amount\"] = actual\n        f = first(raw_dataset)\n>       assert (f.status, f.confirmed_difference) == (status, diff)\nE       AssertionError: assert ('FAIL', '0.01') == ('PASS', '0')\nE         \nE         At index 0 diff: 'FAIL' != 'PASS'\nE         Use -v to get more diff\n\ntests/test_engine.py:52: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_engine.py::test_tolerance_and_signed_differences[100.01-PASS-0]\n1 failed, 4 passed in 0.26s\n"
+    },
+    {
+      "id": "M02",
+      "outcome": "killed",
+      "selectors": [
+        "tests/test_engine.py::test_tolerance_and_signed_differences"
+      ],
+      "failure_signal": "At index 1 diff: '-0.02' != '0.02'",
+      "failed_cases": [
+        "test_tolerance_and_signed_differences",
+        "test_tolerance_and_signed_differences",
+        "test_tolerance_and_signed_differences",
+        "test_tolerance_and_signed_differences"
+      ],
+      "output": ".FFFF                                                                    [100%]\n=================================== FAILURES ===================================\n___________ test_tolerance_and_signed_differences[100.02-FAIL-0.02] ____________\n\nraw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}\nactual = '100.02', status = 'FAIL', diff = '0.02'\n\n    @pytest.mark.parametrize(\n        (\"actual\", \"status\", \"diff\"),\n        [\n            (\"100.01\", \"PASS\", \"0\"),\n            (\"100.02\", \"FAIL\", \"0.02\"),\n            (\"90\", \"FAIL\", \"-10\"),\n            (\"110\", \"FAIL\", \"10\"),\n            (\"-10\", \"FAIL\", \"-110\"),\n        ],\n    )\n    def test_tolerance_and_signed_differences(raw_dataset, actual, status, diff):\n        raw_dataset[\"charges\"][0][\"amount\"] = actual\n        f = first(raw_dataset)\n>       assert (f.status, f.confirmed_difference) == (status, diff)\nE       AssertionError: assert ('FAIL', '-0.02') == ('FAIL', '0.02')\nE         \nE         At index 1 diff: '-0.02' != '0.02'\nE         Use -v to get more diff\n\ntests/test_engine.py:52: AssertionError\n______________ test_tolerance_and_signed_differences[90-FAIL--10] ______________\n\nraw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}\nactual = '90', status = 'FAIL', diff = '-10'\n\n    @pytest.mark.parametrize(\n        (\"actual\", \"status\", \"diff\"),\n        [\n            (\"100.01\", \"PASS\", \"0\"),\n            (\"100.02\", \"FAIL\", \"0.02\"),\n            (\"90\", \"FAIL\", \"-10\"),\n            (\"110\", \"FAIL\", \"10\"),\n            (\"-10\", \"FAIL\", \"-110\"),\n        ],\n    )\n    def test_tolerance_and_signed_differences(raw_dataset, actual, status, diff):\n        raw_dataset[\"charges\"][0][\"amount\"] = actual\n        f = first(raw_dataset)\n>       assert (f.status, f.confirmed_difference) == (status, diff)\nE       AssertionError: assert ('FAIL', '10') == ('FAIL', '-10')\nE         \nE         At index 1 diff: '10' != '-10'\nE         Use -v to get more diff\n\ntests/test_engine.py:52: AssertionError\n______________ test_tolerance_and_signed_differences[110-FAIL-10] ______________\n\nraw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}\nactual = '110', status = 'FAIL', diff = '10'\n\n    @pytest.mark.parametrize(\n        (\"actual\", \"status\", \"diff\"),\n        [\n            (\"100.01\", \"PASS\", \"0\"),\n            (\"100.02\", \"FAIL\", \"0.02\"),\n            (\"90\", \"FAIL\", \"-10\"),\n            (\"110\", \"FAIL\", \"10\"),\n            (\"-10\", \"FAIL\", \"-110\"),\n        ],\n    )\n    def test_tolerance_and_signed_differences(raw_dataset, actual, status, diff):\n        raw_dataset[\"charges\"][0][\"amount\"] = actual\n        f = first(raw_dataset)\n>       assert (f.status, f.confirmed_difference) == (status, diff)\nE       AssertionError: assert ('FAIL', '-10') == ('FAIL', '10')\nE         \nE         At index 1 diff: '-10' != '10'\nE         Use -v to get more diff\n\ntests/test_engine.py:52: AssertionError\n_____________ test_tolerance_and_signed_differences[-10-FAIL--110] _____________\n\nraw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}\nactual = '-10', status = 'FAIL', diff = '-110'\n\n    @pytest.mark.parametrize(\n        (\"actual\", \"status\", \"diff\"),\n        [\n            (\"100.01\", \"PASS\", \"0\"),\n            (\"100.02\", \"FAIL\", \"0.02\"),\n            (\"90\", \"FAIL\", \"-10\"),\n            (\"110\", \"FAIL\", \"10\"),\n            (\"-10\", \"FAIL\", \"-110\"),\n        ],\n    )\n    def test_tolerance_and_signed_differences(raw_dataset, actual, status, diff):\n        raw_dataset[\"charges\"][0][\"amount\"] = actual\n        f = first(raw_dataset)\n>       assert (f.status, f.confirmed_difference) == (status, diff)\nE       AssertionError: assert ('FAIL', '110') == ('FAIL', '-110')\nE         \nE         At index 1 diff: '110' != '-110'\nE         Use -v to get more diff\n\ntests/test_engine.py:52: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_engine.py::test_tolerance_and_signed_differences[100.02-FAIL-0.02]\nFAILED tests/test_engine.py::test_tolerance_and_signed_differences[90-FAIL--10]\nFAILED tests/test_engine.py::test_tolerance_and_signed_differences[110-FAIL-10]\nFAILED tests/test_engine.py::test_tolerance_and_signed_differences[-10-FAIL--110]\n4 failed, 1 passed in 0.31s\n"
+    },
+    {
+      "id": "M03",
+      "outcome": "killed",
+      "selectors": [
+        "tests/test_engine.py::test_currencies_never_summed_or_converted"
+      ],
+      "failure_signal": "Left contains one more item: 'S1'",
+      "failed_cases": [
+        "test_currencies_never_summed_or_converted"
+      ],
+      "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__________________ test_currencies_never_summed_or_converted ___________________\n\nraw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}\n\n    def test_currencies_never_summed_or_converted(raw_dataset):\n        raw_dataset[\"charges\"].append({**raw_dataset[\"charges\"][0], \"id\": \"C2\", \"currency\": \"USD\", \"amount\": \"3\"})\n        result = compute(raw_dataset)\n        assert result.summary[\"currencies\"][\"ARS\"][\"actual\"] == \"100\"\n        assert result.summary[\"currencies\"][\"USD\"][\"actual\"] == \"3\"\n        finding = next(f for f in result.findings if f.currency == \"USD\")\n        assert finding.status == \"UNDETERMINABLE\"\n>       assert finding.shipment_ids == []\nE       AssertionError: assert ['S1'] == []\nE         \nE         Left contains one more item: 'S1'\nE         Use -v to get more diff\n\ntests/test_engine.py:217: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_engine.py::test_currencies_never_summed_or_converted - Asse...\n1 failed in 0.26s\n"
+    },
+    {
+      "id": "M04",
+      "outcome": "killed",
+      "selectors": [
+        "tests/test_engine.py::test_version_boundaries"
+      ],
+      "failure_signal": "At index 0 diff: 'UNDETERMINABLE' != 'PASS'",
+      "failed_cases": [
+        "test_version_boundaries"
+      ],
+      "output": ".F.                                                                      [100%]\n=================================== FAILURES ===================================\n_________________ test_version_boundaries[2026-06-30-PASS-V1] __________________\n\nraw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}\ndate = '2026-06-30', status = 'PASS', version_id = 'V1'\n\n    @pytest.mark.parametrize(\n        \"date,status,version_id\",\n        [(\"2025-12-31\", \"UNDETERMINABLE\", None), (\"2026-06-30\", \"PASS\", \"V1\"), (\"2026-07-01\", \"PASS\", \"V2\")],\n    )\n    def test_version_boundaries(raw_dataset, date, status, version_id):\n        a = raw_dataset[\"agreements\"][0]\n        a[\"versions\"][0][\"valid_to\"] = \"2026-06-30\"\n        a[\"versions\"].append(version(\"V2\", [rule(\"R2\", \"base\", const(\"100\", \"ARS\"))], start=\"2026-07-01\"))\n        raw_dataset[\"shipments\"][0][\"attributes\"][\"service_date\"][\"value\"] = date\n        f = first(raw_dataset)\n>       assert (f.status, f.version) == (status, version_id)\nE       AssertionError: assert ('UNDETERMINABLE', None) == ('PASS', 'V1')\nE         \nE         At index 0 diff: 'UNDETERMINABLE' != 'PASS'\nE         Use -v to get more diff\n\ntests/test_engine.py:97: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_engine.py::test_version_boundaries[2026-06-30-PASS-V1] - As...\n1 failed, 2 passed in 0.25s\n"
+    },
+    {
+      "id": "M05",
+      "outcome": "killed",
+      "selectors": [
+        "tests/test_engine.py::test_missing_evidence_does_not_confirm_even_numeric_difference"
+      ],
+      "failure_signal": "At index 0 diff: 'FAIL' != 'REVIEW'",
+      "failed_cases": [
+        "test_missing_evidence_does_not_confirm_even_numeric_difference"
+      ],
+      "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n________ test_missing_evidence_does_not_confirm_even_numeric_difference ________\n\nraw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}\n\n    def test_missing_evidence_does_not_confirm_even_numeric_difference(raw_dataset):\n        raw_dataset[\"charges\"][0][\"amount\"] = \"200\"\n        raw_dataset[\"agreements\"][0][\"versions\"][0][\"rules\"][0][\"evidence\"] = [{\"any_of\": [\"approval\"]}]\n        result = compute(raw_dataset)\n        f = result.findings[0]\n>       assert (f.status, f.expected, f.difference, f.confirmed_difference) == (\"REVIEW\", \"100\", \"100\", \"0\")\nE       AssertionError: assert ('FAIL', '100', '100', '100') == ('REVIEW', '100', '100', '0')\nE         \nE         At index 0 diff: 'FAIL' != 'REVIEW'\nE         Use -v to get more diff\n\ntests/test_engine.py:60: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_engine.py::test_missing_evidence_does_not_confirm_even_numeric_difference\n1 failed in 0.31s\n"
+    },
+    {
+      "id": "M06",
+      "outcome": "killed",
+      "selectors": [
+        "tests/test_adversarial.py::test_ambiguous_allocation_also_blocks_related_partial_group"
+      ],
+      "failure_signal": "Extra items in the left set:",
+      "failed_cases": [
+        "test_ambiguous_allocation_also_blocks_related_partial_group"
+      ],
+      "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n_________ test_ambiguous_allocation_also_blocks_related_partial_group __________\n\nraw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}\n\n    def test_ambiguous_allocation_also_blocks_related_partial_group(raw_dataset):\n        raw_dataset[\"shipments\"].append({**deepcopy(raw_dataset[\"shipments\"][0]), \"id\": \"S2\"})\n        raw_dataset[\"charges\"][0][\"amount\"] = \"40\"\n        raw_dataset[\"charges\"].append({**raw_dataset[\"charges\"][0], \"id\": \"C2\", \"amount\": \"60\"})\n        raw_dataset[\"agreements\"][0][\"matching\"].update(explicit={\"C1\": [\"S1\"]}, duplicate_fields=[])\n        # The unresolved 60 could be the remainder of S1; 40 vs 100 is not a confirmed shortfall.\n>       assert {f.status for f in result(raw_dataset).findings} == {\"REVIEW\"}\nE       AssertionError: assert {'FAIL', 'REVIEW'} == {'REVIEW'}\nE         \nE         Extra items in the left set:\nE         'FAIL'\nE         Use -v to get more diff\n\ntests/test_adversarial.py:24: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_adversarial.py::test_ambiguous_allocation_also_blocks_related_partial_group\n1 failed in 0.29s\n"
+    },
+    {
+      "id": "M07",
+      "outcome": "killed",
+      "selectors": [
+        "tests/test_adversarial.py::test_band_overlap_and_gap_never_select_arbitrarily"
+      ],
+      "failure_signal": "assert 'FAIL' == 'UNDETERMINABLE'",
+      "failed_cases": [
+        "test_band_overlap_and_gap_never_select_arbitrarily"
+      ],
+      "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n______________ test_band_overlap_and_gap_never_select_arbitrarily ______________\n\nraw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}\n\n    def test_band_overlap_and_gap_never_select_arbitrarily(raw_dataset):\n        version = raw_dataset[\"agreements\"][0][\"versions\"][0]\n        version[\"rules\"][0][\"expression\"] = op(\"band\", attr(\"weight\", \"kg\"), table=\"ranges\")\n        version[\"tables\"] = {\n            \"ranges\": {\n                \"kind\": \"band\",\n                \"unit\": \"kg\",\n                \"bands\": [\n                    {\"lower\": \"0\", \"upper\": \"20\", \"value\": {\"type\": \"decimal\", \"value\": \"100\", \"unit\": \"ARS\"}},\n                    {\"lower\": \"5\", \"upper\": \"30\", \"value\": {\"type\": \"decimal\", \"value\": \"200\", \"unit\": \"ARS\"}},\n                ],\n            }\n        }\n        assert result(raw_dataset).findings[0].status == \"UNDETERMINABLE\"\n        raw_dataset[\"shipments\"][0][\"attributes\"][\"weight\"][\"value\"] = \"30\"\n>       assert result(raw_dataset).findings[0].status == \"UNDETERMINABLE\"\nE       AssertionError: assert 'FAIL' == 'UNDETERMINABLE'\nE         \nE         - UNDETERMINABLE\nE         + FAIL\n\ntests/test_adversarial.py:96: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_adversarial.py::test_band_overlap_and_gap_never_select_arbitrarily\n1 failed in 0.29s\n"
+    },
+    {
+      "id": "M08",
+      "outcome": "killed",
+      "selectors": [
+        "tests/test_engine.py::test_missing_evidence_does_not_confirm_even_numeric_difference"
+      ],
+      "failure_signal": "At index 3 diff: '100' != '0'",
+      "failed_cases": [
+        "test_missing_evidence_does_not_confirm_even_numeric_difference"
+      ],
+      "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n________ test_missing_evidence_does_not_confirm_even_numeric_difference ________\n\nraw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}\n\n    def test_missing_evidence_does_not_confirm_even_numeric_difference(raw_dataset):\n        raw_dataset[\"charges\"][0][\"amount\"] = \"200\"\n        raw_dataset[\"agreements\"][0][\"versions\"][0][\"rules\"][0][\"evidence\"] = [{\"any_of\": [\"approval\"]}]\n        result = compute(raw_dataset)\n        f = result.findings[0]\n>       assert (f.status, f.expected, f.difference, f.confirmed_difference) == (\"REVIEW\", \"100\", \"100\", \"0\")\nE       AssertionError: assert ('REVIEW', '1... '100', '100') == ('REVIEW', '100', '100', '0')\nE         \nE         At index 3 diff: '100' != '0'\nE         Use -v to get more diff\n\ntests/test_engine.py:60: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_engine.py::test_missing_evidence_does_not_confirm_even_numeric_difference\n1 failed in 0.25s\n"
+    },
+    {
+      "id": "M09",
+      "outcome": "killed",
+      "selectors": [
+        "tests/test_engine.py::test_matching_ambiguity_is_review"
+      ],
+      "failure_signal": "assert ('PASS' == 'REVIEW'",
+      "failed_cases": [
+        "test_matching_ambiguity_is_review"
+      ],
+      "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n______________________ test_matching_ambiguity_is_review _______________________\n\nraw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}\n\n    def test_matching_ambiguity_is_review(raw_dataset):\n        raw_dataset[\"shipments\"].append({**deepcopy(raw_dataset[\"shipments\"][0]), \"id\": \"S2\"})\n        f = first(raw_dataset)\n>       assert f.status == \"REVIEW\" and f.shipment_ids == [\"S1\", \"S2\"]\nE       AssertionError: assert ('PASS' == 'REVIEW'\nE         \nE         - REVIEW\nE         + PASS)\n\ntests/test_engine.py:124: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_engine.py::test_matching_ambiguity_is_review - AssertionErr...\n1 failed in 0.26s\n"
+    },
+    {
+      "id": "M10",
+      "outcome": "killed",
+      "selectors": [
+        "tests/test_engine.py::test_overlapping_rules_are_undeterminable"
+      ],
+      "failure_signal": "assert 'PASS' == 'UNDETERMINABLE'",
+      "failed_cases": [
+        "test_overlapping_rules_are_undeterminable"
+      ],
+      "output": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__________________ test_overlapping_rules_are_undeterminable ___________________\n\nraw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}\n\n    def test_overlapping_rules_are_undeterminable(raw_dataset):\n        raw_dataset[\"agreements\"][0][\"versions\"][0][\"rules\"].append(rule(\"R2\", \"base\", const(\"100\", \"ARS\")))\n>       assert first(raw_dataset).status == \"UNDETERMINABLE\"\nE       AssertionError: assert 'PASS' == 'UNDETERMINABLE'\nE         \nE         - UNDETERMINABLE\nE         + PASS\n\ntests/test_engine.py:255: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_engine.py::test_overlapping_rules_are_undeterminable - Asse...\n1 failed in 0.28s\n"
+    }
+  ],
+  "certification": false
+}

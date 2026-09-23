@@ -1,0 +1,16 @@
+{
+  "failed_workflow": "https://github.com/Juan4787/Calibre/actions/runs/35822778429",
+  "source_commit": "f3d3ab5fc0828e5ab57eb59d22b9449dfbaae538",
+  "differing_fixture": "fixtures/authorization.txt",
+  "lf_sha256": "1f6c01d30807ff18bd051cba581a3efcda5444d55960df9a33c36ed4072fd532",
+  "crlf_sha256": "253427fb0592ebd9d6f0f6d64cd6259a1db961276b28eb600ad8555b54f5a3bd",
+  "linux_snapshot_hash": "8d8cceabc719c3d851c134ae6fee4ccede60b147592ca1599fccc3cac7a46298",
+  "windows_snapshot_hash": "32723e3d6c4e389ce0a723ea55598217f334dc1660a36984d20d8061a1331caf",
+  "linux_run_id": "aac30f79e006ec88aa60a47f976cbd437f034221413d87dc80157b2d3a5631a5",
+  "windows_run_id": "12d0d214c15a76c6fe707a03252118db270c846f1c72dba6f4a3b12780a66287",
+  "crlf_reproduced_windows_snapshot_hash": "32723e3d6c4e389ce0a723ea55598217f334dc1660a36984d20d8061a1331caf",
+  "crlf_reproduced_windows_run_id": "12d0d214c15a76c6fe707a03252118db270c846f1c72dba6f4a3b12780a66287",
+  "windows_hashes_reproduced_exactly": true,
+  "other_fingerprint_fields_equal": true,
+  "finding_count": 46
+}

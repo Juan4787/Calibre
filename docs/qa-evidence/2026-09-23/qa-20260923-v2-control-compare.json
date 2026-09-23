@@ -1,0 +1,20 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "scripts/qa.py",
+    "external-control",
+    "output/control-v2-20260923/audit.json",
+    "fixtures/external-control.json"
+  ],
+  "exit_code": 0,
+  "source_before": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
+  "source_after": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+  "started_at_unix": 1790142053.9477284,
+  "elapsed_seconds": 0.199,
+  "log": "docs/qa-evidence/2026-09-23/qa-20260923-v2-control-compare.log",
+  "log_sha256": "9d67c50d40b333e4dec73017cb94c08588b8c13ec611336ce0e8e34e3a1ab9fa",
+  "original_log": "output/qa-20260923-v2-control-compare.log",
+  "original_receipt_sha256": "bf78de71c8c668e0fbf160529a302a0b0686aa5669cc7a526dd0fc04404c4656"
+}

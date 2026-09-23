@@ -1,0 +1,23 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "output/e2e/platform_scale/compare_fingerprints.py",
+    "--linux",
+    "docs/qa-evidence/2026-09-23/platform-final/linux-semantic-fingerprint.json",
+    "--windows",
+    "docs/qa-evidence/2026-09-23/platform-final/windows-semantic-fingerprint.json",
+    "--output",
+    "output/qa-platform-final-rechecked.json"
+  ],
+  "exit_code": 0,
+  "source_before": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
+  "source_after": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+  "started_at_unix": 1790142463.7941113,
+  "elapsed_seconds": 0.129,
+  "log": "docs/qa-evidence/2026-09-23/qa-20260923-v2-platform-parity.log",
+  "log_sha256": "12b7b38e747d559171b9c1c8ef820f833e919aabae7229cbb4ea826d6dee0ba5",
+  "original_log": "output/qa-20260923-v2-platform-parity.log",
+  "original_receipt_sha256": "04ff3355a8ded20d52c8b11ce46f5d524223a8c64402b53a052273b4f2c6b16b"
+}

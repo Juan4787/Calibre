@@ -1,0 +1,121 @@
+{
+  "platform": {
+    "system": "Windows",
+    "release": "2025Server",
+    "version": "10.0.26100",
+    "machine": "AMD64",
+    "python_version": "3.12.10",
+    "sqlite_version": "3.49.1",
+    "cwd": "D:\\a\\Calibre\\Calibre",
+    "executable": "D:\\a\\_temp\\calibre_cleanroom\\Scripts\\python.exe"
+  },
+  "timestamp": 1790141607.6805015,
+  "cases": {
+    "WIN-01": {
+      "status": "PASSED",
+      "file": "D:\\a\\_temp\\calibre_cleanroom\\Lib\\site-packages\\freight_audit\\__init__.py",
+      "in_site_packages": true
+    },
+    "WIN-02": {
+      "status": "PASSED",
+      "has_help": true,
+      "has_demo": true
+    },
+    "WIN-03": {
+      "status": "PASSED",
+      "journal_mode": "delete",
+      "integrity_check": "ok"
+    },
+    "WIN-04": {
+      "status": "PASSED",
+      "stderr": ""
+    },
+    "WIN-05": {
+      "status": "PASSED",
+      "identical": true
+    },
+    "WIN-06": {
+      "status": "PASSED",
+      "integrity": "ok",
+      "run_loaded": true
+    },
+    "WIN-07": {
+      "status": "PASSED",
+      "size": 279224
+    },
+    "WIN-08": {
+      "status": "PASSED",
+      "size": 60058
+    },
+    "WIN-09": {
+      "status": "PASSED",
+      "size": 9615
+    },
+    "WIN-10": {
+      "status": "PASSED",
+      "bundle_id": "12d0d214c15a76c6fe707a03252118db270c846f1c72dba6f4a3b12780a66287"
+    },
+    "WIN-11": {
+      "status": "PASSED",
+      "path": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\tmpiu6k7e_g\\Calibre QA\\Auditoria de Fletes"
+    },
+    "WIN-12": {
+      "status": "PASSED",
+      "path": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\tmpbk9lmi4z\\Calibre QA\\Auditor\u00eda \u00d1and\u00fa"
+    },
+    "WIN-13": {
+      "status": "PASSED",
+      "file": "reporte_a\u00f1o_2026_\u00f1and\u00fa.xlsx"
+    },
+    "WIN-14": {
+      "status": "PASSED",
+      "records": 46
+    },
+    "WIN-15": {
+      "status": "PASSED",
+      "records": 46
+    },
+    "WIN-16": {
+      "status": "PASSED"
+    },
+    "WIN-17": {
+      "status": "PASSED",
+      "writer_blocked_properly": true,
+      "integrity_post_lock": "ok"
+    },
+    "WIN-18": {
+      "status": "PASSED"
+    },
+    "WIN-19": {
+      "status": "PASSED",
+      "record_count": 46
+    },
+    "WIN-20": {
+      "status": "PASSED"
+    },
+    "WIN-21": {
+      "status": "PASSED",
+      "path_length": 194
+    },
+    "WIN-22": {
+      "status": "PASSED",
+      "first_run_ok": true,
+      "second_run_ok": true,
+      "port": 56320
+    },
+    "WIN-23": {
+      "status": "PASSED",
+      "run_id": "e8472f726188c0faa78c4d33a991c32ef0635a32b34ece66ead0b62109c506b1"
+    },
+    "WIN-24": {
+      "status": "PASSED",
+      "rows_rendered": 30
+    }
+  },
+  "summary": {
+    "total": 24,
+    "passed": 24,
+    "failed": 0,
+    "skipped": 0
+  }
+}

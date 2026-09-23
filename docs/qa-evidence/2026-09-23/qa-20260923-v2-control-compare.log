@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "errors": [],
+  "observed": {
+    "source_hashes": [
+      "1f6c01d30807ff18bd051cba581a3efcda5444d55960df9a33c36ed4072fd532",
+      "2505cb3b3dfc0f034ca96fca88ec297bb12c8299811daea79b7673efb1a0d29e",
+      "ced3ad5c8dc1f6c0b7a124ada3d198dfccca630e070a2b2fae7f6fd896cecb19"
+    ],
+    "shipment_count": 32,
+    "charge_count": 46,
+    "actual_by_currency": {
+      "ARS": "43719.4"
+    }
+  },
+  "scope": "Independent input required; comparison cannot establish that external documents or controls are complete"
+}
