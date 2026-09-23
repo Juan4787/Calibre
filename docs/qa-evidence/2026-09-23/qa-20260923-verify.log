@@ -1,0 +1,8 @@
+All checks passed!
+48 files already formatted
+Success: no issues found in 13 source files
+qa/external_control.py:78: error: Need type annotation for "actual_shipments"  [var-annotated]
+qa/external_control.py:79: error: Need type annotation for "actual_charges"  [var-annotated]
+qa/external_control.py:80: error: Need type annotation for "actual_source_totals"  [var-annotated]
+qa/external_control.py:81: error: Need type annotation for "actual_currency_totals"  [var-annotated]
+Found 4 errors in 1 file (checked 13 source files)

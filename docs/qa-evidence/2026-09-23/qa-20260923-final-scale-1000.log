@@ -1,0 +1,33 @@
+/home/usuario/CascadeProjects/CALIBRE/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+Host environment captured: Linux 6.8.0-136-generic | CPU: Intel(R) Core(TM) i3-4170 CPU @ 3.70GHz (4 cores) | RAM: 11900.38 MB
+
+=================================================================
+BENCHMARK SIZE: 1000 charges (reps=1, isolated subprocess mode)
+Watchdog config: max_child_rss=8000.0 MB, min_host_mem=2000.0 MB, all_exports=True
+=================================================================
+Generating dataset for N=1000...
+Executing single isolated benchmark run...
+/home/usuario/CascadeProjects/CALIBRE/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+  [Stage 1/13] Input read: 0.00s | Peak RSS: 53.1 MB
+  [Stage 2/13] Import: 0.17s | Imported 1000 charges | Peak RSS: 61.1 MB
+  [Stage 3/13] Normalization: 0.08s | Peak RSS: 76.5 MB
+  [Stage 4/13] Engine audit: 0.27s (1000 findings) | Peak RSS: 90.3 MB
+  [Stage 5/13] Store.save: 0.68s | DB: 4.5 MB | Peak RSS: 106.5 MB
+  [Stage 6/13] Store.load: 0.18s | Peak RSS: 106.5 MB
+  [Stage 7/13] Replay: 0.40s | Verified: True | Peak RSS: 116.6 MB
+  [Stage 8/13] Export JSON: 0.07s | Size: 4.4 MB | Peak RSS: 116.6 MB
+  [WATCHDOG TELEMETRY] Elapsed: 10.0s | Child RSS: 151.6 MB (Peak: 153.6 MB) | Host Available: 3142.4 MB
+  [Stage 9/13] Export XLSX: 7.18s | Size: 0.8 MB | Peak RSS: 155.1 MB
+  [Stage 10/13] Export HTML: 0.00s | Size: 0.2 MB | Peak RSS: 155.1 MB
+  [Stage 11/13] Bundle ZIP (freight-audit-bundle/v2): 7.55s | Size: 0.8 MB (uncompressed: 5.44 MB) | Peak RSS: 184.8 MB
+  [Stage 12/13] Verify Bundle: 0.42s | Verified: True | Peak RSS: 184.8 MB
+  [Stage 13/13] API retrieval: 0.84s | Peak RSS: 184.8 MB
+  [Correctness Check] Oracle verification 100% matched: findings=1000, currencies=ARS/USD exact
+Single run complete in 19.44s (Audit: 0.27s, Peak RSS: 184.81 MB)
+
+=================================================================
+REQUESTED PIPELINE CHECKS COMPLETED; omitted sizes/curves are not certified.
+Results recorded in: output/qa48-final-20260923
+=================================================================

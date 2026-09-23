@@ -1,0 +1,981 @@
+All checks passed!
+48 files already formatted
+Success: no issues found in 13 source files
+Success: no issues found in 13 source files
+{
+  "families": 58,
+  "selected": [
+    {
+      "id": "QA-01",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Certeza y diferencia confirmada"
+    },
+    {
+      "id": "QA-02",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Tolerancia, signo y fronteras"
+    },
+    {
+      "id": "QA-03",
+      "priority": "P0",
+      "group": "A",
+      "status": "nuevo",
+      "name": "Referencia de precio independiente"
+    },
+    {
+      "id": "QA-04",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Dominio numérico y tipos estrictos"
+    },
+    {
+      "id": "QA-05",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Redondeo, escala y orden"
+    },
+    {
+      "id": "QA-06",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "División y contexto ambiental"
+    },
+    {
+      "id": "QA-07",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Unidades y monedas separadas"
+    },
+    {
+      "id": "QA-08",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Números desde originales"
+    },
+    {
+      "id": "QA-09",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Identidad y normalización declarada"
+    },
+    {
+      "id": "QA-10",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Estructura CSV y conservación de filas"
+    },
+    {
+      "id": "QA-11",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Semántica de libro Excel"
+    },
+    {
+      "id": "QA-12",
+      "priority": "P1",
+      "group": "A",
+      "status": "parcial",
+      "name": "XLS legacy y cache explícito"
+    },
+    {
+      "id": "QA-13",
+      "priority": "P1",
+      "group": "B",
+      "status": "parcial",
+      "name": "Límites de importación y corrupción"
+    },
+    {
+      "id": "QA-14",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Importación incompleta y alcance documental"
+    },
+    {
+      "id": "QA-15",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Procedencia verificable"
+    },
+    {
+      "id": "QA-16",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Selección única de vigencia"
+    },
+    {
+      "id": "QA-17",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Fecha civil y seriales de Excel"
+    },
+    {
+      "id": "QA-18",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Reglas/condiciones y AST acotado"
+    },
+    {
+      "id": "QA-19",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Lookup/bandas sin desempate arbitrario"
+    },
+    {
+      "id": "QA-20",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Claves, aliases y vínculos explícitos"
+    },
+    {
+      "id": "QA-21",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Ambigüedad propagada a grupos parciales"
+    },
+    {
+      "id": "QA-22",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Consolidado y cargos por componentes"
+    },
+    {
+      "id": "QA-23",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Asignaciones superpuestas y servicios parciales"
+    },
+    {
+      "id": "QA-24",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Duplicados candidatos y remito legítimo"
+    },
+    {
+      "id": "QA-25",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Evidencia por ámbito y adición selectiva"
+    },
+    {
+      "id": "QA-26",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Cobertura explícita de cargos ausentes"
+    },
+    {
+      "id": "QA-27",
+      "priority": "P0",
+      "group": "A",
+      "status": "nuevo",
+      "name": "Conservación total por ID y moneda"
+    },
+    {
+      "id": "QA-28",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Determinismo y transformaciones"
+    },
+    {
+      "id": "QA-29",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Aislamiento entre clientes y catálogos"
+    },
+    {
+      "id": "QA-30",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Decisiones humanas y cadena"
+    },
+    {
+      "id": "QA-31",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Integridad histórica y mutación"
+    },
+    {
+      "id": "QA-32",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Replay y cambio de artefacto"
+    },
+    {
+      "id": "QA-33",
+      "priority": "P0",
+      "group": "A",
+      "status": "nuevo",
+      "name": "Proveniencia de ejecutables y alcance"
+    },
+    {
+      "id": "QA-34",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Backup, restore y reapertura"
+    },
+    {
+      "id": "QA-35",
+      "priority": "P0",
+      "group": "B",
+      "status": "parcial",
+      "name": "Crash, rollback y concurrencia"
+    },
+    {
+      "id": "QA-36",
+      "priority": "P0",
+      "group": "B",
+      "status": "parcial",
+      "name": "Schema y migración recuperable"
+    },
+    {
+      "id": "QA-37",
+      "priority": "P0",
+      "group": "A",
+      "status": "nuevo",
+      "name": "Reconciliación entre representaciones"
+    },
+    {
+      "id": "QA-38",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Límites de reportes y contenido activo"
+    },
+    {
+      "id": "QA-39",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "UI conserva semántica visible y estado actual"
+    },
+    {
+      "id": "QA-40",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Barrera de red local"
+    },
+    {
+      "id": "QA-41",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Rutas, archivos y sobrescritura"
+    },
+    {
+      "id": "QA-42",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "XML/ZIP malicioso acotado"
+    },
+    {
+      "id": "QA-43",
+      "priority": "P1",
+      "group": "A",
+      "status": "parcial",
+      "name": "Errores de API y consistencia de operación"
+    },
+    {
+      "id": "QA-44",
+      "priority": "P1",
+      "group": "A",
+      "status": "parcial",
+      "name": "Auditoría sin servicios externos"
+    },
+    {
+      "id": "QA-45",
+      "priority": "P0",
+      "group": "A",
+      "status": "diseñado",
+      "name": "Representación contractual y mapping aprobados"
+    },
+    {
+      "id": "QA-46",
+      "priority": "P1",
+      "group": "A",
+      "status": "parcial",
+      "name": "Generalidad de cinco arquetipos"
+    },
+    {
+      "id": "QA-47",
+      "priority": "P1",
+      "group": "B",
+      "status": "parcial",
+      "name": "Paquete y plataforma real"
+    },
+    {
+      "id": "QA-48",
+      "priority": "P2",
+      "group": "B",
+      "status": "parcial",
+      "name": "Escala, memoria y tiempos de todas las etapas"
+    },
+    {
+      "id": "QA-49",
+      "priority": "P0",
+      "group": "A",
+      "status": "nuevo",
+      "name": "Los verificadores detectan corrupción"
+    },
+    {
+      "id": "QA-50",
+      "priority": "P0",
+      "group": "A",
+      "status": "nuevo",
+      "name": "Mutantes críticos dirigidos"
+    },
+    {
+      "id": "QA-51",
+      "priority": "P0",
+      "group": "B",
+      "status": "diseñado",
+      "name": "Validación ciega con cliente"
+    },
+    {
+      "id": "QA-52",
+      "priority": "P0",
+      "group": "B",
+      "status": "diseñado",
+      "name": "Gate de pago sin nuestra supervisión"
+    },
+    {
+      "id": "QA-53",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "IDs y JSON inequívocos"
+    },
+    {
+      "id": "QA-54",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Bundle portable y ancla externa"
+    },
+    {
+      "id": "QA-55",
+      "priority": "P1",
+      "group": "B",
+      "status": "parcial",
+      "name": "Entrega reproducible y dependencias"
+    },
+    {
+      "id": "QA-56",
+      "priority": "P0",
+      "group": "A",
+      "status": "parcial",
+      "name": "Separación de liquidaciones y alcance de obligación"
+    },
+    {
+      "id": "QA-57",
+      "priority": "P0",
+      "group": "A",
+      "status": "nuevo",
+      "name": "Diagnóstico no muta evidencia"
+    },
+    {
+      "id": "QA-58",
+      "priority": "P3",
+      "group": "C",
+      "status": "diferido",
+      "name": "Píxel exacto y matrices visuales exhaustivas"
+    }
+  ],
+  "pending_family_coverage": [
+    "QA-01",
+    "QA-02",
+    "QA-03",
+    "QA-04",
+    "QA-05",
+    "QA-06",
+    "QA-07",
+    "QA-08",
+    "QA-09",
+    "QA-10",
+    "QA-11",
+    "QA-12",
+    "QA-13",
+    "QA-14",
+    "QA-15",
+    "QA-16",
+    "QA-17",
+    "QA-18",
+    "QA-19",
+    "QA-20",
+    "QA-21",
+    "QA-22",
+    "QA-23",
+    "QA-24",
+    "QA-25",
+    "QA-26",
+    "QA-27",
+    "QA-28",
+    "QA-29",
+    "QA-30",
+    "QA-31",
+    "QA-32",
+    "QA-33",
+    "QA-34",
+    "QA-35",
+    "QA-36",
+    "QA-37",
+    "QA-38",
+    "QA-39",
+    "QA-40",
+    "QA-41",
+    "QA-42",
+    "QA-43",
+    "QA-44",
+    "QA-45",
+    "QA-46",
+    "QA-47",
+    "QA-48",
+    "QA-49",
+    "QA-50",
+    "QA-51",
+    "QA-52",
+    "QA-53",
+    "QA-54",
+    "QA-55",
+    "QA-56",
+    "QA-57",
+    "QA-58"
+  ],
+  "selectors": [
+    "tests/test_adversarial.py::test_aggregate_amount_can_exceed_individual_input_digit_bound",
+    "tests/test_adversarial.py::test_ambiguous_allocation_also_blocks_related_partial_group",
+    "tests/test_adversarial.py::test_band_overlap_and_gap_never_select_arbitrarily",
+    "tests/test_adversarial.py::test_bounded_expression_depth_rejects_nested_attack",
+    "tests/test_adversarial.py::test_coverage_cannot_silently_drop_wrong_carrier",
+    "tests/test_adversarial.py::test_csv_multiline_provenance_uses_actual_line",
+    "tests/test_adversarial.py::test_duplicate_json_keys_are_rejected",
+    "tests/test_adversarial.py::test_duplicate_lookup_rows_even_same_price_are_ambiguous",
+    "tests/test_adversarial.py::test_empty_keys_never_join_to_empty_keys",
+    "tests/test_adversarial.py::test_inexact_comparison_becomes_undeterminable",
+    "tests/test_adversarial.py::test_missing_coverage_must_not_duplicate_existing_undetermined_charge",
+    "tests/test_adversarial.py::test_no_boolean_coercion",
+    "tests/test_adversarial.py::test_oversized_unmapped_cells_not_silently_shifted",
+    "tests/test_backlog_p0_p1.py::test_qa29_client_catalog_and_storage_isolation",
+    "tests/test_engine.py::test_alternate_date_field",
+    "tests/test_engine.py::test_composite_keys_and_directional_alias",
+    "tests/test_engine.py::test_condition_branch_is_lazy",
+    "tests/test_engine.py::test_condition_missing_is_not_false",
+    "tests/test_engine.py::test_configured_duplicate_is_candidate_only",
+    "tests/test_engine.py::test_currencies_never_summed_or_converted",
+    "tests/test_engine.py::test_evidence_any_of_and_per_operation",
+    "tests/test_engine.py::test_float_prohibited",
+    "tests/test_engine.py::test_global_decimal_context_does_not_affect_results",
+    "tests/test_engine.py::test_group_mixed_version_is_undeterminable",
+    "tests/test_engine.py::test_group_sum_and_one_expected_charge",
+    "tests/test_engine.py::test_import_rejects_block_economic_confirmation",
+    "tests/test_engine.py::test_invalid_explicit_link_never_falls_back",
+    "tests/test_engine.py::test_invalid_money",
+    "tests/test_engine.py::test_matching_ambiguity_is_review",
+    "tests/test_engine.py::test_missing_attribute_and_unit_mismatch",
+    "tests/test_engine.py::test_missing_evidence_does_not_confirm_even_numeric_difference",
+    "tests/test_engine.py::test_missing_expected_charge_requires_explicit_scope_and_is_review",
+    "tests/test_engine.py::test_multiple_lines_aggregate_without_inventing_duplicates",
+    "tests/test_engine.py::test_overlap_allocations_are_review",
+    "tests/test_engine.py::test_overlapping_rules_are_undeterminable",
+    "tests/test_engine.py::test_overlapping_versions_never_pick_first",
+    "tests/test_engine.py::test_property_arbitrary_row_permutation",
+    "tests/test_engine.py::test_property_division_matches_high_precision",
+    "tests/test_engine.py::test_rules_need_currency_units",
+    "tests/test_engine.py::test_same_remittance_different_concepts_is_not_duplicate",
+    "tests/test_engine.py::test_semantic_hash_ignores_incidental_label",
+    "tests/test_engine.py::test_tolerance_and_signed_differences",
+    "tests/test_engine.py::test_unrelated_evidence_cannot_support_charge",
+    "tests/test_engine.py::test_version_boundaries",
+    "tests/test_external_control.py::test_external_control_cli_exit_codes_and_hash_integrity",
+    "tests/test_external_control.py::test_external_inventory_count_and_total_are_independent_blockers",
+    "tests/test_importing.py::test_ambiguous_date_is_rejected",
+    "tests/test_importing.py::test_ambiguous_or_missing_headers_fail_file",
+    "tests/test_importing.py::test_argentine_decimal",
+    "tests/test_importing.py::test_csv_argentine_numbers_zeroes_and_provenance",
+    "tests/test_importing.py::test_duplicate_business_ids_visible_not_silently_deduplicated",
+    "tests/test_importing.py::test_excel_fictitious_leap_day_never_aliases_real_date",
+    "tests/test_importing.py::test_malformed_xlsx_fuzz_is_bounded_and_classified",
+    "tests/test_importing.py::test_multisheet_requires_selection",
+    "tests/test_importing.py::test_original_fractional_numeric_identifier_cannot_become_integer_after_float_rounding",
+    "tests/test_importing.py::test_original_numeric_tokens_follow_sparse_sheet_coordinates",
+    "tests/test_importing.py::test_reordered_columns_same_normalized_records",
+    "tests/test_importing.py::test_timestamps_are_not_silently_truncated",
+    "tests/test_importing.py::test_unknown_concept_not_canonicalized_by_accident",
+    "tests/test_importing.py::test_unsafe_numeric_strings_rejected",
+    "tests/test_importing.py::test_xls_requires_explicit_cached_value_acceptance",
+    "tests/test_importing.py::test_xlsx_duplicate_or_traversal_entry_is_rejected",
+    "tests/test_importing.py::test_xlsx_external_entity_never_becomes_imported_value",
+    "tests/test_importing.py::test_xlsx_formula_never_evaluated_or_taken_as_cache",
+    "tests/test_importing.py::test_xlsx_hidden_business_data_blocks_import_until_made_visible",
+    "tests/test_importing.py::test_xlsx_hidden_selected_sheet_blocks_import",
+    "tests/test_importing.py::test_xlsx_numeric_id_requires_explicit_policy",
+    "tests/test_importing.py::test_xlsx_preserves_original_decimal_literal_without_binary_float_loss",
+    "tests/test_importing.py::test_xlsx_unbounded_exponent_is_rejected_before_decimal_expansion",
+    "tests/test_integration.py::test_api_configuration_errors_use_recoverable_messages",
+    "tests/test_integration.py::test_api_import_with_mapping_and_provenance",
+    "tests/test_integration.py::test_api_runs_decisions_export_replay",
+    "tests/test_integration.py::test_fully_offline_core",
+    "tests/test_integration.py::test_invalid_fixture_rejects_visible_rows",
+    "tests/test_integration.py::test_local_api_security_boundary",
+    "tests/test_integration.py::test_real_files_three_agreements_golden_and_second_client",
+    "tests/test_integration.py::test_upload_filename_is_only_a_label_and_never_an_output_path",
+    "tests/test_mutation_verdict.py::test_mutant_verdict_requires_selected_causal_assertion",
+    "tests/test_qa_infrastructure.py::test_checker_rejects_economic_corruption",
+    "tests/test_qa_infrastructure.py::test_cross_report_reconciliation_and_tamper_detection",
+    "tests/test_qa_infrastructure.py::test_generated_reference_prices",
+    "tests/test_qa_infrastructure.py::test_generated_uncertainty_and_metamorphism",
+    "tests/test_qa_infrastructure.py::test_impact_is_read_only_and_retains_unknowns",
+    "tests/test_qa_infrastructure.py::test_reference_manual_anchors",
+    "tests/test_review_regressions.py::test_rebilling_same_operation_in_other_invoice_is_not_independent_pass",
+    "tests/test_review_regressions.py::test_separate_operations_on_separate_invoices_still_pass",
+    "tests/test_security_paths.py::test_backup_publishes_only_completed_copy_without_overwrite",
+    "tests/test_security_paths.py::test_export_marks_interrupted_or_invalid_package",
+    "tests/test_security_paths.py::test_export_rejects_existing_and_redirected_directories",
+    "tests/test_security_paths.py::test_foreign_platform_drive_syntax_is_not_a_local_relative_output",
+    "tests/test_storage_reporting.py::test_changed_agreement_preserves_history",
+    "tests/test_storage_reporting.py::test_db_update_delete_blocked",
+    "tests/test_storage_reporting.py::test_decision_chain_serializes_concurrent_writers",
+    "tests/test_storage_reporting.py::test_engine_artifact_change_blocks_replay",
+    "tests/test_storage_reporting.py::test_excel_long_cell_is_not_silently_truncated",
+    "tests/test_storage_reporting.py::test_excel_row_limit_preserves_full_bundle_json",
+    "tests/test_storage_reporting.py::test_human_decision_never_rewrites_finding",
+    "tests/test_storage_reporting.py::test_migration_reopening_and_consistent_backup",
+    "tests/test_storage_reporting.py::test_newer_database_schema_is_not_opened",
+    "tests/test_storage_reporting.py::test_no_unknown_decision_or_evidence",
+    "tests/test_storage_reporting.py::test_portable_bundle_integrity",
+    "tests/test_storage_reporting.py::test_report_escapes_untrusted_html_and_excel_formula",
+    "tests/test_storage_reporting.py::test_save_replay_and_idempotency",
+    "tests/test_storage_reporting.py::test_source_update_requires_process_restart",
+    "tests/test_storage_reporting.py::test_tampered_result_detected_after_trigger_bypass",
+    "tests/test_storage_reporting.py::test_tampered_source_detected",
+    "tests/test_storage_reporting.py::test_workbook_is_real_and_has_exact_money_and_no_formulas"
+  ],
+  "errors": [],
+  "certification": false
+}
+........................................................................ [ 31%]
+........................................................................ [ 62%]
+........................................................................ [ 93%]
+..............                                                           [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /home/usuario/CascadeProjects/CALIBRE/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv/lib/python3.12/site-packages/starlette/testclient.py:53
+  /home/usuario/CascadeProjects/CALIBRE/.venv/lib/python3.12/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+230 passed, 2 warnings in 21.75s
+* Creating isolated environment: venv+pip...
+* Installing packages in isolated environment:
+  - setuptools==80.9.0
+  - wheel==0.45.1
+* Getting build dependencies for sdist...
+running egg_info
+writing src/freight_audit.egg-info/PKG-INFO
+writing dependency_links to src/freight_audit.egg-info/dependency_links.txt
+writing entry points to src/freight_audit.egg-info/entry_points.txt
+writing requirements to src/freight_audit.egg-info/requires.txt
+writing top-level names to src/freight_audit.egg-info/top_level.txt
+reading manifest file 'src/freight_audit.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'src/freight_audit.egg-info/SOURCES.txt'
+* Installed build dependency versions:
+  - setuptools==80.9.0
+  - wheel==0.45.1
+* Building sdist...
+running sdist
+running egg_info
+writing src/freight_audit.egg-info/PKG-INFO
+writing dependency_links to src/freight_audit.egg-info/dependency_links.txt
+writing entry points to src/freight_audit.egg-info/entry_points.txt
+writing requirements to src/freight_audit.egg-info/requires.txt
+writing top-level names to src/freight_audit.egg-info/top_level.txt
+reading manifest file 'src/freight_audit.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'src/freight_audit.egg-info/SOURCES.txt'
+running check
+creating freight_audit-0.1.0
+creating freight_audit-0.1.0/docs
+creating freight_audit-0.1.0/docs/schemas
+creating freight_audit-0.1.0/fixtures
+creating freight_audit-0.1.0/fixtures/second-client
+creating freight_audit-0.1.0/output/e2e/fault_injection
+creating freight_audit-0.1.0/output/e2e/import_adversarial
+creating freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+creating freight_audit-0.1.0/output/e2e/import_adversarial/mappings
+creating freight_audit-0.1.0/output/e2e/platform_scale
+creating freight_audit-0.1.0/output/e2e/platform_scale/incidents/PERF-01-XLSX-QUADRATIC
+creating freight_audit-0.1.0/output/e2e/platform_scale/incidents/SCALE-EXPORT-01-BUNDLE-PRODUCER-VERIFIER-MISMATCH
+creating freight_audit-0.1.0/qa
+creating freight_audit-0.1.0/scripts
+creating freight_audit-0.1.0/src/freight_audit
+creating freight_audit-0.1.0/src/freight_audit.egg-info
+creating freight_audit-0.1.0/src/freight_audit/static
+creating freight_audit-0.1.0/tests
+creating freight_audit-0.1.0/tests/fuzz_corpus
+creating freight_audit-0.1.0/tests/golden
+copying files to freight_audit-0.1.0...
+copying MANIFEST.in -> freight_audit-0.1.0
+copying README.md -> freight_audit-0.1.0
+copying pyproject.toml -> freight_audit-0.1.0
+copying requirements-browser.lock -> freight_audit-0.1.0
+copying requirements.lock -> freight_audit-0.1.0
+copying docs/ADVERSARIAL_REVIEW.md -> freight_audit-0.1.0/docs
+copying docs/ARCHITECTURE.md -> freight_audit-0.1.0/docs
+copying docs/CI_PIPELINE.md -> freight_audit-0.1.0/docs
+copying docs/DELIVERY.md -> freight_audit-0.1.0/docs
+copying docs/ECONOMIC_INVARIANTS.md -> freight_audit-0.1.0/docs
+copying docs/EXTERNAL_CONTROL.md -> freight_audit-0.1.0/docs
+copying docs/FIRST_REAL_CLIENT.md -> freight_audit-0.1.0/docs
+copying docs/INCIDENT_RESPONSE.md -> freight_audit-0.1.0/docs
+copying docs/PILOT_SCORECARD.csv -> freight_audit-0.1.0/docs
+copying docs/QA_ADVANCEMENT_2026-09-23.md -> freight_audit-0.1.0/docs
+copying docs/QA_CASES.md -> freight_audit-0.1.0/docs
+copying docs/QA_COVERAGE_LEDGER.json -> freight_audit-0.1.0/docs
+copying docs/QA_COVERAGE_LEDGER.md -> freight_audit-0.1.0/docs
+copying docs/QA_DELIVERY.md -> freight_audit-0.1.0/docs
+copying docs/QA_EXECUTION.md -> freight_audit-0.1.0/docs
+copying docs/QA_IMPLEMENTATION.md -> freight_audit-0.1.0/docs
+copying docs/REAL_CLIENT_VALIDATION_PROTOCOL.md -> freight_audit-0.1.0/docs
+copying docs/RELEASE_CRITERIA.md -> freight_audit-0.1.0/docs
+copying docs/RIGOR_REVIEW.md -> freight_audit-0.1.0/docs
+copying docs/RULES_AND_IMPORTS.md -> freight_audit-0.1.0/docs
+copying docs/TEST_AUTOMATION_BACKLOG.md -> freight_audit-0.1.0/docs
+copying docs/TEST_MATRIX.csv -> freight_audit-0.1.0/docs
+copying docs/TEST_MATRIX.md -> freight_audit-0.1.0/docs
+copying docs/TEST_ORACLES.md -> freight_audit-0.1.0/docs
+copying docs/TEST_STRATEGY.md -> freight_audit-0.1.0/docs
+copying docs/TRIAGE_PLAYBOOK.md -> freight_audit-0.1.0/docs
+copying docs/VERIFICATION.md -> freight_audit-0.1.0/docs
+copying docs/schemas/agreement.schema.json -> freight_audit-0.1.0/docs/schemas
+copying docs/schemas/dataset.schema.json -> freight_audit-0.1.0/docs/schemas
+copying docs/schemas/decision.schema.json -> freight_audit-0.1.0/docs/schemas
+copying docs/schemas/mapping.schema.json -> freight_audit-0.1.0/docs/schemas
+copying fixtures/agreements.json -> freight_audit-0.1.0/fixtures
+copying fixtures/authorization.txt -> freight_audit-0.1.0/fixtures
+copying fixtures/evidence.json -> freight_audit-0.1.0/fixtures
+copying fixtures/external-control.json -> freight_audit-0.1.0/fixtures
+copying fixtures/liquidacion.csv -> freight_audit-0.1.0/fixtures
+copying fixtures/mapping-charges.json -> freight_audit-0.1.0/fixtures
+copying fixtures/mapping-invalid.json -> freight_audit-0.1.0/fixtures
+copying fixtures/mapping-shipments.json -> freight_audit-0.1.0/fixtures
+copying fixtures/operaciones-invalidas.csv -> freight_audit-0.1.0/fixtures
+copying fixtures/operaciones.xlsx -> freight_audit-0.1.0/fixtures
+copying fixtures/project.json -> freight_audit-0.1.0/fixtures
+copying fixtures/second-client/agreements.json -> freight_audit-0.1.0/fixtures/second-client
+copying fixtures/second-client/invoice.xlsx -> freight_audit-0.1.0/fixtures/second-client
+copying fixtures/second-client/mapping-charges.json -> freight_audit-0.1.0/fixtures/second-client
+copying fixtures/second-client/mapping-shipments.json -> freight_audit-0.1.0/fixtures/second-client
+copying fixtures/second-client/movements.csv -> freight_audit-0.1.0/fixtures/second-client
+copying fixtures/second-client/project.json -> freight_audit-0.1.0/fixtures/second-client
+copying output/e2e/fault_injection/detector_runner.py -> freight_audit-0.1.0/output/e2e/fault_injection
+copying output/e2e/fault_injection/expected_detectors.json -> freight_audit-0.1.0/output/e2e/fault_injection
+copying output/e2e/fault_injection/fault_generator.py -> freight_audit-0.1.0/output/e2e/fault_injection
+copying output/e2e/fault_injection/run_blind_faults.py -> freight_audit-0.1.0/output/e2e/fault_injection
+copying output/e2e/fault_injection/run_directed_faults.py -> freight_audit-0.1.0/output/e2e/fault_injection
+copying output/e2e/fault_injection/run_healthy_controls.py -> freight_audit-0.1.0/output/e2e/fault_injection
+copying output/e2e/import_adversarial/build_adversarial_fixtures.py -> freight_audit-0.1.0/output/e2e/import_adversarial
+copying output/e2e/import_adversarial/test_import_adversarial.py -> freight_audit-0.1.0/output/e2e/import_adversarial
+copying output/e2e/import_adversarial/fixtures/csv_01_crlf.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_02_bom.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_03_lf.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_04_pipe.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_05_quoted_delim.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_06_escaped_quotes.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_07_multiline.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_08_whitespace.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_09_duplicate_header.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_10_missing_header.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_11_extra_col.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_12_short_row.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_13_arg_number.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_14_anglo_number.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_15_negative_amount.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_16_positive_amount.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_17_leading_zeros.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_18_unicode.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_19_nbsp.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/csv_20_truncated.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/factura_revisada_2026.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_01_data.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_01_data.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_02_anglo.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_02_arg.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_03_perm_a.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_03_perm_b.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_04_order_a.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_04_order_b.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_05_compact.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_05_spaced.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_06_amt_a.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_06_amt_b.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_07_date_a.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_07_date_b.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_08_id_a.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/met_08_id_b.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/prov_01_standard.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/prov_03_vertical_shift.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/prov_04_horizontal_shift.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/prov_05_attributes.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/prov_06_constant.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/rej_01_bad_separator.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/rej_02_ambiguous_date.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/rej_03_date_with_time.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/rej_04_duplicate_id.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/rej_05_ambiguous_boolean.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/rej_06_missing_amount.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/rej_07_unmapped_concept.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/rej_08_empty_file.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/rej_09_headers_only.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/rej_10_blank_line.csv -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_01_standard.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_02_num_as_text.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_03_high_precision.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_04_scientific.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_05_formula_cached.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_06_formula_nocache.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_07_error_token.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_08_serial_date.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_09_multisheet.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_11_hidden_row.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_12_merged_cells.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_13_sparse_rows.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_14_empty_block.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_15_extra_col.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_16_corrupt.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_17_num_id_reject.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/fixtures/xlsx_18_num_id_formatted.xlsx -> freight_audit-0.1.0/output/e2e/import_adversarial/fixtures
+copying output/e2e/import_adversarial/mappings/charges_std.json -> freight_audit-0.1.0/output/e2e/import_adversarial/mappings
+copying output/e2e/import_adversarial/mappings/csv_04_pipe.json -> freight_audit-0.1.0/output/e2e/import_adversarial/mappings
+copying output/e2e/import_adversarial/mappings/csv_05_comma.json -> freight_audit-0.1.0/output/e2e/import_adversarial/mappings
+copying output/e2e/import_adversarial/mappings/csv_14_anglo.json -> freight_audit-0.1.0/output/e2e/import_adversarial/mappings
+copying output/e2e/import_adversarial/mappings/met_02_anglo_map.json -> freight_audit-0.1.0/output/e2e/import_adversarial/mappings
+copying output/e2e/import_adversarial/mappings/prov_03_header4.json -> freight_audit-0.1.0/output/e2e/import_adversarial/mappings
+copying output/e2e/import_adversarial/mappings/prov_05_attrs.json -> freight_audit-0.1.0/output/e2e/import_adversarial/mappings
+copying output/e2e/import_adversarial/mappings/rej_02_ambiguous_date.json -> freight_audit-0.1.0/output/e2e/import_adversarial/mappings
+copying output/e2e/import_adversarial/mappings/rej_05_boolean.json -> freight_audit-0.1.0/output/e2e/import_adversarial/mappings
+copying output/e2e/import_adversarial/mappings/shipments_std.json -> freight_audit-0.1.0/output/e2e/import_adversarial/mappings
+copying output/e2e/import_adversarial/mappings/xlsx_10_bad_sheet.json -> freight_audit-0.1.0/output/e2e/import_adversarial/mappings
+copying output/e2e/import_adversarial/mappings/xlsx_18_formatted.json -> freight_audit-0.1.0/output/e2e/import_adversarial/mappings
+copying output/e2e/platform_scale/benchmark_runner.py -> freight_audit-0.1.0/output/e2e/platform_scale
+copying output/e2e/platform_scale/compare_fingerprints.py -> freight_audit-0.1.0/output/e2e/platform_scale
+copying output/e2e/platform_scale/complexity_runner.py -> freight_audit-0.1.0/output/e2e/platform_scale
+copying output/e2e/platform_scale/endurance_runner.py -> freight_audit-0.1.0/output/e2e/platform_scale
+copying output/e2e/platform_scale/generate_scale_dataset.py -> freight_audit-0.1.0/output/e2e/platform_scale
+copying output/e2e/platform_scale/profile_perf01_xlsx.py -> freight_audit-0.1.0/output/e2e/platform_scale
+copying output/e2e/platform_scale/profile_perf02_memory.py -> freight_audit-0.1.0/output/e2e/platform_scale
+copying output/e2e/platform_scale/run_platform_suite.py -> freight_audit-0.1.0/output/e2e/platform_scale
+copying output/e2e/platform_scale/incidents/PERF-01-XLSX-QUADRATIC/reproducer.py -> freight_audit-0.1.0/output/e2e/platform_scale/incidents/PERF-01-XLSX-QUADRATIC
+copying output/e2e/platform_scale/incidents/SCALE-EXPORT-01-BUNDLE-PRODUCER-VERIFIER-MISMATCH/reproducer.py -> freight_audit-0.1.0/output/e2e/platform_scale/incidents/SCALE-EXPORT-01-BUNDLE-PRODUCER-VERIFIER-MISMATCH
+copying qa/__init__.py -> freight_audit-0.1.0/qa
+copying qa/catalog.py -> freight_audit-0.1.0/qa
+copying qa/catalog_tools.py -> freight_audit-0.1.0/qa
+copying qa/evidence.py -> freight_audit-0.1.0/qa
+copying qa/external_control.py -> freight_audit-0.1.0/qa
+copying qa/gates.py -> freight_audit-0.1.0/qa
+copying qa/generators.py -> freight_audit-0.1.0/qa
+copying qa/impact.py -> freight_audit-0.1.0/qa
+copying qa/invariants.py -> freight_audit-0.1.0/qa
+copying qa/mutants.json -> freight_audit-0.1.0/qa
+copying qa/mutation.py -> freight_audit-0.1.0/qa
+copying qa/reconcile.py -> freight_audit-0.1.0/qa
+copying qa/reference.py -> freight_audit-0.1.0/qa
+copying scripts/benchmark.py -> freight_audit-0.1.0/scripts
+copying scripts/browser_e2e.py -> freight_audit-0.1.0/scripts
+copying scripts/build_qa_coverage_ledger.py -> freight_audit-0.1.0/scripts
+copying scripts/ci_reconcile_fixtures.py -> freight_audit-0.1.0/scripts
+copying scripts/qa.py -> freight_audit-0.1.0/scripts
+copying scripts/record_check.py -> freight_audit-0.1.0/scripts
+copying scripts/run_ci_tier.sh -> freight_audit-0.1.0/scripts
+copying scripts/smoke_wheel.py -> freight_audit-0.1.0/scripts
+copying scripts/start-local.ps1 -> freight_audit-0.1.0/scripts
+copying scripts/start-local.sh -> freight_audit-0.1.0/scripts
+copying scripts/verify.sh -> freight_audit-0.1.0/scripts
+copying scripts/verify_delivery.py -> freight_audit-0.1.0/scripts
+copying src/freight_audit/__init__.py -> freight_audit-0.1.0/src/freight_audit
+copying src/freight_audit/canonical.py -> freight_audit-0.1.0/src/freight_audit
+copying src/freight_audit/cli.py -> freight_audit-0.1.0/src/freight_audit
+copying src/freight_audit/engine.py -> freight_audit-0.1.0/src/freight_audit
+copying src/freight_audit/fixtures.py -> freight_audit-0.1.0/src/freight_audit
+copying src/freight_audit/importing.py -> freight_audit-0.1.0/src/freight_audit
+copying src/freight_audit/local_paths.py -> freight_audit-0.1.0/src/freight_audit
+copying src/freight_audit/models.py -> freight_audit-0.1.0/src/freight_audit
+copying src/freight_audit/project.py -> freight_audit-0.1.0/src/freight_audit
+copying src/freight_audit/reporting.py -> freight_audit-0.1.0/src/freight_audit
+copying src/freight_audit/rules.py -> freight_audit-0.1.0/src/freight_audit
+copying src/freight_audit/server.py -> freight_audit-0.1.0/src/freight_audit
+copying src/freight_audit/storage.py -> freight_audit-0.1.0/src/freight_audit
+copying src/freight_audit.egg-info/PKG-INFO -> freight_audit-0.1.0/src/freight_audit.egg-info
+copying src/freight_audit.egg-info/SOURCES.txt -> freight_audit-0.1.0/src/freight_audit.egg-info
+copying src/freight_audit.egg-info/dependency_links.txt -> freight_audit-0.1.0/src/freight_audit.egg-info
+copying src/freight_audit.egg-info/entry_points.txt -> freight_audit-0.1.0/src/freight_audit.egg-info
+copying src/freight_audit.egg-info/requires.txt -> freight_audit-0.1.0/src/freight_audit.egg-info
+copying src/freight_audit.egg-info/top_level.txt -> freight_audit-0.1.0/src/freight_audit.egg-info
+copying src/freight_audit/static/app.css -> freight_audit-0.1.0/src/freight_audit/static
+copying src/freight_audit/static/app.js -> freight_audit-0.1.0/src/freight_audit/static
+copying src/freight_audit/static/favicon.svg -> freight_audit-0.1.0/src/freight_audit/static
+copying src/freight_audit/static/index.html -> freight_audit-0.1.0/src/freight_audit/static
+copying tests/conftest.py -> freight_audit-0.1.0/tests
+copying tests/test_adversarial.py -> freight_audit-0.1.0/tests
+copying tests/test_backlog_p0_p1.py -> freight_audit-0.1.0/tests
+copying tests/test_bundle_v1_v2.py -> freight_audit-0.1.0/tests
+copying tests/test_engine.py -> freight_audit-0.1.0/tests
+copying tests/test_external_control.py -> freight_audit-0.1.0/tests
+copying tests/test_importing.py -> freight_audit-0.1.0/tests
+copying tests/test_integration.py -> freight_audit-0.1.0/tests
+copying tests/test_mutation_verdict.py -> freight_audit-0.1.0/tests
+copying tests/test_qa_gates.py -> freight_audit-0.1.0/tests
+copying tests/test_qa_infrastructure.py -> freight_audit-0.1.0/tests
+copying tests/test_review_regressions.py -> freight_audit-0.1.0/tests
+copying tests/test_security_paths.py -> freight_audit-0.1.0/tests
+copying tests/test_storage_reporting.py -> freight_audit-0.1.0/tests
+copying tests/fuzz_corpus/README.md -> freight_audit-0.1.0/tests/fuzz_corpus
+copying tests/fuzz_corpus/bad-grouping.csv -> freight_audit-0.1.0/tests/fuzz_corpus
+copying tests/fuzz_corpus/manifest.json -> freight_audit-0.1.0/tests/fuzz_corpus
+copying tests/fuzz_corpus/mapping.json -> freight_audit-0.1.0/tests/fuzz_corpus
+copying tests/fuzz_corpus/multiline.csv -> freight_audit-0.1.0/tests/fuzz_corpus
+copying tests/fuzz_corpus/valid-argentine.csv -> freight_audit-0.1.0/tests/fuzz_corpus
+copying tests/golden/demo.json -> freight_audit-0.1.0/tests/golden
+copying tests/golden/producer-e861667-v1.json -> freight_audit-0.1.0/tests/golden
+copying tests/golden/producer-e861667-v1.zip -> freight_audit-0.1.0/tests/golden
+copying tests/golden/second-client.json -> freight_audit-0.1.0/tests/golden
+copying src/freight_audit.egg-info/SOURCES.txt -> freight_audit-0.1.0/src/freight_audit.egg-info
+Writing freight_audit-0.1.0/setup.cfg
+Creating tar archive
+removing 'freight_audit-0.1.0' (and everything under it)
+* Building wheel from sdist
+* Creating isolated environment: venv+pip...
+* Installing packages in isolated environment:
+  - setuptools==80.9.0
+  - wheel==0.45.1
+* Getting build dependencies for wheel...
+running egg_info
+writing src/freight_audit.egg-info/PKG-INFO
+writing dependency_links to src/freight_audit.egg-info/dependency_links.txt
+writing entry points to src/freight_audit.egg-info/entry_points.txt
+writing requirements to src/freight_audit.egg-info/requires.txt
+writing top-level names to src/freight_audit.egg-info/top_level.txt
+reading manifest file 'src/freight_audit.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'src/freight_audit.egg-info/SOURCES.txt'
+* Installed build dependency versions:
+  - setuptools==80.9.0
+  - wheel==0.45.1
+* Building wheel...
+running bdist_wheel
+running build
+running build_py
+creating build/lib/freight_audit
+copying src/freight_audit/engine.py -> build/lib/freight_audit
+copying src/freight_audit/importing.py -> build/lib/freight_audit
+copying src/freight_audit/models.py -> build/lib/freight_audit
+copying src/freight_audit/project.py -> build/lib/freight_audit
+copying src/freight_audit/local_paths.py -> build/lib/freight_audit
+copying src/freight_audit/canonical.py -> build/lib/freight_audit
+copying src/freight_audit/cli.py -> build/lib/freight_audit
+copying src/freight_audit/reporting.py -> build/lib/freight_audit
+copying src/freight_audit/__init__.py -> build/lib/freight_audit
+copying src/freight_audit/storage.py -> build/lib/freight_audit
+copying src/freight_audit/rules.py -> build/lib/freight_audit
+copying src/freight_audit/fixtures.py -> build/lib/freight_audit
+copying src/freight_audit/server.py -> build/lib/freight_audit
+running egg_info
+writing src/freight_audit.egg-info/PKG-INFO
+writing dependency_links to src/freight_audit.egg-info/dependency_links.txt
+writing entry points to src/freight_audit.egg-info/entry_points.txt
+writing requirements to src/freight_audit.egg-info/requires.txt
+writing top-level names to src/freight_audit.egg-info/top_level.txt
+reading manifest file 'src/freight_audit.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'src/freight_audit.egg-info/SOURCES.txt'
+creating build/lib/freight_audit/static
+copying src/freight_audit/static/app.js -> build/lib/freight_audit/static
+copying src/freight_audit/static/app.css -> build/lib/freight_audit/static
+copying src/freight_audit/static/index.html -> build/lib/freight_audit/static
+copying src/freight_audit/static/favicon.svg -> build/lib/freight_audit/static
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/freight_audit
+copying build/lib/freight_audit/engine.py -> build/bdist.linux-x86_64/wheel/./freight_audit
+copying build/lib/freight_audit/importing.py -> build/bdist.linux-x86_64/wheel/./freight_audit
+copying build/lib/freight_audit/models.py -> build/bdist.linux-x86_64/wheel/./freight_audit
+copying build/lib/freight_audit/project.py -> build/bdist.linux-x86_64/wheel/./freight_audit
+copying build/lib/freight_audit/local_paths.py -> build/bdist.linux-x86_64/wheel/./freight_audit
+copying build/lib/freight_audit/canonical.py -> build/bdist.linux-x86_64/wheel/./freight_audit
+copying build/lib/freight_audit/cli.py -> build/bdist.linux-x86_64/wheel/./freight_audit
+copying build/lib/freight_audit/reporting.py -> build/bdist.linux-x86_64/wheel/./freight_audit
+copying build/lib/freight_audit/__init__.py -> build/bdist.linux-x86_64/wheel/./freight_audit
+copying build/lib/freight_audit/storage.py -> build/bdist.linux-x86_64/wheel/./freight_audit
+creating build/bdist.linux-x86_64/wheel/freight_audit/static
+copying build/lib/freight_audit/static/app.js -> build/bdist.linux-x86_64/wheel/./freight_audit/static
+copying build/lib/freight_audit/static/app.css -> build/bdist.linux-x86_64/wheel/./freight_audit/static
+copying build/lib/freight_audit/static/index.html -> build/bdist.linux-x86_64/wheel/./freight_audit/static
+copying build/lib/freight_audit/static/favicon.svg -> build/bdist.linux-x86_64/wheel/./freight_audit/static
+copying build/lib/freight_audit/rules.py -> build/bdist.linux-x86_64/wheel/./freight_audit
+copying build/lib/freight_audit/fixtures.py -> build/bdist.linux-x86_64/wheel/./freight_audit
+copying build/lib/freight_audit/server.py -> build/bdist.linux-x86_64/wheel/./freight_audit
+running install_egg_info
+Copying src/freight_audit.egg-info to build/bdist.linux-x86_64/wheel/./freight_audit-0.1.0-py3.12.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/freight_audit-0.1.0.dist-info/WHEEL
+creating '/home/usuario/CascadeProjects/CALIBRE/dist/.tmp-axugw8nr/freight_audit-0.1.0-py3-none-any.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'freight_audit/__init__.py'
+adding 'freight_audit/canonical.py'
+adding 'freight_audit/cli.py'
+adding 'freight_audit/engine.py'
+adding 'freight_audit/fixtures.py'
+adding 'freight_audit/importing.py'
+adding 'freight_audit/local_paths.py'
+adding 'freight_audit/models.py'
+adding 'freight_audit/project.py'
+adding 'freight_audit/reporting.py'
+adding 'freight_audit/rules.py'
+adding 'freight_audit/server.py'
+adding 'freight_audit/storage.py'
+adding 'freight_audit/static/app.css'
+adding 'freight_audit/static/app.js'
+adding 'freight_audit/static/favicon.svg'
+adding 'freight_audit/static/index.html'
+adding 'freight_audit-0.1.0.dist-info/METADATA'
+adding 'freight_audit-0.1.0.dist-info/WHEEL'
+adding 'freight_audit-0.1.0.dist-info/entry_points.txt'
+adding 'freight_audit-0.1.0.dist-info/top_level.txt'
+adding 'freight_audit-0.1.0.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+Successfully built freight_audit-0.1.0.tar.gz and freight_audit-0.1.0-py3-none-any.whl

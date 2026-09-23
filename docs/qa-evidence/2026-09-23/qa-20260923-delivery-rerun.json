@@ -1,0 +1,19 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "scripts/verify_delivery.py",
+    "--output",
+    "output/delivery-verification-20260923.json"
+  ],
+  "exit_code": 1,
+  "source_before": "45ebb562fa28935aebb7fdae870e3f91927b1a28d5af2f0a2830f48a25dfaf78",
+  "source_after": "45ebb562fa28935aebb7fdae870e3f91927b1a28d5af2f0a2830f48a25dfaf78",
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+  "started_at_unix": 1790140970.5129397,
+  "elapsed_seconds": 6.729,
+  "log": "docs/qa-evidence/2026-09-23/qa-20260923-delivery-rerun.log",
+  "log_sha256": "223cbaf39eb1dcbf7c4958a549c1198d24eb72b5095b570776e61631f8d9f439",
+  "original_log": "output/qa-20260923-delivery-rerun.log",
+  "original_receipt_sha256": "a42523e90c9965ec473e5bc2786dc2f8a257f81c8b17f273e9f36eb67cb81bf7"
+}

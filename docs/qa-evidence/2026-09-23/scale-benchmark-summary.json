@@ -1,0 +1,242 @@
+{
+  "1000": {
+    "reps": 1,
+    "correctness_verified": true,
+    "total_wall": {
+      "median": 17.8427,
+      "min": 17.8427,
+      "max": 17.8427,
+      "mean": 17.8427,
+      "stdev": 0.0
+    },
+    "total_cpu": {
+      "median": 17.7016,
+      "min": 17.7016,
+      "max": 17.7016,
+      "mean": 17.7016
+    },
+    "peak_rss_mb": 184.81,
+    "stages": {
+      "1_input_read": {
+        "wall": {
+          "median": 0.0005,
+          "min": 0.0005,
+          "max": 0.0005,
+          "mean": 0.0005,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.0005,
+          "min": 0.0005,
+          "max": 0.0005,
+          "mean": 0.0005
+        },
+        "peak_rss_mb": 53.1
+      },
+      "2_import": {
+        "wall": {
+          "median": 0.167,
+          "min": 0.167,
+          "max": 0.167,
+          "mean": 0.167,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.1666,
+          "min": 0.1666,
+          "max": 0.1666,
+          "mean": 0.1666
+        },
+        "peak_rss_mb": 61.13
+      },
+      "3_normalization": {
+        "wall": {
+          "median": 0.0846,
+          "min": 0.0846,
+          "max": 0.0846,
+          "mean": 0.0846,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.083,
+          "min": 0.083,
+          "max": 0.083,
+          "mean": 0.083
+        },
+        "peak_rss_mb": 76.51
+      },
+      "4_audit": {
+        "wall": {
+          "median": 0.2689,
+          "min": 0.2689,
+          "max": 0.2689,
+          "mean": 0.2689,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.2661,
+          "min": 0.2661,
+          "max": 0.2661,
+          "mean": 0.2661
+        },
+        "peak_rss_mb": 90.26,
+        "charges_per_sec": 3718.19,
+        "findings_per_sec": 3718.19
+      },
+      "5_store_save": {
+        "wall": {
+          "median": 0.682,
+          "min": 0.682,
+          "max": 0.682,
+          "mean": 0.682,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.6643,
+          "min": 0.6643,
+          "max": 0.6643,
+          "mean": 0.6643
+        },
+        "peak_rss_mb": 106.47,
+        "db_size_bytes": 4767744
+      },
+      "6_store_load": {
+        "wall": {
+          "median": 0.1753,
+          "min": 0.1753,
+          "max": 0.1753,
+          "mean": 0.1753,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.1751,
+          "min": 0.1751,
+          "max": 0.1751,
+          "mean": 0.1751
+        },
+        "peak_rss_mb": 106.47
+      },
+      "7_replay": {
+        "wall": {
+          "median": 0.4027,
+          "min": 0.4027,
+          "max": 0.4027,
+          "mean": 0.4027,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.4024,
+          "min": 0.4024,
+          "max": 0.4024,
+          "mean": 0.4024
+        },
+        "peak_rss_mb": 116.64
+      },
+      "8_export_json": {
+        "wall": {
+          "median": 0.0687,
+          "min": 0.0687,
+          "max": 0.0687,
+          "mean": 0.0687,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.0687,
+          "min": 0.0687,
+          "max": 0.0687,
+          "mean": 0.0687
+        },
+        "peak_rss_mb": 116.64,
+        "size_bytes": 4574639
+      },
+      "9_export_xlsx": {
+        "wall": {
+          "median": 7.1815,
+          "min": 7.1815,
+          "max": 7.1815,
+          "mean": 7.1815,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 7.0983,
+          "min": 7.0983,
+          "max": 7.0983,
+          "mean": 7.0983
+        },
+        "peak_rss_mb": 155.11,
+        "size_bytes": 790044,
+        "status": "PASS"
+      },
+      "10_export_html": {
+        "wall": {
+          "median": 0.0041,
+          "min": 0.0041,
+          "max": 0.0041,
+          "mean": 0.0041,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.0041,
+          "min": 0.0041,
+          "max": 0.0041,
+          "mean": 0.0041
+        },
+        "peak_rss_mb": 155.11,
+        "size_bytes": 183801,
+        "status": "PASS"
+      },
+      "11_bundle_zip": {
+        "wall": {
+          "median": 7.5472,
+          "min": 7.5472,
+          "max": 7.5472,
+          "mean": 7.5472,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 7.5156,
+          "min": 7.5156,
+          "max": 7.5156,
+          "mean": 7.5156
+        },
+        "peak_rss_mb": 184.81,
+        "size_bytes": 831027,
+        "status": "PASS"
+      },
+      "12_verify_bundle": {
+        "wall": {
+          "median": 0.4248,
+          "min": 0.4248,
+          "max": 0.4248,
+          "mean": 0.4248,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.424,
+          "min": 0.424,
+          "max": 0.424,
+          "mean": 0.424
+        },
+        "peak_rss_mb": 184.81,
+        "status": "PASS",
+        "verified": true
+      },
+      "13_api_retrieval": {
+        "wall": {
+          "median": 0.8354,
+          "min": 0.8354,
+          "max": 0.8354,
+          "mean": 0.8354,
+          "stdev": 0.0
+        },
+        "cpu": {
+          "median": 0.8328,
+          "min": 0.8328,
+          "max": 0.8328,
+          "mean": 0.8328
+        },
+        "peak_rss_mb": 184.81
+      }
+    }
+  }
+}

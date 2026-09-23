@@ -1,0 +1,25 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "output/e2e/platform_scale/benchmark_runner.py",
+    "--sizes",
+    "1000",
+    "--reps",
+    "1",
+    "--skip-curve",
+    "--all-exports",
+    "--output-dir",
+    "output/qa48-final-20260923"
+  ],
+  "exit_code": 0,
+  "source_before": "c66f6d360bb58ea5535024bee24c31655126494569dd4adf354be36e4e36a763",
+  "source_after": "c66f6d360bb58ea5535024bee24c31655126494569dd4adf354be36e4e36a763",
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+  "started_at_unix": 1790141162.1507828,
+  "elapsed_seconds": 20.392,
+  "log": "docs/qa-evidence/2026-09-23/qa-20260923-final-scale-1000.log",
+  "log_sha256": "df2112eab9e261c8b9af1d7e919d5dc9050b05d7e65edc2d5ea6e1b85066a5b6",
+  "original_log": "output/qa-20260923-final-scale-1000.log",
+  "original_receipt_sha256": "3bc287dc7aba574b915b862476138c00bf28895ecc4f2acfa67ab790a9b18d22"
+}
