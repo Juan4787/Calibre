@@ -158,7 +158,7 @@ def verify(output):
                 "freight_audit/static/app.js",
                 "freight_audit/local_paths.py",
             }
-            <= wheel_members
+            <= wheel_members.keys()
         ):
             raise RuntimeError("The wheel lacks a required product resource")
         if any(name.endswith((".db", ".sqlite")) or "/.env" in name for name in wheel_members):
