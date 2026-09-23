@@ -71,10 +71,11 @@ def clean_source(directory, archived):
     for name in names:
         original = ROOT / name
         copied = directory / name
+        committed = command_bytes(["git", "show", f"HEAD:{name}"])
         if original.is_symlink():
-            if not copied.is_symlink() or os.readlink(original) != os.readlink(copied):
+            if not copied.is_symlink() or os.fsencode(os.readlink(copied)) != committed:
                 raise RuntimeError(f"Tracked symlink differs: {name}")
-        elif not copied.is_file() or sha(original.read_bytes()) != sha(copied.read_bytes()):
+        elif not copied.is_file() or sha(committed) != sha(copied.read_bytes()):
             raise RuntimeError(f"Tracked file differs: {name}")
     forbidden = [
         name
