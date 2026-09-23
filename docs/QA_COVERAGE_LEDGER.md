@@ -8,23 +8,18 @@ Fuente única: `qa/catalog.py`. Un selector existente acredita infraestructura d
 
 Las campañas históricas Windows, escala, importación y E2E conservan su alcance original. No certifican este checkout. Ver `RIGOR_REVIEW.md`.
 
-Commit base: `0fe0b034ddd6f4338ebe0c040c857862fccb09f0`; huella del código y pruebas: `71ebcecaf723893460aff2e8f4f198eff319ecfcde2d7d3bf06fbe3c939187f4`.
+Commit base: `0a73fc30a6efe5e450ae919261046a0cd3ed8848`; huella del código y pruebas: `c66f6d360bb58ea5535024bee24c31655126494569dd4adf354be36e4e36a763`.
 
 ## Ejecuciones adjuntas
 
 | Recibo | Código y log verificables | Salida | Comando |
 |---|---|---|---|
-| output/review-20260922/final-verification.json | Sí | 0 | `bash scripts/verify.sh` |
-| output/review-20260922/final-mutations.json | Sí | 0 | `.venv/bin/python scripts/qa.py mutate --execute` |
-| output/review-20260922/final-healthy.json | Sí | 0 | `.venv/bin/python output/e2e/fault_injection/run_healthy_controls.py --output-dir output/review-20260922/final-faults` |
-| output/review-20260922/final-faults.json | Sí | 0 | `.venv/bin/python output/e2e/fault_injection/run_directed_faults.py --output-dir output/review-20260922/final-faults` |
-| output/review-20260922/final-imports.json | Sí | 0 | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python output/e2e/import_adversarial/test_import_adversarial.py --output-dir output/review-20260922/final-imports` |
-| output/review-20260922/final-reconcile.json | Sí | 0 | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python scripts/ci_reconcile_fixtures.py` |
-| output/review-20260922/final-pipeline.json | Sí | 0 | `.venv/bin/python output/e2e/platform_scale/benchmark_runner.py --sizes 200 --reps 1 --skip-curve --all-exports --max-child-rss 1000 --min-host-mem 1500 --output-dir output/review-20260922/final-pipeline` |
-| output/review-20260922/final-endurance.json | Sí | 0 | `.venv/bin/python output/e2e/platform_scale/endurance_runner.py --iterations 10 --batch-size 100 --output-dir output/review-20260922/final-endurance` |
-| output/review-20260922/final-wheel-smoke.json | Sí | 0 | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python scripts/smoke_wheel.py --installed-root /tmp/calibre-reviewed-wheel-7mq3sqfu/lib/python3.12/site-packages` |
-| output/review-20260922/final-browser.json | Sí | 0 | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python scripts/browser_e2e.py --installed-root /tmp/calibre-reviewed-wheel-7mq3sqfu/lib/python3.12/site-packages --output-dir output/playwright/review-final` |
-| output/review-20260922/final-platform.json | Sí | 0 | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python output/e2e/platform_scale/run_platform_suite.py --platform linux --cleanroom --output-dir output/review-20260922/final-platform` |
+| docs/qa-evidence/2026-09-23/qa-20260923-delivery-final.json | Sí | 0 | `.venv/bin/python scripts/verify_delivery.py --output output/delivery-verification-20260923.json` |
+| docs/qa-evidence/2026-09-23/qa-20260923-final-verify.json | Sí | 0 | `scripts/verify.sh` |
+| docs/qa-evidence/2026-09-23/qa-20260923-final-mutations.json | Sí | 0 | `.venv/bin/python scripts/qa.py mutate --execute` |
+| docs/qa-evidence/2026-09-23/qa-20260923-final-browser.json | Sí | 0 | `.venv/bin/python scripts/browser_e2e.py --output-dir output/playwright/qa40-final-20260923` |
+| docs/qa-evidence/2026-09-23/qa-20260923-final-scale-1000.json | Sí | 0 | `.venv/bin/python output/e2e/platform_scale/benchmark_runner.py --sizes 1000 --reps 1 --skip-curve --all-exports --output-dir output/qa48-final-20260923` |
+| docs/qa-evidence/2026-09-23/qa-20260923-final-external-control.json | Sí | 0 | `.venv/bin/python scripts/qa.py external-control output/control-final-20260923/audit.json fixtures/external-control.json` |
 
 ## Familias
 
@@ -40,10 +35,10 @@ Commit base: `0fe0b034ddd6f4338ebe0c040c857862fccb09f0`; huella del código y pr
 | QA-08 — Números desde originales | P0 | PARTIAL | 4 |
 | QA-09 — Identidad y normalización declarada | P0 | PARTIAL | 3 |
 | QA-10 — Estructura CSV y conservación de filas | P0 | PARTIAL | 4 |
-| QA-11 — Semántica de libro Excel | P0 | PARTIAL | 3 |
+| QA-11 — Semántica de libro Excel | P0 | PARTIAL | 5 |
 | QA-12 — XLS legacy y cache explícito | P1 | PARTIAL | 1 |
 | QA-13 — Límites de importación y corrupción | P1 | PARTIAL | 1 |
-| QA-14 — Importación incompleta y alcance documental | P0 | PARTIAL | 2 |
+| QA-14 — Importación incompleta y alcance documental | P0 | PARTIAL | 4 |
 | QA-15 — Procedencia verificable | P0 | PARTIAL | 2 |
 | QA-16 — Selección única de vigencia | P0 | PARTIAL | 3 |
 | QA-17 — Fecha civil y seriales de Excel | P0 | PARTIAL | 4 |
@@ -70,24 +65,24 @@ Commit base: `0fe0b034ddd6f4338ebe0c040c857862fccb09f0`; huella del código y pr
 | QA-38 — Límites de reportes y contenido activo | P0 | PARTIAL | 4 |
 | QA-39 — UI conserva semántica visible y estado actual | P0 | PARTIAL | 0 |
 | QA-40 — Barrera de red local | P0 | PARTIAL | 1 |
-| QA-41 — Rutas, archivos y sobrescritura | P0 | NO_REGISTERED_RUNNER | 0 |
-| QA-42 — XML/ZIP malicioso acotado | P0 | PARTIAL | 1 |
+| QA-41 — Rutas, archivos y sobrescritura | P0 | PARTIAL | 5 |
+| QA-42 — XML/ZIP malicioso acotado | P0 | PARTIAL | 3 |
 | QA-43 — Errores de API y consistencia de operación | P1 | PARTIAL | 3 |
 | QA-44 — Auditoría sin servicios externos | P1 | PARTIAL | 1 |
 | QA-45 — Representación contractual y mapping aprobados | P0 | REQUIRES_REAL_CLIENT | 0 |
 | QA-46 — Generalidad de cinco arquetipos | P1 | PARTIAL | 1 |
-| QA-47 — Paquete y plataforma real | P1 | NO_REGISTERED_RUNNER | 0 |
-| QA-48 — Escala, memoria y tiempos de todas las etapas | P2 | NO_REGISTERED_RUNNER | 0 |
+| QA-47 — Paquete y plataforma real | P1 | PARTIAL | 0 |
+| QA-48 — Escala, memoria y tiempos de todas las etapas | P2 | PARTIAL | 0 |
 | QA-49 — Los verificadores detectan corrupción | P0 | PARTIAL | 2 |
-| QA-50 — Mutantes críticos dirigidos | P0 | NO_REGISTERED_RUNNER | 0 |
+| QA-50 — Mutantes críticos dirigidos | P0 | PARTIAL | 1 |
 | QA-51 — Validación ciega con cliente | P0 | REQUIRES_REAL_CLIENT | 0 |
 | QA-52 — Gate de pago sin nuestra supervisión | P0 | REQUIRES_REAL_CLIENT | 0 |
 | QA-53 — IDs y JSON inequívocos | P0 | PARTIAL | 2 |
 | QA-54 — Bundle portable y ancla externa | P0 | PARTIAL | 1 |
-| QA-55 — Entrega reproducible y dependencias | P1 | NO_REGISTERED_RUNNER | 0 |
+| QA-55 — Entrega reproducible y dependencias | P1 | PARTIAL | 0 |
 | QA-56 — Separación de liquidaciones y alcance de obligación | P0 | PARTIAL | 2 |
 | QA-57 — Diagnóstico no muta evidencia | P0 | PARTIAL | 1 |
-| QA-58 — Píxel exacto y matrices visuales exhaustivas | P3 | NO_REGISTERED_RUNNER | 0 |
+| QA-58 — Píxel exacto y matrices visuales exhaustivas | P3 | DEFERRED_NON_BLOCKING | 0 |
 
 ## QA-01 — Certeza y diferencia confirmada
 
@@ -231,16 +226,16 @@ Comando del subconjunto automatizado:
 
 ## QA-11 — Semántica de libro Excel
 
-**Obligación:** Varias hojas sin selección error; fórmula mapeada rechazada; sin fill-forward. Ocultas requieren alcance visible: falta automatizar warning en producto.
+**Obligación:** Varias hojas sin selección error; fórmula mapeada rechazada; sin fill-forward. Hoja o datos ocultos bloquean la importación hasta hacerlos visibles y revisar el alcance.
 
 **Procedimiento:** 1. Especificar sheet. 2. Importar con columnas requeridas vacías/merged. 3. Añadir fórmula cacheada y fila oculta. 4. Cotejar alcance declarado.
 
-**Oráculo:** OR-04. **Lo que puede escapar:** Happy path XLSX no cubre estilos/hidden/cache; deuda explícita.
+**Oráculo:** OR-04. **Lo que puede escapar:** Los casos de ocultamiento probados no cubren todos los productores, estilos, merges ni caches reales.
 
 Comando del subconjunto automatizado:
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_importing.py::test_multisheet_requires_selection tests/test_importing.py::test_xlsx_formula_never_evaluated_or_taken_as_cache tests/test_importing.py::test_original_numeric_tokens_follow_sparse_sheet_coordinates
+.venv/bin/python -m pytest -q tests/test_importing.py::test_multisheet_requires_selection tests/test_importing.py::test_xlsx_formula_never_evaluated_or_taken_as_cache tests/test_importing.py::test_original_numeric_tokens_follow_sparse_sheet_coordinates tests/test_importing.py::test_xlsx_hidden_business_data_blocks_import_until_made_visible tests/test_importing.py::test_xlsx_hidden_selected_sheet_blocks_import
 ```
 
 ## QA-12 — XLS legacy y cache explícito
@@ -277,12 +272,18 @@ Comando del subconjunto automatizado:
 
 **Procedimiento:** 1. Contar filas de negocio. 2. Conciliar accepted/rejected/omitted. 3. Auditar issue row. 4. Comparar contra total externo y etiqueta UI.
 
-**Oráculo:** OR-03 OR-04 OR-01. **Lo que puede escapar:** Import_complete=true no demuestra documentos completos.
+**Oráculo:** OR-03 OR-04 OR-01. **Lo que puede escapar:** El comparador sólo detecta omisiones incluidas en un inventario externo independiente; no puede demostrar que ese inventario sea verdadero/completo ni reemplaza la validación humana.
 
 Comando del subconjunto automatizado:
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_engine.py::test_import_rejects_block_economic_confirmation tests/test_integration.py::test_invalid_fixture_rejects_visible_rows
+.venv/bin/python -m pytest -q tests/test_engine.py::test_import_rejects_block_economic_confirmation tests/test_integration.py::test_invalid_fixture_rejects_visible_rows tests/test_external_control.py::test_external_inventory_count_and_total_are_independent_blockers tests/test_external_control.py::test_external_control_cli_exit_codes_and_hash_integrity
+```
+
+Runner adicional; usar un directorio de evidencia nuevo:
+
+```bash
+.venv/bin/python scripts/qa.py external-control ARCHIVO_AUDIT_JSON CONTROL_EXTERNO_JSON
 ```
 
 ## QA-15 — Procedencia verificable
@@ -642,12 +643,18 @@ Runner adicional; usar un directorio de evidencia nuevo:
 
 **Procedimiento:** 1. Enviar POST con y sin token y Origin válidos. 2. Verificar bind a 127.0.0.1 en el proceso CLI. 3. Probar lectura desde otro origen en navegador. 4. Inspeccionar efectos en la base.
 
-**Oráculo:** OR-09. **Lo que puede escapar:** TestClient no verifica el socket real, su dirección de escucha ni el comportamiento del navegador.
+**Oráculo:** OR-09. **Lo que puede escapar:** El E2E de Chromium/Linux no prueba firewall ni aislamiento frente a otros usuarios del equipo; falta matriz Windows.
 
 Comando del subconjunto automatizado:
 
 ```bash
 .venv/bin/python -m pytest -q tests/test_integration.py::test_local_api_security_boundary
+```
+
+Runner adicional; usar un directorio de evidencia nuevo:
+
+```bash
+.venv/bin/python scripts/browser_e2e.py --output-dir output/playwright/qa40-new
 ```
 
 ## QA-41 — Rutas, archivos y sobrescritura
@@ -656,9 +663,13 @@ Comando del subconjunto automatizado:
 
 **Procedimiento:** 1. Subir un archivo con nombre hostil. 2. Exportar y crear backup en destinos temporales existentes y enlaces simbólicos. 3. Verificar el testigo y archivos modificados. 4. Usar sólo datos sintéticos.
 
-**Oráculo:** OR-09. **Lo que puede escapar:** Un enlace a una carpeta vacía puede redirigir la exportación sin activar la barrera de sobrescritura.
+**Oráculo:** OR-09. **Lo que puede escapar:** La comprobación de enlaces no detiene a otro proceso del mismo usuario que cambie directorios durante la escritura; falta ejecutar la matriz nativa Windows.
 
-Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes de cerrar.
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_security_paths.py::test_export_rejects_existing_and_redirected_directories tests/test_security_paths.py::test_foreign_platform_drive_syntax_is_not_a_local_relative_output tests/test_security_paths.py::test_backup_publishes_only_completed_copy_without_overwrite tests/test_security_paths.py::test_export_marks_interrupted_or_invalid_package tests/test_integration.py::test_upload_filename_is_only_a_label_and_never_an_output_path
+```
 
 ## QA-42 — XML/ZIP malicioso acotado
 
@@ -666,12 +677,12 @@ Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes
 
 **Procedimiento:** 1. Generar un archivo sintético pequeño. 2. Ejecutar en subproceso sin red y con límites. 3. Registrar rechazo, salidas, red y testigo. 4. Verificar expansión efectiva y cabecera.
 
-**Oráculo:** OR-09. **Lo que puede escapar:** Generar 500 bytes aleatorios no ejercita DTD, ZIP válido ni expansión.
+**Oráculo:** OR-09. **Lo que puede escapar:** DTD y ZIP ambiguo sintéticos no prueban todos los productores XML ni el pico de descompresión real bajo un límite de proceso.
 
 Comando del subconjunto automatizado:
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_importing.py::test_malformed_xlsx_fuzz_is_bounded_and_classified
+.venv/bin/python -m pytest -q tests/test_importing.py::test_malformed_xlsx_fuzz_is_bounded_and_classified tests/test_importing.py::test_xlsx_duplicate_or_traversal_entry_is_rejected tests/test_importing.py::test_xlsx_external_entity_never_becomes_imported_value
 ```
 
 ## QA-43 — Errores de API y consistencia de operación
@@ -732,9 +743,14 @@ Comando del subconjunto automatizado:
 
 **Procedimiento:** 1. Instalar paquete aislado. 2. Comprobar recursos UI, demo, replay y exportación. 3. Comparar contenidos y hashes. 4. En Windows: rutas Unicode, longitudes, saltos de línea y Excel real.
 
-**Oráculo:** OR-04 OR-06 OR-07. **Lo que puede escapar:** CI en Linux no valida Windows ni la aplicación Excel.
+**Oráculo:** OR-04 OR-06 OR-07. **Lo que puede escapar:** Instalar wheel y sdist en Linux no valida rutas ni Excel de escritorio en Windows.
 
-Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes de cerrar.
+
+Runner adicional; usar un directorio de evidencia nuevo:
+
+```bash
+.venv/bin/python scripts/verify_delivery.py --output output/delivery-verification.json
+```
 
 ## QA-48 — Escala, memoria y tiempos de todas las etapas
 
@@ -742,9 +758,14 @@ Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes
 
 **Procedimiento:** 1. Un proceso por tamaño con memoria base registrada. 2. Medir importación, motor, hashes, persistencia, exportación y UI por separado. 3. Conciliar cantidades y sumas al terminar.
 
-**Oráculo:** OR-03 OR-10. **Lo que puede escapar:** Un benchmark sin persistencia ni reportes puede omitir el pico real del cierre.
+**Oráculo:** OR-03 OR-10. **Lo que puede escapar:** El pipeline de 1000 cargos no extrapola 50000/100000 ni mide un navegador con esos hallazgos.
 
-Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes de cerrar.
+
+Runner adicional; usar un directorio de evidencia nuevo:
+
+```bash
+.venv/bin/python output/e2e/platform_scale/benchmark_runner.py --sizes 1000 --reps 1 --skip-curve --all-exports --output-dir output/qa48-small
+```
 
 ## QA-49 — Los verificadores detectan corrupción
 
@@ -766,9 +787,19 @@ Comando del subconjunto automatizado:
 
 **Procedimiento:** 1. Validar ancla única. 2. Ejecutar tests base en copia temporal. 3. Aplicar un mutante. 4. Ejecutar sus selectores. 5. Exigir fallo de aserción causal; colección fallida o timeout es inconcluso.
 
-**Oráculo:** OR-01 OR-05. **Lo que puede escapar:** Un fallo global de hash puede detectar un mutante sin ejercitar el invariante; revisar la aserción causal.
+**Oráculo:** OR-01 OR-05. **Lo que puede escapar:** La señal causal exigida vale para estos diez mutantes; no demuestra que todas las defensas tengan un mutante dirigido.
 
-Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes de cerrar.
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_mutation_verdict.py::test_mutant_verdict_requires_selected_causal_assertion
+```
+
+Runner adicional; usar un directorio de evidencia nuevo:
+
+```bash
+.venv/bin/python scripts/qa.py mutate --execute
+```
 
 ## QA-51 — Validación ciega con cliente
 
@@ -824,9 +855,14 @@ Comando del subconjunto automatizado:
 
 **Procedimiento:** 1. Comparar árbol versionado y archivos materiales. 2. Instalar y probar en checkout limpio. 3. Registrar hashes del paquete y dependencias. 4. Verificar equivalencia de parsing con LF sin exigir SHA del original CRLF.
 
-**Oráculo:** OR-06 OR-08. **Lo que puede escapar:** Una instalación editable puede ocultar recursos faltantes en wheel.
+**Oráculo:** OR-06 OR-08. **Lo que puede escapar:** Las instalaciones aisladas en Linux no prueban Excel de escritorio, distribución firmada ni hashes de terceros en el lock.
 
-Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes de cerrar.
+
+Runner adicional; usar un directorio de evidencia nuevo:
+
+```bash
+.venv/bin/python scripts/verify_delivery.py --output output/delivery-verification.json
+```
 
 ## QA-56 — Separación de liquidaciones y alcance de obligación
 
