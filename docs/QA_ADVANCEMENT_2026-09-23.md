@@ -43,6 +43,8 @@ El [primer workflow Linux/Windows](https://github.com/Juan4787/Calibre/actions/r
 
 `verify_delivery.py` exige árbol Git limpio y por eso se ejecuta **después** de confirmar el código. La equivalencia de contenidos del wheel/sdist no implica que dos archivos `.tar.gz` tengan idénticos bytes; el reporte distingue hashes de contenedor y hashes del contenido. El protocolo de build usa versiones fijadas, verificadas en [PyPI setuptools 80.9.0](https://pypi.org/project/setuptools/80.9.0/) y [PyPI wheel 0.45.1](https://pypi.org/project/wheel/0.45.1/).
 
+El recibo de entrega se ejecutó en el commit de código `4f368d4`, antes de incorporar al repositorio los recibos y artefactos de esta campaña. Por eso sus hashes y el inventario del sdist corresponden **a ese commit**, no a un sdist reconstruido desde el commit final de documentación. Los commits posteriores sólo agregan/corrigen documentación y evidencia fuera de la huella de código; no se afirma identidad byte a byte ni inclusión íntegra de esta evidencia en el sdist final. La evidencia portátil completa está en GitHub, en este repositorio.
+
 ## Obligaciones técnicas que siguen abiertas sin datos ni usuarios reales
 
 Cada fila señala el control adicional necesario; `PARTIAL` significa que existe alguna prueba o runner, no que el control ya pasó para todo el alcance. Los detalles operativos y falsos negativos están en `QA_COVERAGE_LEDGER.md`.

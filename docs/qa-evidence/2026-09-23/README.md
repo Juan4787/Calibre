@@ -49,3 +49,5 @@ PY
 ```
 
 Esta validación constata integridad relativa al checkout y a los hashes comprometidos en Git. No demuestra que la máquina, la cuenta GitHub, el control externo o los datos de un cliente real sean confiables. La cobertura causal permanece parcial según el ledger.
+
+El sdist probado se construyó desde `4f368d4`, antes de archivar estos artefactos y regenerar el ledger. El reporte de entrega valida ese paquete y sus 239 miembros, no los bytes ni la inclusión de toda esta evidencia en un sdist reconstruido después de los commits de documentación. Para inspeccionar el conjunto completo de recibos y logs, usar este repositorio Git.
