@@ -1,6 +1,7 @@
 """Conservative impact inventory; reads SQLite without creating schema or triggers."""
 
 import sqlite3
+from collections import defaultdict
 from pathlib import Path
 
 from .invariants import integrity_errors, json_load
@@ -78,6 +79,16 @@ def inventory(db: Path, filters: dict[str, str] | None = None) -> dict:
                     entries.append(entry)
                     continue
                 features = operators(snapshot.get("agreements", [])) | operators(result.get("findings", []))
+                charge_settlements = {c["id"]: c["settlement"] for c in snapshot["charges"]}
+                obligation_settlements: dict[tuple[str, str, str, str], set[str]] = defaultdict(set)
+                for finding in result["findings"]:
+                    for shipment_id in finding["shipment_ids"]:
+                        key = (finding["agreement"], shipment_id, finding["concept"], finding["currency"])
+                        obligation_settlements[key].update(
+                            charge_settlements[cid] for cid in finding["charge_ids"]
+                        )
+                if any(len(settlements) > 1 for settlements in obligation_settlements.values()):
+                    features.add("cross_settlement")
                 for agreement in snapshot["agreements"]:
                     matching = agreement["matching"]
                     if matching.get("cardinality") == "group":

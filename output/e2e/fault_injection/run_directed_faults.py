@@ -9,11 +9,10 @@ Evaluates each fault against independent detectors and classifies each result as
 """
 
 import json
+import argparse
 import shutil
 import sys
 import tempfile
-import traceback
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -21,17 +20,29 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from output.e2e.fault_injection.detector_runner import DetectorRunner
-from output.e2e.fault_injection.fault_generator import INJECTORS
+from output.e2e.fault_injection.fault_generator import INJECTORS, generate_healthy_control
 
 
-def run_all_faults():
+def run_all_faults(output_dir=None):
     root = ROOT
     catalog_path = root / "output/e2e/fault_injection/expected_detectors.json"
     raw_meta = json.loads(catalog_path.read_text(encoding="utf-8")) if catalog_path.exists() else {}
     expected_detectors = raw_meta.get("faults", raw_meta)
     
-    incidents_dir = root / "output/e2e/fault_injection/incidents"
+    output_dir = Path(output_dir or root / "output/e2e/fault_injection")
+    incidents_dir = output_dir / "incidents"
     incidents_dir.mkdir(parents=True, exist_ok=True)
+
+    # A broken detector or fixture cannot be credited as successful prevention.
+    with tempfile.TemporaryDirectory(prefix="calibre-fi-control-") as td:
+        control = generate_healthy_control("CTRL-01", Path(td))
+        baseline = DetectorRunner().evaluate_bundle(
+            control["bundle_dir"], api_run=control.get("api_run"),
+            observed_ui=control.get("observed_ui"),
+        )
+        if baseline["verdict"] != "TRUSTED":
+            (output_dir / "baseline-error.json").write_text(json.dumps(baseline, indent=2))
+            return False
     
     results = []
     matrix_rows = {}
@@ -64,7 +75,11 @@ def run_all_faults():
                 violations = det_res.get("violations", [])
                 failed_checks = det_res.get("failed_checks", [])
                 
-                if det_res["verdict"] == "UNTRUSTED" and violations:
+                expected = {exp_meta.get("primary_detector"), *exp_meta.get("secondary_detectors", [])}
+                causal_checks = {v["detector"] for v in violations if v["check"] not in {
+                    "reconcile_exception", "replay_execution_error", "integrity_error", "parse_error"
+                }}
+                if det_res["verdict"] == "UNTRUSTED" and causal_checks & expected:
                     status = "DETECTED"
                     detected_by = failed_checks
                     primary_detector = failed_checks[0] if failed_checks else violations[0]["detector"]
@@ -73,16 +88,20 @@ def run_all_faults():
                     primary_detector = "NONE"
                     
             except Exception as e:
-                # Fault was prevented by invariant/validation exception
-                status = "PREVENTED"
-                primary_detector = "invariant_prevention"
+                # No injector currently declares a prevention exception oracle.
+                status = "INCONCLUSIVE"
+                primary_detector = "runner_error"
                 violations = [{
                     "detector": "system_prevention",
-                    "check": "prevention_exception",
+                    "check": "infrastructure_exception",
                     "message": str(e),
                     "severity": severity
                 }]
-                detected_by = ["system_prevention"]
+                detected_by = []
+
+            if status != "DETECTED":
+                # Preserve the actual mutated inputs before TemporaryDirectory removes them.
+                shutil.copytree(target_dir, incidents_dir / fault_id / "reproducer", dirs_exist_ok=True)
 
         # Record result
         res_item = {
@@ -101,7 +120,7 @@ def run_all_faults():
         matrix_rows[fault_id] = res_item
         
         # If SURVIVED, generate incident reproduction package
-        if status == "SURVIVED":
+        if status != "DETECTED":
             inc_dir = incidents_dir / fault_id
             inc_dir.mkdir(parents=True, exist_ok=True)
             (inc_dir / "expected.json").write_text(json.dumps(exp_meta, indent=2), encoding="utf-8")
@@ -120,7 +139,7 @@ def run_all_faults():
         print(f"{fault_id:<10} | {severity:<4} | {status:<10} | {primary_detector:<20} | {len(violations):<10} | {res_item['sample_violation'][:40]}")
 
     # Write detector matrix output
-    matrix_out = root / "output/e2e/fault_injection/detector_matrix.json"
+    matrix_out = output_dir / "detector_matrix.json"
     matrix_out.write_text(json.dumps({
         "total_faults": len(results),
         "results": matrix_rows,
@@ -145,7 +164,12 @@ def run_all_faults():
     print(f"P1 Total: {summary['p1_total']} | Detected/Prevented: {summary['p1_detected_or_prevented']} | Survived: {summary['p1_survived']} | Detection Rate: {p1_rate:.1f}%")
     print(f"P2 Total: {summary['p2_total']} | Detected/Prevented: {summary['p2_detected_or_prevented']} | Survived: {summary['p2_survived']}")
     print(f"Matrix saved to {matrix_out}")
+    return bool(results) and set(INJECTORS) == set(expected_detectors) and all(
+        r["status"] == "DETECTED" for r in results
+    )
 
 
 if __name__ == "__main__":
-    run_all_faults()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output-dir", type=Path)
+    sys.exit(0 if run_all_faults(parser.parse_args().output_dir) else 1)

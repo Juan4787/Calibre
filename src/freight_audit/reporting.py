@@ -328,6 +328,8 @@ def verify_bundle(data: bytes) -> dict:
             ):
                 raise IntegrityError("El paquete contiene entradas repetidas o supera el tamaño admitido.")
             manifest = load_json(archive.read("manifest.json"))
+            if not isinstance(manifest, dict) or not isinstance(manifest.get("files"), dict):
+                raise IntegrityError("El manifiesto del paquete no tiene la estructura requerida.")
             bundle_format = manifest.get("format")
             if bundle_format not in {"freight-audit-bundle/v1", "freight-audit-bundle/v2"}:
                 raise IntegrityError("Formato de paquete no admitido.")
@@ -336,10 +338,17 @@ def verify_bundle(data: bytes) -> dict:
             for name, source_hash in manifest["files"].items():
                 if (
                     name.startswith("/")
+                    or "\\" in name
+                    or ":" in name
+                    or any(part in {"", ".", ".."} for part in name.split("/"))
                     or ".." in Path(name).parts
                     or bytes_hash(archive.read(name)) != source_hash
                 ):
                     raise IntegrityError("Un archivo del paquete fue alterado.")
+            if "reporte.html" not in manifest["files"] or not (
+                {"auditoria.xlsx", "ADVERTENCIA_EXPORTACION.txt"} & manifest["files"].keys()
+            ):
+                raise IntegrityError("Falta un informe o la advertencia de exportación del paquete.")
             run = load_json(archive.read("audit.json"))
             if (
                 digest(run["snapshot"]) != run["input_hash"]
@@ -368,7 +377,7 @@ def verify_bundle(data: bytes) -> dict:
                 if bytes_hash(archive.read(f"sources/{source_hash}")) != source_hash:
                     raise IntegrityError("El documento original fue alterado.")
             return run
-    except (KeyError, ValueError, zipfile.BadZipFile) as exc:
+    except (KeyError, ValueError, TypeError, AttributeError, zipfile.BadZipFile) as exc:
         if isinstance(exc, IntegrityError):
             raise
         raise IntegrityError("El paquete está incompleto o dañado; usar una copia verificada.") from exc

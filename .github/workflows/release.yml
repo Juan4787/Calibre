@@ -1,4 +1,4 @@
-name: Release (Packaged Wheel Certification & Publish Gate)
+name: Release (Checks and Packaged Artifacts)
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   tier4-release:
-    name: Tier 4 - Release Gate & Clean-Room Wheel Certification
+    name: Tier 4 - Release Checks and Clean-Room Wheel
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository (Clean fetch)
@@ -21,15 +21,30 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install build tool
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install build and verification tools
         run: |
           python -m pip install --upgrade pip
-          pip install build
+          pip install -r requirements.lock -r requirements-browser.lock
+          pip install --no-deps -e .
+          playwright install --with-deps chromium
 
       - name: Execute Tier 4 Release Gate (Build, Hashes, Isolated Clean-Room Install, Smoke)
         run: bash scripts/run_ci_tier.sh release
 
-      - name: Upload Certified Distribution Artifacts
+      - name: Preserve browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-browser-evidence
+          path: output/playwright/
+          retention-days: 7
+
+      - name: Upload Checked Distribution Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: dist-packages

@@ -1,7 +1,12 @@
-include README.md requirements.lock
+include README.md requirements.lock requirements-browser.lock
 recursive-include docs *.md *.json *.csv
 recursive-include fixtures *.json *.csv *.xlsx *.txt
-recursive-include tests *.py *.json *.csv *.md
+recursive-include tests *.py *.json *.csv *.md *.zip
 recursive-include qa *.py *.json
 recursive-include scripts *.py *.sh *.ps1
 recursive-include src/freight_audit/static *.html *.css *.js *.svg
+recursive-include output/e2e/fault_injection *.py expected_detectors.json
+recursive-include output/e2e/import_adversarial *.py
+recursive-include output/e2e/import_adversarial/fixtures *
+recursive-include output/e2e/import_adversarial/mappings *.json
+recursive-include output/e2e/platform_scale *.py

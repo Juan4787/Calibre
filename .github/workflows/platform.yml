@@ -29,13 +29,17 @@ jobs:
       - name: Install dependencies & Playwright Chromium
         run: |
           python -m pip install --upgrade pip build
-          pip install -e ".[dev]"
-          pip install playwright
+          pip install -r requirements.lock -r requirements-browser.lock
+          pip install --no-deps -e .
           playwright install --with-deps chromium
 
       - name: Execute Linux Platform Suite (WIN-01..WIN-24 & Semantic Fingerprint)
         run: |
-          python output/e2e/platform_scale/run_platform_suite.py --platform linux
+          python -m build --wheel
+          python -m venv "$RUNNER_TEMP/calibre-linux-wheel"
+          "$RUNNER_TEMP/calibre-linux-wheel/bin/pip" install -r requirements.lock -r requirements-browser.lock
+          "$RUNNER_TEMP/calibre-linux-wheel/bin/pip" install --no-deps dist/*.whl
+          "$RUNNER_TEMP/calibre-linux-wheel/bin/python" output/e2e/platform_scale/run_platform_suite.py --platform linux --cleanroom
 
       - name: Upload Linux Platform Artifacts
         uses: actions/upload-artifact@v4
@@ -86,8 +90,8 @@ jobs:
           $CLEAN_PY -m pip install --upgrade pip
           WHEEL_FILE=$(ls dist/*.whl | head -n 1)
           echo "Installing wheel: $WHEEL_FILE"
-          $CLEAN_PY -m pip install "$WHEEL_FILE"
-          $CLEAN_PY -m pip install openpyxl xlrd pydantic fastapi httpx uvicorn playwright
+          $CLEAN_PY -m pip install -r requirements.lock -r requirements-browser.lock
+          $CLEAN_PY -m pip install --no-deps "$WHEEL_FILE"
 
       - name: Install Playwright Chromium on Windows
         run: |

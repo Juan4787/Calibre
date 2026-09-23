@@ -8,5 +8,5 @@ cd "$(dirname "$0")/.."
 .venv/bin/python scripts/qa.py matrix --check
 node --check src/freight_audit/static/app.js
 .venv/bin/pytest -q
-.venv/bin/python -m compileall -q src
+.venv/bin/python -m compileall -q -x '/(isolated_env|__pycache__)/' src output/e2e
 .venv/bin/python -m build

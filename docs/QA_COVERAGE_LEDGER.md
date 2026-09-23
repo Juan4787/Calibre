@@ -1,893 +1,866 @@
-# QA Coverage Ledger: Reconciliación de las 58 Familias de Verificación (Fase 7 y 7.5)
-
-**Commit Base**: `0aa9bea92d7496c1f3e53d79debeca8f13b5d364`  
-**Wheel Distribuible**: `dist/freight_audit-0.1.0-py3-none-any.whl` (SHA-256: `5cbd1d5f3a0b16ac57f5edb8fff3cd7ffcb25aa42fe45a767804261bd717afdd`)  
-**Source Tarball**: `dist/freight_audit-0.1.0.tar.gz` (SHA-256: `c5f44178be5fb3d591e45c6f5d846c89a0c78240afaeadaf73ff3d28e6194a6a`)  
-**Estado Global**: **GATE S CERRADO (100.0% SATISFIED - 51/51)**  
-
----
-
-## 1. Resumen Ejecutivo y Balance de Gate S
-
-Este documento constituye el inventario auditable definitivo de las **58 familias causales** de Calibre (`QA-01` a `QA-58`), reconciliando cada obligación contra la evidencia acumulada a lo largo de las Fases 1 a 6, Fase 7 y Fase 7.5, y la suite de tests de regresión permanente.
-
-### Clasificación Estricta de Estados
-
-| Estado | Significado | Cantidad | % del Total |
-| :--- | :--- | :---: | :---: |
-| **`SATISFIED`** | Obligación técnica/sintética 100% satisfecha con evidencia auditable actual | **51** | **87.9%** |
-| **`PARTIAL`** | Cobertura de tests existente con delimitación arquitectónica documentada | **0** | **0.0%** |
-| **`REQUIRES_REAL_CLIENT`** | Requiere acuerdos o liquidaciones de clientes reales (Reserva Gate P / Fase R) | **3** | **5.2%** |
-| **`REQUIRES_WINDOWS`** | Requiere ejecución y kernel de plataforma Windows nativa (Fase 9) | **2** | **3.4%** |
-| **`REQUIRES_SCALE`** | Requiere datasets masivos (100k filas) y hardware dedicado (Fase 9) | **1** | **1.7%** |
-| **`DEFERRED_WITH_REASON`** | Diferido formalmente por diseño (P3 visual pixel-exact frágil) | **1** | **1.7%** |
-| **TOTAL** | | **58** | **100.0%** |
-
-### Cálculo del Gate S (Técnico / Sintético)
-
-- **Familias en el alcance de Gate S**: **51** (excluye las 3 de cliente real, las 2 de Windows, 1 de escala y 1 diferida)
-- **Familias SATISFIED**: **51** (100.0%)
-- **Familias PARTIAL**: **0**
-- **Veredicto Gate S**: **🟢 GATE S CERRADO (51/51 SATISFIED)**. Matriz sintética cerrada al 100% sin excepciones materiales conocidas.
-
----
-
-## 2. Inventario Detallado de las 58 Familias
-
-| ID | Prioridad | Severidad | Familia | Estado | Evidencia Principal | Comando / Verificación |
-| :--- | :---: | :---: | :--- | :---: | :--- | :--- |
-| **[QA-01](#qa-01)** | `P0` | `CRITICAL` | Certeza y diferencia confirmada | **`SATISFIED`** | Fase 1 (+3) | `.venv/bin/pytest tests/test_engine.py -k test` |
-| **[QA-02](#qa-02)** | `P0` | `CRITICAL` | Tolerancia, signo y fronteras | **`SATISFIED`** | Fase 0 (+3) | `.venv/bin/pytest tests/test_engine.py -k test` |
-| **[QA-03](#qa-03)** | `P0` | `CRITICAL` | Referencia de precio independiente | **`SATISFIED`** | Fase 4 (+1) | `.venv/bin/pytest tests/test_qa_infrastructure` |
-| **[QA-04](#qa-04)** | `P0` | `CRITICAL` | Dominio numérico y tipos estrictos | **`SATISFIED`** | Fase 5 (+1) | `.venv/bin/pytest tests/test_engine.py -k 'tes` |
-| **[QA-05](#qa-05)** | `P0` | `CRITICAL` | Redondeo, escala y orden | **`SATISFIED`** | Fase 4 (+2) | `.venv/bin/pytest tests/test_engine.py -k test` |
-| **[QA-06](#qa-06)** | `P0` | `CRITICAL` | División y contexto ambiental | **`SATISFIED`** | Unit/Integration | `.venv/bin/pytest tests/test_engine.py -k test` |
-| **[QA-07](#qa-07)** | `P0` | `CRITICAL` | Unidades y monedas separadas | **`SATISFIED`** | Fase 2 (+3) | `.venv/bin/pytest tests/test_engine.py -k test` |
-| **[QA-08](#qa-08)** | `P0` | `CRITICAL` | Números desde originales | **`SATISFIED`** | Fase 5 (+1) | `.venv/bin/pytest tests/test_importing.py -k '` |
-| **[QA-09](#qa-09)** | `P0` | `CRITICAL` | Identidad y normalización declarada | **`SATISFIED`** | Fase 5 (+1) | `.venv/bin/pytest tests/test_importing.py -k t` |
-| **[QA-10](#qa-10)** | `P0` | `CRITICAL` | Estructura CSV y conservación de filas | **`SATISFIED`** | Fase 5 (+1) | `.venv/bin/pytest tests/test_importing.py -k t` |
-| **[QA-11](#qa-11)** | `P0` | `CRITICAL` | Semántica de libro Excel | **`SATISFIED`** | Fase 4 (+2) | `.venv/bin/pytest tests/test_importing.py -k t` |
-| **[QA-12](#qa-12)** | `P1` | `HIGH` | XLS legacy y cache explícito | **`SATISFIED`** | Fase 5 (+1) | `.venv/bin/pytest tests/test_importing.py -k t` |
-| **[QA-13](#qa-13)** | `P1` | `HIGH` | Límites de importación y corrupción | **`SATISFIED`** | Fase 5 (+1) | `.venv/bin/pytest tests/test_importing.py -k t` |
-| **[QA-14](#qa-14)** | `P0` | `CRITICAL` | Importación incompleta y alcance documental | **`SATISFIED`** | Fase 2 (+2) | `.venv/bin/pytest tests/test_engine.py -k test` |
-| **[QA-15](#qa-15)** | `P0` | `CRITICAL` | Procedencia verificable | **`SATISFIED`** | Fase 1 (+2) | `.venv/bin/pytest tests/test_integration.py -k` |
-| **[QA-16](#qa-16)** | `P0` | `CRITICAL` | Selección única de vigencia | **`SATISFIED`** | Fase 2 (+3) | `.venv/bin/pytest tests/test_engine.py -k test` |
-| **[QA-17](#qa-17)** | `P0` | `CRITICAL` | Fecha civil y seriales de Excel | **`SATISFIED`** | Fase 5 (+1) | `.venv/bin/pytest tests/test_importing.py -k t` |
-| **[QA-18](#qa-18)** | `P0` | `CRITICAL` | Reglas/condiciones y AST acotado | **`SATISFIED`** | Fase 4 (+1) | `.venv/bin/pytest tests/test_engine.py -k 'tes` |
-| **[QA-19](#qa-19)** | `P0` | `CRITICAL` | Lookup/bandas sin desempate arbitrario | **`SATISFIED`** | Fase 4 (+1) | `.venv/bin/pytest tests/test_adversarial.py -k` |
-| **[QA-20](#qa-20)** | `P0` | `CRITICAL` | Claves, aliases y vínculos explícitos | **`SATISFIED`** | Fase 1 (+2) | `.venv/bin/pytest tests/test_engine.py -k test` |
-| **[QA-21](#qa-21)** | `P0` | `CRITICAL` | Ambigüedad propagada a grupos parciales | **`SATISFIED`** | Fase 2 (+1) | `.venv/bin/pytest tests/test_adversarial.py -k` |
-| **[QA-22](#qa-22)** | `P0` | `CRITICAL` | Consolidado y cargos por componentes | **`SATISFIED`** | Fase 4 (+1) | `.venv/bin/pytest tests/test_engine.py -k test` |
-| **[QA-23](#qa-23)** | `P0` | `CRITICAL` | Asignaciones superpuestas y servicios parciales | **`SATISFIED`** | Fase 2 (+1) | `.venv/bin/pytest tests/test_engine.py -k test` |
-| **[QA-24](#qa-24)** | `P0` | `CRITICAL` | Duplicados candidatos y remito legítimo | **`SATISFIED`** | Fase 2 (+1) | `.venv/bin/pytest tests/test_engine.py -k 'tes` |
-| **[QA-25](#qa-25)** | `P0` | `CRITICAL` | Evidencia por ámbito y adición selectiva | **`SATISFIED`** | Fase 1 (+1) | `.venv/bin/pytest tests/test_engine.py -k 'tes` |
-| **[QA-26](#qa-26)** | `P0` | `CRITICAL` | Cobertura explícita de cargos ausentes | **`SATISFIED`** | Fase 2 (+1) | `.venv/bin/pytest tests/test_engine.py -k test` |
-| **[QA-27](#qa-27)** | `P0` | `CRITICAL` | Conservación total por ID y moneda | **`SATISFIED`** | Fase 6 (+1) | `.venv/bin/pytest tests/test_qa_infrastructure` |
-| **[QA-28](#qa-28)** | `P0` | `CRITICAL` | Determinismo y transformaciones | **`SATISFIED`** | Fase 2 (+1) | `.venv/bin/pytest tests/test_engine.py -k test` |
-| **[QA-29](#qa-29)** | `P0` | `CRITICAL` | Aislamiento entre clientes y catálogos | **`SATISFIED`** | Fase 7 (+1) | `.venv/bin/pytest tests/test_backlog_p0_p1.py ` |
-| **[QA-30](#qa-30)** | `P0` | `CRITICAL` | Decisiones humanas y cadena | **`SATISFIED`** | Fase 1 (+2) | `.venv/bin/pytest tests/test_storage_reporting` |
-| **[QA-31](#qa-31)** | `P0` | `CRITICAL` | Integridad histórica y mutación | **`SATISFIED`** | Fase 3 (+1) | `.venv/bin/pytest tests/test_storage_reporting` |
-| **[QA-32](#qa-32)** | `P0` | `CRITICAL` | Replay y cambio de artefacto | **`SATISFIED`** | Fase 1 (+2) | `.venv/bin/pytest tests/test_storage_reporting` |
-| **[QA-33](#qa-33)** | `P0` | `CRITICAL` | Proveniencia de ejecutables y alcance | **`SATISFIED`** | Fase 0 (+2) | `.venv/bin/pytest tests/test_storage_reporting` |
-| **[QA-34](#qa-34)** | `P0` | `CRITICAL` | Backup, restore y reapertura | **`SATISFIED`** | Fase 3 (+1) | `.venv/bin/pytest tests/test_storage_reporting` |
-| **[QA-35](#qa-35)** | `P0` | `CRITICAL` | Crash, rollback y concurrencia | **`SATISFIED`** | Fase 3F (+1) | `.venv/bin/python output/e2e/persistence_crash` |
-| **[QA-36](#qa-36)** | `P0` | `CRITICAL` | Schema y migración recuperable | **`SATISFIED`** | Fase 3 (+1) | `.venv/bin/pytest tests/test_storage_reporting` |
-| **[QA-37](#qa-37)** | `P0` | `CRITICAL` | Reconciliación entre representaciones | **`SATISFIED`** | Fase 1 (+3) | `.venv/bin/pytest tests/test_qa_infrastructure` |
-| **[QA-38](#qa-38)** | `P0` | `CRITICAL` | Límites de reportes y contenido activo | **`SATISFIED`** | Unit/Integration | `.venv/bin/pytest tests/test_storage_reporting` |
-| **[QA-39](#qa-39)** | `P0` | `CRITICAL` | UI conserva semántica visible y estado actual | **`SATISFIED`** | Fase 1 (+2) | `Playwright headless Chromium automated flow i` |
-| **[QA-40](#qa-40)** | `P0` | `CRITICAL` | Barrera de red local | **`SATISFIED`** | Unit/Integration | `.venv/bin/pytest tests/test_integration.py -k` |
-| **[QA-41](#qa-41)** | `P0` | `CRITICAL` | Rutas, archivos y sobrescritura | **`REQUIRES_WINDOWS`** | Pendiente Fase 9 | `scripts/verify_windows.bat (Fase 9)` |
-| **[QA-42](#qa-42)** | `P0` | `CRITICAL` | XML/ZIP malicioso acotado | **`SATISFIED`** | Fase 5 (+1) | `.venv/bin/pytest tests/test_storage_reporting` |
-| **[QA-43](#qa-43)** | `P1` | `HIGH` | Errores de API y consistencia de operación | **`SATISFIED`** | Fase 1 (+1) | `.venv/bin/pytest tests/test_integration.py -k` |
-| **[QA-44](#qa-44)** | `P1` | `HIGH` | Auditoría sin servicios externos | **`SATISFIED`** | Fase 1 (+1) | `.venv/bin/pytest tests/test_integration.py -k` |
-| **[QA-45](#qa-45)** | `P0` | `CRITICAL` | Representación contractual y mapping aprobados | **`REQUIRES_REAL_CLIENT`** | Pendiente Gate P / Fase R | `Revisión formal con cliente real (Fase R)` |
-| **[QA-46](#qa-46)** | `P1` | `HIGH` | Generalidad de cinco arquetipos | **`SATISFIED`** | Fase 4 | `.venv/bin/python output/e2e/generality/test_g` |
-| **[QA-47](#qa-47)** | `P1` | `HIGH` | Paquete y plataforma real | **`REQUIRES_WINDOWS`** | Pendiente Fase 9 | `pip install dist/*.whl en Windows x64 (Fase 9` |
-| **[QA-48](#qa-48)** | `P2` | `HIGH` | Escala, memoria y tiempos de todas las etapas | **`REQUIRES_SCALE`** | Pendiente Fase 9 | `scripts/benchmark_scale.py (Fase 9)` |
-| **[QA-49](#qa-49)** | `P0` | `CRITICAL` | Los verificadores detectan corrupción | **`SATISFIED`** | Fase 3 (+2) | `.venv/bin/pytest tests/test_qa_infrastructure` |
-| **[QA-50](#qa-50)** | `P0` | `CRITICAL` | Mutantes críticos dirigidos | **`SATISFIED`** | Fase 0 (+1) | `.venv/bin/python scripts/qa.py mutate --all` |
-| **[QA-51](#qa-51)** | `P0` | `CRITICAL` | Validación ciega con cliente | **`REQUIRES_REAL_CLIENT`** | Pendiente Gate P / Fase R | `Auditoría en staging con dataset confidencial` |
-| **[QA-52](#qa-52)** | `P0` | `CRITICAL` | Gate de pago sin nuestra supervisión | **`REQUIRES_REAL_CLIENT`** | Pendiente Gate P / Fase R | `Pase a producción operacional en dador de car` |
-| **[QA-53](#qa-53)** | `P0` | `CRITICAL` | IDs y JSON inequívocos | **`SATISFIED`** | Fase 5 (+1) | `.venv/bin/pytest tests/test_adversarial.py -k` |
-| **[QA-54](#qa-54)** | `P0` | `CRITICAL` | Bundle portable y ancla externa | **`SATISFIED`** | Fase 1 (+1) | `.venv/bin/pytest tests/test_storage_reporting` |
-| **[QA-55](#qa-55)** | `P1` | `HIGH` | Entrega reproducible y dependencias | **`SATISFIED`** | Fase 0 (+2) | `bash scripts/verify.sh` |
-| **[QA-56](#qa-56)** | `P0` | `CRITICAL` | Separación de liquidaciones y alcance de obligación | **`SATISFIED`** | Fase 7 (+2) | `.venv/bin/pytest tests/test_backlog_p0_p1.py ` |
-| **[QA-57](#qa-57)** | `P0` | `CRITICAL` | Diagnóstico no muta evidencia | **`SATISFIED`** | Fase 3 (+1) | `.venv/bin/pytest tests/test_qa_infrastructure` |
-| **[QA-58](#qa-58)** | `P3` | `LOW` | Píxel exacto y matrices visuales exhaustivas | **`DEFERRED_WITH_REASON`** | Diferido | `N/A (Diferido formalmente)` |
-
----
-
-## 3. Mapeo Causal de Evidencia por Familia (TEST_ID)
-
-### QA-01 — Certeza y diferencia confirmada
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/summary`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Falta de respaldo (evidencia, reglas incompletas) nunca se convierte en discrepancia confirmada ni dinero recuperable.
-- **Fases con Evidencia**: Fase 1, Fase 2, Fase 6, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/adversarial/ADVERSARIAL_CASES.md#adv-05`
-  - `output/e2e/fault_injection/FAULT_CATALOG.md#fi-e03`
-  - `tests/test_engine.py::test_missing_evidence_does_not_confirm_even_numeric_difference`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k test_missing_evidence`
-- **Resultado Observado**: `PASS (0 confirmed diff in REVIEW/UNDETERMINABLE)`
-
-### QA-02 — Tolerancia, signo y fronteras
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/tolerance`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Evaluación de tolerancias absolutas y relativas con signos exactos; diferencias dentro de tolerancia son PASS.
-- **Fases con Evidencia**: Fase 0, Fase 2, Fase 6, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/adversarial/ADVERSARIAL_CASES.md#adv-06`
-  - `output/e2e/fault_injection/FAULT_CATALOG.md#fi-e01`
-  - `tests/test_engine.py::test_tolerance_and_signed_differences`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k test_tolerance`
-- **Resultado Observado**: `PASS (INV-02 and INV-07 verified)`
-
-### QA-03 — Referencia de precio independiente
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `qa/oracle`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Oráculo independiente de referencia en Decimal/Fraction sin reusar código del motor productivo.
-- **Fases con Evidencia**: Fase 4, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/generality/GENERALITY_REPORT.md`
-  - `qa/reference.py`
-  - `tests/test_qa_infrastructure.py::test_generated_reference_prices`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_qa_infrastructure.py -k test_generated_reference`
-- **Resultado Observado**: `PASS (20 findings compared against independent oracle)`
-
-### QA-04 — Dominio numérico y tipos estrictos
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/numeric`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Prohibición absoluta de float binario IEEE 754; operaciones en Decimal con representación textual exacta.
-- **Fases con Evidencia**: Fase 5, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/import_adversarial/IMPORT_ADVERSARIAL_REPORT.md`
-  - `tests/test_engine.py::test_float_prohibited`
-  - `tests/test_engine.py::test_invalid_money`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k 'test_float or test_invalid_money'`
-- **Resultado Observado**: `PASS (strict Decimal enforcement)`
-
-### QA-05 — Redondeo, escala y orden
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/rounding`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Redondeo solo en la frontera contractual especificada, sin pérdidas acumuladas de centavos.
-- **Fases con Evidencia**: Fase 4, Fase 6, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/generality/GENERALITY_REPORT.md`
-  - `output/e2e/fault_injection/FAULT_CATALOG.md#fi-e12`
-  - `tests/test_engine.py::test_property_division_matches_high_precision`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k test_property_division`
-- **Resultado Observado**: `PASS (exact scale conservation)`
-
-### QA-06 — División y contexto ambiental
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/environment`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Inmunidad frente al contexto global decimal de Python (getcontext()); divisiones protegidas contra división por cero.
-- **Fases con Evidencia**: Unit/Integration
-- **Artefactos de Respaldo**:
-  - `tests/test_engine.py::test_global_decimal_context_does_not_affect_results`
-  - `tests/test_engine.py::test_property_division_matches_high_precision`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k test_global_decimal_context`
-- **Resultado Observado**: `PASS (local decimal isolation)`
-
-### QA-07 — Unidades y monedas separadas
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/currency`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Segregación estricta por moneda; imposibilidad de sumar o consolidar ARS con USD u otras divisas.
-- **Fases con Evidencia**: Fase 2, Fase 4, Fase 6, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/adversarial/ADVERSARIAL_CASES.md#adv-02`
-  - `output/e2e/generality/GENERALITY_REPORT.md#g2`
-  - `output/e2e/fault_injection/FAULT_CATALOG.md#fi-e09`
-  - `tests/test_engine.py::test_currencies_never_summed_or_converted`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k test_currencies_never_summed`
-- **Resultado Observado**: `PASS (INV-06 multi-currency segregation)`
-
-### QA-08 — Números desde originales
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `importing/numbers`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Preservación del token numérico original desde CSV/XLSX respetando separadores decimales locales.
-- **Fases con Evidencia**: Fase 5, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/import_adversarial/IMPORT_ADVERSARIAL_REPORT.md`
-  - `tests/test_importing.py::test_argentine_decimal`
-  - `tests/test_importing.py::test_csv_argentine_numbers_zeroes_and_provenance`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_importing.py -k 'test_argentine_decimal or test_csv_argentine'`
-- **Resultado Observado**: `PASS (exact numeric token parsing)`
-
-### QA-09 — Identidad y normalización declarada
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `importing/identity`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Normalización explícita y visible de identificadores sin desduplicación silenciosa.
-- **Fases con Evidencia**: Fase 5, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/import_adversarial/IMPORT_ADVERSARIAL_REPORT.md`
-  - `tests/test_importing.py::test_duplicate_business_ids_visible_not_silently_deduplicated`
-  - `tests/test_importing.py::test_unknown_concept_not_canonicalized_by_accident`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_importing.py -k test_duplicate_business_ids`
-- **Resultado Observado**: `PASS (explicit identifier handling)`
-
-### QA-10 — Estructura CSV y conservación de filas
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `importing/csv`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Lectura robusta de CSV (comillas escapadas, multilínea, saltos CRLF) con coordenadas de fila verificables.
-- **Fases con Evidencia**: Fase 5, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/import_adversarial/IMPORT_ADVERSARIAL_REPORT.md`
-  - `tests/test_importing.py::test_csv_multiline_provenance_uses_actual_line`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_importing.py -k test_csv_multiline`
-- **Resultado Observado**: `PASS (15 CSV adversarial vectors passed)`
-
-### QA-11 — Semántica de libro Excel
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `importing/xlsx`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Lectura directa de celdas XLSX sin evaluar fórmulas activas ni depender de caché opaco; selección de hoja obligatoria.
-- **Fases con Evidencia**: Fase 4, Fase 5, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/generality/GENERALITY_REPORT.md#g3`
-  - `output/e2e/import_adversarial/IMPORT_ADVERSARIAL_REPORT.md`
-  - `tests/test_importing.py::test_xlsx_formula_never_evaluated_or_taken_as_cache`
-  - `tests/test_importing.py::test_multisheet_requires_selection`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_importing.py -k test_xlsx_formula`
-- **Resultado Observado**: `PASS (20 XLSX adversarial vectors passed)`
-
-### QA-12 — XLS legacy y cache explícito
-
-- **Prioridad / Severidad**: `P1` / `HIGH`
-- **Componente**: `importing/xls`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Importación segura de archivos binarios XLS (BIFF8) con requerimiento de declaración de caché explícito.
-- **Fases con Evidencia**: Fase 5, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/import_adversarial/IMPORT_ADVERSARIAL_REPORT.md`
-  - `tests/test_importing.py::test_xls_requires_explicit_cached_value_acceptance`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_importing.py -k test_xls_requires`
-- **Resultado Observado**: `PASS (10 XLS adversarial vectors passed)`
-
-### QA-13 — Límites de importación y corrupción
-
-- **Prioridad / Severidad**: `P1` / `HIGH`
-- **Componente**: `importing/limits`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Fuzzing y contención de archivos corruptos, truncados o con ataques de expansión (zip bomb, xml entity).
-- **Fases con Evidencia**: Fase 5, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/import_adversarial/IMPORT_ADVERSARIAL_REPORT.md`
-  - `tests/test_importing.py::test_malformed_xlsx_fuzz_is_bounded_and_classified`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_importing.py -k test_malformed_xlsx`
-- **Resultado Observado**: `PASS (15 malformed files safely rejected)`
-
-### QA-14 — Importación incompleta y alcance documental
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/integrity`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Si la importación rechaza filas o está incompleta, el motor bloquea la certificación de certeza (INV-11).
-- **Fases con Evidencia**: Fase 2, Fase 6, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/adversarial/ADVERSARIAL_CASES.md#adv-09`
-  - `output/e2e/fault_injection/FAULT_CATALOG.md#fi-u04`
-  - `tests/test_engine.py::test_import_rejects_block_economic_confirmation`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k test_import_rejects`
-- **Resultado Observado**: `PASS (INV-11 incomplete import lock)`
-
-### QA-15 — Procedencia verificable
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `storage/provenance`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Trazabilidad celda a celda con hash de documento fuente inmutable; validable por verificadores independientes.
-- **Fases con Evidencia**: Fase 1, Fase 6, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/isolated_env/artifacts/reconciliation.json`
-  - `output/e2e/fault_injection/FAULT_CATALOG.md#fi-i06`
-  - `tests/test_integration.py::test_api_import_with_mapping_and_provenance`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_integration.py -k test_api_import_with_mapping`
-- **Resultado Observado**: `PASS (INV-22 provenance verifier verified)`
-
-### QA-16 — Selección única de vigencia
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/validity`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Resolución unívoca de vigencia contractual por fecha; solapamientos no eligen primera versión arbitraria.
-- **Fases con Evidencia**: Fase 2, Fase 4, Fase 6, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/adversarial/ADVERSARIAL_CASES.md#adv-04`
-  - `output/e2e/generality/GENERALITY_REPORT.md#g4`
-  - `output/e2e/fault_injection/FAULT_CATALOG.md#fi-e06`
-  - `tests/test_engine.py::test_overlapping_versions_never_pick_first`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k test_overlapping_versions`
-- **Resultado Observado**: `PASS (INV-08 ambiguity leads to UNDETERMINABLE)`
-
-### QA-17 — Fecha civil y seriales de Excel
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `importing/dates`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Parsing inequívoco de fechas ISO (YYYY-MM-DD) y seriales de Excel (epoch 1899-12-30) rechazando ambigüedad DD/MM vs MM/DD.
-- **Fases con Evidencia**: Fase 5, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/import_adversarial/IMPORT_ADVERSARIAL_REPORT.md`
-  - `tests/test_importing.py::test_ambiguous_date_is_rejected`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_importing.py -k test_ambiguous_date`
-- **Resultado Observado**: `PASS (ambiguous dates rejected)`
-
-### QA-18 — Reglas/condiciones y AST acotado
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/rules`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Evaluación segura de AST acotado; lazy branching; falta de atributo no es falso booleano.
-- **Fases con Evidencia**: Fase 4, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/generality/GENERALITY_REPORT.md`
-  - `tests/test_engine.py::test_condition_branch_is_lazy`
-  - `tests/test_engine.py::test_condition_missing_is_not_false`
-  - `tests/test_adversarial.py::test_bounded_expression_depth_rejects_nested_attack`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k 'test_condition_branch or test_condition_missing'`
-- **Resultado Observado**: `PASS (safe bounded rule evaluation)`
-
-### QA-19 — Lookup/bandas sin desempate arbitrario
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/lookup`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Búsqueda en tablas y bandas escalonadas; solapamientos o vacíos conducen a indeterminación sin selección arbitraria.
-- **Fases con Evidencia**: Fase 4, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/generality/GENERALITY_REPORT.md#g2`
-  - `tests/test_adversarial.py::test_band_overlap_and_gap_never_select_arbitrarily`
-  - `tests/test_adversarial.py::test_duplicate_lookup_rows_even_same_price_are_ambiguous`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_adversarial.py -k test_band_overlap`
-- **Resultado Observado**: `PASS (lookup ambiguity handled conservatively)`
-
-### QA-20 — Claves, aliases y vínculos explícitos
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/matching`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Matching por claves compuestas, aliases direccionales y vínculos explícitos; keys vacías nunca cruzan con keys vacías.
-- **Fases con Evidencia**: Fase 1, Fase 4, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/generality/GENERALITY_REPORT.md`
-  - `tests/test_engine.py::test_composite_keys_and_directional_alias`
-  - `tests/test_adversarial.py::test_empty_keys_never_join_to_empty_keys`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k test_composite_keys`
-- **Resultado Observado**: `PASS (empty keys never join)`
-
-### QA-21 — Ambigüedad propagada a grupos parciales
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/matching`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Ambigüedad en asignación de viajes contamina al grupo completo, declarando REVIEW para todo el conjunto.
-- **Fases con Evidencia**: Fase 2, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/adversarial/ADVERSARIAL_CASES.md#adv-01`
-  - `tests/test_engine.py::test_matching_ambiguity_is_review`
-  - `tests/test_adversarial.py::test_ambiguous_allocation_also_blocks_related_partial_group`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_adversarial.py -k test_ambiguous_allocation`
-- **Resultado Observado**: `PASS (matching ambiguity propagates)`
-
-### QA-22 — Consolidado y cargos por componentes
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/consolidation`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Auditoría de fletes consolidados (N remitos -> 1 cargo) y componentes desagregados (1 remito -> N cargos).
-- **Fases con Evidencia**: Fase 4, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/generality/GENERALITY_REPORT.md#g5`
-  - `output/e2e/generality/GENERALITY_REPORT.md#g6`
-  - `tests/test_engine.py::test_group_sum_and_one_expected_charge`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k test_group_sum`
-- **Resultado Observado**: `PASS (G5 and G6 parity verified)`
-
-### QA-23 — Asignaciones superpuestas y servicios parciales
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/allocation`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Cargos que reclaman los mismos remitos en combinaciones solapadas se envían a REVIEW sin doble adjudicación.
-- **Fases con Evidencia**: Fase 2, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/adversarial/ADVERSARIAL_CASES.md#adv-10`
-  - `tests/test_engine.py::test_overlap_allocations_are_review`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k test_overlap_allocations`
-- **Resultado Observado**: `PASS (overlapping allocations in REVIEW)`
-
-### QA-24 — Duplicados candidatos y remito legítimo
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/duplicates`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Detección de duplicados como candidatos a revisión humana; mismo remito con conceptos distintos no es duplicado.
-- **Fases con Evidencia**: Fase 2, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/adversarial/ADVERSARIAL_CASES.md#adv-08`
-  - `tests/test_engine.py::test_configured_duplicate_is_candidate_only`
-  - `tests/test_engine.py::test_same_remittance_different_concepts_is_not_duplicate`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k 'test_configured_duplicate or test_same_remittance'`
-- **Resultado Observado**: `PASS (duplicate candidate isolation)`
-
-### QA-25 — Evidencia por ámbito y adición selectiva
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/evidence`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Requisitos de evidencia validados por ámbito (operación, remito o flete); evidencia no relacionada no satisface el cargo.
-- **Fases con Evidencia**: Fase 1, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/isolated_env/artifacts/reconciliation.json`
-  - `tests/test_engine.py::test_evidence_any_of_and_per_operation`
-  - `tests/test_engine.py::test_unrelated_evidence_cannot_support_charge`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k 'test_evidence_any_of or test_unrelated_evidence'`
-- **Resultado Observado**: `PASS (INV-10 evidence enforcement)`
-
-### QA-26 — Cobertura explícita de cargos ausentes
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/coverage`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Cargos esperados contractualmente pero no facturados se detectan en REVIEW si el ámbito está explícitamente cerrado.
-- **Fases con Evidencia**: Fase 2, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/adversarial/ADVERSARIAL_CASES.md#adv-07`
-  - `tests/test_engine.py::test_missing_expected_charge_requires_explicit_scope_and_is_review`
-  - `tests/test_adversarial.py::test_coverage_cannot_silently_drop_wrong_carrier`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k test_missing_expected_charge`
-- **Resultado Observado**: `PASS (missing expected charges in REVIEW)`
-
-### QA-27 — Conservación total por ID y moneda
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `qa/invariants`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Invariantes de conservación estricta: suma de cargos = suma de hallazgos; partición biyectiva de IDs (INV-04, INV-05).
-- **Fases con Evidencia**: Fase 6, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/fault_injection/FAULT_CATALOG.md#fi-e10`
-  - `output/e2e/fault_injection/FAULT_CATALOG.md#fi-e11`
-  - `tests/test_qa_infrastructure.py::test_checker_rejects_economic_corruption`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_qa_infrastructure.py -k test_checker_rejects`
-- **Resultado Observado**: `PASS (INV-04 and INV-05 invariants enforced)`
-
-### QA-28 — Determinismo y transformaciones
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/determinism`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Invarianza estricta ante orden de filas, espacios inocuos y permutación de records en input.
-- **Fases con Evidencia**: Fase 2, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/adversarial/ADVERSARIAL_CASES.md`
-  - `tests/test_engine.py::test_property_arbitrary_row_permutation`
-  - `tests/test_integration.py::test_economic_result_unchanged_by_input_row_order`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_engine.py -k test_property_arbitrary_row`
-- **Resultado Observado**: `PASS (10 E2E metamorphic permutations passed)`
-
-### QA-29 — Aislamiento entre clientes y catálogos
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `storage/isolation`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Aislamiento criptográfico y de base de datos entre clientes distintos; bases de datos y fuentes no se contaminan.
-- **Fases con Evidencia**: Fase 7, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `tests/test_backlog_p0_p1.py::test_qa29_client_catalog_and_storage_isolation`
-  - `tests/test_integration.py::test_real_files_three_agreements_golden_and_second_client`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_backlog_p0_p1.py -k test_qa29`
-- **Resultado Observado**: `PASS (strict multi-tenant database isolation)`
-
-### QA-30 — Decisiones humanas y cadena
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `storage/decisions`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Decisiones humanas son aditivas y encadenadas por SHA-256; nunca reescriben el hallazgo del motor.
-- **Fases con Evidencia**: Fase 1, Fase 3, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/persistence_crash/CRASH_AND_PERSISTENCE_REPORT.md#3d`
-  - `tests/test_storage_reporting.py::test_human_decision_never_rewrites_finding`
-  - `tests/test_storage_reporting.py::test_decision_chain_serializes_concurrent_writers`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_storage_reporting.py -k test_human_decision`
-- **Resultado Observado**: `PASS (INV-24 append-only decision chain)`
-
-### QA-31 — Integridad histórica y mutación
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `storage/integrity`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Bloqueo de UPDATE y DELETE en tablas históricas; detección inmediata si se saltean los triggers SQLite.
-- **Fases con Evidencia**: Fase 3, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/persistence_crash/CRASH_AND_PERSISTENCE_REPORT.md#3a`
-  - `output/e2e/persistence_crash/CRASH_AND_PERSISTENCE_REPORT.md#3c`
-  - `tests/test_storage_reporting.py::test_db_update_delete_blocked`
-  - `tests/test_storage_reporting.py::test_tampered_result_detected_after_trigger_bypass`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_storage_reporting.py -k 'test_db_update or test_tampered_result'`
-- **Resultado Observado**: `PASS (triggers and tamper verifiers verified)`
-
-### QA-32 — Replay y cambio de artefacto
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `storage/replay`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Replay determinista reproduce idéntico resultado desde snapshot; si cambia el artefacto motor se bloquea con advertencia.
-- **Fases con Evidencia**: Fase 1, Fase 3, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/persistence_crash/CRASH_AND_PERSISTENCE_REPORT.md#3d`
-  - `tests/test_storage_reporting.py::test_save_replay_and_idempotency`
-  - `tests/test_storage_reporting.py::test_engine_artifact_change_blocks_replay`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_storage_reporting.py -k 'test_save_replay or test_engine_artifact'`
-- **Resultado Observado**: `PASS (deterministic replay from snapshot)`
-
-### QA-33 — Proveniencia de ejecutables y alcance
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `storage/artifact`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Identidad SHA-256 del código del motor persistida en metadata de cada corrida (engine_artifact_hash).
-- **Fases con Evidencia**: Fase 0, Fase 3, Fase 5
-- **Artefactos de Respaldo**:
-  - `output/e2e/persistence_crash/CRASH_AND_PERSISTENCE_REPORT.md`
-  - `tests/test_storage_reporting.py::test_engine_artifact_change_blocks_replay`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_storage_reporting.py -k test_engine_artifact`
-- **Resultado Observado**: `PASS (artifact hash verified)`
-
-### QA-34 — Backup, restore y reapertura
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `storage/backup`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Backup consistente con VACUUM INTO / WAL checkpoint; reapertura y replay idéntico tras restore.
-- **Fases con Evidencia**: Fase 3, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/persistence_crash/CRASH_AND_PERSISTENCE_REPORT.md#3b`
-  - `tests/test_storage_reporting.py::test_migration_reopening_and_consistent_backup`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_storage_reporting.py -k test_migration_reopening`
-- **Resultado Observado**: `PASS (backup restore verified)`
-
-### QA-35 — Crash, rollback y concurrencia
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `storage/crash`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Resistencia a muerte no cooperativa del proceso con SIGKILL en puntos transaccionales deterministas y timing variable.
-- **Fases con Evidencia**: Fase 3F, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/persistence_crash/CRASH_AND_PERSISTENCE_REPORT.md#3f`
-  - `output/e2e/persistence_crash/observed/crash-summary.json`
-- **Comando de Verificación**: `.venv/bin/python output/e2e/persistence_crash/test_crash_resilience.py`
-- **Resultado Observado**: `PASS (7 deterministic SIGKILL crash points + 60 timing-variable iterations passed without corruption)`
-
-### QA-36 — Schema y migración recuperable
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `storage/schema`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Control estricto de versión de schema SQLite; bases de datos de versiones más nuevas son rechazadas de modo seguro.
-- **Fases con Evidencia**: Fase 3, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/persistence_crash/CRASH_AND_PERSISTENCE_REPORT.md#3e`
-  - `tests/test_storage_reporting.py::test_newer_database_schema_is_not_opened`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_storage_reporting.py -k test_newer_database_schema`
-- **Resultado Observado**: `PASS (forward compatibility protection)`
-
-### QA-37 — Reconciliación entre representaciones
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `reporting/reconcile`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Reconciliación cruzada exhaustiva entre JSON, XLSX, HTML, API y UI DOM con cero tolerancia a divergencias.
-- **Fases con Evidencia**: Fase 1, Fase 2, Fase 6, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/isolated_env/artifacts/reconciliation.json`
-  - `output/e2e/fault_injection/FAULT_INJECTION_REPORT.md`
-  - `tests/test_qa_infrastructure.py::test_cross_report_reconciliation_and_tamper_detection`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_qa_infrastructure.py -k test_cross_report`
-- **Resultado Observado**: `PASS (zero divergence across 6 representations)`
-
-### QA-38 — Límites de reportes y contenido activo
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `reporting/limits`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Escape estricto de HTML (XSS) y fórmulas de Excel (=, +, -, @); manejo de celdas largas sin desbordar buffers.
-- **Fases con Evidencia**: Unit/Integration
-- **Artefactos de Respaldo**:
-  - `tests/test_storage_reporting.py::test_report_escapes_untrusted_html_and_excel_formula`
-  - `tests/test_storage_reporting.py::test_excel_long_cell_is_not_silently_truncated`
-  - `tests/test_storage_reporting.py::test_excel_row_limit_preserves_full_bundle_json`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_storage_reporting.py -k 'test_report_escapes or test_excel_long_cell'`
-- **Resultado Observado**: `PASS (formula injection and XSS blocked)`
-
-### QA-39 — UI conserva semántica visible y estado actual
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `ui/browser`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Navegación completa Chromium E2E verificando que el árbol DOM refleja fielmente estados, importes y banderas del backend.
-- **Fases con Evidencia**: Fase 1, Fase 2, Fase 6
-- **Artefactos de Respaldo**:
-  - `output/e2e/isolated_env/artifacts/screenshots/`
-  - `output/e2e/adversarial/observed/adversarial-ui-observed.json`
-  - `output/e2e/fault_injection/FAULT_INJECTION_REPORT.md#fi-u01`
-- **Comando de Verificación**: `Playwright headless Chromium automated flow in Fase 1 & 2`
-- **Resultado Observado**: `PASS (DOM mirrors core exactly)`
-
-### QA-40 — Barrera de red local
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `server/security`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: La API corre exclusivamente en localhost; rechaza Host headers externos, CORS sospechoso y no emite requests salientes.
-- **Fases con Evidencia**: Unit/Integration
-- **Artefactos de Respaldo**:
-  - `tests/test_integration.py::test_local_api_security_boundary`
-  - `tests/test_integration.py::test_fully_offline_core`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_integration.py -k test_local_api_security_boundary`
-- **Resultado Observado**: `PASS (local binding, CSP and offline barrier verified)`
-
-### QA-41 — Rutas, archivos y sobrescritura
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `platform/windows_paths`
-- **Estado**: **`REQUIRES_WINDOWS`**
-- **Obligación / Requisito**: Comportamiento ante rutas con backslash, case-insensitivity y locking de archivos en Windows.
-- **Fases con Evidencia**: Pendiente Fase 9
-- **Artefactos de Respaldo**:
-  - `docs/QA_DELIVERY.md#plataforma-windows`
-- **Comando de Verificación**: `scripts/verify_windows.bat (Fase 9)`
-- **Resultado Observado**: `REQUIRES_WINDOWS (ambiente Linux actual no ejecuta kernel NTFS)`
-
-### QA-42 — XML/ZIP malicioso acotado
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `reporting/security`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Verificación segura de bundles ZIP sin path traversal y lectura de XML sin resolución de entidades externas.
-- **Fases con Evidencia**: Fase 5, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/import_adversarial/IMPORT_ADVERSARIAL_REPORT.md`
-  - `tests/test_storage_reporting.py::test_portable_bundle_integrity`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_storage_reporting.py -k test_portable_bundle_integrity`
-- **Resultado Observado**: `PASS (safe zip and defused xml parsing)`
-
-### QA-43 — Errores de API y consistencia de operación
-
-- **Prioridad / Severidad**: `P1` / `HIGH`
-- **Componente**: `api/errors`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Respuestas de error estructuradas con códigos HTTP adecuados (400/403/404/409/422) y mensajes recuperables.
-- **Fases con Evidencia**: Fase 1, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `tests/test_integration.py::test_api_configuration_errors_use_recoverable_messages`
-  - `tests/test_integration.py::test_api_runs_decisions_export_replay`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_integration.py -k test_api_configuration_errors`
-- **Resultado Observado**: `PASS (standard error responses)`
-
-### QA-44 — Auditoría sin servicios externos
-
-- **Prioridad / Severidad**: `P1` / `HIGH`
-- **Componente**: `engine/offline`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Ejecución de auditoría completamente offline sin llamadas a DNS, CDN o APIs de terceros.
-- **Fases con Evidencia**: Fase 1, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `tests/test_integration.py::test_fully_offline_core`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_integration.py -k test_fully_offline`
-- **Resultado Observado**: `PASS (zero outbound network activity)`
-
-### QA-45 — Representación contractual y mapping aprobados
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `client/contracts`
-- **Estado**: **`REQUIRES_REAL_CLIENT`**
-- **Obligación / Requisito**: Validación y firma de mappings y representaciones contractuales con los transportistas y dadores reales.
-- **Fases con Evidencia**: Pendiente Gate P / Fase R
-- **Artefactos de Respaldo**:
-  - `docs/QA_DELIVERY.md#gate-p`
-- **Comando de Verificación**: `Revisión formal con cliente real (Fase R)`
-- **Resultado Observado**: `REQUIRES_REAL_CLIENT (no debe simularse artificialmente)`
-
-### QA-46 — Generalidad de cinco arquetipos
-
-- **Prioridad / Severidad**: `P1` / `HIGH`
-- **Componente**: `engine/archetypes`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Validación de generalidad sobre los arquetipos contractuales de flete (pallets, peso, bultos, vigencias, consolidado).
-- **Fases con Evidencia**: Fase 4
-- **Artefactos de Respaldo**:
-  - `output/e2e/generality/GENERALITY_REPORT.md`
-  - `output/e2e/generality/oracle.py`
-- **Comando de Verificación**: `.venv/bin/python output/e2e/generality/test_generality_e2e.py`
-- **Resultado Observado**: `PASS (6 archetypes G1..G6 matched independent oracle 100%)`
-
-### QA-47 — Paquete y plataforma real
-
-- **Prioridad / Severidad**: `P1` / `HIGH`
-- **Componente**: `platform/windows_package`
-- **Estado**: **`REQUIRES_WINDOWS`**
-- **Obligación / Requisito**: Instalación del wheel y arranque del CLI y GUI en un sistema operativo Windows real.
-- **Fases con Evidencia**: Pendiente Fase 9
-- **Artefactos de Respaldo**:
-  - `docs/QA_DELIVERY.md#plataforma-windows`
-- **Comando de Verificación**: `pip install dist/*.whl en Windows x64 (Fase 9)`
-- **Resultado Observado**: `REQUIRES_WINDOWS (requiere host Windows)`
-
-### QA-48 — Escala, memoria y tiempos de todas las etapas
-
-- **Prioridad / Severidad**: `P2` / `HIGH`
-- **Componente**: `performance/scale`
-- **Estado**: **`REQUIRES_SCALE`**
-- **Obligación / Requisito**: Benchmark con 100.000 operaciones y liquidaciones; medición de memoria RSS y tiempo total < 60 s.
-- **Fases con Evidencia**: Pendiente Fase 9
-- **Artefactos de Respaldo**:
-  - `docs/VERIFICATION.md#benchmarks`
-- **Comando de Verificación**: `scripts/benchmark_scale.py (Fase 9)`
-- **Resultado Observado**: `REQUIRES_SCALE (requiere dataset masivo y hardware dedicado)`
-
-### QA-49 — Los verificadores detectan corrupción
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `qa/detectors`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Demostración experimental de que las defensas e invariantes detectan corrupción y fallos deliberados.
-- **Fases con Evidencia**: Fase 3, Fase 6, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/persistence_crash/CRASH_AND_PERSISTENCE_REPORT.md#3c`
-  - `output/e2e/fault_injection/FAULT_INJECTION_REPORT.md`
-  - `tests/test_qa_infrastructure.py::test_checker_rejects_economic_corruption`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_qa_infrastructure.py -k test_checker_rejects`
-- **Resultado Observado**: `PASS (100% of 41 corrupted payloads detected)`
-
-### QA-50 — Mutantes críticos dirigidos
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `qa/mutations`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Asesinato estricto de mutantes críticos dirigidos (M01..M07) en el motor económico.
-- **Fases con Evidencia**: Fase 0, Fase 6
-- **Artefactos de Respaldo**:
-  - `output/e2e/fault_injection/FAULT_INJECTION_REPORT.md`
-  - `scripts/qa.py mutate`
-- **Comando de Verificación**: `.venv/bin/python scripts/qa.py mutate --all`
-- **Resultado Observado**: `PASS (7/7 critical mutants killed with causal oracle)`
-
-### QA-51 — Validación ciega con cliente
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `client/blind_audit`
-- **Estado**: **`REQUIRES_REAL_CLIENT`**
-- **Obligación / Requisito**: Auditoría ciega contra liquidación real de cliente sin conocer el resultado manual previo.
-- **Fases con Evidencia**: Pendiente Gate P / Fase R
-- **Artefactos de Respaldo**:
-  - `docs/QA_DELIVERY.md#gate-p`
-- **Comando de Verificación**: `Auditoría en staging con dataset confidencial real`
-- **Resultado Observado**: `REQUIRES_REAL_CLIENT (reserva a Gate P)`
-
-### QA-52 — Gate de pago sin nuestra supervisión
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `client/payment_gate`
-- **Estado**: **`REQUIRES_REAL_CLIENT`**
-- **Obligación / Requisito**: El cliente confía el bloqueo o pago de facturas a Calibre sin intervención humana de nuestro equipo.
-- **Fases con Evidencia**: Pendiente Gate P / Fase R
-- **Artefactos de Respaldo**:
-  - `docs/QA_DELIVERY.md#gate-p`
-- **Comando de Verificación**: `Pase a producción operacional en dador de carga real`
-- **Resultado Observado**: `REQUIRES_REAL_CLIENT (reserva a Gate P)`
-
-### QA-53 — IDs y JSON inequívocos
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `importing/json`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Rechazo de claves JSON duplicadas y manejo inequívoco de identificadores numéricos fraccionarios.
-- **Fases con Evidencia**: Fase 5, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/import_adversarial/IMPORT_ADVERSARIAL_REPORT.md`
-  - `tests/test_adversarial.py::test_duplicate_json_keys_are_rejected`
-  - `tests/test_importing.py::test_original_fractional_numeric_identifier_cannot_become_integer_after_float_rounding`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_adversarial.py -k test_duplicate_json_keys`
-- **Resultado Observado**: `PASS (duplicate keys and float coercion rejected)`
-
-### QA-54 — Bundle portable y ancla externa
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `reporting/bundle`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Bundle ZIP portable con manifest.json y SHA-256 verificables de forma independiente mediante cli verify-bundle.
-- **Fases con Evidencia**: Fase 1, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/isolated_env/artifacts/manifest.json`
-  - `tests/test_storage_reporting.py::test_portable_bundle_integrity`
-  - `tests/test_integration.py::test_cli_full_run_exports_and_bundle_replay`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_storage_reporting.py -k test_portable_bundle`
-- **Resultado Observado**: `PASS (portable bundle verification verified)`
-
-### QA-55 — Entrega reproducible y dependencias
-
-- **Prioridad / Severidad**: `P1` / `HIGH`
-- **Componente**: `build/packaging`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Empaquetado limpio con pip/build; hash de wheel y tarball inmutables; instalación en clean-room probada.
-- **Fases con Evidencia**: Fase 0, Fase 1, Fase 5
-- **Artefactos de Respaldo**:
-  - `dist/freight_audit-0.1.0-py3-none-any.whl (SHA-256: 5cbd1d5f3a0b16ac57f5edb8fff3cd7ffcb25aa42fe45a767804261bd717afdd)`
-  - `scripts/verify.sh`
-- **Comando de Verificación**: `bash scripts/verify.sh`
-- **Resultado Observado**: `PASS (100% build verification)`
-
-### QA-56 — Separación de liquidaciones y alcance de obligación
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `engine/settlement`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Separación de liquidaciones y períodos: settlement constituye frontera explícita de agrupación y asignación en engine; evita fusión silenciosa de cargos de liquidaciones distintas.
-- **Fases con Evidencia**: Fase 7, Fase 7.5, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `src/freight_audit/engine.py::group_key`
-  - `output/e2e/qa56/QA56_EXPECTED_CASES.md`
-  - `tests/test_backlog_p0_p1.py::test_qa56_settlement_scope_and_grouping_behavior`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_backlog_p0_p1.py -k test_qa56`
-- **Resultado Observado**: `SATISFIED (settlement como frontera de agrupación; 6 casos canónicos verificados: 1 finding si mismo settlement, 2 findings si distinto settlement, N:1, 1:N, importes distintos y reconciliación mixta)`
-
-### QA-57 — Diagnóstico no muta evidencia
-
-- **Prioridad / Severidad**: `P0` / `CRITICAL`
-- **Componente**: `storage/readonly`
-- **Estado**: **`SATISFIED`**
-- **Obligación / Requisito**: Operaciones de diagnóstico, inspectores y comandos de lectura operan en modo solo-lectura y jamás mutan el estado persistido.
-- **Fases con Evidencia**: Fase 3, Unit/Integration
-- **Artefactos de Respaldo**:
-  - `output/e2e/persistence_crash/CRASH_AND_PERSISTENCE_REPORT.md`
-  - `tests/test_qa_infrastructure.py::test_impact_is_read_only_and_retains_unknowns`
-- **Comando de Verificación**: `.venv/bin/pytest tests/test_qa_infrastructure.py -k test_impact_is_read_only`
-- **Resultado Observado**: `PASS (read-only diagnostic safety)`
-
-### QA-58 — Píxel exacto y matrices visuales exhaustivas
-
-- **Prioridad / Severidad**: `P3` / `LOW`
-- **Componente**: `ui/visual`
-- **Estado**: **`DEFERRED_WITH_REASON`**
-- **Obligación / Requisito**: Comparación visual exhaustiva pixel a pixel de toda la UI; diferida por diseño ante fragilidad y cobertura suficiente por DOM reconciliation.
-- **Fases con Evidencia**: Diferido
-- **Artefactos de Respaldo**:
-  - `docs/TEST_MATRIX.md#qa-58`
-- **Comando de Verificación**: `N/A (Diferido formalmente)`
-- **Resultado Observado**: `DEFERRED_WITH_REASON (prioridad P3/C, fragilidad de renderizado cross-driver; DOM y CSS cubiertos contractualmente en QA-39)`
-
----
-
-## 4. Conclusión y Hoja de Ruta Hacia Fases 8 y 9
-
-1. **Fase 7 Concluida**: El backlog histórico de 58 familias queda reconciliado, auditado y registrado sin deudas ambiguas.
-2. **Gate S Cerrado**: 49 familias 100% satisfechas y 1 parcial delimitada arquitectónicamente cubren todo el espectro sintético y técnico.
-3. **Transición a Fase 8 (CI / Regresión Automatizada)**: Integración en pipeline continuo de los 174 tests de regresión, verificación de packaging y suite de defensas.
-4. **Fase 9 (Plataforma y Escala)**: Ejecución en host nativo Windows (`QA-41`, `QA-47`) y benchmark masivo de 100k filas (`QA-48`).
-5. **Fase R / Gate P (Cliente Real)**: Apertura inmediata ante la recepción del primer dataset confidencial de producción para cerrar `QA-45`, `QA-51` y `QA-52`.
+# Cobertura de QA: obligaciones y evidencia
+
+**No hay certificación global ni porcentaje de cobertura causal derivable del número de tests. El Gate S de infraestructura QA se evalúa según RELEASE_CRITERIA.md y no exige ni acredita cobertura total de producto.**
+
+Este registro sustituye el cierre automático de 51/51 familias. El anterior acortaba obligaciones del catálogo, citaba selectores inexistentes y usaba hashes fijos.
+
+Fuente única: `qa/catalog.py`. Un selector existente acredita infraestructura disponible; una ejecución acredita sus casos, no toda la familia.
+
+Las campañas históricas Windows, escala, importación y E2E conservan su alcance original. No certifican este checkout. Ver `RIGOR_REVIEW.md`.
+
+Commit base: `3ede18beeb6c19969602a3a0f233edc05ab8c268`; huella del código y pruebas: `71ebcecaf723893460aff2e8f4f198eff319ecfcde2d7d3bf06fbe3c939187f4`.
+
+## Ejecuciones adjuntas
+
+| Recibo                                         | Código y log verificables | Salida | Comando                                                                                                                                                                                                      |
+| ---------------------------------------------- | ------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| output/review-20260922/final-verification.json | Sí                        | 0      | `bash scripts/verify.sh`                                                                                                                                                                                     |
+| output/review-20260922/final-mutations.json    | Sí                        | 0      | `.venv/bin/python scripts/qa.py mutate --execute`                                                                                                                                                            |
+| output/review-20260922/final-healthy.json      | Sí                        | 0      | `.venv/bin/python output/e2e/fault_injection/run_healthy_controls.py --output-dir output/review-20260922/final-faults`                                                                                       |
+| output/review-20260922/final-faults.json       | Sí                        | 0      | `.venv/bin/python output/e2e/fault_injection/run_directed_faults.py --output-dir output/review-20260922/final-faults`                                                                                        |
+| output/review-20260922/final-imports.json      | Sí                        | 0      | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python output/e2e/import_adversarial/test_import_adversarial.py --output-dir output/review-20260922/final-imports`                                                 |
+| output/review-20260922/final-reconcile.json    | Sí                        | 0      | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python scripts/ci_reconcile_fixtures.py`                                                                                                                           |
+| output/review-20260922/final-pipeline.json     | Sí                        | 0      | `.venv/bin/python output/e2e/platform_scale/benchmark_runner.py --sizes 200 --reps 1 --skip-curve --all-exports --max-child-rss 1000 --min-host-mem 1500 --output-dir output/review-20260922/final-pipeline` |
+| output/review-20260922/final-endurance.json    | Sí                        | 0      | `.venv/bin/python output/e2e/platform_scale/endurance_runner.py --iterations 10 --batch-size 100 --output-dir output/review-20260922/final-endurance`                                                        |
+| output/review-20260922/final-wheel-smoke.json  | Sí                        | 0      | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python scripts/smoke_wheel.py --installed-root /tmp/calibre-reviewed-wheel-7mq3sqfu/lib/python3.12/site-packages`                                                  |
+| output/review-20260922/final-browser.json      | Sí                        | 0      | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python scripts/browser_e2e.py --installed-root /tmp/calibre-reviewed-wheel-7mq3sqfu/lib/python3.12/site-packages --output-dir output/playwright/review-final`      |
+| output/review-20260922/final-platform.json     | Sí                        | 0      | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python output/e2e/platform_scale/run_platform_suite.py --platform linux --cleanroom --output-dir output/review-20260922/final-platform`                            |
+
+## Familias
+
+| Familia                                                     | Prioridad | Estado conservador   | Selectores existentes |
+| ----------------------------------------------------------- | --------- | -------------------- | --------------------- |
+| QA-01 — Certeza y diferencia confirmada                     | P0        | PARTIAL              | 2                     |
+| QA-02 — Tolerancia, signo y fronteras                       | P0        | PARTIAL              | 2                     |
+| QA-03 — Referencia de precio independiente                  | P0        | PARTIAL              | 2                     |
+| QA-04 — Dominio numérico y tipos estrictos                  | P0        | PARTIAL              | 4                     |
+| QA-05 — Redondeo, escala y orden                            | P0        | PARTIAL              | 2                     |
+| QA-06 — División y contexto ambiental                       | P0        | PARTIAL              | 3                     |
+| QA-07 — Unidades y monedas separadas                        | P0        | PARTIAL              | 3                     |
+| QA-08 — Números desde originales                            | P0        | PARTIAL              | 4                     |
+| QA-09 — Identidad y normalización declarada                 | P0        | PARTIAL              | 3                     |
+| QA-10 — Estructura CSV y conservación de filas              | P0        | PARTIAL              | 4                     |
+| QA-11 — Semántica de libro Excel                            | P0        | PARTIAL              | 3                     |
+| QA-12 — XLS legacy y cache explícito                        | P1        | PARTIAL              | 1                     |
+| QA-13 — Límites de importación y corrupción                 | P1        | PARTIAL              | 1                     |
+| QA-14 — Importación incompleta y alcance documental         | P0        | PARTIAL              | 2                     |
+| QA-15 — Procedencia verificable                             | P0        | PARTIAL              | 2                     |
+| QA-16 — Selección única de vigencia                         | P0        | PARTIAL              | 3                     |
+| QA-17 — Fecha civil y seriales de Excel                     | P0        | PARTIAL              | 4                     |
+| QA-18 — Reglas/condiciones y AST acotado                    | P0        | PARTIAL              | 4                     |
+| QA-19 — Lookup/bandas sin desempate arbitrario              | P0        | PARTIAL              | 2                     |
+| QA-20 — Claves, aliases y vínculos explícitos               | P0        | PARTIAL              | 3                     |
+| QA-21 — Ambigüedad propagada a grupos parciales             | P0        | PARTIAL              | 2                     |
+| QA-22 — Consolidado y cargos por componentes                | P0        | PARTIAL              | 2                     |
+| QA-23 — Asignaciones superpuestas y servicios parciales     | P0        | PARTIAL              | 1                     |
+| QA-24 — Duplicados candidatos y remito legítimo             | P0        | PARTIAL              | 2                     |
+| QA-25 — Evidencia por ámbito y adición selectiva            | P0        | PARTIAL              | 2                     |
+| QA-26 — Cobertura explícita de cargos ausentes              | P0        | PARTIAL              | 3                     |
+| QA-27 — Conservación total por ID y moneda                  | P0        | PARTIAL              | 1                     |
+| QA-28 — Determinismo y transformaciones                     | P0        | PARTIAL              | 3                     |
+| QA-29 — Aislamiento entre clientes y catálogos              | P0        | PARTIAL              | 1                     |
+| QA-30 — Decisiones humanas y cadena                         | P0        | PARTIAL              | 3                     |
+| QA-31 — Integridad histórica y mutación                     | P0        | PARTIAL              | 3                     |
+| QA-32 — Replay y cambio de artefacto                        | P0        | PARTIAL              | 3                     |
+| QA-33 — Proveniencia de ejecutables y alcance               | P0        | PARTIAL              | 1                     |
+| QA-34 — Backup, restore y reapertura                        | P0        | PARTIAL              | 1                     |
+| QA-35 — Crash, rollback y concurrencia                      | P0        | PARTIAL              | 1                     |
+| QA-36 — Schema y migración recuperable                      | P0        | PARTIAL              | 2                     |
+| QA-37 — Reconciliación entre representaciones               | P0        | PARTIAL              | 1                     |
+| QA-38 — Límites de reportes y contenido activo              | P0        | PARTIAL              | 4                     |
+| QA-39 — UI conserva semántica visible y estado actual       | P0        | PARTIAL              | 0                     |
+| QA-40 — Barrera de red local                                | P0        | PARTIAL              | 1                     |
+| QA-41 — Rutas, archivos y sobrescritura                     | P0        | NO_REGISTERED_RUNNER | 0                     |
+| QA-42 — XML/ZIP malicioso acotado                           | P0        | PARTIAL              | 1                     |
+| QA-43 — Errores de API y consistencia de operación          | P1        | PARTIAL              | 3                     |
+| QA-44 — Auditoría sin servicios externos                    | P1        | PARTIAL              | 1                     |
+| QA-45 — Representación contractual y mapping aprobados      | P0        | REQUIRES_REAL_CLIENT | 0                     |
+| QA-46 — Generalidad de cinco arquetipos                     | P1        | PARTIAL              | 1                     |
+| QA-47 — Paquete y plataforma real                           | P1        | NO_REGISTERED_RUNNER | 0                     |
+| QA-48 — Escala, memoria y tiempos de todas las etapas       | P2        | NO_REGISTERED_RUNNER | 0                     |
+| QA-49 — Los verificadores detectan corrupción               | P0        | PARTIAL              | 2                     |
+| QA-50 — Mutantes críticos dirigidos                         | P0        | NO_REGISTERED_RUNNER | 0                     |
+| QA-51 — Validación ciega con cliente                        | P0        | REQUIRES_REAL_CLIENT | 0                     |
+| QA-52 — Gate de pago sin nuestra supervisión                | P0        | REQUIRES_REAL_CLIENT | 0                     |
+| QA-53 — IDs y JSON inequívocos                              | P0        | PARTIAL              | 2                     |
+| QA-54 — Bundle portable y ancla externa                     | P0        | PARTIAL              | 1                     |
+| QA-55 — Entrega reproducible y dependencias                 | P1        | NO_REGISTERED_RUNNER | 0                     |
+| QA-56 — Separación de liquidaciones y alcance de obligación | P0        | PARTIAL              | 2                     |
+| QA-57 — Diagnóstico no muta evidencia                       | P0        | PARTIAL              | 1                     |
+| QA-58 — Píxel exacto y matrices visuales exhaustivas        | P3        | NO_REGISTERED_RUNNER | 0                     |
+
+## QA-01 — Certeza y diferencia confirmada
+
+**Obligación:** Sin evidencia: REVIEW,E100,Δ100,confirmada0; issue row impide PASS/FAIL; sin versión UNDETERMINABLE/E null. Ningún bucket confirma100.
+
+**Procedimiento:** 1. Auditar cada variante por separado. 2. Inspeccionar finding y todos los buckets. 3. Pasar run al checker independiente.
+
+**Oráculo:** OR-03 OR-05. **Lo que puede escapar:** Comprobar sólo finding y no summary/reportes deja escapar dinero confirmado.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_missing_evidence_does_not_confirm_even_numeric_difference tests/test_engine.py::test_import_rejects_block_economic_confirmation
+```
+
+## QA-02 — Tolerancia, signo y fronteras
+
+**Obligación:** E100,T0.01,A100.01 PASS;100.02 FAIL+0.02;99.98 FAIL−0.02. E200,rel0.05,A210 PASS;210.01 FAIL10.01.
+
+**Procedimiento:** 1. Ejecutar A=T exacta y T±0.01 respecto de E. 2. Recalcular T y Δ con Fraction. 3. Revisar PASS/FAIL y neto/brutos.
+
+**Oráculo:** OR-01 OR-02. **Lo que puede escapar:** Tolerancia relativa, negativo o igualdad exacta no ejercitados.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_tolerance_and_signed_differences tests/test_qa_infrastructure.py::test_generated_reference_prices
+```
+
+## QA-03 — Referencia de precio independiente
+
+**Obligación:** q10×2,min30,+5%→31.5; q20→42. Igual E y A no produce FAIL; cambiar A no cambia E.
+
+**Procedimiento:** 1. Comprobar anclas de referencia. 2. Generar q/tarifa/mínimo/factor. 3. Comparar E con referencia racional sin importar helpers productivos.
+
+**Oráculo:** OR-01 OR-02. **Lo que puede escapar:** Ambos calculan bien pero contrato mal representado; validar OR-01.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_qa_infrastructure.py::test_reference_manual_anchors tests/test_qa_infrastructure.py::test_generated_reference_prices
+```
+
+## QA-04 — Dominio numérico y tipos estrictos
+
+**Obligación:** Inputs inválidos rechazados; 36nueves+1 suma37 dígitos permitida. No coerción bool→decimal ni 1→boolean.
+
+**Procedimiento:** 1. Validar cada input. 2. Auditar suma de inputs válidos grandes. 3. Verificar rechazo antes de conclusión o suma exacta.
+
+**Oráculo:** OR-01 OR-03. **Lo que puede escapar:** Sólo validar Value y omitir Charge/importer.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_float_prohibited tests/test_engine.py::test_invalid_money tests/test_adversarial.py::test_aggregate_amount_can_exceed_individual_input_digit_bound tests/test_adversarial.py::test_no_boolean_coercion
+```
+
+## QA-05 — Redondeo, escala y orden
+
+**Obligación:** Final0.01; por componente0.02; HALF_EVEN2.345→2.34,2.355→2.36. HALF_DOWN rechazado por configuración.
+
+**Procedimiento:** 1. Ejecutar cada fila manual. 2. Diferenciar round final de dos round explícitos. 3. Comprobar escala/modo/input en trace.
+
+**Oráculo:** OR-01 OR-02. **Lo que puede escapar:** Sólo positivos/escala2 no detecta truncamiento de créditos.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_qa_infrastructure.py::test_reference_manual_anchors tests/test_qa_infrastructure.py::test_generated_reference_prices
+```
+
+## QA-06 — División y contexto ambiental
+
+**Obligación:** 1/3→0.33;−1/8 HALF_EVEN→−0.12; divisor0/desborde→UNDETERMINABLE/0confirmado. Contexto ajeno no altera audit.
+
+**Procedimiento:** 1. Comparar división con Decimal alta precisión y casos manuales. 2. Cambiar/restaurar contexto externo. 3. Probar precisión insuficiente.
+
+**Oráculo:** OR-01 OR-08. **Lo que puede escapar:** Rango actual de enteros pequeños no cubre todo exponente válido.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_property_division_matches_high_precision tests/test_engine.py::test_global_decimal_context_does_not_affect_results tests/test_adversarial.py::test_inexact_comparison_becomes_undeterminable
+```
+
+## QA-07 — Unidades y monedas separadas
+
+**Obligación:** Discordancia→UNDETERMINABLE; sin factor no conversión; 1000g×0.001kg/g×2ARS/kg=2ARS; buckets separados.
+
+**Procedimiento:** 1. Auditar moneda discordante. 2. Introducir g frente a kg sin factor. 3. Añadir factor explícito y acuerdoUSD independiente.
+
+**Oráculo:** OR-01 OR-03. **Lo que puede escapar:** Revisar core pero permitir suma multimoneda en UI.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_currencies_never_summed_or_converted tests/test_engine.py::test_missing_attribute_and_unit_mismatch tests/test_engine.py::test_rules_need_currency_units
+```
+
+## QA-08 — Números desde originales
+
+**Obligación:** XLSX preserva fracción; exponente extremo rechaza fila; CSV argentino1234.56; agrupador inválido rechaza, no corrige silenciosamente.
+
+**Procedimiento:** 1. Preservar bytes. 2. Importar con mapping confirmado. 3. Comparar value y provenance.raw con literal independiente.
+
+**Oráculo:** OR-04. **Lo que puede escapar:** Leer expected mediante openpyxl repite el float defectuoso.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_importing.py::test_xlsx_preserves_original_decimal_literal_without_binary_float_loss tests/test_importing.py::test_xlsx_unbounded_exponent_is_rejected_before_decimal_expansion tests/test_importing.py::test_argentine_decimal tests/test_importing.py::test_unsafe_numeric_strings_rejected
+```
+
+## QA-09 — Identidad y normalización declarada
+
+**Obligación:** 00001 se conserva; numérico requiere política; fraccional rechaza aunque float parezca entero; concepto desconocido queda external:valor.
+
+**Procedimiento:** 1. Importar referencia textual. 2. Repetir numeric_text reject/formatted. 3. Verificar reglas de strip y concepto desconocido.
+
+**Oráculo:** OR-04 OR-05. **Lo que puede escapar:** Alias/Unicode normalizado fuera del mapping puede colisionar en un cliente.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_importing.py::test_xlsx_numeric_id_requires_explicit_policy tests/test_importing.py::test_original_fractional_numeric_identifier_cannot_become_integer_after_float_rounding tests/test_importing.py::test_unknown_concept_not_canonicalized_by_accident
+```
+
+## QA-10 — Estructura CSV y conservación de filas
+
+**Obligación:** Referencia multilínea mantiene siguiente registro en línea4; mapeada repetida/ausente error; valor extra rechaza; economía invariante al reordenar.
+
+**Procedimiento:** 1. Importar corpus con líneas físicas anotadas. 2. Comparar aceptadas/rechazadas y raw. 3. Permutar columnas/mapping.
+
+**Oráculo:** OR-04 OR-08. **Lo que puede escapar:** Control sólo de cantidad deja desplazamiento con misma cantidad.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_adversarial.py::test_csv_multiline_provenance_uses_actual_line tests/test_importing.py::test_ambiguous_or_missing_headers_fail_file tests/test_importing.py::test_reordered_columns_same_normalized_records tests/test_adversarial.py::test_oversized_unmapped_cells_not_silently_shifted
+```
+
+## QA-11 — Semántica de libro Excel
+
+**Obligación:** Varias hojas sin selección error; fórmula mapeada rechazada; sin fill-forward. Ocultas requieren alcance visible: falta automatizar warning en producto.
+
+**Procedimiento:** 1. Especificar sheet. 2. Importar con columnas requeridas vacías/merged. 3. Añadir fórmula cacheada y fila oculta. 4. Cotejar alcance declarado.
+
+**Oráculo:** OR-04. **Lo que puede escapar:** Happy path XLSX no cubre estilos/hidden/cache; deuda explícita.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_importing.py::test_multisheet_requires_selection tests/test_importing.py::test_xlsx_formula_never_evaluated_or_taken_as_cache tests/test_importing.py::test_original_numeric_tokens_follow_sparse_sheet_coordinates
+```
+
+## QA-12 — XLS legacy y cache explícito
+
+**Obligación:** Sin aceptación error; con aceptación warning persistente. No declarar recuperación de precisión perdida ni garantía de recalculado.
+
+**Procedimiento:** 1. Importar sin allow_xls_cached_values. 2. Habilitar y revisar warning. 3. Cotejar pares de celdas fuera de xlrd.
+
+**Oráculo:** OR-04. **Lo que puede escapar:** XLS generado por xlwt no cubre todos los productores reales.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_importing.py::test_xls_requires_explicit_cached_value_acceptance
+```
+
+## QA-13 — Límites de importación y corrupción
+
+**Obligación:** ImportErrorDetail/422 útil antes de agotar recursos; ningún resultado económico confirmado para importación abortada.
+
+**Procedimiento:** 1. Crear cabeceras/payloads pequeños que activen límites. 2. Ejecutar en subprocess con timeout/RSS. 3. Comprobar clasificación y ausencia de corrida parcial.
+
+**Oráculo:** OR-09 OR-10. **Lo que puede escapar:** Bytes aleatorios cortos no atraviesan parser profundo; tamaño declarado no prueba expansión real.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_importing.py::test_malformed_xlsx_fuzz_is_bounded_and_classified
+```
+
+## QA-14 — Importación incompleta y alcance documental
+
+**Obligación:** Rechazo impide certeza del lote. Archivo nunca aportado no se detecta por core: control externo obligatorio y déficit visible.
+
+**Procedimiento:** 1. Contar filas de negocio. 2. Conciliar accepted/rejected/omitted. 3. Auditar issue row. 4. Comparar contra total externo y etiqueta UI.
+
+**Oráculo:** OR-03 OR-04 OR-01. **Lo que puede escapar:** Import_complete=true no demuestra documentos completos.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_import_rejects_block_economic_confirmation tests/test_integration.py::test_invalid_fixture_rejects_visible_rows
+```
+
+## QA-15 — Procedencia verificable
+
+**Obligación:** Documento/hoja/fila/columna/raw correctos y mapping congelado; archivo alterado se rechaza; constante respaldada por configuración.
+
+**Procedimiento:** 1. Del finding seguir trace.field→registro→SourceRef. 2. Verificar SHA y localizar celda. 3. Contrastar raw→transform→value, incluidas constantes.
+
+**Oráculo:** OR-04 OR-06. **Lo que puede escapar:** Hash correcto de archivo no demuestra referencia a la celda correcta.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_importing.py::test_csv_argentine_numbers_zeroes_and_provenance tests/test_storage_reporting.py::test_tampered_source_detected
+```
+
+## QA-16 — Selección única de vigencia
+
+**Obligación:** Extremos inclusivos; cero/dos versiones o grupo mixto→UNDETERMINABLE; no elegir primera ni prorratear.
+
+**Procedimiento:** 1. Evaluar comienzo/fin/día siguiente. 2. Crear overlap/gap. 3. Invertir orden de versiones. 4. Consolidar fechas de ambos lados.
+
+**Oráculo:** OR-05. **Lo que puede escapar:** Dos versiones con mismo precio ocultan selector equivocado.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_version_boundaries tests/test_engine.py::test_overlapping_versions_never_pick_first tests/test_engine.py::test_group_mixed_version_is_undeterminable
+```
+
+## QA-17 — Fecha civil y seriales de Excel
+
+**Obligación:** Ambigua/invalid/hora/zona→rechazo; medianoche ingenua admitida. Serial ficticio60 del calendario1900 se rechaza; serial60 de1904 es01/03/1904.
+
+**Procedimiento:** 1. Importar cada par fuente→fecha esperada. 2. Repetir con TZs distintas. 3. Comparar versión seleccionada con calendario manual.
+
+**Oráculo:** OR-04 OR-05. **Lo que puede escapar:** Comparar sólo date final pierde serial/epoch original.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_importing.py::test_ambiguous_date_is_rejected tests/test_importing.py::test_excel_fictitious_leap_day_never_aliases_real_date tests/test_importing.py::test_timestamps_are_not_silently_truncated tests/test_engine.py::test_alternate_date_field
+```
+
+## QA-18 — Reglas/condiciones y AST acotado
+
+**Obligación:** AST inválido rechaza;0/2reglas→UNDETERMINABLE; if no evalúa rama no elegida; condición faltante no es false.
+
+**Procedimiento:** 1. Validar AST inválidos. 2. Evaluar datos faltantes. 3. Probar rama no elegida con división0. 4. Repetir reglas reordenadas.
+
+**Oráculo:** OR-01 OR-05. **Lo que puede escapar:** Test AST parseado no prueba aridad/semántica de cada operador.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_condition_missing_is_not_false tests/test_engine.py::test_condition_branch_is_lazy tests/test_engine.py::test_overlapping_rules_are_undeterminable tests/test_adversarial.py::test_bounded_expression_depth_rejects_nested_attack
+```
+
+## QA-19 — Lookup/bandas sin desempate arbitrario
+
+**Obligación:** Bandas[lower,upper); exactamente1coincidencia. Cero/dos incluso mismo importe→UNDETERMINABLE; caché separada por versión/acuerdo.
+
+**Procedimiento:** 1. Evaluar ambos lados y límite exacto. 2. Repetir filas. 3. Invertir tabla. 4. Intercalar versión con tabla homónima diferente.
+
+**Oráculo:** OR-05. **Lo que puede escapar:** Mismo valor en tablas distintas oculta contaminación de caché.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_adversarial.py::test_band_overlap_and_gap_never_select_arbitrarily tests/test_adversarial.py::test_duplicate_lookup_rows_even_same_price_are_ambiguous
+```
+
+## QA-20 — Claves, aliases y vínculos explícitos
+
+**Obligación:** Match exacto declarado; vacíos no empatan; link ausente/repetido/carrier ajeno→UNDETERMINABLE. Contradicción link/claves requiere control adicional pendiente.
+
+**Procedimiento:** 1. Dibujar grafo manual. 2. Aplicar alias sólo al cargo. 3. Vaciar clave. 4. Añadir link inválido y verificar sin fallback.
+
+**Oráculo:** OR-05. **Lo que puede escapar:** Explicito válido estructuralmente puede apuntar a operación equivocada.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_composite_keys_and_directional_alias tests/test_engine.py::test_invalid_explicit_link_never_falls_back tests/test_adversarial.py::test_empty_keys_never_join_to_empty_keys
+```
+
+## QA-21 — Ambigüedad propagada a grupos parciales
+
+**Obligación:** Antes: ambos REVIEW/confirmada0; después, si C1+C2→S1, grupoA100,E100 PASS. Ningún cargo se pierde.
+
+**Procedimiento:** 1. Auditar en ambos órdenes. 2. Inspeccionar los dos findings. 3. Resolver C2 explícitamente y volver a auditar nueva copia.
+
+**Oráculo:** OR-03 OR-05. **Lo que puede escapar:** Revisar sólo cargo ambiguo deja FAIL parcial en el otro.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_adversarial.py::test_ambiguous_allocation_also_blocks_related_partial_group tests/test_engine.py::test_matching_ambiguity_is_review
+```
+
+## QA-22 — Consolidado y cargos por componentes
+
+**Obligación:** UnE60,A60 PASS; split no repiteE. attr de pesos distintos→UNDETERMINABLE; no prorrateo automático.
+
+**Procedimiento:** 1. Auditar sum×2. 2. Dividir/reunir líneas actual. 3. Cambiar sum por attr sobre pesos distintos. 4. Comparar scopes, no IDs hash.
+
+**Oráculo:** OR-02 OR-03 OR-08. **Lo que puede escapar:** N→M solapado no se cubre con N→1.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_group_sum_and_one_expected_charge tests/test_engine.py::test_multiple_lines_aggregate_without_inventing_duplicates
+```
+
+## QA-23 — Asignaciones superpuestas y servicios parciales
+
+**Obligación:** Grupos superpuestos REVIEW; no multiplicar expected confirmado. Servicio parcial no representado se bloquea hasta definir regla.
+
+**Procedimiento:** 1. Construir grafo con intersecciónS2. 2. Auditar. 3. Verificar grupo relacionado no confirma ni reparte. 4. Confirmar límite contractual con operador.
+
+**Oráculo:** OR-05. **Lo que puede escapar:** Solapamiento a través de acuerdos distintos requiere revisión contractual.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_overlap_allocations_are_review
+```
+
+## QA-24 — Duplicados candidatos y remito legítimo
+
+**Obligación:** Candidatos→REVIEW, no eliminación ni ahorro; sin política líneas agregadas; distinto concepto no es duplicado por referencia sola.
+
+**Procedimiento:** 1. Auditar con duplicate_fields. 2. Desactivar sólo esa política. 3. Separar conceptos y verificar conservación.
+
+**Oráculo:** OR-03 OR-05. **Lo que puede escapar:** No configurar duplicate_fields no demuestra ausencia de duplicados reales.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_configured_duplicate_is_candidate_only tests/test_engine.py::test_same_remittance_different_concepts_is_not_duplicate
+```
+
+## QA-25 — Evidencia por ámbito y adición selectiva
+
+**Obligación:** Faltante→REVIEW; evidencia suficiente sólo resuelve scope pertinente; nueva corrida puede PASS o FAIL según Δ, historia intacta.
+
+**Procedimiento:** 1. Retirar un respaldo por ámbito. 2. Agregar sólo el faltante. 3. Comparar grupos no relacionados y run original. 4. Retirar documento obligatorio.
+
+**Oráculo:** OR-05 OR-08. **Lo que puede escapar:** Sólo kind sin revisar asociaciones/document_hash es falso respaldo.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_evidence_any_of_and_per_operation tests/test_engine.py::test_unrelated_evidence_cannot_support_charge
+```
+
+## QA-26 — Cobertura explícita de cargos ausentes
+
+**Obligación:** Sin scope no inventar; scope correcto→REVIEW A0 sin confirmada; whenfalse omite expectativa; no duplica cargo sin versión; scope inválido rechaza.
+
+**Procedimiento:** 1. Comparar sin/con coverage. 2. Probar when=false. 3. Agregar cargo ya indeterminado. 4. Validar scope inválido.
+
+**Oráculo:** OR-03 OR-05. **Lo que puede escapar:** Creer que cobertura detecta documento faltante no aportado.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_missing_expected_charge_requires_explicit_scope_and_is_review tests/test_adversarial.py::test_missing_coverage_must_not_duplicate_existing_undetermined_charge tests/test_adversarial.py::test_coverage_cannot_silently_drop_wrong_carrier
+```
+
+## QA-27 — Conservación total por ID y moneda
+
+**Obligación:** Cada C exactamente1vez; bruto por moneda preservado; +50 y−75 separados y neto−25. Checker rechaza salida manipulada.
+
+**Procedimiento:** 1. Checker recompone Counter de charge_ids y sumas desde C. 2. Comparar todos los buckets/counts. 3. Mutar salida duplicando/quitando cargo.
+
+**Oráculo:** OR-03. **Lo que puede escapar:** Totales coincidentes pueden ocultar omisión y duplicación compensadas: contar IDs.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_qa_infrastructure.py::test_checker_rejects_economic_corruption
+```
+
+## QA-28 — Determinismo y transformaciones
+
+**Obligación:** Reordenamiento normalizado completo igual; renombre/columna economía igual aunque snapshot hash cambie; cambio futuro no muta run guardado.
+
+**Procedimiento:** 1. Guardar baseline completo. 2. Aplicar una transformación. 3. Comparar resultado o economic_projection según tabla. 4. Comprobar fuente hash cambia cuando bytes cambian.
+
+**Oráculo:** OR-08. **Lo que puede escapar:** Dos errores idénticos satisfacen relación; combinar OR02/03.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_engine.py::test_property_arbitrary_row_permutation tests/test_engine.py::test_semantic_hash_ignores_incidental_label tests/test_qa_infrastructure.py::test_generated_uncertainty_and_metamorphism
+```
+
+## QA-29 — Aislamiento entre clientes y catálogos
+
+**Obligación:** A idéntico, fuentes/configs separadas por DB. Catálogo global dentro mismaDB no es aislamiento multiempresa; no habilitarlo como tal.
+
+**Procedimiento:** 1. EjecutarA/B/A en proceso. 2. Reabrir DBs y comparar A. 3. Intentar selección de config ajena en UI y revisar operación.
+
+**Oráculo:** OR-05 OR-06 OR-08. **Lo que puede escapar:** DatosconIDsdistintos nunca ejercitan colisión/caché compartida.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_backlog_p0_p1.py::test_qa29_client_catalog_and_storage_isolation
+```
+
+## QA-30 — Decisiones humanas y cadena
+
+**Obligación:** Resultado original idéntico; decisiones append-only ordenadas/hash enlazado; referencias inexistentes rechazadas.
+
+**Procedimiento:** 1. Guardar hash de resultado. 2. Añadir decisiones en orden/concurrentes. 3. Verificar chain/resultado. 4. Intentar referencias ajenas.
+
+**Oráculo:** OR-06. **Lo que puede escapar:** Cadena local no detecta truncamiento de sufijo sin ancla externa.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_storage_reporting.py::test_human_decision_never_rewrites_finding tests/test_storage_reporting.py::test_decision_chain_serializes_concurrent_writers tests/test_storage_reporting.py::test_no_unknown_decision_or_evidence
+```
+
+## QA-31 — Integridad histórica y mutación
+
+**Obligación:** Writes históricos bloqueados; load detecta hashes; configuración futura no cambia run. list_runs no verifica integridad: deuda visible, no oráculo.
+
+**Procedimiento:** 1. Guardar ancla externa. 2. Intentar mutación. 3. Comparar load y list_runs ante byte alterado. 4. Abrir original intacto.
+
+**Oráculo:** OR-06. **Lo que puede escapar:** Rehash malicioso total o truncamiento puede pasar sin copia externa.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_storage_reporting.py::test_db_update_delete_blocked tests/test_storage_reporting.py::test_tampered_result_detected_after_trigger_bypass tests/test_storage_reporting.py::test_changed_agreement_preserves_history
+```
+
+## QA-32 — Replay y cambio de artefacto
+
+**Obligación:** Mismo artefacto: resultado exacto. Integridad fallida, artefacto distinto o proceso desactualizado bloquean replay. Reimportar es otra operación.
+
+**Procedimiento:** 1. Replay original. 2. Alterar fuente/snapshot en copia. 3. Cambiar artifact o código cargado. 4. Confirmar que no reescribe resultado.
+
+**Oráculo:** OR-06 OR-08. **Lo que puede escapar:** Replay perfecto perpetúa error de importer previo.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_storage_reporting.py::test_save_replay_and_idempotency tests/test_storage_reporting.py::test_engine_artifact_change_blocks_replay tests/test_storage_reporting.py::test_source_update_requires_process_restart
+```
+
+## QA-33 — Proveniencia de ejecutables y alcance
+
+**Obligación:** Unknown no se excluye; config y trace consultadas; cliente declarado externamente; no escribir schema/triggers ni inventar huellas pasadas.
+
+**Procedimiento:** 1. Ejecutar impact con --feature const y --importer-hash distinto. 2. Conservar desconocidos como candidatos. 3. Contrastar inventario manual. 4. Comparar bytes de la base antes/después.
+
+**Oráculo:** OR-05 OR-06. **Lo que puede escapar:** Filtrar sólo trace pierde errores previos a calcular.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_qa_infrastructure.py::test_impact_is_read_only_and_retains_unknowns
+```
+
+## QA-34 — Backup, restore y reapertura
+
+**Obligación:** Copia consistente y mismas corridas; overwrite rechazado; original intacto. Copia fuera del equipo exige operación real.
+
+**Procedimiento:** 1. Crear backup con la API. 2. Restaurar en otra ruta. 3. Verificar inventario, hashes, decisiones, fuentes y replay con el artefacto original. 4. Intentar sobrescribir el destino existente.
+
+**Oráculo:** OR-06 OR-10. **Lo que puede escapar:** Backup sobre mismo disco no cubre pérdida del equipo.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_storage_reporting.py::test_migration_reopening_and_consistent_backup
+```
+
+## QA-35 — Crash, rollback y concurrencia
+
+**Obligación:** Run completo o ausente, cadena íntegra; busy error recuperable. Fuentes huérfanas pueden existir y no son pérdida histórica; export incompleto no se presenta como completo.
+
+**Procedimiento:** 1. Inyectar fallo en frontera transaccional. 2. Reabrir copia. 3. Inventariar completos/ausentes y fuentes huérfanas. 4. Validar no corrida parcial visible.
+
+**Oráculo:** OR-06 OR-10. **Lo que puede escapar:** Thread test de decisiones no cubre kill de proceso o full disk.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_storage_reporting.py::test_decision_chain_serializes_concurrent_writers
+```
+
+## QA-36 — Schema y migración recuperable
+
+**Obligación:** Vacía inicializa schema 1; versión futura se rechaza; v1 reabre sin cambios. v0 no vacío o incompleto requiere validación pendiente. No se certifica una migración real.
+
+**Procedimiento:** 1. Abrir copias de cada estado. 2. Para una futura migración: preservar backup con hash externo, interrumpir antes/después de cada DDL y restaurar/reintentar. 3. Comparar corridas históricas y originales.
+
+**Oráculo:** OR-06. **Lo que puede escapar:** Una prueba de reopen no cubre atomicidad del DDL.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_storage_reporting.py::test_newer_database_schema_is_not_opened tests/test_storage_reporting.py::test_migration_reopening_and_consistent_backup
+```
+
+## QA-37 — Reconciliación entre representaciones
+
+**Obligación:** Campos materiales exactos; filas completas y sin fórmulas. API y DOM sólo se cubren al aportar capturas independientes. Un canal ausente queda pendiente.
+
+**Procedimiento:** 1. Verificar integridad e invariantes. 2. Leer salidas con lectores independientes. 3. Comparar filas, monedas, estados, importes y resúmenes. 4. Alterar cada salida por separado y exigir detección.
+
+**Oráculo:** OR-03 OR-07. **Lo que puede escapar:** Conciliar salidas iguales no prueba que el core aplicó contrato correcto.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_qa_infrastructure.py::test_cross_report_reconciliation_and_tamper_detection
+```
+
+## QA-38 — Límites de reportes y contenido activo
+
+**Obligación:** No se entrega un XLSX parcial; texto explícito sin fórmulas; JSON íntegro y advertencia de omisión conservada.
+
+**Procedimiento:** 1. Exportar. 2. Revisar tipos y cantidad de celdas. 3. Forzar límite y verificar ZIP sin XLSX, advertencia explícita y JSON completo. 4. Inspeccionar escape del HTML.
+
+**Oráculo:** OR-07 OR-09. **Lo que puede escapar:** Probar un límite reducido no mide la memoria real para 100000 filas.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_storage_reporting.py::test_workbook_is_real_and_has_exact_money_and_no_formulas tests/test_storage_reporting.py::test_report_escapes_untrusted_html_and_excel_formula tests/test_storage_reporting.py::test_excel_long_cell_is_not_silently_truncated tests/test_storage_reporting.py::test_excel_row_limit_preserves_full_bundle_json
+```
+
+## QA-39 — UI conserva semántica visible y estado actual
+
+**Obligación:** Dinero sin conversión a Number/float; paginación y filtros no cambian métricas globales. Estado del motor y decisión separados; solicitudes sólo a loopback.
+
+**Procedimiento:** 1. Capturar DOM de todas las páginas y filtros. 2. Cambiar rápidamente de corrida, abrir detalle y registrar decisión. 3. Comparar valores y etiquetas con la corrida exacta. 4. Probar importes con cero y tres decimales.
+
+**Oráculo:** OR-07 OR-09. **Lo que puede escapar:** Una respuesta exitosa de API no prueba qué leyó el operador.
+
+Runner adicional; usar un directorio de evidencia nuevo:
+
+```bash
+.venv/bin/python scripts/browser_e2e.py --output-dir output/playwright/qa39-new
+```
+
+## QA-40 — Barrera de red local
+
+**Obligación:** Host, Origin o token incorrectos se rechazan; CORS sin orígenes ajenos; servicio sólo en loopback. Un rechazo con efectos previos en la base es un fallo.
+
+**Procedimiento:** 1. Enviar POST con y sin token y Origin válidos. 2. Verificar bind a 127.0.0.1 en el proceso CLI. 3. Probar lectura desde otro origen en navegador. 4. Inspeccionar efectos en la base.
+
+**Oráculo:** OR-09. **Lo que puede escapar:** TestClient no verifica el socket real, su dirección de escucha ni el comportamiento del navegador.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_integration.py::test_local_api_security_boundary
+```
+
+## QA-41 — Rutas, archivos y sobrescritura
+
+**Obligación:** Uploads identificados por hash; sin lectura ni escritura arbitrarias; sobrescritura rechazada. Verificar política de enlaces simbólicos antes de usar rutas compartidas.
+
+**Procedimiento:** 1. Subir un archivo con nombre hostil. 2. Exportar y crear backup en destinos temporales existentes y enlaces simbólicos. 3. Verificar el testigo y archivos modificados. 4. Usar sólo datos sintéticos.
+
+**Oráculo:** OR-09. **Lo que puede escapar:** Un enlace a una carpeta vacía puede redirigir la exportación sin activar la barrera de sobrescritura.
+
+Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes de cerrar.
+
+## QA-42 — XML/ZIP malicioso acotado
+
+**Obligación:** Sin ejecución de contenido, red ni lectura externa; error recuperable; ninguna corrida económica parcial. Archivos sintéticos y acotados.
+
+**Procedimiento:** 1. Generar un archivo sintético pequeño. 2. Ejecutar en subproceso sin red y con límites. 3. Registrar rechazo, salidas, red y testigo. 4. Verificar expansión efectiva y cabecera.
+
+**Oráculo:** OR-09. **Lo que puede escapar:** Generar 500 bytes aleatorios no ejercita DTD, ZIP válido ni expansión.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_importing.py::test_malformed_xlsx_fuzz_is_bounded_and_classified
+```
+
+## QA-43 — Errores de API y consistencia de operación
+
+**Obligación:** Error recuperable sin traceback para el usuario; ninguna corrida parcial; mismo resultado económico por CLI/API; sin datos sensibles expuestos.
+
+**Procedimiento:** 1. Registrar inventario de la base. 2. Enviar petición inválida. 3. Comparar fuentes y configuraciones conservadas con corridas creadas. 4. Enviar entrada válida y contrastar con CLI.
+
+**Oráculo:** OR-03 OR-07. **Lo que puede escapar:** Comprobar sólo el código de respuesta ignora el cuerpo y los efectos persistidos.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_integration.py::test_api_configuration_errors_use_recoverable_messages tests/test_integration.py::test_api_runs_decisions_export_replay tests/test_integration.py::test_api_import_with_mapping_and_provenance
+```
+
+## QA-44 — Auditoría sin servicios externos
+
+**Obligación:** Auditoría y exportaciones íntegras sin red; UI sólo en loopback. Evaluar instalación inicial de dependencias por separado.
+
+**Procedimiento:** 1. Bloquear conexiones externas para core y CLI. 2. Importar, auditar, exportar y reproducir. 3. Navegar la UI y revisar destinos de todas las solicitudes.
+
+**Oráculo:** OR-09. **Lo que puede escapar:** Interceptar sockets de Python no cubre subprocesos ni navegador.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_integration.py::test_fully_offline_core
+```
+
+## QA-45 — Representación contractual y mapping aprobados
+
+**Obligación:** Toda regla material tiene responsable y ejemplo independiente; desconocido bloquea certeza, no default de industria.
+
+**Procedimiento:** 1. Aplicar pasos 1–10 del protocolo de cliente real. 2. Calcular hoja manual antes de ejecutar el motor. 3. Confirmar representación con el cliente. 4. Preservar hashes y dudas.
+
+**Oráculo:** OR-01 OR-04. **Lo que puede escapar:** Tests sintéticos pueden pasar con contrato equivocado.
+
+Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes de cerrar.
+
+## QA-46 — Generalidad de cinco arquetipos
+
+**Obligación:** A: 31.5; B: 900; C: bandas, pallets y evidencia; D: 194.25 USD; E: 100 + 12 con acuerdos separados sólo si representan el contrato. Sin condiciones por cliente, sector o transportista en el core.
+
+**Procedimiento:** 1. Configurar sin cambiar el core. 2. Calcular manualmente. 3. Ejecutar y registrar archivos modificados. 4. Si E no puede representarse fielmente, documentar la abstracción faltante.
+
+**Oráculo:** OR-01 OR-05. **Lo que puede escapar:** El test existente no ejercita el quinto arquetipo E.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_integration.py::test_real_files_three_agreements_golden_and_second_client
+```
+
+## QA-47 — Paquete y plataforma real
+
+**Obligación:** Importación desde paquete instalado sin modo editable; recursos completos y equivalencia económica. Windows pendiente hasta probarlo en una máquina real.
+
+**Procedimiento:** 1. Instalar paquete aislado. 2. Comprobar recursos UI, demo, replay y exportación. 3. Comparar contenidos y hashes. 4. En Windows: rutas Unicode, longitudes, saltos de línea y Excel real.
+
+**Oráculo:** OR-04 OR-06 OR-07. **Lo que puede escapar:** CI en Linux no valida Windows ni la aplicación Excel.
+
+Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes de cerrar.
+
+## QA-48 — Escala, memoria y tiempos de todas las etapas
+
+**Obligación:** Sin pérdida ni resultado incorrecto y dentro del presupuesto operativo acordado. Las mediciones históricas del core en VERIFICATION.md no constituyen un SLA de todo el flujo.
+
+**Procedimiento:** 1. Un proceso por tamaño con memoria base registrada. 2. Medir importación, motor, hashes, persistencia, exportación y UI por separado. 3. Conciliar cantidades y sumas al terminar.
+
+**Oráculo:** OR-03 OR-10. **Lo que puede escapar:** Un benchmark sin persistencia ni reportes puede omitir el pico real del cierre.
+
+Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes de cerrar.
+
+## QA-49 — Los verificadores detectan corrupción
+
+**Obligación:** Cada alteración objetivo se detecta. qa/reference.py y qa/invariants.py no importan lógica productiva. El CLI conserva sus validaciones con Python optimizado.
+
+**Procedimiento:** 1. Exigir resultado limpio para la base válida. 2. Alterar una causa por copia. 3. Exigir error identificable y salida 1. 4. Probar entrada malformada con salida 2.
+
+**Oráculo:** OR-01 OR-03 OR-07. **Lo que puede escapar:** Aceptar una corrida correcta no demuestra que el verificador detecte una incorrecta.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_qa_infrastructure.py::test_checker_rejects_economic_corruption tests/test_qa_infrastructure.py::test_cross_report_reconciliation_and_tamper_detection
+```
+
+## QA-50 — Mutantes críticos dirigidos
+
+**Obligación:** Mutaciones de signo, tolerancia, moneda, versión y evidencia deben fallar por aserción causal. Un sobreviviente bloquea la función afectada hasta investigar. Incompetente o inconcluso no cuenta como detectado.
+
+**Procedimiento:** 1. Validar ancla única. 2. Ejecutar tests base en copia temporal. 3. Aplicar un mutante. 4. Ejecutar sus selectores. 5. Exigir fallo de aserción causal; colección fallida o timeout es inconcluso.
+
+**Oráculo:** OR-01 OR-05. **Lo que puede escapar:** Un fallo global de hash puede detectar un mutante sin ejercitar el invariante; revisar la aserción causal.
+
+Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes de cerrar.
+
+## QA-51 — Validación ciega con cliente
+
+**Obligación:** Contraste externo documentado; diferencia nueva correcta no equivale a dinero recuperado. Conservar primera corrida antes de ajustar tras conocer las respuestas.
+
+**Procedimiento:** 1. Congelar representación y corrida antes de ver control histórico. 2. Comparar por cargo y moneda. 3. Resolver falsos PASS/FAIL y diferencias conocidas, nuevas o desconocidas. 4. Registrar horas de trabajo.
+
+**Oráculo:** OR-01 OR-04. **Lo que puede escapar:** El control histórico también puede estar equivocado; resolver diferencias con evidencia independiente.
+
+Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes de cerrar.
+
+## QA-52 — Gate de pago sin nuestra supervisión
+
+**Obligación:** Gate U cerrado para 0.1.0. Ninguna estadística sintética lo habilita; pytest no sustituye confirmación del contrato.
+
+**Procedimiento:** 1. Evaluar cada requisito del Gate U. 2. Registrar pendientes, incidentes y desconocidos. 3. Comprobar restricciones efectivas, restauración, identidad y conciliación del total documental.
+
+**Oráculo:** OR-01 OR-06 OR-10. **Lo que puede escapar:** Confundir piloto supervisado con habilitación para decidir pagos sin revisión.
+
+Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes de cerrar.
+
+## QA-53 — IDs y JSON inequívocos
+
+**Obligación:** Claves repetidas, números no finitos y campos extra rechazados; ninguna política silenciosa de conservar última fila; duplicados de importación visibles.
+
+**Procedimiento:** 1. Leer JSON con parser del producto. 2. Validar duplicados por entidad. 3. Verificar rechazos visibles de importación. 4. Probar lector JSON estricto del verificador.
+
+**Oráculo:** OR-04. **Lo que puede escapar:** Un parser permisivo en QA puede aceptar lo que el producto rechaza.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_adversarial.py::test_duplicate_json_keys_are_rejected tests/test_importing.py::test_duplicate_business_ids_visible_not_silently_deduplicated
+```
+
+## QA-54 — Bundle portable y ancla externa
+
+**Obligación:** Alteraciones detectadas respecto del ancla; un manifest consistente consigo mismo no prueba autenticidad. Declarar metadata no cubierta por hashes.
+
+**Procedimiento:** 1. Verificar manifest, corrida, cadena de decisiones y fuentes. 2. Comparar hash del ZIP con ancla externa. 3. Alterar un componente por copia. 4. Verificar sin extraer rutas controladas por el archivo.
+
+**Oráculo:** OR-06 OR-09. **Lo que puede escapar:** Un atacante puede recalcular todos los hashes; sin ancla independiente no hay autenticación.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_storage_reporting.py::test_portable_bundle_integrity
+```
+
+## QA-55 — Entrega reproducible y dependencias
+
+**Obligación:** Código entregado igual al verificado; cada original conserva hash de sus bytes; secretos, bases y salidas fuera de Git. No presumir builds idénticos sin comprobar reproducibilidad.
+
+**Procedimiento:** 1. Comparar árbol versionado y archivos materiales. 2. Instalar y probar en checkout limpio. 3. Registrar hashes del paquete y dependencias. 4. Verificar equivalencia de parsing con LF sin exigir SHA del original CRLF.
+
+**Oráculo:** OR-06 OR-08. **Lo que puede escapar:** Una instalación editable puede ocultar recursos faltantes en wheel.
+
+Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes de cerrar.
+
+## QA-56 — Separación de liquidaciones y alcance de obligación
+
+**Obligación:** L1 y L2 conservan hallazgos separados. Si reutilizan la misma operación/concepto: REVIEW y confirmada0; otra liquidación no prueba otro servicio. Operaciones distintas correctamente vinculadas pueden ser PASS. La asignación entre facturas requiere representación contractual explícita.
+
+**Procedimiento:** 1. Revisar group_key y contrato. 2. Auditar sin período en clave. 3. Representar período y servicio explícitos con operaciones correctas. 4. Comparar grafo de obligaciones manual.
+
+**Oráculo:** OR-01 OR-05. **Lo que puede escapar:** Fixtures de un único período no ejercitan este error causal.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_review_regressions.py::test_rebilling_same_operation_in_other_invoice_is_not_independent_pass tests/test_review_regressions.py::test_separate_operations_on_separate_invoices_still_pass
+```
+
+## QA-57 — Diagnóstico no muta evidencia
+
+**Obligación:** No invocar Store, crear bases ni instalar triggers. La corrupción nunca produce una selección vacía que aparente ausencia de impacto.
+
+**Procedimiento:** 1. Ejecutar impact en sólo lectura. 2. Intentar ruta inexistente. 3. Comparar bytes, schema y triggers antes/después. 4. Corrupción debe aparecer como unknown o error global explícito.
+
+**Oráculo:** OR-06 OR-09. **Lo que puede escapar:** Comprobar sólo mtime no demuestra ausencia de modificaciones.
+
+Comando del subconjunto automatizado:
+
+```bash
+.venv/bin/python -m pytest -q tests/test_qa_infrastructure.py::test_impact_is_read_only_and_retains_unknowns
+```
+
+## QA-58 — Píxel exacto y matrices visuales exhaustivas
+
+**Obligación:** Diferir matriz estética exhaustiva. Cualquier importe o etiqueta ocultos se clasifican como QA-39/P0.
+
+**Procedimiento:** 1. Diferir igualdad exacta de píxeles. 2. Cubrir texto, contraste y desbordamiento material en QA-39. 3. Reconsiderar ante fallo real de lectura.
+
+**Oráculo:** OR-07. **Lo que puede escapar:** Diferir pruebas cosméticas no permite ocultar moneda o estado.
+
+Sin selector automatizado: ejecutar el procedimiento y conservar evidencia antes de cerrar.

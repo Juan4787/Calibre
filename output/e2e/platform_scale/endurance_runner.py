@@ -211,7 +211,7 @@ print('RESTART_REPLAY_SUCCESS')
         capture_output=True,
         text=True,
     )
-    restart_ok = "RESTART_REPLAY_SUCCESS" in proc.stdout
+    restart_ok = proc.returncode == 0 and "RESTART_REPLAY_SUCCESS" in proc.stdout
 
     summary = {
         "iterations": iterations,
@@ -248,10 +248,14 @@ def main():
     parser = argparse.ArgumentParser(description="Calibre Endurance Runner")
     parser.add_argument("--iterations", type=int, default=50, help="Number of consecutive iterations")
     parser.add_argument("--batch-size", type=int, default=1000, help="Charges per iteration")
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "output/e2e/platform_scale/endurance")
     args = parser.parse_args()
 
-    out_dir = ROOT / "output/e2e/platform_scale/endurance"
-    run_endurance_campaign(args.iterations, args.batch_size, out_dir)
+    from qa.gates import endurance_passed
+    if args.iterations < 10 or args.batch_size < 1:
+        parser.error("Require at least 10 iterations and a positive batch size")
+    summary = run_endurance_campaign(args.iterations, args.batch_size, args.output_dir)
+    sys.exit(0 if endurance_passed(summary) else 1)
 
 
 if __name__ == "__main__":

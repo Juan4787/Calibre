@@ -69,6 +69,52 @@ def test_csv_argentine_numbers_zeroes_and_provenance():
     assert (source["row"], source["column"], source["raw"]) == (2, "weight", "1.234,56")
 
 
+@pytest.mark.parametrize("extension", ["xlsx", "xls"])
+@pytest.mark.parametrize("mac_epoch", [False, True])
+def test_excel_fictitious_leap_day_never_aliases_real_date(extension, mac_epoch):
+    # 59 and 60 alias to February 28 in common readers for the 1900 system.
+    # Only the nonexistent day must be rejected; the 1904 epoch has no such defect.
+    rows = [["id", "ref", "weight", "date"], *[[f"S{n}", f"R{n}", 1, n] for n in (59, 60, 61)]]
+    output = io.BytesIO()
+    if extension == "xlsx":
+        from openpyxl.utils.datetime import CALENDAR_MAC_1904
+
+        workbook = Workbook()
+        if mac_epoch:
+            workbook.epoch = CALENDAR_MAC_1904
+        sheet = workbook.active
+        for row in rows:
+            sheet.append(row)
+        for index in range(2, 5):
+            sheet.cell(index, 4).number_format = "yyyy-mm-dd"
+        workbook.save(output)
+        workbook.close()
+    else:
+        workbook = xlwt.Workbook()
+        workbook.dates_1904 = mac_epoch
+        sheet = workbook.add_sheet("Data")
+        style = xlwt.easyxf(num_format_str="YYYY-MM-DD")
+        for row_index, row in enumerate(rows):
+            for col_index, value in enumerate(row):
+                sheet.write(
+                    row_index,
+                    col_index,
+                    value,
+                    style if col_index == 3 and row_index else xlwt.Style.default_style,
+                )
+        workbook.save(output)
+    result = import_data(output.getvalue(), "dates." + extension, mapping(allow_xls_cached_values=True))
+    dates = {r["id"]: r["attributes"]["service_date"]["value"] for r in result["records"]}
+    if mac_epoch:
+        assert dates == {"S59": "1904-02-29", "S60": "1904-03-01", "S61": "1904-03-02"}
+        assert not result["rejected"]
+    else:
+        assert dates == {"S59": "1900-02-28", "S61": "1900-03-01"}
+        assert len(result["rejected"]) == 1
+        assert result["rejected"] == [3]
+        assert "29/02/1900" in str(result["issues"])
+
+
 @pytest.mark.parametrize(
     "raw,expected",
     [

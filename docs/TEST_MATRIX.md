@@ -34,7 +34,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 | [QA-26](#qa-26) | Cobertura explícita de cargos ausentes | CRITICAL | P0 / A | parcial | 60 / 30 |
 | [QA-27](#qa-27) | Conservación total por ID y moneda | CRITICAL | P0 / A | nuevo | 60 / 30 |
 | [QA-28](#qa-28) | Determinismo y transformaciones | CRITICAL | P0 / A | parcial | 60 / 30 |
-| [QA-29](#qa-29) | Aislamiento entre clientes y catálogos | CRITICAL | P0 / A | diseñado | 60 / 15 |
+| [QA-29](#qa-29) | Aislamiento entre clientes y catálogos | CRITICAL | P0 / A | parcial | 60 / 15 |
 | [QA-30](#qa-30) | Decisiones humanas y cadena | CRITICAL | P0 / A | parcial | 60 / 30 |
 | [QA-31](#qa-31) | Integridad histórica y mutación | CRITICAL | P0 / A | parcial | 60 / 30 |
 | [QA-32](#qa-32) | Replay y cambio de artefacto | CRITICAL | P0 / A | parcial | 60 / 30 |
@@ -44,7 +44,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 | [QA-36](#qa-36) | Schema y migración recuperable | CRITICAL | P0 / B | parcial | 60 / 7.5 |
 | [QA-37](#qa-37) | Reconciliación entre representaciones | CRITICAL | P0 / A | nuevo | 60 / 15 |
 | [QA-38](#qa-38) | Límites de reportes y contenido activo | CRITICAL | P0 / A | parcial | 60 / 30 |
-| [QA-39](#qa-39) | UI conserva semántica visible y estado actual | CRITICAL | P0 / A | diseñado | 60 / 15 |
+| [QA-39](#qa-39) | UI conserva semántica visible y estado actual | CRITICAL | P0 / A | parcial | 60 / 15 |
 | [QA-40](#qa-40) | Barrera de red local | CRITICAL | P0 / A | parcial | 60 / 30 |
 | [QA-41](#qa-41) | Rutas, archivos y sobrescritura | CRITICAL | P0 / A | diseñado | 60 / 15 |
 | [QA-42](#qa-42) | XML/ZIP malicioso acotado | CRITICAL | P0 / A | parcial | 60 / 15 |
@@ -61,7 +61,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 | [QA-53](#qa-53) | IDs y JSON inequívocos | CRITICAL | P0 / A | parcial | 60 / 30 |
 | [QA-54](#qa-54) | Bundle portable y ancla externa | CRITICAL | P0 / A | parcial | 60 / 30 |
 | [QA-55](#qa-55) | Entrega reproducible y dependencias | HIGH | P1 / B | diseñado | 48 / 12 |
-| [QA-56](#qa-56) | Separación de liquidaciones y alcance de obligación | CRITICAL | P0 / A | diseñado | 60 / 15 |
+| [QA-56](#qa-56) | Separación de liquidaciones y alcance de obligación | CRITICAL | P0 / A | parcial | 60 / 15 |
 | [QA-57](#qa-57) | Diagnóstico no muta evidencia | CRITICAL | P0 / A | nuevo | 60 / 30 |
 | [QA-58](#qa-58) | Píxel exacto y matrices visuales exhaustivas | LOW | P3 / C | diferido | 2 / 0.25 |
 
@@ -91,6 +91,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-03 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_missing_evidence_does_not_confirm_even_numeric_difference; tests/test_engine.py::test_import_rejects_block_economic_confirmation
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -131,6 +132,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-01 IR-02 IR-06 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_tolerance_and_signed_differences; tests/test_qa_infrastructure.py::test_generated_reference_prices
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -171,6 +173,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-06 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** nuevo
 - **SELECTORES:** tests/test_qa_infrastructure.py::test_reference_manual_anchors; tests/test_qa_infrastructure.py::test_generated_reference_prices
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -211,6 +214,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-06 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_float_prohibited; tests/test_engine.py::test_invalid_money; tests/test_adversarial.py::test_aggregate_amount_can_exceed_individual_input_digit_bound; tests/test_adversarial.py::test_no_boolean_coercion
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -251,6 +255,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-06 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_qa_infrastructure.py::test_reference_manual_anchors; tests/test_qa_infrastructure.py::test_generated_reference_prices
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -291,6 +296,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-06 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_property_division_matches_high_precision; tests/test_engine.py::test_global_decimal_context_does_not_affect_results; tests/test_adversarial.py::test_inexact_comparison_becomes_undeterminable
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -331,6 +337,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-06 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_currencies_never_summed_or_converted; tests/test_engine.py::test_missing_attribute_and_unit_mismatch; tests/test_engine.py::test_rules_need_currency_units
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -371,6 +378,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-07 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_importing.py::test_xlsx_preserves_original_decimal_literal_without_binary_float_loss; tests/test_importing.py::test_xlsx_unbounded_exponent_is_rejected_before_decimal_expansion; tests/test_importing.py::test_argentine_decimal; tests/test_importing.py::test_unsafe_numeric_strings_rejected
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -411,6 +419,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-04 IR-07 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_importing.py::test_xlsx_numeric_id_requires_explicit_policy; tests/test_importing.py::test_original_fractional_numeric_identifier_cannot_become_integer_after_float_rounding; tests/test_importing.py::test_unknown_concept_not_canonicalized_by_accident
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -451,6 +460,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-07 IR-11 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_adversarial.py::test_csv_multiline_provenance_uses_actual_line; tests/test_importing.py::test_ambiguous_or_missing_headers_fail_file; tests/test_importing.py::test_reordered_columns_same_normalized_records; tests/test_adversarial.py::test_oversized_unmapped_cells_not_silently_shifted
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -491,6 +501,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-07 IR-15 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_importing.py::test_multisheet_requires_selection; tests/test_importing.py::test_xlsx_formula_never_evaluated_or_taken_as_cache; tests/test_importing.py::test_original_numeric_tokens_follow_sparse_sheet_coordinates
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -531,6 +542,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-07 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_importing.py::test_xls_requires_explicit_cached_value_acceptance
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 4
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -571,6 +583,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-07 IR-14 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_importing.py::test_malformed_xlsx_fuzz_is_bounded_and_classified
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 4
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -611,6 +624,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-02 IR-07 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_import_rejects_block_economic_confirmation; tests/test_integration.py::test_invalid_fixture_rejects_visible_rows
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -651,6 +665,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-11 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_importing.py::test_csv_argentine_numbers_zeroes_and_provenance; tests/test_storage_reporting.py::test_tampered_source_detected
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -691,6 +706,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-05 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_version_boundaries; tests/test_engine.py::test_overlapping_versions_never_pick_first; tests/test_engine.py::test_group_mixed_version_is_undeterminable
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -716,7 +732,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
 - **FIXTURE_DATOS:** Matriz temporal completa:03/04 ambiguo, leap2024/2026, serial60, epochs1900/1904, midnight/offset
 - **PASOS_EXACTOS:** 1. Importar cada par fuente→fecha esperada. 2. Repetir con TZs distintas. 3. Comparar versión seleccionada con calendario manual.
-- **RESULTADO_ESPERADO:** Ambigua/invalid/hora/zona→rechazo; medianoche ingenua admitida. Serial ficticio60 debe bloquearse/advertirse: pendiente comprobar y corregir si normaliza.
+- **RESULTADO_ESPERADO:** Ambigua/invalid/hora/zona→rechazo; medianoche ingenua admitida. Serial ficticio60 del calendario1900 se rechaza; serial60 de1904 es01/03/1904.
 - **ORACULO:** OR-04 OR-05
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** Cambiar date_field contractual legítimamente cambia tarifa.
@@ -730,7 +746,8 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **CUANDO:** cambio afectado; CI; release; después de incidente
 - **RESPUESTA_SI_FALLA:** IR-05 IR-07 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
-- **SELECTORES:** tests/test_importing.py::test_ambiguous_date_is_rejected; tests/test_importing.py::test_timestamps_are_not_silently_truncated; tests/test_engine.py::test_alternate_date_field
+- **SELECTORES:** tests/test_importing.py::test_ambiguous_date_is_rejected; tests/test_importing.py::test_excel_fictitious_leap_day_never_aliases_real_date; tests/test_importing.py::test_timestamps_are_not_silently_truncated; tests/test_engine.py::test_alternate_date_field
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -742,7 +759,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **INTERVENCION_HUMANA:** no
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_importing.py::test_ambiguous_date_is_rejected tests/test_importing.py::test_timestamps_are_not_silently_truncated tests/test_engine.py::test_alternate_date_field
+.venv/bin/python -m pytest -q tests/test_importing.py::test_ambiguous_date_is_rejected tests/test_importing.py::test_excel_fictitious_leap_day_never_aliases_real_date tests/test_importing.py::test_timestamps_are_not_silently_truncated tests/test_engine.py::test_alternate_date_field
 ```
 
 ## QA-18
@@ -771,6 +788,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-03 IR-06 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_condition_missing_is_not_false; tests/test_engine.py::test_condition_branch_is_lazy; tests/test_engine.py::test_overlapping_rules_are_undeterminable; tests/test_adversarial.py::test_bounded_expression_depth_rejects_nested_attack
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -811,6 +829,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-05 IR-06 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_adversarial.py::test_band_overlap_and_gap_never_select_arbitrarily; tests/test_adversarial.py::test_duplicate_lookup_rows_even_same_price_are_ambiguous
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -851,6 +870,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-04 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_composite_keys_and_directional_alias; tests/test_engine.py::test_invalid_explicit_link_never_falls_back; tests/test_adversarial.py::test_empty_keys_never_join_to_empty_keys
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -891,6 +911,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-04 IR-03 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_adversarial.py::test_ambiguous_allocation_also_blocks_related_partial_group; tests/test_engine.py::test_matching_ambiguity_is_review
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -931,6 +952,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-04 IR-06 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_group_sum_and_one_expected_charge; tests/test_engine.py::test_multiple_lines_aggregate_without_inventing_duplicates
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -971,6 +993,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-04 IR-15 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_overlap_allocations_are_review
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1011,6 +1034,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-03 IR-04 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_configured_duplicate_is_candidate_only; tests/test_engine.py::test_same_remittance_different_concepts_is_not_duplicate
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1051,6 +1075,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-03 IR-11 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_evidence_any_of_and_per_operation; tests/test_engine.py::test_unrelated_evidence_cannot_support_charge
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1091,6 +1116,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-03 IR-04 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_missing_expected_charge_requires_explicit_scope_and_is_review; tests/test_adversarial.py::test_missing_coverage_must_not_duplicate_existing_undetermined_charge; tests/test_adversarial.py::test_coverage_cannot_silently_drop_wrong_carrier
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1131,6 +1157,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-01 IR-02 IR-06 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** nuevo
 - **SELECTORES:** tests/test_qa_infrastructure.py::test_checker_rejects_economic_corruption
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1171,6 +1198,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESPUESTA_SI_FALLA:** IR-09 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_engine.py::test_property_arbitrary_row_permutation; tests/test_engine.py::test_semantic_hash_ignores_incidental_label; tests/test_qa_infrastructure.py::test_generated_uncertainty_and_metamorphism
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1209,8 +1237,9 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **GRUPO:** A
 - **CUANDO:** cambio afectado; CI; release; después de incidente
 - **RESPUESTA_SI_FALLA:** IR-13 + IR-COMMON (INCIDENT_RESPONSE.md)
-- **ESTADO_COBERTURA:** diseñado
-- **SELECTORES:** Pendiente: sin selector automatizado
+- **ESTADO_COBERTURA:** parcial
+- **SELECTORES:** tests/test_backlog_p0_p1.py::test_qa29_client_catalog_and_storage_isolation
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1221,7 +1250,9 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **WINDOWS:** no
 - **INTERVENCION_HUMANA:** sí
 
-No hay automatización completa registrada. Implementar/ejecutar los pasos y preservar evidencia antes de cerrar esta familia.
+```bash
+.venv/bin/python -m pytest -q tests/test_backlog_p0_p1.py::test_qa29_client_catalog_and_storage_isolation
+```
 
 ## QA-30
 
@@ -1249,6 +1280,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-10 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_storage_reporting.py::test_human_decision_never_rewrites_finding; tests/test_storage_reporting.py::test_decision_chain_serializes_concurrent_writers; tests/test_storage_reporting.py::test_no_unknown_decision_or_evidence
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1289,6 +1321,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-10 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_storage_reporting.py::test_db_update_delete_blocked; tests/test_storage_reporting.py::test_tampered_result_detected_after_trigger_bypass; tests/test_storage_reporting.py::test_changed_agreement_preserves_history
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1329,6 +1362,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-09 IR-10 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_storage_reporting.py::test_save_replay_and_idempotency; tests/test_storage_reporting.py::test_engine_artifact_change_blocks_replay; tests/test_storage_reporting.py::test_source_update_requires_process_restart
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1369,6 +1403,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-09 IR-13 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** nuevo
 - **SELECTORES:** tests/test_qa_infrastructure.py::test_impact_is_read_only_and_retains_unknowns
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1409,6 +1444,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-12 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_storage_reporting.py::test_migration_reopening_and_consistent_backup
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1449,6 +1485,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-12 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_storage_reporting.py::test_decision_chain_serializes_concurrent_writers
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1489,6 +1526,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-10 IR-12 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_storage_reporting.py::test_newer_database_schema_is_not_opened; tests/test_storage_reporting.py::test_migration_reopening_and_consistent_backup
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1529,6 +1567,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-08 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** nuevo
 - **SELECTORES:** tests/test_qa_infrastructure.py::test_cross_report_reconciliation_and_tamper_detection
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1569,6 +1608,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-08 IR-14 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_storage_reporting.py::test_workbook_is_real_and_has_exact_money_and_no_formulas; tests/test_storage_reporting.py::test_report_escapes_untrusted_html_and_excel_formula; tests/test_storage_reporting.py::test_excel_long_cell_is_not_silently_truncated; tests/test_storage_reporting.py::test_excel_row_limit_preserves_full_bundle_json
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1607,8 +1647,9 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **GRUPO:** A
 - **CUANDO:** cambio afectado; CI; release; después de incidente
 - **RESPUESTA_SI_FALLA:** IR-08 + IR-COMMON (INCIDENT_RESPONSE.md)
-- **ESTADO_COBERTURA:** diseñado
+- **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** Pendiente: sin selector automatizado
+- **RUNNERS:** .venv/bin/python scripts/browser_e2e.py --output-dir output/playwright/qa39-new
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1619,7 +1660,9 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **WINDOWS:** no
 - **INTERVENCION_HUMANA:** sí
 
-No hay automatización completa registrada. Implementar/ejecutar los pasos y preservar evidencia antes de cerrar esta familia.
+```bash
+.venv/bin/python scripts/browser_e2e.py --output-dir output/playwright/qa39-new
+```
 
 ## QA-40
 
@@ -1647,6 +1690,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-14 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_integration.py::test_local_api_security_boundary
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1687,6 +1731,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-14 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** diseñado
 - **SELECTORES:** Pendiente: sin selector automatizado
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1725,6 +1770,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-14 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_importing.py::test_malformed_xlsx_fuzz_is_bounded_and_classified
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1765,6 +1811,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-07 IR-08 IR-12 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_integration.py::test_api_configuration_errors_use_recoverable_messages; tests/test_integration.py::test_api_runs_decisions_export_replay; tests/test_integration.py::test_api_import_with_mapping_and_provenance
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 4
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1805,6 +1852,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-14 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_integration.py::test_fully_offline_core
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 4
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1845,6 +1893,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-15 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** diseñado
 - **SELECTORES:** Pendiente: sin selector automatizado
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1883,6 +1932,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-15 IR-13 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_integration.py::test_real_files_three_agreements_golden_and_second_client
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 4
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1923,6 +1973,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-07 IR-08 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** diseñado
 - **SELECTORES:** Pendiente: sin selector automatizado
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 4
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1961,6 +2012,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-12 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** diseñado
 - **SELECTORES:** Pendiente: sin selector automatizado
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 4
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -1999,6 +2051,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-08 IR-06 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** nuevo
 - **SELECTORES:** tests/test_qa_infrastructure.py::test_checker_rejects_economic_corruption; tests/test_qa_infrastructure.py::test_cross_report_reconciliation_and_tamper_detection
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -2039,6 +2092,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-06 IR-03 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** nuevo
 - **SELECTORES:** Pendiente: sin selector automatizado
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -2077,6 +2131,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-15 IR-01 IR-02 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** diseñado
 - **SELECTORES:** Pendiente: sin selector automatizado
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -2115,6 +2170,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-15 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** diseñado
 - **SELECTORES:** Pendiente: sin selector automatizado
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -2153,6 +2209,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-07 IR-13 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_adversarial.py::test_duplicate_json_keys_are_rejected; tests/test_importing.py::test_duplicate_business_ids_visible_not_silently_deduplicated
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -2193,6 +2250,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-10 IR-14 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
 - **SELECTORES:** tests/test_storage_reporting.py::test_portable_bundle_integrity
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -2233,6 +2291,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-09 IR-07 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** diseñado
 - **SELECTORES:** Pendiente: sin selector automatizado
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 4
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -2256,7 +2315,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
 - **FIXTURE_DATOS:** Referencia R; cargos de 100 en liquidaciones L1 y L2; tarifa 100; cliente confirma dos servicios independientes.
 - **PASOS_EXACTOS:** 1. Revisar group_key y contrato. 2. Auditar sin período en clave. 3. Representar período y servicio explícitos con operaciones correctas. 4. Comparar grafo de obligaciones manual.
-- **RESULTADO_ESPERADO:** Dos obligaciones independientes no se comparan contra un único esperado de 100. El core actual no incluye settlement en agrupación; confirmar mapping y alcance o declarar el caso no soportado.
+- **RESULTADO_ESPERADO:** L1 y L2 conservan hallazgos separados. Si reutilizan la misma operación/concepto: REVIEW y confirmada0; otra liquidación no prueba otro servicio. Operaciones distintas correctamente vinculadas pueden ser PASS. La asignación entre facturas requiere representación contractual explícita.
 - **ORACULO:** OR-01 OR-05
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** Dos líneas de facturas pueden completar un servicio; no asumir independencia automáticamente.
@@ -2269,8 +2328,9 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **GRUPO:** A
 - **CUANDO:** nuevo formato; cambio de matching; antes de cliente real
 - **RESPUESTA_SI_FALLA:** IR-04 IR-15 + IR-COMMON (INCIDENT_RESPONSE.md)
-- **ESTADO_COBERTURA:** diseñado
-- **SELECTORES:** Pendiente: sin selector automatizado
+- **ESTADO_COBERTURA:** parcial
+- **SELECTORES:** tests/test_review_regressions.py::test_rebilling_same_operation_in_other_invoice_is_not_independent_pass; tests/test_review_regressions.py::test_separate_operations_on_separate_invoices_still_pass
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -2281,7 +2341,9 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **WINDOWS:** no
 - **INTERVENCION_HUMANA:** sí
 
-No hay automatización completa registrada. Implementar/ejecutar los pasos y preservar evidencia antes de cerrar esta familia.
+```bash
+.venv/bin/python -m pytest -q tests/test_review_regressions.py::test_rebilling_same_operation_in_other_invoice_is_not_independent_pass tests/test_review_regressions.py::test_separate_operations_on_separate_invoices_still_pass
+```
 
 ## QA-57
 
@@ -2309,6 +2371,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-12 IR-14 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** nuevo
 - **SELECTORES:** tests/test_qa_infrastructure.py::test_impact_is_read_only_and_retains_unknowns
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
 - **DIFICULTAD_DETECCION:** 4
@@ -2349,6 +2412,7 @@ No hay automatización completa registrada. Implementar/ejecutar los pasos y pre
 - **RESPUESTA_SI_FALLA:** IR-08 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** diferido
 - **SELECTORES:** Pendiente: sin selector automatizado
+- **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 1
 - **PROBABILIDAD:** 2
 - **DIFICULTAD_DETECCION:** 1

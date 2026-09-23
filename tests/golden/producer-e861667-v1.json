@@ -1,0 +1,5 @@
+{
+  "producer_commit": "e8616679b4fc43e084f76c1ba3c9c2a663795148",
+  "sha256": "51e1248263d2a5af86ace5f79127b69c633bc6442a7f6741988a193009602f18",
+  "scope": "Created once during the 2026-09-22 review using the pinned historical producer, then frozen. Synthetic second-client fixture; not a past real-client export."
+}

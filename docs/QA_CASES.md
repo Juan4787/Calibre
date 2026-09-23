@@ -76,7 +76,7 @@ V1 [2026-01-01,2026-06-30] cobra100; V2 [2026-07-01,∞] cobra120. Cargo igual a
 | Servicio parcial                         | Cliente dice cobra sólo tramo1                                | Configuración actual no reparte obligación: detener caso hasta regla explícita confirmada; IR-15                                                                          |
 | Remito repetido legítimo                 | Fecha/lote/concepto lo distinguen                             | Cambiar claves/semántica configurada; no inventar unicidad del remito                                                                                                     |
 | Referencia contradictoria                | Link explícitoS1 y referencia apuntaS2                        | Hoy explícito precede claves. Objetivo del piloto: conflicto visible y confirmado por operador; no afirmar que el test existente detecta intención errónea                |
-| Dos liquidaciones/mismos IDs de servicio | settlement L1 y L2 no es parte del group_key actual           | Configurar alcance de un período o clave adicional; si representan servicios independientes y se agrupan, bloquear por semántica. No inferir consolidación entre facturas |
+| Dos liquidaciones/mismos IDs de servicio | L1 y L2 conservan hallazgos separados; la misma operación/concepto implica asignación superpuesta | Ambos quedan REVIEW y confirmada0. Para servicios independientes, representar operaciones distintas y matching inequívoco. Una factura distinta no demuestra otra obligación. |
 
 ## Fuzz estructurado de importación
 

@@ -75,7 +75,7 @@ def test_qa56_settlement_scope_and_grouping_behavior():
     2. Same charges in different settlements -> 2 distinct findings, NOT merged
     3. N:1 consolidation within same settlement -> 1 consolidated finding
     4. 1:N multi-charge within same settlement -> distinct findings per concept
-    5. Same shipment/concept across two settlements with different amounts -> 2 findings, one PASS, one FAIL
+    5. Rebilling the same shipment/concept in two settlements -> 2 REVIEW findings
     6. Mixed dataset with two settlements -> findings and totals reconcile cleanly per settlement
     """
     with tempfile.TemporaryDirectory() as td:
@@ -109,6 +109,7 @@ def test_qa56_settlement_scope_and_grouping_behavior():
         assert f2_a.actual == "194.25"
         assert f2_b.actual == "194.25"
         assert f2_a.id != f2_b.id
+        assert f2_a.status == f2_b.status == "REVIEW"
 
         # -------------------------------------------------------------
         # Case 3: N:1 consolidation within the SAME settlement -> 1 finding
@@ -142,19 +143,18 @@ def test_qa56_settlement_scope_and_grouping_behavior():
         assert len(res5.findings) == 2
         f_jan = next(f for f in res5.findings if "INV-JAN" in f.charge_ids)
         f_feb = next(f for f in res5.findings if "INV-FEB" in f.charge_ids)
-        assert f_jan.status == "PASS"
+        assert f_jan.status == "REVIEW"
         assert f_jan.actual == "194.25"
         assert f_jan.difference == "0"
-        assert f_feb.status == "FAIL"
+        assert f_feb.status == "REVIEW"
         assert f_feb.actual == "250"
         assert f_feb.difference == "55.75"
-        assert f_feb.confirmed_difference == "55.75"
+        assert f_feb.confirmed_difference == "0"
 
         # -------------------------------------------------------------
         # Case 6: Mixed dataset with two settlements reconciled per settlement
         # -------------------------------------------------------------
-        # LIQ-A: M1..M3 (194.25 PASS), M4..M6 (overcharge 250 vs expected 194.25 -> FAIL +55.75)
-        # LIQ-B: M1..M3 (undercharge 150 vs expected 194.25 -> FAIL -44.25), M4..M6 (194.25 PASS)
+        # The same operations appear in both invoices: amounts reconcile, certainty cannot.
         c_a1 = ds_b.charges[0].model_copy(update={"id": "CH-A1", "settlement": "LIQ-A", "amount": "194.25"})
         c_a2 = ds_b.charges[1].model_copy(update={"id": "CH-A2", "settlement": "LIQ-A", "amount": "250"})
         c_b1 = ds_b.charges[0].model_copy(update={"id": "CH-B1", "settlement": "LIQ-B", "amount": "150"})
@@ -164,16 +164,12 @@ def test_qa56_settlement_scope_and_grouping_behavior():
         assert len(res6.findings) == 4
 
         f_by_cid = {f.charge_ids[0]: f for f in res6.findings}
-        assert f_by_cid["CH-A1"].status == "PASS"
-        assert f_by_cid["CH-A2"].status == "FAIL"
-        assert f_by_cid["CH-A2"].confirmed_difference == "55.75"
-        assert f_by_cid["CH-B1"].status == "FAIL"
-        assert f_by_cid["CH-B1"].confirmed_difference == "-44.25"
-        assert f_by_cid["CH-B2"].status == "PASS"
+        assert {f.status for f in f_by_cid.values()} == {"REVIEW"}
+        assert {f.confirmed_difference for f in f_by_cid.values()} == {"0"}
 
         # Check global currencies summary
         usd_summary = res6.summary["currencies"]["USD"]
         assert usd_summary["actual"] == "788.5"  # 194.25 + 250 + 150 + 194.25
-        assert usd_summary["confirmed_net_difference"] == "11.5"  # +55.75 - 44.25
-        assert usd_summary["confirmed_overcharge"] == "55.75"
-        assert usd_summary["confirmed_undercharge"] == "-44.25"
+        assert usd_summary["confirmed_net_difference"] == "0"
+        assert usd_summary["confirmed_overcharge"] == "0"
+        assert usd_summary["confirmed_undercharge"] == "0"

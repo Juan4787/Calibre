@@ -26,9 +26,19 @@ jobs:
       - name: Install dependencies & Playwright Chromium
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]"
-          pip install playwright
+          pip install -r requirements.lock -r requirements-browser.lock
+          pip install --no-deps -e .
           playwright install --with-deps chromium
 
       - name: Run Tier 3 Nightly Suite (Hypothesis 1000, Mutations, Faults, Adversarial Corpus)
         run: bash scripts/run_ci_tier.sh nightly
+
+      - name: Preserve detector and browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-qa-evidence
+          path: |
+            output/ci/
+            output/playwright/
+          retention-days: 7

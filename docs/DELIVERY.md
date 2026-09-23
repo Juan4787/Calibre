@@ -1,5 +1,7 @@
 # Entrega técnica — Freight Audit 0.1.0
 
+Esta entrega conserva el alcance original. Ver [RIGOR_REVIEW.md](RIGOR_REVIEW.md) para la revisión posterior, los defectos corregidos y las pruebas actuales.
+
 Implementación funcional, local y sin servicios externos en el camino de auditoría. **No constituye validación comercial ni una representación de las prácticas del mercado.**
 
 1. **Arquitectura elegida:** monolito modular con núcleo puro, adaptadores de importación/persistencia/reporting y dos interfaces: CLI y web local.

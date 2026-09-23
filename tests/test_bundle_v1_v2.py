@@ -16,8 +16,10 @@ Validates the 13 required scenarios:
 13. XLSX omitido por ReportLimitError + advertencia -> v2 sigue PASS.
 """
 
+import hashlib
 import io
 import zipfile
+from pathlib import Path
 
 import pytest
 
@@ -33,6 +35,15 @@ from freight_audit.storage import IntegrityError, Store
 from qa.reconcile import reconcile
 
 
+def test_frozen_historical_producer_v1_is_readable():
+    directory = Path(__file__).parent / "golden"
+    data = (directory / "producer-e861667-v1.zip").read_bytes()
+    metadata = load_json((directory / "producer-e861667-v1.json").read_bytes())
+    assert hashlib.sha256(data).hexdigest() == metadata["sha256"]
+    run = verify_bundle(data)
+    assert run["result"]["summary"]["currencies"]["USD"]["confirmed_net_difference"] == "10"
+
+
 def create_test_run(tmp_path, make_dataset):
     store = Store(tmp_path / "test.db")
     doc_content = b"sample original document content"
@@ -42,7 +53,7 @@ def create_test_run(tmp_path, make_dataset):
     return store, run_id
 
 
-def test_1_bundle_v1_historic_verifies(tmp_path, make_dataset):
+def test_1_bundle_v1_current_producer_verifies(tmp_path, make_dataset):
     store, run_id = create_test_run(tmp_path, make_dataset)
     v1_bundle = bundle_bytes(store, run_id, format="freight-audit-bundle/v1")
     with zipfile.ZipFile(io.BytesIO(v1_bundle)) as archive:
@@ -51,6 +62,34 @@ def test_1_bundle_v1_historic_verifies(tmp_path, make_dataset):
         assert "snapshot.json" in archive.namelist()
     verified = verify_bundle(v1_bundle)
     assert verified["id"] == run_id
+
+
+@pytest.mark.parametrize("manifest", [[], None, {"files": []}, {"format": "freight-audit-bundle/v2"}])
+def test_malformed_manifest_is_classified_as_integrity_error(manifest):
+    output = io.BytesIO()
+    with zipfile.ZipFile(output, "w") as archive:
+        archive.writestr("manifest.json", canonical(manifest))
+    with pytest.raises(IntegrityError):
+        verify_bundle(output.getvalue())
+
+
+@pytest.mark.parametrize("name", ["..\\outside.txt", "C:outside.txt", "sources/../outside.txt"])
+def test_bundle_paths_are_rejected_identically_on_all_platforms(name, tmp_path, make_dataset):
+    from freight_audit.canonical import bytes_hash
+
+    store, run_id = create_test_run(tmp_path, make_dataset)
+    with zipfile.ZipFile(io.BytesIO(bundle_bytes(store, run_id))) as source:
+        files = {n: source.read(n) for n in source.namelist()}
+    manifest = load_json(files["manifest.json"])
+    files[name] = b"unsafe path"
+    manifest["files"][name] = bytes_hash(files[name])
+    files["manifest.json"] = canonical(manifest).encode()
+    output = io.BytesIO()
+    with zipfile.ZipFile(output, "w") as archive:
+        for path, content in files.items():
+            archive.writestr(path, content)
+    with pytest.raises(IntegrityError):
+        verify_bundle(output.getvalue())
 
 
 def test_2_bundle_v1_snapshot_tampered_fails(tmp_path, make_dataset):

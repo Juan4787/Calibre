@@ -30,6 +30,8 @@ const state = {
   view: "audits",
   wizardStep: 1,
   auditLabel: "",
+  viewRevision: 0,
+  importRevision: { shipments: 0, charges: 0 },
 };
 
 const esc = (value) =>
@@ -136,6 +138,7 @@ const post = (url, body) =>
   });
 
 function nav(view) {
+  state.viewRevision += 1;
   state.view = view;
   document
     .querySelectorAll(".nav")
@@ -153,6 +156,7 @@ function heading(kicker, title, description, buttons = "") {
    ========================================================================== */
 async function showRuns() {
   nav("audits");
+  const revision = state.viewRevision;
   state.run = null;
   main.innerHTML =
     heading(
@@ -165,6 +169,7 @@ async function showRuns() {
 
   $("#new-run").onclick = showNew;
   const runs = await api("/api/runs");
+  if (revision !== state.viewRevision) return;
   state.allRuns = runs;
   renderRunsList();
 }
@@ -244,7 +249,7 @@ function renderRunsItems() {
   listContainer.innerHTML = filteredRuns
     .map((run) => {
       const s = run.summary;
-      const currencies = Object.keys(s.currencies || {}).join(" / ") || "ARS";
+      const currencies = Object.keys(s.currencies || {}).join(" / ") || "Sin moneda";
       const totalFindings = s.total_findings || 0;
       const failCount = s.counts?.FAIL || 0;
       const reviewCount = s.counts?.REVIEW || 0;
@@ -260,7 +265,7 @@ function renderRunsItems() {
         <button class="run-card run-card-rich" data-run="${run.id}">
           <div class="run-card-top">
             <div>
-              <h3 class="run-card-title">${esc(run.label)} · ${totalFindings} cargos</h3>
+              <h3 class="run-card-title">${esc(run.label)} · ${totalFindings} hallazgos</h3>
               <div class="run-card-sub">Moneda ${esc(currencies)}${dateStr ? ` · ${dateStr}` : ""}</div>
             </div>
             <span class="run-card-cta">Ver auditoría →</span>
@@ -292,7 +297,11 @@ function renderRunsItems() {
    AUDITORÍA DETALLE / RESULTADO
    ========================================================================== */
 async function openRun(id) {
-  state.run = await api("/api/runs/" + id);
+  nav("audits");
+  const revision = state.viewRevision;
+  const run = await api("/api/runs/" + id);
+  if (revision !== state.viewRevision) return;
+  state.run = run;
   state.shipmentIndex = new Map(
     state.run.snapshot.shipments.map((s) => [s.id, s]),
   );
@@ -300,7 +309,6 @@ async function openRun(id) {
   state.page = 0;
   state.filter = "";
   state.search = "";
-  nav("audits");
   renderAudit();
 }
 
@@ -477,10 +485,10 @@ function renderFindings() {
   tbody.innerHTML =
     page
       .map((f) => {
-        const decision = state.run.decisions.find(
+        const decision = state.run.decisions.findLast(
           (d) => d.payload.finding_id === f.id,
         );
-        return `<tr>
+        return `<tr data-finding-id="${esc(f.id)}">
           <td>
             <div class="ref">${esc(references(f) || "Sin referencia vinculada")}</div>
             <span class="muted" style="font-size:12px;">${esc(f.concept)} · ${f.charge_ids.length} cargo${f.charge_ids.length === 1 ? "" : "s"}</span>
@@ -584,22 +592,16 @@ function traceHtml(trace) {
 }
 
 function extractArithmeticSummary(finding) {
-  for (const t of finding.trace || []) {
-    if (t.op === "mul" && t.output) {
-      return `${t.children.map((c) => c.output).join(" × ")} = ${finding.currency} ${t.output}`;
-    }
-    for (const ch of t.children || []) {
-      if (ch.op === "mul" && ch.output) {
-        return `${ch.children.map((c) => c.output).join(" × ")} = ${finding.currency} ${ch.output}`;
-      }
-    }
-  }
+  // Intermediate products can have other units or precede minimums and rounding.
+  // The complete expression remains available in the trace below.
   return finding.expected !== null
     ? `Esperado según regla: ${finding.currency} ${money(finding.expected)}`
     : "Sin cálculo automático: requiere revisión de datos o evidencia.";
 }
 
 function showDetail(id) {
+  const detailRun = state.run;
+  const revision = state.viewRevision;
   const f = state.run.result.findings.find((item) => item.id === id);
   const history = state.run.decisions.filter(
     (d) => d.payload.finding_id === id,
@@ -615,15 +617,15 @@ function showDetail(id) {
   // Documentos usados checklist
   const documentsUsed = [];
   shipments.forEach((s) => {
-    const fn = Object.values(s.provenance || {})[0]?.filename || "Archivo de remitos";
+    const fn = Object.values(s.provenance || {})[0]?.filename || "Sin archivo de origen vinculado";
     documentsUsed.push(`Remito ${s.reference || s.id} (${fn})`);
   });
   charges.forEach((c) => {
-    const fn = Object.values(c.provenance || {})[0]?.filename || "Archivo de cargos";
+    const fn = Object.values(c.provenance || {})[0]?.filename || "Sin archivo de origen vinculado";
     documentsUsed.push(`Liquidación ${c.reference || c.id} (${fn})`);
   });
-  if (f.agreement) {
-    documentsUsed.push(`Tarifario contractual ${f.agreement} (Regla ${f.rule || "R-BASE"})`);
+  if (f.agreement && f.version && f.rule) {
+    documentsUsed.push(`Configuración ${f.agreement}, versión ${f.version}, regla ${f.rule}`);
   }
 
   const arithmeticStr = extractArithmeticSummary(f);
@@ -642,7 +644,7 @@ function showDetail(id) {
         </h2>
         <div style="margin-top:6px;">
           ${badge(f.status)}
-          <span class="muted" style="margin-left:10px; font-size:13px;">Acuerdo <strong>${esc(f.agreement)}</strong> · Versión <strong>${esc(f.version || "V1")}</strong> · Regla <strong>${esc(f.rule || "R-BASE")}</strong></span>
+          <span class="muted" style="margin-left:10px; font-size:13px;">Acuerdo <strong>${esc(f.agreement || "Sin acuerdo")}</strong> · Versión <strong>${esc(f.version || "Sin versión aplicable")}</strong> · Regla <strong>${esc(f.rule || "Sin regla aplicable")}</strong></span>
         </div>
       </div>
       <button class="btn small" id="close-detail" aria-label="Cerrar explicación">Cerrar ✕</button>
@@ -653,17 +655,17 @@ function showDetail(id) {
       <div class="hero-fin-col">
         <label>FACTURADO LIQUIDADO · ${esc(f.currency)}</label>
         <div class="amount">${money(f.actual)}</div>
-        <p class="muted" style="font-size:12px; margin:4px 0 0;">Según comprobante del transportista</p>
+        <p class="muted" style="font-size:12px; margin:4px 0 0;">Según los cargos importados</p>
       </div>
       <div class="hero-fin-col">
         <label>ESPERADO SEGÚN ACUERDO</label>
         <div class="amount">${money(f.expected, f.status === "REVIEW" ? "Requiere revisión" : "No determinable")}</div>
-        <p class="muted" style="font-size:12px; margin:4px 0 0;">Cálculo auditado determinista</p>
+        <p class="muted" style="font-size:12px; margin:4px 0 0;">${f.expected === null ? "Faltan datos o reglas para calcular" : "Resultado de la regla configurada"}</p>
       </div>
       <div class="hero-fin-col ${f.status === "FAIL" ? "highlight-fail" : f.status === "REVIEW" ? "highlight-review" : ""}">
         <label>DIFERENCIA CALCULADA</label>
         <div class="amount">${money(f.difference, f.status === "REVIEW" ? "Requiere revisión" : "No determinable")}</div>
-        <p class="muted" style="font-size:12px; margin:4px 0 0;">${f.status === "FAIL" ? "Discrepancia confirmada" : f.status === "REVIEW" ? "Sujeta a confirmación humana" : "Sin desviación"}</p>
+        <p class="muted" style="font-size:12px; margin:4px 0 0;">${f.status === "FAIL" ? "Discrepancia determinada" : f.status === "REVIEW" ? "Diferencia sin confirmar" : f.status === "PASS" ? "Dentro de la tolerancia configurada" : "No se puede determinar la diferencia"}</p>
       </div>
     </div>
 
@@ -676,7 +678,7 @@ function showDetail(id) {
         </div>
         ${f.reasons.map((r) => `<p style="font-size:14px; line-height:1.5; margin:0 0 10px;">${esc(r)}</p>`).join("")}
         <div style="background:#f9faf7; border:1px solid var(--line); border-radius:6px; padding:10px 14px; font-size:13px; color:var(--ink-secondary); margin-top:14px;">
-          Tarifa <strong>${esc(f.rule || "R-BASE")}</strong> · vigencia <strong>${esc(f.version || "Vigente")}</strong>
+          Regla <strong>${esc(f.rule || "Sin regla aplicable")}</strong> · versión <strong>${esc(f.version || "Sin versión aplicable")}</strong>
         </div>
       </div>
 
@@ -689,7 +691,7 @@ function showDetail(id) {
           ${esc(arithmeticStr)}
         </div>
         <div style="font-size:12px; font-weight:750; text-transform:uppercase; color:var(--muted); margin:14px 0 6px;">
-          Documentos usados:
+          Registros y configuración utilizados:
         </div>
         <ul class="doc-checklist">
           ${documentsUsed.map((doc) => `<li class="doc-item"><span class="check">✓</span> <span>${esc(doc)}</span></li>`).join("")}
@@ -820,7 +822,7 @@ function showDetail(id) {
   $("#decision-form").onsubmit = (event) => {
     event.preventDefault();
     busy($("button[type=submit]", event.target), async () => {
-      await post(`/api/runs/${state.run.id}/decisions`, {
+      await post(`/api/runs/${detailRun.id}/decisions`, {
         finding_id: id,
         action: $("#action").value,
         actor: $("#actor").value,
@@ -828,7 +830,9 @@ function showDetail(id) {
         known_to_client:
           $("#known").value === "" ? null : $("#known").value === "true",
       });
-      state.run = await api("/api/runs/" + state.run.id);
+      const updated = await api("/api/runs/" + detailRun.id);
+      if (revision !== state.viewRevision || !$("#detail").open) return;
+      state.run = updated;
       renderFindings();
       showDetail(id);
       notice("Decisión agregada al expediente. El hallazgo original se conserva.");
@@ -838,7 +842,9 @@ function showDetail(id) {
   $("#evidence-form").onsubmit = (event) => {
     event.preventDefault();
     busy($("button[type=submit]", event.target), async () => {
-      const snapshot = structuredClone(state.run.snapshot);
+      const snapshot = structuredClone(detailRun.snapshot);
+      const kind = $("#ev-kind").value;
+      const note = $("#ev-note").value;
       let document_hash = null;
       const file = $("#ev-file").files[0];
       if (file) {
@@ -850,14 +856,15 @@ function showDetail(id) {
       }
       snapshot.evidence.push({
         id: "EV-" + crypto.randomUUID(),
-        kind: $("#ev-kind").value,
-        note: $("#ev-note").value,
+        kind,
+        note,
         shipment_ids: f.shipment_ids,
         charge_ids: f.charge_ids,
         document_hash,
       });
       snapshot.label += " · evidencia adicional";
       const result = await post("/api/audit", snapshot);
+      if (revision !== state.viewRevision) return;
       $("#detail").close();
       await openRun(result.run_id);
       notice(
@@ -874,9 +881,15 @@ function showDetail(id) {
    ========================================================================== */
 async function showNew() {
   nav("new");
+  const revision = state.viewRevision;
   state.imports = {};
+  state.auditLabel = "";
+  state.importRevision.shipments += 1;
+  state.importRevision.charges += 1;
   state.wizardStep = 1;
-  state.configs = await api("/api/configs");
+  const configs = await api("/api/configs");
+  if (revision !== state.viewRevision) return;
+  state.configs = configs;
 
   renderWizard();
 }
@@ -1233,6 +1246,19 @@ function renderWizard() {
 }
 
 function goToStep(step) {
+  if (step > 1 && (!state.imports.shipments || !state.imports.charges)) {
+    notice("Validá los archivos de operaciones y cargos antes de continuar.", true);
+    return;
+  }
+  if (step > 2) {
+    try {
+      const agreements = JSON.parse($("#agreements")?.value || "[]");
+      if (!Array.isArray(agreements) || !agreements.length) throw new Error();
+    } catch {
+      notice("Seleccioná un acuerdo válido antes de verificar el lote.", true);
+      return;
+    }
+  }
   // Sync label
   const labelInput = $("#audit-label");
   if (labelInput && labelInput.value.trim()) {
@@ -1528,6 +1554,8 @@ function setupStep1Handlers() {
         const file = fileInput.files[0];
         if (!file) throw new Error("Seleccionar el archivo a importar.");
         const mapping = JSON.parse($(`#mapping-${role}`).value || "{}");
+        const revision = state.importRevision[role];
+        const viewRevision = state.viewRevision;
         if (mapping.entity !== role)
           throw new Error(
             "El mapping seleccionado corresponde a otro tipo de archivo.",
@@ -1536,6 +1564,7 @@ function setupStep1Handlers() {
         form.append("file", file);
         form.append("mapping", JSON.stringify(mapping));
         const result = await post("/api/import", form);
+        if (revision !== state.importRevision[role] || viewRevision !== state.viewRevision) return;
         state.imports[role] = result;
         $(`#result-${role}`).innerHTML = `
           <strong style="color:#1b6d49; font-size:14px;">✓ ${result.accepted} filas aceptadas · ${result.rejected.length} rechazadas</strong>
@@ -1624,8 +1653,8 @@ function updateFormatBox(role, recognized, formatName = "") {
   if (recognized) {
     box.className = "format-recognition recognized";
     if (icon) icon.textContent = "✓";
-    if (title) title.textContent = `Formato reconocido: ${formatName}`;
-    if (sub) sub.textContent = "Mapeo de columnas asignado automáticamente";
+    if (title) title.textContent = `Formato seleccionado: ${formatName}`;
+    if (sub) sub.textContent = "Validá el archivo para comprobar sus columnas";
     if (columnsPanel) {
       columnsPanel.classList.add("hidden");
       columnsPanel.style.display = "none";
@@ -1643,6 +1672,7 @@ function updateFormatBox(role, recognized, formatName = "") {
 }
 
 function invalidateImport(role) {
+  state.importRevision[role] += 1;
   delete state.imports[role];
   const result = $(`#result-${role}`);
   if (result)
@@ -1655,7 +1685,10 @@ function invalidateImport(role) {
    ========================================================================== */
 async function showConfigs() {
   nav("configs");
-  state.configs = await api("/api/configs");
+  const revision = state.viewRevision;
+  const configs = await api("/api/configs");
+  if (revision !== state.viewRevision) return;
+  state.configs = configs;
   main.innerHTML = heading(
     "CONFIGURACIÓN VERSIONADA",
     "Acuerdos y formatos",

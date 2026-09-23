@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from .canonical import load_json
+from .canonical import canonical, load_json
 from .engine import audit
 from .fixtures import generate, run_demo
 from .importing import MAX_FILE_BYTES, ImportMapping, import_data
@@ -187,6 +187,12 @@ def create_app(db_path: Path) -> FastAPI:
     @app.get("/api/runs/{run_id}/export/{format}")
     def export(run_id: str, format: str):
         run = store.load(run_id)
+        if format == "canonical":
+            return Response(
+                canonical(run),
+                media_type="application/json",
+                headers={"Content-Disposition": 'attachment; filename="audit.json"'},
+            )
         if format == "xlsx":
             return Response(
                 workbook_bytes(run),

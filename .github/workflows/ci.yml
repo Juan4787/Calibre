@@ -32,10 +32,20 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]"
+          pip install -r requirements.lock -r requirements-browser.lock
+          pip install --no-deps -e .
+          playwright install --with-deps chromium
 
       - name: Run Tier 1 Verification (Lints, Types, Matrix, Tests, Build)
         run: bash scripts/run_ci_tier.sh pr
+
+      - name: Preserve browser evidence on success or failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-browser-evidence
+          path: output/playwright/
+          retention-days: 7
 
   tier2-ci:
     name: Tier 2 - Full Semantic & Invariant Verification
@@ -59,7 +69,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]"
+          pip install -r requirements.lock -r requirements-browser.lock
+          pip install --no-deps -e .
+          playwright install --with-deps chromium
 
       - name: Run Tier 2 Verification (Hypothesis CI, Invariants, Reconciliation)
         run: bash scripts/run_ci_tier.sh ci

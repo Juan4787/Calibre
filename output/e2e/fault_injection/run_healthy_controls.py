@@ -6,6 +6,7 @@ are correctly evaluated as TRUSTED with 0 false positives.
 """
 
 import json
+import argparse
 import sys
 import tempfile
 from pathlib import Path
@@ -33,7 +34,7 @@ CONTROLS = [
 ]
 
 
-def run_all_controls():
+def run_all_controls(output_dir=None):
     print(f"{'CONTROL ID':<10} | {'STATUS':<10} | {'VERDICT':<10} | {'VIOLATIONS':<10} | {'DESCRIPTION'}")
     print("-" * 90)
     
@@ -86,7 +87,9 @@ def run_all_controls():
     print("\n" + "=" * 90)
     print(f"Total Controls: {len(CONTROLS)} | Passed: {len(CONTROLS) - false_positives} | False Positives: {false_positives} | FP Rate: {fp_rate:.1f}%")
     
-    out_path = ROOT / "output/e2e/fault_injection/false_positive_results.json"
+    out_dir = Path(output_dir or ROOT / "output/e2e/fault_injection")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / "false_positive_results.json"
     out_path.write_text(json.dumps({
         "total_controls": len(CONTROLS),
         "passed": len(CONTROLS) - false_positives,
@@ -99,5 +102,7 @@ def run_all_controls():
 
 
 if __name__ == "__main__":
-    success = run_all_controls()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output-dir", type=Path)
+    success = run_all_controls(parser.parse_args().output_dir)
     sys.exit(0 if success else 1)

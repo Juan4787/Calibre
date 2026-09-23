@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Automated runner for Phase 5: Adversarial Import and Document Fidelity (5A-5F).
 
-Executes all 62 pre-registered test cases against the productive clean-room wheel.
+Executes 62 pre-registered cases against the package of the selected Python interpreter.
 Records observed data, issues, provenance, and verifies adherence to the preregistered contract.
 DOES NOT MODIFY PRODUCTION SOURCE CODE.
 """
 
+import argparse
 import io
 import json
 import os
@@ -29,14 +30,17 @@ from freight_audit.importing import (
     parse_decimal,
 )
 from freight_audit.models import Charge, Shipment
+from freight_audit.storage import engine_artifact_hash
 
 BASE_DIR = Path(__file__).resolve().parent
+ROOT = BASE_DIR.parents[2]
+sys.path.insert(0, str(ROOT))
+from qa.evidence import source_digest
+from qa.gates import import_cases_passed
+
 FIXTURES_DIR = BASE_DIR / "fixtures"
 MAPPINGS_DIR = BASE_DIR / "mappings"
 OBSERVED_DIR = BASE_DIR / "observed"
-
-OBSERVED_DIR.mkdir(parents=True, exist_ok=True)
-
 
 def load_mapping(name: str) -> ImportMapping:
     raw = json.loads((MAPPINGS_DIR / f"{name}.json").read_text(encoding="utf-8"))
@@ -1007,11 +1011,20 @@ def run_5f_metamorphic_tests():
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output-dir", type=Path)
+    args = parser.parse_args()
+    destination = args.output_dir or OBSERVED_DIR / datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+    destination.mkdir(parents=True, exist_ok=False)
+    collector.results.clear()
+    fingerprint = source_digest(ROOT)
+    product_hash = engine_artifact_hash()
     print("=======================================================================")
     print("  FASE 5 — Importación Adversarial y Fidelidad Documental  ")
     print("=======================================================================")
-    print(f"Commit: 8e308cfebd5eda2c63a61a8a69ca0a5a4be80ce1")
+    print(f"Source fingerprint: {fingerprint}")
     print(f"Freight Audit package: {freight_audit.__file__}")
+    print(f"Product artifact hash: {product_hash}")
 
     run_5b_csv_tests()
     run_5c_xlsx_tests()
@@ -1022,16 +1035,25 @@ def main():
     total = len(collector.results)
     passed_count = sum(1 for r in collector.results if r["passed"])
     failed_count = total - passed_count
+    accepted = (
+        import_cases_passed(collector.results)
+        and fingerprint == source_digest(ROOT)
+        and product_hash == engine_artifact_hash()
+    )
 
     print("\n=======================================================================")
     print(f"  RESUMEN EJECUCIÓN FASE 5: {passed_count}/{total} PASSED ({failed_count} FAILED)")
     print("=======================================================================")
 
-    out_file = OBSERVED_DIR / "adversarial_import_results.json"
+    out_file = destination / "adversarial_import_results.json"
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(
             {
                 "timestamp": datetime.now().isoformat(),
+                "source_digest": fingerprint,
+                "product_path": freight_audit.__file__,
+                "artifact_hash": product_hash,
+                "gate_passed": accepted,
                 "total_cases": total,
                 "passed": passed_count,
                 "failed": failed_count,
@@ -1043,14 +1065,12 @@ def main():
         )
     print(f"Results saved to: {out_file}")
 
-    if failed_count > 0:
-        print("\n[ATTENTION] Failures detected. Per Phase 5 rules, DO NOT PATCH PRODUCTION CODE.")
-        print("All failures are recorded in observed results for audit analysis.")
-        sys.exit(2)
-    else:
-        print("\nAll 62 preregistered cases satisfied the Gate of Phase 5 perfectly!")
-        sys.exit(0)
+    if not accepted:
+        print("\nImport gate failed: require all 62 distinct cases passed and unchanged tested code.")
+        return 2
+    print("\nAll 62 preregistered import cases passed; results apply to the recorded product artifact.")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

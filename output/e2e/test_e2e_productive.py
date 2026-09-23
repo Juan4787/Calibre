@@ -706,4 +706,8 @@ def run_e2e():
 
 
 if __name__ == "__main__":
-    run_e2e()
+    # The original body documents an earlier UI and wheel. Current executions use
+    # isolated data, the selected interpreter and exact assertions maintained in CI.
+    import runpy
+
+    runpy.run_path(str(PROJECT_ROOT / "scripts/browser_e2e.py"), run_name="__main__")

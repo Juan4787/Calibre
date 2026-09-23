@@ -109,6 +109,8 @@ def reconcile(directory: Path, *, api_run=None, observed_ui=None) -> dict:
             if snapshot != run["snapshot"]:
                 errors.append("INV-20 separate snapshot mismatch")
     else:
+        if "snapshot.json" in manifest["files"] or (directory / "snapshot.json").exists():
+            errors.append("INV-20 redundant snapshot.json in v2 bundle")
         snapshot = run["snapshot"]
     source_hashes = set(snapshot["documents"])
     for entity in ("shipments", "charges"):

@@ -277,6 +277,7 @@ def _audit(dataset: Dataset) -> AuditResult:
             duplicate_ids.update(ids)
     incomplete = any(issue.category in {"file", "mapping", "row"} for issue in dataset.issues)
     observed_scopes = {(key[0], key[1]) for key in groups}
+    billed_scopes = {key[:4] for key, charges in groups.items() if charges}
     # Optional coverage is explicit. Never infer a missing payable from an unrelated shipment.
     for agreement in dataset.agreements:
         if not agreement.detect_missing or incomplete:
@@ -299,14 +300,12 @@ def _audit(dataset: Dataset) -> AuditResult:
                 version, _ = select_version(agreement, matched)
                 for rule in sorted(version.rules, key=lambda r: r.id):
                     if rule.expected:
-                        already_billed = any(
-                            key[0] == agreement.id
-                            and key[1] == tuple(s.id for s in matched)
-                            and key[2] == rule.concept
-                            and key[3] == agreement.currency
-                            and len(groups[key]) > 0
-                            for key in groups
-                        )
+                        already_billed = (
+                            agreement.id,
+                            tuple(s.id for s in matched),
+                            rule.concept,
+                            agreement.currency,
+                        ) in billed_scopes
                         if not already_billed:
                             group_key = (
                                 agreement.id,
@@ -334,7 +333,9 @@ def _audit(dataset: Dataset) -> AuditResult:
     for group_key in groups:
         aid, sids, concept, currency, settlement = group_key
         for sid in sids:
-            allocations[(aid, sid, concept, currency, settlement)].add(group_key)
+            # A different invoice preserves document identity, not a new service.
+            # Reuse of the same obligation needs an explicit allocation before certainty.
+            allocations[(aid, sid, concept, currency)].add(group_key)
     overlapping = {
         group_key
         for allocation_key, group_set in allocations.items()

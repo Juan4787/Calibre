@@ -1,5 +1,7 @@
 # INFORME DE FASE 9: PLATAFORMA, ESCALA Y ESTABILIDAD
 
+> Acta histórica de los artefactos y entornos indicados. La revisión del 22/09 encontró gates que podían aprobar ejecuciones incompletas y una comparación de plataforma parcial. Ver `docs/RIGOR_REVIEW.md`. Los verificadores actuales requieren repetir Windows y escala sobre el artefacto a entregar antes de trasladar estas conclusiones a otra versión.
+
 **Proyecto:** CALIBRE / Freight Audit Engine  
 **Entornos de Referencia:**
 - *Host Local de Desarrollo:* Linux 6.8.0-136-generic | Intel Core i3-4170 (4 hilos @ 3.70GHz) | 11.9 GB RAM (~5.8 GB libres en reposo)

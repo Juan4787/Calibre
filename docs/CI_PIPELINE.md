@@ -1,7 +1,9 @@
 # Arquitectura de CI / Regresión Automatizada (Fase 8)
 
+Actualización 2026-09-22: los workflows instalan `requirements.lock` y `requirements-browser.lock`. Tier 1 incluye `scripts/browser_e2e.py` con Chromium; Tier 2 depende del job previo y no repite lint/build. Nightly exige 12 controles sanos antes de las 41 fallas. Release ejecuta Tier 1, reconciliación y E2E del wheel instalado, además del smoke. Las duraciones dibujadas abajo son objetivos históricos, no resultados medidos del pipeline actual. `mypy` se ejecuta con la configuración del proyecto, sin modo `strict` global. Los resultados actuales y sus límites están en [RIGOR_REVIEW.md](RIGOR_REVIEW.md).
+
 > **Principio Rector:**  
-> Convertir el baseline verificado y certificado manualmente a lo largo de las Fases 1 a 7.5 en un sistema de ejecución automática e implacable que impida que futuros commits degraden silenciosamente las propiedades algebraicas, económicas y documentales demostradas.
+> Conservar regresiones comprobables y bloquear ejecuciones incompletas. Las campañas históricas prueban sus casos y artefactos; no constituyen certificación global del producto.
 
 ---
 
@@ -11,8 +13,8 @@ Para garantizar un ciclo de desarrollo ágil sin comprometer la exhaustividad de
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ TIER 1: PR & Fast Gate (< 90s)                                          │
-│ Lints, Format, Types, Sync Matrix, JS Syntax, Pytest Suite, Build       │
+│ TIER 1: PR & Fast Gate (duración objetivo histórica < 90s)            │
+│ Lints, Format, Types, Matrix, JS, Pytest, Build, Chromium              │
 └────────────────────────────────────┬────────────────────────────────────┘
                                      ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -28,7 +30,7 @@ Para garantizar un ciclo de desarrollo ágil sin comprometer la exhaustividad de
                                      │ (On Release Tag 'v*')
                                      ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ TIER 4: Release Gate & Clean-Room Wheel Certification (< 4 min)         │
+│ TIER 4: Release Checks & Clean-Room Wheel (objetivo < 4 min)          │
 │ Clean Git Tree, Build .whl/.tar.gz, SHA-256 Baseline, Clean-Room Venv,  │
 │ Zero-Source Smoke Test (Installed Package in Isolated /tmp)            │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -44,17 +46,18 @@ Para garantizar un ciclo de desarrollo ágil sin comprometer la exhaustividad de
 * **Controles ejecutados:**
   1. `ruff check src tests scripts qa`: Control de estilo y linter estricto.
   2. `ruff format --check src tests scripts qa`: Consistencia tipográfica y de formato.
-  3. `mypy src` & `mypy --explicit-package-bases qa scripts/qa.py`: Verificación estricta de tipos.
+  3. `mypy src` & `mypy --explicit-package-bases qa scripts/qa.py`: Verificación de tipos con la configuración del proyecto.
   4. `python scripts/qa.py matrix --check`: Sincronización exacta de `docs/TEST_MATRIX.md` con los tests del repositorio.
   5. `node --check src/freight_audit/static/app.js`: Validez sintáctica del frontend vanilla.
-  6. `pytest -q tests/`: Batería completa unitaria y de integración (174 tests).
-  7. `python -m compileall -q src` & `python -m build`: Compilación de bytecode y verificación de empaquetado.
+  6. `pytest -q tests/`: Batería unitaria, de integración y regresiones; recuento vigente en `RIGOR_REVIEW.md`.
+  7. Compilación de `src` y runners E2E, excluyendo entornos/caches, y `python -m build`: verificación de empaquetado.
+  8. `scripts/browser_e2e.py`: flujo de Chromium con datos sintéticos, comparaciones exactas y evidencia por corrida.
 
 ### Tier 2: CI Completa (`ci`)
 * **Disparador:** Pull requests hacia `main` y merge a `main`.
 * **Objetivo:** Garantizar que ningún cambio afecte los invariantes estructurales ni la reconciliación exacta multicanal sobre fixtures contractuales oficiales.
 * **Controles ejecutados:**
-  1. Todos los pasos de **Tier 1**.
+  1. El workflow exige que el job **Tier 1** del mismo commit haya terminado correctamente.
   2. `QA_PROFILE=ci pytest -q tests/`: Batería property-based con Hypothesis configurada a 100 ejemplos por invariante/propiedad.
   3. `python scripts/ci_reconcile_fixtures.py`:
      - Auditoría completa de `fixtures/project.json` y `fixtures/second-client/project.json`.
@@ -67,15 +70,16 @@ Para garantizar un ciclo de desarrollo ágil sin comprometer la exhaustividad de
 * **Controles ejecutados:**
   1. `QA_PROFILE=nightly pytest -q tests/test_qa_infrastructure.py`: Fuzzing intensivo con Hypothesis a 1000 ejemplos por invariante.
   2. `python scripts/qa.py mutate --execute`: Inyección y ejecución activa de mutaciones semánticas (`M01` a `M10`), exigiendo 100% de aniquilación (`killed`).
-  3. `python output/e2e/fault_injection/run_directed_faults.py`: Suite dirigida de 41 fallas (33 P0 y 8 P1) a través de detectores agnósticos independientes (`invariants`, `reconcile`, `manifest_verifier`), exigiendo 100% de detección.
-  4. `python output/e2e/import_adversarial/test_import_adversarial.py`: Batería de 62 vectores adversariales de importación (CSV, XLSX, fórmulas, XML, desplazamientos y límites).
-  5. `python output/e2e/test_e2e_productive.py`: Ciclo de vida completo E2E en Chromium headless con Playwright, auditoría real, decisiones humanas, inmutabilidad de runs, replay y reconciliación exacta de 6 canales (SQLite = API = JSON = XLSX = HTML = UI).
+  3. Controles sanos y luego `python output/e2e/fault_injection/run_directed_faults.py`: 41 fallas (33 P0 y 8 P1), exigiendo detección registrada y salida no cero si una falla sobrevive o la infraestructura impide comprobarla.
+  4. `python output/e2e/import_adversarial/test_import_adversarial.py --output-dir DIRECTORIO_NUEVO`: exige los 62 casos distintos de importación aprobados y código sin cambios durante la corrida; conserva procedencia real y resultados sin reemplazar una campaña anterior.
+  5. `python scripts/browser_e2e.py`: Chromium, auditoría real con datos sintéticos, decisiones sucesivas, evidencia, historial, replay, descarga JSON, celdas exactas y todas las páginas. SQLite se ejercita a través del servicio y los tests de almacenamiento; no se declara un lector SQL independiente en este runner.
 
 ### Tier 4: Release Gate (`release`)
 * **Disparador:** Push de tags con formato `v*` (ej. `v0.1.0`) o disparo manual de release.
-* **Objetivo:** Certificar que el artefacto que se distribuye al usuario final es idéntico al validado y funciona de manera autónoma en un entorno clean-room sin acceso al árbol fuente (`src/`).
+* **Objetivo:** Comprobar el código actual y ejecutar smoke/E2E contra el wheel instalado en un entorno nuevo. Los checks ejecutados no constituyen certificación completa del producto.
 * **Controles ejecutados:**
   1. **Verificación de árbol limpio:** `git status --porcelain` debe estar 100% vacío (sin archivos sin seguimiento ni modificaciones).
+     Después se ejecutan Tier 1 y la reconciliación de ambas fixtures sobre ese código.
   2. **Build canónico:** Generación de `.whl` y `.tar.gz` desde el commit limpio (`git rev-parse HEAD`).
   3. **Registro criptográfico:** Cálculo y emisión en log de los hashes SHA-256 de los artefactos en `dist/`.
   4. **Entorno clean-room aislado:** Creación de un virtualenv temporal efímero en `/tmp` con `pip` actualizado.
@@ -85,6 +89,7 @@ Para garantizar un ciclo de desarrollo ágil sin comprometer la exhaustividad de
      - Creación de base SQLite efímera y ejecución de auditoría demo con recuentos deterministas (`34 PASS`, `2 FAIL`, `6 REVIEW`, `4 UNDETERMINABLE`).
      - Replay transaccional inmutable (`/api/runs/{id}/replay` -> `identical: true`).
      - Exportación de bundle ZIP y verificación de integridad criptográfica vía `verify_bundle`.
+  7. **E2E del wheel:** `scripts/browser_e2e.py --installed-root SITE_PACKAGES` exige igualdad de archivos con el código revisado y opera el navegador contra el producto instalado.
 
 ---
 
@@ -113,7 +118,7 @@ bash scripts/run_ci_tier.sh ci
 # Nivel 3: Batería exhaustiva nocturna
 bash scripts/run_ci_tier.sh nightly
 
-# Nivel 4: Certificación de release y prueba del wheel
+# Nivel 4: Verificación de release y prueba del wheel
 bash scripts/run_ci_tier.sh release
 ```
 

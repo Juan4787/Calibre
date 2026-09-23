@@ -31,7 +31,7 @@ def create_baseline(target_dir: Path) -> tuple[Store, Dataset, str, Path]:
     target_dir.mkdir(parents=True, exist_ok=True)
     db_path = target_dir / "audit.db"
     store = Store(db_path)
-    dataset, _ = load_project(Path("fixtures/project.json"), store)
+    dataset, _ = load_project(Path(__file__).resolve().parents[3] / "fixtures/project.json", store)
     run_id = store.save(dataset, audit(dataset))
     bundle_dir = target_dir / "bundle"
     export_run(store, run_id, bundle_dir)
@@ -39,7 +39,7 @@ def create_baseline(target_dir: Path) -> tuple[Store, Dataset, str, Path]:
 
 
 def create_ui_observation(run_dict: dict) -> dict[str, Any]:
-    """Generate a faithful DOM observation dictionary from a run dict."""
+    """Synthetic observation for detector unit controls; this is NOT a DOM capture."""
     findings = run_dict["result"]["findings"]
     return {
         "run_id": run_dict["id"],

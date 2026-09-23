@@ -48,6 +48,7 @@ from freight_audit.storage import IntegrityError, Store
 from fastapi.testclient import TestClient
 
 from output.e2e.platform_scale.generate_scale_dataset import generate_scale_data
+from qa.gates import pipeline_passed
 
 
 def get_environment_info() -> dict:
@@ -498,12 +499,16 @@ def run_single_pipeline_benchmark(data_dir: Path, oracle: dict, all_exports: boo
         "total_wall_sec": total_wall,
         "total_cpu_sec": total_cpu,
         "peak_rss_mb": get_peak_rss_mb(),
-        "correctness_verified": True,
+        "core_oracle_verified": True,
+        "correctness_verified": metrics["12_verify_bundle"].get("verified") is True
+        and all(m.get("status", "PASS") == "PASS" for m in metrics.values()),
     }
 
 
 def aggregate_runs(runs: list[dict]) -> dict:
     """Computes median, min, max, mean, stdev, p95 across repeated runs."""
+    if not runs or not all(pipeline_passed(run) for run in runs):
+        return {"status": "INCOMPLETE", "correctness_verified": False, "runs": runs}
     agg = {}
     stage_keys = list(runs[0]["stages"].keys())
 
@@ -550,6 +555,7 @@ def aggregate_runs(runs: list[dict]) -> dict:
 
     return {
         "reps": len(runs),
+        "correctness_verified": True,
         "total_wall": {
             "median": round(statistics.median(total_walls), 4),
             "min": round(min(total_walls), 4),
@@ -763,9 +769,8 @@ def run_growth_curve(sizes: list[int], scale_dir: Path, reps: int = 1) -> dict:
     curve_data = {}
     for sz in sizes:
         summ = execute_size_benchmark(sz, reps=reps, scale_dir=scale_dir)
-        if summ.get("status") == "RESOURCE_LIMIT":
-            print(f"Curve halted at {sz} due to resource limit: {summ.get('reason')}")
-            break
+        if not pipeline_passed(summ):
+            raise RuntimeError(f"Incomplete growth curve at {sz}: {summ.get('status')}")
         curve_data[sz] = {
             "audit_wall_median": summ["stages"]["4_audit"]["wall"]["median"],
             "total_wall_median": summ["total_wall"]["median"],
@@ -810,6 +815,7 @@ def main():
     parser.add_argument("--sizes", nargs="+", type=int, default=[10000, 50000, 100000], help="Benchmark sizes")
     parser.add_argument("--curve", nargs="+", type=int, default=[10000, 20000, 40000, 80000], help="Growth curve sizes")
     parser.add_argument("--reps", type=int, default=5, help="Number of measured repetitions")
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "output/e2e/platform_scale/scale")
     parser.add_argument("--skip-curve", action="store_true", help="Skip growth curve")
     parser.add_argument("--curve-only", action="store_true", help="Run only growth curve")
     parser.add_argument("--all-exports", action="store_true", help="Run all exports (XLSX, Bundle) even for large sizes")
@@ -828,9 +834,11 @@ def main():
         oracle = json.loads(args.oracle_path.read_text(encoding="utf-8"))
         res = run_single_pipeline_benchmark(args.data_dir, oracle, all_exports=args.all_exports)
         args.output_file.write_text(json.dumps(res, indent=2), encoding="utf-8")
-        sys.exit(0)
+        sys.exit(0 if pipeline_passed(res) else 1)
 
-    scale_dir = ROOT / "output/e2e/platform_scale/scale"
+    if args.reps < 1 or any(size < 1 for size in args.sizes + args.curve):
+        parser.error("Repetitions and sizes must be positive")
+    scale_dir = args.output_dir
     scale_dir.mkdir(parents=True, exist_ok=True)
 
     env = get_environment_info()
@@ -858,13 +866,16 @@ def main():
             )
             benchmark_summary[sz] = summary
             (scale_dir / "benchmark_summary.json").write_text(json.dumps(benchmark_summary, indent=2), encoding="utf-8")
+            if not pipeline_passed(summary):
+                print(f"GATE BLOCKED: incomplete pipeline at size {sz}")
+                sys.exit(1)
 
     # Run Growth Curve (10k, 20k, 40k, 80k)
     if not args.skip_curve:
         run_growth_curve(args.curve, scale_dir=scale_dir, reps=args.reps)
 
     print("\n=================================================================")
-    print("ALL SCALE BENCHMARKS AND GROWTH CURVES COMPLETED SUCCESSFULLY!")
+    print("REQUESTED PIPELINE CHECKS COMPLETED; omitted sizes/curves are not certified.")
     print(f"Results recorded in: {scale_dir}")
     print("=================================================================")
 

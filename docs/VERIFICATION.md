@@ -1,5 +1,7 @@
 # Verificación — 17 de septiembre de 2026
 
+Acta histórica. La revisión posterior del código, los E2E y sus verificadores está en [RIGOR_REVIEW.md](RIGOR_REVIEW.md); los recuentos siguientes no describen automáticamente la versión actual.
+
 Entorno verificado: Linux x86_64, Python 3.12.3, un proceso por check. Dependencias exactas: `requirements.lock`. Los datos y acuerdos utilizados son ficticios. La suite final aprobó 148 tests.
 
 ## Checks

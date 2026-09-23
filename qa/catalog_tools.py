@@ -4,6 +4,7 @@ import ast
 import csv
 import io
 import re
+import shlex
 from collections import Counter
 from pathlib import Path
 
@@ -41,7 +42,9 @@ def rendered():
             matrix.append(f"- **{key}:** {value_text(value)}")
         if row["SELECTORES"]:
             matrix += ["", "```bash", ".venv/bin/python -m pytest -q " + " ".join(row["SELECTORES"]), "```"]
-        else:
+        if row["RUNNERS"]:
+            matrix += ["", "```bash", *row["RUNNERS"], "```"]
+        if not row["SELECTORES"] and not row["RUNNERS"]:
             matrix += [
                 "",
                 "No hay automatización completa registrada. Implementar/ejecutar los pasos y preservar evidencia antes de cerrar esta familia.",
@@ -127,6 +130,10 @@ def validate_catalog():
             }
             if function not in names:
                 errors.append(f"{row['TEST_ID']}: unknown function {selector}")
+        for runner in row["RUNNERS"]:
+            arguments = shlex.split(runner)
+            if len(arguments) < 2 or not (ROOT / arguments[1]).is_file():
+                errors.append(f"{row['TEST_ID']}: missing runner {runner}")
         if row["GRUPO"] not in {"A", "B", "C"} or row["PRIORIDAD"] not in {"P0", "P1", "P2", "P3"}:
             errors.append(f"{row['TEST_ID']}: invalid priority/group")
         if any(value == "" for value in row.values()):

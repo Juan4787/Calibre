@@ -45,6 +45,10 @@ from freight_audit.project import load_project
 from freight_audit.reporting import bundle_bytes, export_run, html_report, verify_bundle, workbook_bytes
 from freight_audit.storage import Store
 
+# QA helpers remain in the checkout; product imports above retain clean-room isolation.
+sys.path.append(str(ROOT))
+from qa.gates import platform_passed
+
 
 def get_platform_info() -> dict:
     return {
@@ -66,6 +70,10 @@ def normalize_fingerprint_finding(finding: dict) -> dict:
     conf_diff = finding.get("confirmed_difference", "0")
     act = finding.get("actual", "0")
     return {
+        "agreement": finding.get("agreement"),
+        "concept": finding.get("concept"),
+        "evidence_ids": finding.get("evidence_ids", []),
+        "trace": finding.get("trace"),
         "id": finding.get("id"),
         "status": finding.get("status"),
         "currency": finding.get("currency"),
@@ -102,12 +110,14 @@ def compute_semantic_fingerprint(store: Store, run_ids: list[str]) -> dict:
             )
         )
 
-        summary_orig = run["result"].get("summary", {})
+        summary_orig = run["result"]["summary"]
         curr_summary_norm = {}
         for curr, sdata in sorted(summary_orig.get("currencies", {}).items()):
             curr_summary_norm[curr] = {
                 "actual": str(Decimal(str(sdata.get("actual", "0")))),
-                "expected": str(Decimal(str(sdata.get("expected", "0")))),
+                "confirmed_net_difference": sdata["confirmed_net_difference"],
+                "pass": sdata["pass"],
+                "determinable": sdata["determinable"],
                 "confirmed_excess": str(Decimal(str(sdata.get("confirmed_overcharge", "0")))),
                 "confirmed_defect": str(Decimal(str(sdata.get("confirmed_undercharge", "0")))),
                 "review": str(Decimal(str(sdata.get("review", "0")))),
@@ -117,6 +127,8 @@ def compute_semantic_fingerprint(store: Store, run_ids: list[str]) -> dict:
         runs_fingerprints.append(
             {
                 "run_id": rid,
+                "snapshot_hash": run["input_hash"],
+                "engine_artifact_hash": run["artifact_hash"],
                 "dataset_label": run["snapshot"].get("label", ""),
                 "counts": summary_orig.get("counts", {}),
                 "currencies": curr_summary_norm,
@@ -127,6 +139,7 @@ def compute_semantic_fingerprint(store: Store, run_ids: list[str]) -> dict:
     # Sort runs by dataset label
     runs_fingerprints.sort(key=lambda r: r["dataset_label"])
     return {
+        "schema": "calibre-platform/v2",
         "runs": runs_fingerprints,
         "digest": digest(runs_fingerprints),
     }
@@ -152,9 +165,9 @@ def execute_suite(is_cleanroom: bool = False) -> tuple[dict, dict]:
         }
     else:
         results["WIN-01"] = {
-            "status": "PASSED",
+            "status": "SKIPPED_INFRA",
             "file": str(fa_file),
-            "note": "Running in repo mode; remote runner verifies clean-room installation.",
+            "note": "Clean-room installation was not exercised. Re-run with --cleanroom and installed wheel.",
         }
 
     # -------------------------------------------------------------
@@ -730,7 +743,7 @@ uvicorn.run(app, host='127.0.0.1', port={ui_port}, log_level='error')
         "summary": {
             "total": len(results),
             "passed": sum(1 for r in results.values() if r.get("status") == "PASSED"),
-            "failed": sum(1 for r in results.values() if r.get("status") == "FAILED"),
+            "failed": sum(1 for r in results.values() if r.get("status") != "PASSED"),
             "skipped": sum(1 for r in results.values() if "SKIPPED" in r.get("status", "")),
         },
     }
@@ -744,6 +757,8 @@ def main():
     parser.add_argument("--output-dir", type=Path, default=ROOT / "output/e2e/platform_scale/windows")
     parser.add_argument("--cleanroom", action="store_true")
     args = parser.parse_args()
+    if args.platform.lower() != platform.system().lower():
+        parser.error("--platform must match the operating system actually executing this suite")
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     report, fingerprint = execute_suite(is_cleanroom=args.cleanroom)
@@ -761,7 +776,7 @@ def main():
     print(f"  Result artifact:      {result_file}")
     print(f"  Semantic fingerprint: {fp_file} (digest: {fingerprint['digest']})")
 
-    if report["summary"]["failed"] > 0:
+    if not platform_passed(report):
         sys.exit(1)
 
 

@@ -1,5 +1,7 @@
 # FREIGHT AUDIT
 
+Revisión técnica actual: [RIGOR_REVIEW](docs/RIGOR_REVIEW.md). Detalla los fallos encontrados tras las campañas E2E, las correcciones, la evidencia ejecutada y los límites pendientes. El [ledger](docs/QA_COVERAGE_LEDGER.md) conserva las obligaciones completas; no declara cobertura total a partir del número de tests.
+
 Prototipo B2B local para reconstruir cargos esperados a partir de operaciones, acuerdos versionados y evidencia, compararlos con cargos reales y conservar una explicación reproducible. Todos los fixtures son **completamente ficticios**.
 
 El programa separa PASS, FAIL, REVIEW y UNDETERMINABLE. Sólo una discrepancia objetiva integra las diferencias confirmadas. Ningún importe se presenta como ahorro. Las decisiones humanas no modifican el hallazgo original.

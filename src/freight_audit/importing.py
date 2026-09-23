@@ -104,6 +104,7 @@ class Cell:
     format: str = ""
     formula: bool = False
     numeric_literal: str | None = None
+    invalid_date: bool = False
 
     def raw(self):
         if self.numeric_literal is not None:
@@ -122,7 +123,9 @@ class Tabular:
     row_numbers: list[int] = dataclass_field(default_factory=list)
 
 
-def preserve_xlsx_numbers(data: bytes, worksheet_path: str, rows: list[list[Cell]]) -> None:
+def preserve_xlsx_numbers(
+    data: bytes, worksheet_path: str, rows: list[list[Cell]], *, epoch_1900: bool = True
+) -> None:
     """Overlay the original numeric tokens, bounded to one XML row at a time.
 
     openpyxl supplies dates, formats and formulas; decimal values must bypass
@@ -152,6 +155,11 @@ def preserve_xlsx_numbers(data: bytes, worksheet_path: str, rows: list[list[Cell
                 if not 1 <= column_index <= len(rows[row_index - 1]):
                     raise ImportErrorDetail("El rango de columnas del libro es inconsistente.")
                 cell = rows[row_index - 1][column_index - 1]
+                if source.get("t", "n") == "n" and isinstance(cell.value, (date, datetime)):
+                    token = source.findtext(namespace + "v")
+                    if epoch_1900 and token is not None and Decimal("60") <= Decimal(token) < Decimal("61"):
+                        cell.invalid_date = True
+                        cell.numeric_literal = token
                 if (
                     source.get("t", "n") == "n"
                     and not cell.formula
@@ -239,7 +247,9 @@ def read_table(data: bytes, filename: str, mapping: ImportMapping) -> Tabular:
                             for cell in row
                         ]
                     )
-                preserve_xlsx_numbers(data, sheet._worksheet_path, rows)
+                preserve_xlsx_numbers(
+                    data, sheet._worksheet_path, rows, epoch_1900=workbook.epoch.year != 1904
+                )
                 return Tabular(names, sheet_name, rows, warnings)
             finally:
                 workbook.close()
@@ -267,12 +277,25 @@ def read_table(data: bytes, filename: str, mapping: ImportMapping) -> Tabular:
                     xls_row: list[Cell] = []
                     for cell in sheet_xls.row(row_index):
                         value = cell.value
+                        invalid_date = (
+                            cell.ctype == xlrd.XL_CELL_DATE
+                            and workbook_xls.datemode == 0
+                            and 60 <= value < 61
+                        )
                         if cell.ctype == xlrd.XL_CELL_DATE:
                             value = xlrd.xldate_as_datetime(value, workbook_xls.datemode)
                         fmt = workbook_xls.format_map[
                             workbook_xls.xf_list[cell.xf_index].format_key
                         ].format_str
-                        xls_row.append(Cell(value, fmt, cell.ctype == xlrd.XL_CELL_ERROR))
+                        xls_row.append(
+                            Cell(
+                                value,
+                                fmt,
+                                cell.ctype == xlrd.XL_CELL_ERROR,
+                                numeric_literal=str(cell.value) if invalid_date else None,
+                                invalid_date=invalid_date,
+                            )
+                        )
                     rows.append(xls_row)
                 return Tabular(names, name, rows, warnings)
             finally:
@@ -314,6 +337,10 @@ def parse_decimal(raw: str, decimal_separator: str, thousands_separator: str) ->
 
 
 def convert(cell: Cell, column: ColumnMapping, mapping: ImportMapping) -> str | bool:
+    if cell.invalid_date:
+        raise ValueError(
+            "La fecha representa el 29/02/1900, que no existe; corregirla en el archivo original."
+        )
     if cell.formula:
         raise ValueError("La celda contiene una fórmula o un error de Excel; aportar el valor verificado.")
     value = cell.value

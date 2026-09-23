@@ -40,7 +40,7 @@ run_tier_pr() {
     echo "[2/8] Ruff format check..."
     "$RUFF" format --check src tests scripts qa
 
-    echo "[3/8] Mypy strict type checking (src)..."
+    echo "[3/8] Mypy type checking (src)..."
     "$MYPY" src
 
     echo "[4/8] Mypy type checking (qa & scripts)..."
@@ -56,15 +56,15 @@ run_tier_pr() {
     "$PYTEST" -q tests/
 
     echo "[8/8] Python compilation and distribution build..."
-    "$PYTHON" -m compileall -q src
+    "$PYTHON" -m compileall -q -x '/(isolated_env|__pycache__)/' src output/e2e
     "$PYTHON" -m build
+
+    "$PYTHON" scripts/browser_e2e.py --output-dir "output/playwright/pr-$(date +%s)"
 
     echo "[✓] TIER 1 PASSED: All fast-checks and functional tests clean."
 }
 
 run_tier_ci() {
-    run_tier_pr
-
     echo ""
     echo "================================================================"
     echo "== TIER 2: FULL CI (Deep Semantic & Invariant Verification)   =="
@@ -91,13 +91,14 @@ run_tier_nightly() {
     "$PYTHON" scripts/qa.py mutate --execute
 
     echo "[3/5] Directed fault injection detection (33 P0 + 8 P1)..."
-    "$PYTHON" output/e2e/fault_injection/run_directed_faults.py
+    "$PYTHON" output/e2e/fault_injection/run_healthy_controls.py --output-dir output/ci/faults
+    "$PYTHON" output/e2e/fault_injection/run_directed_faults.py --output-dir output/ci/faults
 
     echo "[4/5] Adversarial import edge cases (62 cases)..."
-    "$PYTHON" output/e2e/import_adversarial/test_import_adversarial.py
+    "$PYTHON" output/e2e/import_adversarial/test_import_adversarial.py --output-dir "output/ci/imports-$(date +%s)"
 
     echo "[5/5] E2E Chromium Playwright UI & multichannel lifecycle..."
-    "$PYTHON" output/e2e/test_e2e_productive.py
+    "$PYTHON" scripts/browser_e2e.py --output-dir "output/playwright/nightly-$(date +%s)"
 
     echo "[✓] TIER 3 PASSED: All heavy adversarial and defense sweeps clean."
 }
@@ -116,6 +117,10 @@ run_tier_release() {
     COMMIT="$(git rev-parse HEAD)"
     echo "    Commit HEAD: $COMMIT"
 
+    # Require checks of this release source, not another workflow's historical result.
+    run_tier_pr
+    "$PYTHON" scripts/ci_reconcile_fixtures.py
+
     echo "[2/5] Building distribution artifacts from clean HEAD..."
     rm -rf dist/
     "$PYTHON" -m build
@@ -130,7 +135,8 @@ run_tier_release() {
     
     WHEEL_FILE="$(ls "${ROOT_DIR}"/dist/freight_audit-*.whl | head -n 1)"
     echo "    Installing wheel: $WHEEL_FILE into isolated clean-room..."
-    "$TEMP_VENV/bin/pip" install --no-cache-dir --force-reinstall "$WHEEL_FILE" httpx
+    "$TEMP_VENV/bin/pip" install -r requirements.lock -r requirements-browser.lock
+    "$TEMP_VENV/bin/pip" install --no-deps "$WHEEL_FILE"
 
     echo "[5/5] Executing smoke test against installed wheel without checkout access..."
     SITE_PACKAGES="$("$TEMP_VENV/bin/python" -c "import site; print(site.getsitepackages()[0])")"
@@ -139,8 +145,9 @@ run_tier_release() {
         env -u PYTHONPATH "$TEMP_VENV/bin/python" "$ROOT_DIR/scripts/smoke_wheel.py" --installed-root "$SITE_PACKAGES"
     )
 
+    env -u PYTHONPATH "$TEMP_VENV/bin/python" "$ROOT_DIR/scripts/browser_e2e.py" --installed-root "$SITE_PACKAGES" --output-dir "output/playwright/release-$(date +%s)"
     rm -rf "$TEMP_VENV"
-    echo "[✓] TIER 4 PASSED: Packaged wheel certified in isolated clean-room."
+    echo "[✓] TIER 4 PASSED: Current wheel smoke and browser regression checks passed in isolated clean-room."
 }
 
 case "$tier" in
