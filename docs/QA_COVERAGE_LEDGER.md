@@ -8,18 +8,21 @@ Fuente única: `qa/catalog.py`. Un selector existente acredita infraestructura d
 
 Las campañas históricas Windows, escala, importación y E2E conservan su alcance original. No certifican este checkout. Ver `RIGOR_REVIEW.md`.
 
-Commit base: `0a73fc30a6efe5e450ae919261046a0cd3ed8848`; huella del código y pruebas: `c66f6d360bb58ea5535024bee24c31655126494569dd4adf354be36e4e36a763`.
+Commit base: `9ad568670f8d9b71627677645f7bd5268b84c23b`; huella del código y pruebas: `bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371`.
 
 ## Ejecuciones adjuntas
 
 | Recibo | Código y log verificables | Salida | Comando |
 |---|---|---|---|
-| docs/qa-evidence/2026-09-23/qa-20260923-delivery-final.json | Sí | 0 | `.venv/bin/python scripts/verify_delivery.py --output output/delivery-verification-20260923.json` |
-| docs/qa-evidence/2026-09-23/qa-20260923-final-verify.json | Sí | 0 | `scripts/verify.sh` |
-| docs/qa-evidence/2026-09-23/qa-20260923-final-mutations.json | Sí | 0 | `.venv/bin/python scripts/qa.py mutate --execute` |
-| docs/qa-evidence/2026-09-23/qa-20260923-final-browser.json | Sí | 0 | `.venv/bin/python scripts/browser_e2e.py --output-dir output/playwright/qa40-final-20260923` |
-| docs/qa-evidence/2026-09-23/qa-20260923-final-scale-1000.json | Sí | 0 | `.venv/bin/python output/e2e/platform_scale/benchmark_runner.py --sizes 1000 --reps 1 --skip-curve --all-exports --output-dir output/qa48-final-20260923` |
-| docs/qa-evidence/2026-09-23/qa-20260923-final-external-control.json | Sí | 0 | `.venv/bin/python scripts/qa.py external-control output/control-final-20260923/audit.json fixtures/external-control.json` |
+| docs/qa-evidence/2026-09-23/qa-20260923-v2-delivery.json | Sí | 0 | `.venv/bin/python scripts/verify_delivery.py --output output/delivery-verification-20260923-v2.json` |
+| docs/qa-evidence/2026-09-23/qa-20260923-v2-verify.json | Sí | 0 | `scripts/verify.sh` |
+| docs/qa-evidence/2026-09-23/qa-20260923-v2-mutations.json | Sí | 0 | `.venv/bin/python scripts/qa.py mutate --execute` |
+| docs/qa-evidence/2026-09-23/qa-20260923-v2-browser.json | Sí | 0 | `.venv/bin/python scripts/browser_e2e.py --output-dir output/playwright/qa40-v2-20260923` |
+| docs/qa-evidence/2026-09-23/qa-20260923-v2-scale-1000.json | Sí | 0 | `.venv/bin/python output/e2e/platform_scale/benchmark_runner.py --sizes 1000 --reps 1 --skip-curve --all-exports --output-dir output/qa48-v2-20260923` |
+| docs/qa-evidence/2026-09-23/qa-20260923-v2-control-run.json | Sí | 0 | `.venv/bin/freight-audit --db .local/control-v2-20260923.db run fixtures/project.json --out output/control-v2-20260923` |
+| docs/qa-evidence/2026-09-23/qa-20260923-v2-control-bundle.json | Sí | 0 | `.venv/bin/freight-audit verify-bundle output/control-v2-20260923/auditoria.zip --replay` |
+| docs/qa-evidence/2026-09-23/qa-20260923-v2-control-compare.json | Sí | 0 | `.venv/bin/python scripts/qa.py external-control output/control-v2-20260923/audit.json fixtures/external-control.json` |
+| docs/qa-evidence/2026-09-23/qa-20260923-v2-platform-parity.json | Sí | 0 | `.venv/bin/python output/e2e/platform_scale/compare_fingerprints.py --linux docs/qa-evidence/2026-09-23/platform-final/linux-semantic-fingerprint.json --windows docs/qa-evidence/2026-09-23/platform-final/windows-semantic-fingerprint.json --output output/qa-platform-final-rechecked.json` |
 
 ## Familias
 

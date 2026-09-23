@@ -1,41 +1,41 @@
 {
   "schema": "calibre-coverage/v2",
-  "commit": "0a73fc30a6efe5e450ae919261046a0cd3ed8848",
-  "source_digest": "c66f6d360bb58ea5535024bee24c31655126494569dd4adf354be36e4e36a763",
+  "commit": "9ad568670f8d9b71627677645f7bd5268b84c23b",
+  "source_digest": "bf5b45d760d225038f2bc0e1e01dca4075e64c089c6590b61480c640f5482371",
   "dirty": false,
   "certification": false,
   "total_families": 58,
   "full_product_coverage": "PENDING_OBLIGATION_REVIEW",
   "gate_s": "QA_INFRASTRUCTURE_ONLY_SEE_RELEASE_CRITERIA",
   "distribution_files_observed": {
-    "freight_audit-0.1.0-py3-none-any.whl": "94832d56097798cd6fbc9ea083ff08dd1d4411fdc87cdb1e26995d0cb7987e80",
-    "freight_audit-0.1.0.tar.gz": "ca069f6c1c2b873ecba1ce08955aa2eef80b78cfaca4c6641234c95fda63f1a1"
+    "freight_audit-0.1.0-py3-none-any.whl": "40226bfacd4bba2e4e20cdebfc2c044c1a0f14b96f2ad2b52c32616a91d2b711",
+    "freight_audit-0.1.0.tar.gz": "38f5714b562a529687978e62ba2ee5b7a47bddcfb5a8b458f9e2489ecec0055a"
   },
   "distribution_note": "Hashes observed on disk; acceptance also requires a current build/install receipt.",
   "executions": [
     {
-      "path": "docs/qa-evidence/2026-09-23/qa-20260923-delivery-final.json",
+      "path": "docs/qa-evidence/2026-09-23/qa-20260923-v2-delivery.json",
       "command": [
         ".venv/bin/python",
         "scripts/verify_delivery.py",
         "--output",
-        "output/delivery-verification-20260923.json"
+        "output/delivery-verification-20260923-v2.json"
       ],
       "exit_code": 0,
       "accepted": true,
-      "receipt_sha256": "4f63b5c9c0c6da8e4fa40de0a0becbe552bd7049dbb67c47f6d86b2d72181aa5"
+      "receipt_sha256": "9f1c808391d0f60b2f91f10fdb849adf899b330a657e58f0cfae03bcfe0b1a71"
     },
     {
-      "path": "docs/qa-evidence/2026-09-23/qa-20260923-final-verify.json",
+      "path": "docs/qa-evidence/2026-09-23/qa-20260923-v2-verify.json",
       "command": [
         "scripts/verify.sh"
       ],
       "exit_code": 0,
       "accepted": true,
-      "receipt_sha256": "f2e38ebb9680abc7835d06de49998b49f45e5e1b8bdeb70e543fb6ec41f37993"
+      "receipt_sha256": "6ed4498ca535bd932fd4312ddc0bd21c0bbeb4175e10e7e43c90a8c5d3cfe525"
     },
     {
-      "path": "docs/qa-evidence/2026-09-23/qa-20260923-final-mutations.json",
+      "path": "docs/qa-evidence/2026-09-23/qa-20260923-v2-mutations.json",
       "command": [
         ".venv/bin/python",
         "scripts/qa.py",
@@ -44,22 +44,22 @@
       ],
       "exit_code": 0,
       "accepted": true,
-      "receipt_sha256": "fb7d6a6a71148d9beff141e4c432be0e0d958efc1f3d5f861496b74b880796a4"
+      "receipt_sha256": "b0220178cdad86f29409decce59eacd57fa16ba715046e137b7d02b699a6fb51"
     },
     {
-      "path": "docs/qa-evidence/2026-09-23/qa-20260923-final-browser.json",
+      "path": "docs/qa-evidence/2026-09-23/qa-20260923-v2-browser.json",
       "command": [
         ".venv/bin/python",
         "scripts/browser_e2e.py",
         "--output-dir",
-        "output/playwright/qa40-final-20260923"
+        "output/playwright/qa40-v2-20260923"
       ],
       "exit_code": 0,
       "accepted": true,
-      "receipt_sha256": "57e3efccade81b707688c6105ad6fbff04a2241a1915916cfe0e660847eed797"
+      "receipt_sha256": "6b9368cc9be3b44e1e6337df47623285693c695b32df6ce8d3b04374dd3224e3"
     },
     {
-      "path": "docs/qa-evidence/2026-09-23/qa-20260923-final-scale-1000.json",
+      "path": "docs/qa-evidence/2026-09-23/qa-20260923-v2-scale-1000.json",
       "command": [
         ".venv/bin/python",
         "output/e2e/platform_scale/benchmark_runner.py",
@@ -70,24 +70,67 @@
         "--skip-curve",
         "--all-exports",
         "--output-dir",
-        "output/qa48-final-20260923"
+        "output/qa48-v2-20260923"
       ],
       "exit_code": 0,
       "accepted": true,
-      "receipt_sha256": "18ce5de81c17cf53a6357878a41aff659516f4855d27f9ad4336d958b69cf2a8"
+      "receipt_sha256": "d3440e8107b4128bc3ed785357a6f268acca3671716c2268f41bbc831e8b25be"
     },
     {
-      "path": "docs/qa-evidence/2026-09-23/qa-20260923-final-external-control.json",
+      "path": "docs/qa-evidence/2026-09-23/qa-20260923-v2-control-run.json",
+      "command": [
+        ".venv/bin/freight-audit",
+        "--db",
+        ".local/control-v2-20260923.db",
+        "run",
+        "fixtures/project.json",
+        "--out",
+        "output/control-v2-20260923"
+      ],
+      "exit_code": 0,
+      "accepted": true,
+      "receipt_sha256": "283a86304c2f9f674f0a0378819c0400f52837a56229e0ac1267dea485c4aedd"
+    },
+    {
+      "path": "docs/qa-evidence/2026-09-23/qa-20260923-v2-control-bundle.json",
+      "command": [
+        ".venv/bin/freight-audit",
+        "verify-bundle",
+        "output/control-v2-20260923/auditoria.zip",
+        "--replay"
+      ],
+      "exit_code": 0,
+      "accepted": true,
+      "receipt_sha256": "1ad6229a0ec535e78fa91dbb74341dd4e2f6f37dbe63b5633de22317d9c9e3e3"
+    },
+    {
+      "path": "docs/qa-evidence/2026-09-23/qa-20260923-v2-control-compare.json",
       "command": [
         ".venv/bin/python",
         "scripts/qa.py",
         "external-control",
-        "output/control-final-20260923/audit.json",
+        "output/control-v2-20260923/audit.json",
         "fixtures/external-control.json"
       ],
       "exit_code": 0,
       "accepted": true,
-      "receipt_sha256": "a12f1c5d8c44145f7c235312c7fd4d9a055aa52980a72da83bc9ff79bdd72f00"
+      "receipt_sha256": "dcbe84307ff743861ee63542c39954933c01ac62f00023e31a066a38f555476a"
+    },
+    {
+      "path": "docs/qa-evidence/2026-09-23/qa-20260923-v2-platform-parity.json",
+      "command": [
+        ".venv/bin/python",
+        "output/e2e/platform_scale/compare_fingerprints.py",
+        "--linux",
+        "docs/qa-evidence/2026-09-23/platform-final/linux-semantic-fingerprint.json",
+        "--windows",
+        "docs/qa-evidence/2026-09-23/platform-final/windows-semantic-fingerprint.json",
+        "--output",
+        "output/qa-platform-final-rechecked.json"
+      ],
+      "exit_code": 0,
+      "accepted": true,
+      "receipt_sha256": "6c3956ca27239cb28fadaad2e478965ee9bbb596477483b4ef093a584579179b"
     }
   ],
   "families": [
