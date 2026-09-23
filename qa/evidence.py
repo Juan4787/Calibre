@@ -26,7 +26,14 @@ def source_digest(root: Path) -> str:
                 paths.append(path)
     paths.extend(
         root / name
-        for name in ("pyproject.toml", "requirements.lock", "requirements-browser.lock", "MANIFEST.in")
+        for name in (
+            ".gitattributes",
+            ".gitignore",
+            "pyproject.toml",
+            "requirements.lock",
+            "requirements-browser.lock",
+            "MANIFEST.in",
+        )
         if (root / name).exists()
     )
     entries = {

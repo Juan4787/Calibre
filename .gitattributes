@@ -9,5 +9,6 @@
 *.css text eol=lf
 *.js text eol=lf
 *.svg text eol=lf
+fixtures/authorization.txt text eol=lf
 *.xlsx binary
 output/e2e/import_adversarial/fixtures/* -text

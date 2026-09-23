@@ -133,6 +133,13 @@ def test_receipt_fingerprint_ignores_generated_metadata_but_not_product_code(tmp
     with_fixture = source_digest(tmp_path)
     fixture.write_text("id,amount\nS1,200\n")
     assert source_digest(tmp_path) != with_fixture
+    before_checkout_rules = source_digest(tmp_path)
+    checkout_rules = tmp_path / ".gitattributes"
+    checkout_rules.write_text("*.txt text eol=lf\n")
+    with_checkout_rules = source_digest(tmp_path)
+    assert with_checkout_rules != before_checkout_rules
+    checkout_rules.write_text("*.txt text=auto\n")
+    assert source_digest(tmp_path) != with_checkout_rules
 
 
 def test_import_gate_rejects_empty_missing_duplicated_and_failed_cases():
