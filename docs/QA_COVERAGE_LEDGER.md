@@ -8,86 +8,86 @@ Fuente única: `qa/catalog.py`. Un selector existente acredita infraestructura d
 
 Las campañas históricas Windows, escala, importación y E2E conservan su alcance original. No certifican este checkout. Ver `RIGOR_REVIEW.md`.
 
-Commit base: `3ede18beeb6c19969602a3a0f233edc05ab8c268`; huella del código y pruebas: `71ebcecaf723893460aff2e8f4f198eff319ecfcde2d7d3bf06fbe3c939187f4`.
+Commit base: `0fe0b034ddd6f4338ebe0c040c857862fccb09f0`; huella del código y pruebas: `71ebcecaf723893460aff2e8f4f198eff319ecfcde2d7d3bf06fbe3c939187f4`.
 
 ## Ejecuciones adjuntas
 
-| Recibo                                         | Código y log verificables | Salida | Comando                                                                                                                                                                                                      |
-| ---------------------------------------------- | ------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| output/review-20260922/final-verification.json | Sí                        | 0      | `bash scripts/verify.sh`                                                                                                                                                                                     |
-| output/review-20260922/final-mutations.json    | Sí                        | 0      | `.venv/bin/python scripts/qa.py mutate --execute`                                                                                                                                                            |
-| output/review-20260922/final-healthy.json      | Sí                        | 0      | `.venv/bin/python output/e2e/fault_injection/run_healthy_controls.py --output-dir output/review-20260922/final-faults`                                                                                       |
-| output/review-20260922/final-faults.json       | Sí                        | 0      | `.venv/bin/python output/e2e/fault_injection/run_directed_faults.py --output-dir output/review-20260922/final-faults`                                                                                        |
-| output/review-20260922/final-imports.json      | Sí                        | 0      | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python output/e2e/import_adversarial/test_import_adversarial.py --output-dir output/review-20260922/final-imports`                                                 |
-| output/review-20260922/final-reconcile.json    | Sí                        | 0      | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python scripts/ci_reconcile_fixtures.py`                                                                                                                           |
-| output/review-20260922/final-pipeline.json     | Sí                        | 0      | `.venv/bin/python output/e2e/platform_scale/benchmark_runner.py --sizes 200 --reps 1 --skip-curve --all-exports --max-child-rss 1000 --min-host-mem 1500 --output-dir output/review-20260922/final-pipeline` |
-| output/review-20260922/final-endurance.json    | Sí                        | 0      | `.venv/bin/python output/e2e/platform_scale/endurance_runner.py --iterations 10 --batch-size 100 --output-dir output/review-20260922/final-endurance`                                                        |
-| output/review-20260922/final-wheel-smoke.json  | Sí                        | 0      | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python scripts/smoke_wheel.py --installed-root /tmp/calibre-reviewed-wheel-7mq3sqfu/lib/python3.12/site-packages`                                                  |
-| output/review-20260922/final-browser.json      | Sí                        | 0      | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python scripts/browser_e2e.py --installed-root /tmp/calibre-reviewed-wheel-7mq3sqfu/lib/python3.12/site-packages --output-dir output/playwright/review-final`      |
-| output/review-20260922/final-platform.json     | Sí                        | 0      | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python output/e2e/platform_scale/run_platform_suite.py --platform linux --cleanroom --output-dir output/review-20260922/final-platform`                            |
+| Recibo | Código y log verificables | Salida | Comando |
+|---|---|---|---|
+| output/review-20260922/final-verification.json | Sí | 0 | `bash scripts/verify.sh` |
+| output/review-20260922/final-mutations.json | Sí | 0 | `.venv/bin/python scripts/qa.py mutate --execute` |
+| output/review-20260922/final-healthy.json | Sí | 0 | `.venv/bin/python output/e2e/fault_injection/run_healthy_controls.py --output-dir output/review-20260922/final-faults` |
+| output/review-20260922/final-faults.json | Sí | 0 | `.venv/bin/python output/e2e/fault_injection/run_directed_faults.py --output-dir output/review-20260922/final-faults` |
+| output/review-20260922/final-imports.json | Sí | 0 | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python output/e2e/import_adversarial/test_import_adversarial.py --output-dir output/review-20260922/final-imports` |
+| output/review-20260922/final-reconcile.json | Sí | 0 | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python scripts/ci_reconcile_fixtures.py` |
+| output/review-20260922/final-pipeline.json | Sí | 0 | `.venv/bin/python output/e2e/platform_scale/benchmark_runner.py --sizes 200 --reps 1 --skip-curve --all-exports --max-child-rss 1000 --min-host-mem 1500 --output-dir output/review-20260922/final-pipeline` |
+| output/review-20260922/final-endurance.json | Sí | 0 | `.venv/bin/python output/e2e/platform_scale/endurance_runner.py --iterations 10 --batch-size 100 --output-dir output/review-20260922/final-endurance` |
+| output/review-20260922/final-wheel-smoke.json | Sí | 0 | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python scripts/smoke_wheel.py --installed-root /tmp/calibre-reviewed-wheel-7mq3sqfu/lib/python3.12/site-packages` |
+| output/review-20260922/final-browser.json | Sí | 0 | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python scripts/browser_e2e.py --installed-root /tmp/calibre-reviewed-wheel-7mq3sqfu/lib/python3.12/site-packages --output-dir output/playwright/review-final` |
+| output/review-20260922/final-platform.json | Sí | 0 | `/tmp/calibre-reviewed-wheel-7mq3sqfu/bin/python output/e2e/platform_scale/run_platform_suite.py --platform linux --cleanroom --output-dir output/review-20260922/final-platform` |
 
 ## Familias
 
-| Familia                                                     | Prioridad | Estado conservador   | Selectores existentes |
-| ----------------------------------------------------------- | --------- | -------------------- | --------------------- |
-| QA-01 — Certeza y diferencia confirmada                     | P0        | PARTIAL              | 2                     |
-| QA-02 — Tolerancia, signo y fronteras                       | P0        | PARTIAL              | 2                     |
-| QA-03 — Referencia de precio independiente                  | P0        | PARTIAL              | 2                     |
-| QA-04 — Dominio numérico y tipos estrictos                  | P0        | PARTIAL              | 4                     |
-| QA-05 — Redondeo, escala y orden                            | P0        | PARTIAL              | 2                     |
-| QA-06 — División y contexto ambiental                       | P0        | PARTIAL              | 3                     |
-| QA-07 — Unidades y monedas separadas                        | P0        | PARTIAL              | 3                     |
-| QA-08 — Números desde originales                            | P0        | PARTIAL              | 4                     |
-| QA-09 — Identidad y normalización declarada                 | P0        | PARTIAL              | 3                     |
-| QA-10 — Estructura CSV y conservación de filas              | P0        | PARTIAL              | 4                     |
-| QA-11 — Semántica de libro Excel                            | P0        | PARTIAL              | 3                     |
-| QA-12 — XLS legacy y cache explícito                        | P1        | PARTIAL              | 1                     |
-| QA-13 — Límites de importación y corrupción                 | P1        | PARTIAL              | 1                     |
-| QA-14 — Importación incompleta y alcance documental         | P0        | PARTIAL              | 2                     |
-| QA-15 — Procedencia verificable                             | P0        | PARTIAL              | 2                     |
-| QA-16 — Selección única de vigencia                         | P0        | PARTIAL              | 3                     |
-| QA-17 — Fecha civil y seriales de Excel                     | P0        | PARTIAL              | 4                     |
-| QA-18 — Reglas/condiciones y AST acotado                    | P0        | PARTIAL              | 4                     |
-| QA-19 — Lookup/bandas sin desempate arbitrario              | P0        | PARTIAL              | 2                     |
-| QA-20 — Claves, aliases y vínculos explícitos               | P0        | PARTIAL              | 3                     |
-| QA-21 — Ambigüedad propagada a grupos parciales             | P0        | PARTIAL              | 2                     |
-| QA-22 — Consolidado y cargos por componentes                | P0        | PARTIAL              | 2                     |
-| QA-23 — Asignaciones superpuestas y servicios parciales     | P0        | PARTIAL              | 1                     |
-| QA-24 — Duplicados candidatos y remito legítimo             | P0        | PARTIAL              | 2                     |
-| QA-25 — Evidencia por ámbito y adición selectiva            | P0        | PARTIAL              | 2                     |
-| QA-26 — Cobertura explícita de cargos ausentes              | P0        | PARTIAL              | 3                     |
-| QA-27 — Conservación total por ID y moneda                  | P0        | PARTIAL              | 1                     |
-| QA-28 — Determinismo y transformaciones                     | P0        | PARTIAL              | 3                     |
-| QA-29 — Aislamiento entre clientes y catálogos              | P0        | PARTIAL              | 1                     |
-| QA-30 — Decisiones humanas y cadena                         | P0        | PARTIAL              | 3                     |
-| QA-31 — Integridad histórica y mutación                     | P0        | PARTIAL              | 3                     |
-| QA-32 — Replay y cambio de artefacto                        | P0        | PARTIAL              | 3                     |
-| QA-33 — Proveniencia de ejecutables y alcance               | P0        | PARTIAL              | 1                     |
-| QA-34 — Backup, restore y reapertura                        | P0        | PARTIAL              | 1                     |
-| QA-35 — Crash, rollback y concurrencia                      | P0        | PARTIAL              | 1                     |
-| QA-36 — Schema y migración recuperable                      | P0        | PARTIAL              | 2                     |
-| QA-37 — Reconciliación entre representaciones               | P0        | PARTIAL              | 1                     |
-| QA-38 — Límites de reportes y contenido activo              | P0        | PARTIAL              | 4                     |
-| QA-39 — UI conserva semántica visible y estado actual       | P0        | PARTIAL              | 0                     |
-| QA-40 — Barrera de red local                                | P0        | PARTIAL              | 1                     |
-| QA-41 — Rutas, archivos y sobrescritura                     | P0        | NO_REGISTERED_RUNNER | 0                     |
-| QA-42 — XML/ZIP malicioso acotado                           | P0        | PARTIAL              | 1                     |
-| QA-43 — Errores de API y consistencia de operación          | P1        | PARTIAL              | 3                     |
-| QA-44 — Auditoría sin servicios externos                    | P1        | PARTIAL              | 1                     |
-| QA-45 — Representación contractual y mapping aprobados      | P0        | REQUIRES_REAL_CLIENT | 0                     |
-| QA-46 — Generalidad de cinco arquetipos                     | P1        | PARTIAL              | 1                     |
-| QA-47 — Paquete y plataforma real                           | P1        | NO_REGISTERED_RUNNER | 0                     |
-| QA-48 — Escala, memoria y tiempos de todas las etapas       | P2        | NO_REGISTERED_RUNNER | 0                     |
-| QA-49 — Los verificadores detectan corrupción               | P0        | PARTIAL              | 2                     |
-| QA-50 — Mutantes críticos dirigidos                         | P0        | NO_REGISTERED_RUNNER | 0                     |
-| QA-51 — Validación ciega con cliente                        | P0        | REQUIRES_REAL_CLIENT | 0                     |
-| QA-52 — Gate de pago sin nuestra supervisión                | P0        | REQUIRES_REAL_CLIENT | 0                     |
-| QA-53 — IDs y JSON inequívocos                              | P0        | PARTIAL              | 2                     |
-| QA-54 — Bundle portable y ancla externa                     | P0        | PARTIAL              | 1                     |
-| QA-55 — Entrega reproducible y dependencias                 | P1        | NO_REGISTERED_RUNNER | 0                     |
-| QA-56 — Separación de liquidaciones y alcance de obligación | P0        | PARTIAL              | 2                     |
-| QA-57 — Diagnóstico no muta evidencia                       | P0        | PARTIAL              | 1                     |
-| QA-58 — Píxel exacto y matrices visuales exhaustivas        | P3        | NO_REGISTERED_RUNNER | 0                     |
+| Familia | Prioridad | Estado conservador | Selectores existentes |
+|---|---|---|---|
+| QA-01 — Certeza y diferencia confirmada | P0 | PARTIAL | 2 |
+| QA-02 — Tolerancia, signo y fronteras | P0 | PARTIAL | 2 |
+| QA-03 — Referencia de precio independiente | P0 | PARTIAL | 2 |
+| QA-04 — Dominio numérico y tipos estrictos | P0 | PARTIAL | 4 |
+| QA-05 — Redondeo, escala y orden | P0 | PARTIAL | 2 |
+| QA-06 — División y contexto ambiental | P0 | PARTIAL | 3 |
+| QA-07 — Unidades y monedas separadas | P0 | PARTIAL | 3 |
+| QA-08 — Números desde originales | P0 | PARTIAL | 4 |
+| QA-09 — Identidad y normalización declarada | P0 | PARTIAL | 3 |
+| QA-10 — Estructura CSV y conservación de filas | P0 | PARTIAL | 4 |
+| QA-11 — Semántica de libro Excel | P0 | PARTIAL | 3 |
+| QA-12 — XLS legacy y cache explícito | P1 | PARTIAL | 1 |
+| QA-13 — Límites de importación y corrupción | P1 | PARTIAL | 1 |
+| QA-14 — Importación incompleta y alcance documental | P0 | PARTIAL | 2 |
+| QA-15 — Procedencia verificable | P0 | PARTIAL | 2 |
+| QA-16 — Selección única de vigencia | P0 | PARTIAL | 3 |
+| QA-17 — Fecha civil y seriales de Excel | P0 | PARTIAL | 4 |
+| QA-18 — Reglas/condiciones y AST acotado | P0 | PARTIAL | 4 |
+| QA-19 — Lookup/bandas sin desempate arbitrario | P0 | PARTIAL | 2 |
+| QA-20 — Claves, aliases y vínculos explícitos | P0 | PARTIAL | 3 |
+| QA-21 — Ambigüedad propagada a grupos parciales | P0 | PARTIAL | 2 |
+| QA-22 — Consolidado y cargos por componentes | P0 | PARTIAL | 2 |
+| QA-23 — Asignaciones superpuestas y servicios parciales | P0 | PARTIAL | 1 |
+| QA-24 — Duplicados candidatos y remito legítimo | P0 | PARTIAL | 2 |
+| QA-25 — Evidencia por ámbito y adición selectiva | P0 | PARTIAL | 2 |
+| QA-26 — Cobertura explícita de cargos ausentes | P0 | PARTIAL | 3 |
+| QA-27 — Conservación total por ID y moneda | P0 | PARTIAL | 1 |
+| QA-28 — Determinismo y transformaciones | P0 | PARTIAL | 3 |
+| QA-29 — Aislamiento entre clientes y catálogos | P0 | PARTIAL | 1 |
+| QA-30 — Decisiones humanas y cadena | P0 | PARTIAL | 3 |
+| QA-31 — Integridad histórica y mutación | P0 | PARTIAL | 3 |
+| QA-32 — Replay y cambio de artefacto | P0 | PARTIAL | 3 |
+| QA-33 — Proveniencia de ejecutables y alcance | P0 | PARTIAL | 1 |
+| QA-34 — Backup, restore y reapertura | P0 | PARTIAL | 1 |
+| QA-35 — Crash, rollback y concurrencia | P0 | PARTIAL | 1 |
+| QA-36 — Schema y migración recuperable | P0 | PARTIAL | 2 |
+| QA-37 — Reconciliación entre representaciones | P0 | PARTIAL | 1 |
+| QA-38 — Límites de reportes y contenido activo | P0 | PARTIAL | 4 |
+| QA-39 — UI conserva semántica visible y estado actual | P0 | PARTIAL | 0 |
+| QA-40 — Barrera de red local | P0 | PARTIAL | 1 |
+| QA-41 — Rutas, archivos y sobrescritura | P0 | NO_REGISTERED_RUNNER | 0 |
+| QA-42 — XML/ZIP malicioso acotado | P0 | PARTIAL | 1 |
+| QA-43 — Errores de API y consistencia de operación | P1 | PARTIAL | 3 |
+| QA-44 — Auditoría sin servicios externos | P1 | PARTIAL | 1 |
+| QA-45 — Representación contractual y mapping aprobados | P0 | REQUIRES_REAL_CLIENT | 0 |
+| QA-46 — Generalidad de cinco arquetipos | P1 | PARTIAL | 1 |
+| QA-47 — Paquete y plataforma real | P1 | NO_REGISTERED_RUNNER | 0 |
+| QA-48 — Escala, memoria y tiempos de todas las etapas | P2 | NO_REGISTERED_RUNNER | 0 |
+| QA-49 — Los verificadores detectan corrupción | P0 | PARTIAL | 2 |
+| QA-50 — Mutantes críticos dirigidos | P0 | NO_REGISTERED_RUNNER | 0 |
+| QA-51 — Validación ciega con cliente | P0 | REQUIRES_REAL_CLIENT | 0 |
+| QA-52 — Gate de pago sin nuestra supervisión | P0 | REQUIRES_REAL_CLIENT | 0 |
+| QA-53 — IDs y JSON inequívocos | P0 | PARTIAL | 2 |
+| QA-54 — Bundle portable y ancla externa | P0 | PARTIAL | 1 |
+| QA-55 — Entrega reproducible y dependencias | P1 | NO_REGISTERED_RUNNER | 0 |
+| QA-56 — Separación de liquidaciones y alcance de obligación | P0 | PARTIAL | 2 |
+| QA-57 — Diagnóstico no muta evidencia | P0 | PARTIAL | 1 |
+| QA-58 — Píxel exacto y matrices visuales exhaustivas | P3 | NO_REGISTERED_RUNNER | 0 |
 
 ## QA-01 — Certeza y diferencia confirmada
 
@@ -628,6 +628,7 @@ Comando del subconjunto automatizado:
 **Procedimiento:** 1. Capturar DOM de todas las páginas y filtros. 2. Cambiar rápidamente de corrida, abrir detalle y registrar decisión. 3. Comparar valores y etiquetas con la corrida exacta. 4. Probar importes con cero y tres decimales.
 
 **Oráculo:** OR-07 OR-09. **Lo que puede escapar:** Una respuesta exitosa de API no prueba qué leyó el operador.
+
 
 Runner adicional; usar un directorio de evidencia nuevo:
 

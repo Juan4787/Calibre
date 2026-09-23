@@ -1,8 +1,8 @@
 {
   "schema": "calibre-coverage/v2",
-  "commit": "3ede18beeb6c19969602a3a0f233edc05ab8c268",
+  "commit": "0fe0b034ddd6f4338ebe0c040c857862fccb09f0",
   "source_digest": "71ebcecaf723893460aff2e8f4f198eff319ecfcde2d7d3bf06fbe3c939187f4",
-  "dirty": true,
+  "dirty": false,
   "certification": false,
   "total_families": 58,
   "full_product_coverage": "PENDING_OBLIGATION_REVIEW",
