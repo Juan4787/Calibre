@@ -32,6 +32,15 @@ const state = {
   auditLabel: "",
   viewRevision: 0,
   importRevision: { shipments: 0, charges: 0 },
+  matchingRevision: 0,
+  matchingCheck: null,
+  matchingConflicts: 0,
+  mappingSource: { shipments: null, charges: null },
+  mappingRevision: { shipments: 0, charges: 0 },
+  mappingReadPending: { shipments: false, charges: false },
+  importPending: { shipments: false, charges: false },
+  agreementRevision: 0,
+  agreementReadPending: false,
 };
 
 const esc = (value) =>
@@ -181,10 +190,10 @@ function renderRunsList() {
 
   if (!runs.length) {
     container.innerHTML = `<div class="panel empty">
-      <div class="symbol" aria-hidden="true" style="font-size:44px; color:var(--accent);">▤</div>
+      <div class="symbol ui-fontsize-b9cba918" aria-hidden="true">▤</div>
       <h2>Del cargo a la evidencia.</h2>
       <p class="muted">Importá operaciones y liquidaciones, seleccioná el acuerdo y reconstruí el importe esperado. Todo se procesa de forma segura en este equipo.</p>
-      <div class="actions centered" style="justify-content:center; margin-top:20px;">
+      <div class="actions centered ui-justifycontent-1025a90c">
         <button class="btn primary" id="demo">Explorar demostración ficticia</button>
       </div>
       <p class="hint">32 operaciones · 3 acuerdos distintos · 4 estados de certeza</p>
@@ -200,17 +209,17 @@ function renderRunsList() {
   if (!$("#search-runs")) {
     container.innerHTML = `
       <div class="banner info">
-        <div style="font-size:22px; line-height:1;">ⓘ</div>
+        <div class="ui-fontsize-0e7fe10f">ⓘ</div>
         <div>
           <strong>La certeza también se audita.</strong>
-          <p style="margin:2px 0 0;">Una diferencia determinada requiere reglas y datos suficientes. La revisión humana y los casos indeterminados no representan ahorro.</p>
+          <p class="ui-margin-b2f2f5fb">Una diferencia determinada requiere reglas y datos suficientes. La revisión humana y los casos indeterminados no representan ahorro.</p>
         </div>
       </div>
       <div class="search-toolbar">
         <input id="search-runs" type="text" placeholder="Buscar por transportista, período o identificador…" value="${esc(state.runSearch || "")}" />
         <button class="btn" id="demo">Ejecutar demostración ficticia</button>
       </div>
-      <div id="runs-items" class="run-list" style="display:flex; flex-direction:column; gap:16px;"></div>
+      <div id="runs-items" class="run-list ui-display-141abdf4"></div>
     `;
 
     $("#search-runs").oninput = (e) => {
@@ -240,7 +249,7 @@ function renderRunsItems() {
     : runs;
 
   if (!filteredRuns.length) {
-    listContainer.innerHTML = `<div class="panel" style="text-align:center; padding:32px 20px; color:var(--muted);">
+    listContainer.innerHTML = `<div class="panel ui-textalign-253c882b">
       No se encontraron auditorías que coincidan con "<strong>${esc(state.runSearch)}</strong>".
     </div>`;
     return;
@@ -329,7 +338,7 @@ function renderAudit() {
     ) +
     (!summary.import_complete
       ? `<div class="banner warning">
-          <div style="font-size:22px;">⚠</div>
+          <div class="ui-fontsize-997b3b04">⚠</div>
           <div>
             <strong>Lote con filas rechazadas.</strong>
             <p>Se excluyeron registros que no cumplían el formato. Las ausencias o datos parciales se tratan como problemas de datos y no se confirman como discrepancia.</p>
@@ -372,7 +381,7 @@ function renderAudit() {
             `<span class="badge ${k}"><strong>${v}</strong> ${summary.counts[k] || 0}</span>`,
         )
         .join("")}
-      <span class="muted" style="margin-left:auto; font-size:13px;">La diferencia determinada no equivale a ahorro ni recupero.</span>
+      <span class="muted ui-marginleft-f89ec43d">La diferencia determinada no equivale a ahorro ni recupero.</span>
       <button class="btn small" id="replay">Verificar reproducción</button>
     </div>
 
@@ -380,7 +389,7 @@ function renderAudit() {
       <div class="table-head">
         <div>
           <h2>Detalle de cargos auditados</h2>
-          <p class="muted" style="margin:4px 0 0; font-size:13px;">Cobertura con reglas completas: ${coverage}% (${summary.determinable_findings} de ${count})</p>
+          <p class="muted ui-margin-ebd1dbfe">Cobertura con reglas completas: ${coverage}% (${summary.determinable_findings} de ${count})</p>
         </div>
         <div class="filters">
           <input id="search" type="search" placeholder="Buscar por referencia, concepto o regla…" value="${esc(state.search)}">
@@ -417,7 +426,7 @@ function renderAudit() {
       </div>
     </div>
 
-    <div class="actions" style="margin-top:24px;">
+    <div class="actions ui-margintop-04bbec5e">
       <a class="btn" href="/api/runs/${run.id}/export/xlsx">↓ Planilla operativa</a>
       <a class="btn" href="/api/runs/${run.id}/export/html" target="_blank">↓ Informe imprimible</a>
       <a class="btn" href="/api/runs/${run.id}/export/canonical" target="_blank">Exportar JSON canónico</a>
@@ -491,14 +500,14 @@ function renderFindings() {
         return `<tr data-finding-id="${esc(f.id)}">
           <td>
             <div class="ref">${esc(references(f) || "Sin referencia vinculada")}</div>
-            <span class="muted" style="font-size:12px;">${esc(f.concept)} · ${f.charge_ids.length} cargo${f.charge_ids.length === 1 ? "" : "s"}</span>
+            <span class="muted ui-fontsize-c42f23b8">${esc(f.concept)} · ${f.charge_ids.length} cargo${f.charge_ids.length === 1 ? "" : "s"}</span>
           </td>
           <td>${badge(f.status)}</td>
           <td class="num">${esc(f.currency)} ${money(f.actual)}</td>
           <td class="num">${moneyOrStatus(f.expected, f.status)}</td>
-          <td class="num" style="font-weight:750; color:${f.status === "FAIL" ? "var(--red)" : f.status === "REVIEW" ? "var(--amber)" : "inherit"};">
+          <td class="num finding-difference ${f.status === "FAIL" ? "finding-difference-fail" : f.status === "REVIEW" ? "finding-difference-review" : ""}">
             ${moneyOrStatus(f.difference, f.status)}
-            ${f.status === "REVIEW" ? '<br><small class="muted" style="font-size:11px;">Requiere revisión</small>' : ""}
+            ${f.status === "REVIEW" ? '<br><small class="muted ui-fontsize-025fe512">Requiere revisión</small>' : ""}
           </td>
           <td class="muted">${decision ? esc(actions[decision.payload.action]) : "Sin resolución"}</td>
           <td>
@@ -546,6 +555,7 @@ const opLabels = {
   currency_round: "Redondeo monetario",
   evidence: "Control de evidencia",
   matching: "Relación de operaciones y cargos",
+  matching_uncertainty: "Vinculación pendiente de un cargo relacionado",
   condition: "Aplicabilidad de regla",
   unresolved: "Dato o regla no resueltos",
 };
@@ -582,7 +592,7 @@ function traceText(trace) {
 function traceHtml(trace) {
   return `<details class="trace" open>
     <summary>${esc(opLabels[trace.op] || trace.op)} ${trace.output !== null ? `<span class="trace-output">→ ${esc(trace.output)}</span>` : ""}</summary>
-    <p class="small-text" style="font-weight:600; margin:4px 0;">${esc(traceText(trace))}</p>
+    <p class="small-text ui-fontweight-94760884">${esc(traceText(trace))}</p>
     <details>
       <summary>Datos utilizados en este paso</summary>
       <code>${esc(JSON.stringify(trace.details, null, 2))}</code>
@@ -628,7 +638,13 @@ function showDetail(id) {
     documentsUsed.push(`Configuración ${f.agreement}, versión ${f.version}, regla ${f.rule}`);
   }
 
-  const arithmeticStr = extractArithmeticSummary(f);
+  const conflictingLinks = f.trace.flatMap((t) => t.details.execution || []).filter((e) => ["conflict", "invalid", "ambiguous", "unmatched"].includes(e.comparison));
+  const relatedConflicts = f.trace.flatMap((t) => t.op === "matching_uncertainty" ? t.details.unresolved_charge_ids : t.op === "matching_conflict" ? t.details.conflicting_charge_ids : []);
+  const versionLabel = conflictingLinks.length ? "Pendiente por vinculación" : f.version || "Sin versión aplicable";
+  const ruleLabel = conflictingLinks.length ? "Pendiente por vinculación" : f.rule || "Sin regla aplicable";
+  const arithmeticStr = conflictingLinks.length
+    ? "Cálculo pendiente: resolver la vinculación entre el cargo y las operaciones."
+    : extractArithmeticSummary(f);
 
   $("#detail-content").innerHTML = `
     <!-- Top Status Banner -->
@@ -638,13 +654,13 @@ function showDetail(id) {
 
     <div class="modal-header-star">
       <div class="modal-header-title">
-        <div class="eyebrow" style="color:var(--accent);">EXPLICACIÓN DEL HALLAZGO</div>
-        <h2 id="detail-title" style="margin:0; font-size:24px;">
+        <div class="eyebrow ui-color-10d73d12">EXPLICACIÓN DEL HALLAZGO</div>
+        <h2 id="detail-title" class="ui-margin-698a2e6f">
           ${esc(references(f) || "Referencia sin vincular")} · ${esc(f.concept)}
         </h2>
-        <div style="margin-top:6px;">
+        <div class="ui-margintop-1d436efc">
           ${badge(f.status)}
-          <span class="muted" style="margin-left:10px; font-size:13px;">Acuerdo <strong>${esc(f.agreement || "Sin acuerdo")}</strong> · Versión <strong>${esc(f.version || "Sin versión aplicable")}</strong> · Regla <strong>${esc(f.rule || "Sin regla aplicable")}</strong></span>
+          <span class="muted ui-marginleft-c3b08bda">Acuerdo <strong>${esc(f.agreement || "Sin acuerdo")}</strong> · Versión <strong>${esc(versionLabel)}</strong> · Regla <strong>${esc(ruleLabel)}</strong></span>
         </div>
       </div>
       <button class="btn small" id="close-detail" aria-label="Cerrar explicación">Cerrar ✕</button>
@@ -655,17 +671,17 @@ function showDetail(id) {
       <div class="hero-fin-col">
         <label>FACTURADO LIQUIDADO · ${esc(f.currency)}</label>
         <div class="amount">${money(f.actual)}</div>
-        <p class="muted" style="font-size:12px; margin:4px 0 0;">Según los cargos importados</p>
+        <p class="muted ui-fontsize-5ca1e82b">Según los cargos importados</p>
       </div>
       <div class="hero-fin-col">
         <label>ESPERADO SEGÚN ACUERDO</label>
         <div class="amount">${money(f.expected, f.status === "REVIEW" ? "Requiere revisión" : "No determinable")}</div>
-        <p class="muted" style="font-size:12px; margin:4px 0 0;">${f.expected === null ? "Faltan datos o reglas para calcular" : "Resultado de la regla configurada"}</p>
+        <p class="muted ui-fontsize-5ca1e82b">${conflictingLinks.length ? "Primero se debe resolver la vinculación" : f.expected === null ? "Faltan datos o reglas para calcular" : "Resultado de la regla configurada"}</p>
       </div>
       <div class="hero-fin-col ${f.status === "FAIL" ? "highlight-fail" : f.status === "REVIEW" ? "highlight-review" : ""}">
         <label>DIFERENCIA CALCULADA</label>
         <div class="amount">${money(f.difference, f.status === "REVIEW" ? "Requiere revisión" : "No determinable")}</div>
-        <p class="muted" style="font-size:12px; margin:4px 0 0;">${f.status === "FAIL" ? "Discrepancia determinada" : f.status === "REVIEW" ? "Diferencia sin confirmar" : f.status === "PASS" ? "Dentro de la tolerancia configurada" : "No se puede determinar la diferencia"}</p>
+        <p class="muted ui-fontsize-5ca1e82b">${f.status === "FAIL" ? "Discrepancia determinada" : f.status === "REVIEW" ? "Diferencia sin confirmar" : f.status === "PASS" ? "Dentro de la tolerancia configurada" : "No se puede determinar la diferencia"}</p>
       </div>
     </div>
 
@@ -676,9 +692,11 @@ function showDetail(id) {
         <div class="finding-card-title">
           <span>ⓘ</span> Por qué
         </div>
-        ${f.reasons.map((r) => `<p style="font-size:14px; line-height:1.5; margin:0 0 10px;">${esc(r)}</p>`).join("")}
-        <div style="background:#f9faf7; border:1px solid var(--line); border-radius:6px; padding:10px 14px; font-size:13px; color:var(--ink-secondary); margin-top:14px;">
-          Regla <strong>${esc(f.rule || "Sin regla aplicable")}</strong> · versión <strong>${esc(f.version || "Sin versión aplicable")}</strong>
+        ${f.reasons.map((r) => `<p class="ui-fontsize-afce41d9">${esc(r)}</p>`).join("")}
+        ${matchingConflictDetails(conflictingLinks, state.run.snapshot)}
+        ${relatedConflicts.length ? `<p>Revisar los cargos con vinculación pendiente: ${relatedConflicts.map(esc).join(", ")}.</p>` : ""}
+        <div class="ui-background-ef9abbd6">
+          Regla <strong>${esc(ruleLabel)}</strong> · versión <strong>${esc(versionLabel)}</strong>
         </div>
       </div>
 
@@ -690,29 +708,29 @@ function showDetail(id) {
         <div class="arithmetic-callout">
           ${esc(arithmeticStr)}
         </div>
-        <div style="font-size:12px; font-weight:750; text-transform:uppercase; color:var(--muted); margin:14px 0 6px;">
-          Registros y configuración utilizados:
+        <div class="ui-fontsize-7d717343">
+          ${conflictingLinks.length ? "Operaciones candidatas y cargos a contrastar:" : "Registros y configuración utilizados:"}
         </div>
         <ul class="doc-checklist">
-          ${documentsUsed.map((doc) => `<li class="doc-item"><span class="check">✓</span> <span>${esc(doc)}</span></li>`).join("")}
+          ${documentsUsed.map((doc) => `<li class="doc-item"><span class="check">${conflictingLinks.length ? "?" : "✓"}</span> <span>${esc(doc)}</span></li>`).join("")}
         </ul>
       </div>
     </div>
 
     <!-- Trazabilidad completa (secundario) -->
-    <div style="padding: 0 32px 18px;">
-      <details class="panel" style="margin:0;">
-        <summary style="font-weight:750; color:var(--accent);">Cálculo ejecutado y decisiones de la regla (ver pasos matemáticos)</summary>
-        <div style="margin-top:12px;">
+    <div class="ui-padding-496cf7c8">
+      <details class="panel ui-margin-38965f9b">
+        <summary class="ui-fontweight-b44ef607">Cálculo ejecutado y decisiones de la regla (ver pasos matemáticos)</summary>
+        <div class="ui-margintop-b6d781cb">
           ${f.trace.map(traceHtml).join("") || "<p class='muted'>No hubo cálculo: primero se necesita resolver la vinculación.</p>"}
         </div>
       </details>
     </div>
 
-    <div style="padding: 0 32px 24px;">
-      <details class="panel" style="margin:0;">
-        <summary style="font-weight:750; color:var(--accent);">Origen de cada dato (${records.length} registros celda por celda)</summary>
-        <div class="table-wrap" style="margin-top:12px;">
+    <div class="ui-padding-fea5994f">
+      <details class="panel ui-margin-38965f9b">
+        <summary class="ui-fontweight-b44ef607">Origen de cada dato (${records.length} registros celda por celda)</summary>
+        <div class="table-wrap ui-margintop-b6d781cb">
           <table>
             <thead>
               <tr>
@@ -743,8 +761,8 @@ function showDetail(id) {
     <!-- Decisión Humana e Historial -->
     <div class="decision-section-wrap">
       <div class="grid2">
-        <section class="panel" style="margin:0;">
-          <h3 style="margin-top:0;">Decisión humana</h3>
+        <section class="panel ui-margin-38965f9b">
+          <h3 class="ui-margintop-1294519f">Decisión humana</h3>
           <p class="hint">Agrega una resolución al expediente de auditoría. El cálculo y estado técnico original del motor se conservan intactos.</p>
           <form id="decision-form" class="decision-form">
             <div class="field">
@@ -773,13 +791,13 @@ function showDetail(id) {
                 <option value="false">No, discrepancia nueva</option>
               </select>
             </div>
-            <button class="btn primary" type="submit" style="width:100%;">Guardar decisión en expediente</button>
+            <button class="btn primary ui-width-9ccc4ca9" type="submit">Guardar decisión en expediente</button>
           </form>
         </section>
 
-        <section class="panel" style="margin:0;">
-          <h3 style="margin-top:0;">Historial de resoluciones</h3>
-          <div style="max-height: 220px; overflow-y: auto; margin-bottom: 16px;">
+        <section class="panel ui-margin-38965f9b">
+          <h3 class="ui-margintop-1294519f">Historial de resoluciones</h3>
+          <div class="ui-maxheight-d1cb98d5">
             ${history
               .map(
                 (d) =>
@@ -793,9 +811,9 @@ function showDetail(id) {
           </div>
 
           <!-- Aportar evidencia -->
-          <details id="evidence-panel" style="border-top:1.5px solid var(--line); padding-top:16px;">
-            <summary style="font-size:14px; font-weight:750; color:var(--ink);">Aportar evidencia y crear nueva corrida</summary>
-            <p class="hint" style="margin-bottom:12px;">Permite adjuntar documentación que subsane una revisión. La corrida anterior permanece inmutable.</p>
+          <details id="evidence-panel" class="ui-bordertop-fd7dfba1">
+            <summary class="ui-fontsize-74b1bec6">Aportar evidencia y crear nueva corrida</summary>
+            <p class="hint ui-marginbottom-4636770b">Permite adjuntar documentación que subsane una revisión. La corrida anterior permanece inmutable.</p>
             <form id="evidence-form">
               <div class="field">
                 <label for="ev-kind">Tipo de evidencia según el acuerdo</label>
@@ -809,7 +827,7 @@ function showDetail(id) {
                 <label for="ev-file">Documento adjunto (opcional)</label>
                 <input id="ev-file" type="file">
               </div>
-              <button class="btn" type="submit" style="width:100%;">Auditar con esta evidencia</button>
+              <button class="btn ui-width-9ccc4ca9" type="submit">Auditar con esta evidencia</button>
             </form>
           </details>
         </section>
@@ -879,25 +897,63 @@ function showDetail(id) {
 /* ==========================================================================
    WIZARD DE NUEVA AUDITORÍA (1. DATOS → 2. ACUERDO → 3. VERIFICACIÓN → 4. EJECUTAR)
    ========================================================================== */
+function agreementRuleCount(agreement) {
+  return (agreement?.versions || []).reduce(
+    (count, version) => count + (Array.isArray(version.rules) ? version.rules.length : 0),
+    0,
+  );
+}
+
+function agreementVersionList(agreement) {
+  return (agreement.versions || []).map((version) => {
+    const ruleCount = Array.isArray(version.rules) ? version.rules.length : 0;
+    return `<li><strong>${esc(version.id)}</strong> · ${esc(version.valid_from || "sin inicio")} a ${esc(version.valid_to || "abierta")} · ${ruleCount} regla(s)</li>`;
+  }).join("");
+}
+
+function agreementSummary(agreements) {
+  const versions = agreements.flatMap((agreement) => agreement.versions || []);
+  const rules = agreements.reduce((count, agreement) => count + agreementRuleCount(agreement), 0);
+  const details = agreements.map((agreement) => {
+    return `<li><strong>${esc(agreement.id)}</strong> · ${esc(agreement.carrier)} · ${esc(agreement.currency)}
+      <ul>${agreementVersionList(agreement)}</ul></li>`;
+  }).join("");
+  return `<strong>${agreements.length} acuerdo(s)</strong> · <strong>${versions.length} versión(es)</strong> · <strong>${rules} regla(s) configuradas</strong>
+    <details class="agreement-summary-detail"><summary>Ver acuerdos y versiones cargados</summary><ul>${details}</ul></details>`;
+}
+
 async function showNew() {
   nav("new");
   const revision = state.viewRevision;
+  main.innerHTML = heading("NUEVA AUDITORÍA", "Preparando el asistente", "Leyendo acuerdos y formatos del equipo…");
   state.imports = {};
+  state.mappingSource = { shipments: null, charges: null };
+  state.mappingReadPending = { shipments: false, charges: false };
+  state.importPending = { shipments: false, charges: false };
+  state.agreementReadPending = false;
+  state.agreementRevision += 1;
+  state.matchingRevision += 1;
+  state.matchingCheck = null;
   state.auditLabel = "";
   state.importRevision.shipments += 1;
   state.importRevision.charges += 1;
   state.wizardStep = 1;
-  const configs = await api("/api/configs");
-  if (revision !== state.viewRevision) return;
-  state.configs = configs;
-
-  renderWizard();
+  try {
+    const configs = await api("/api/configs");
+    if (revision !== state.viewRevision) return;
+    state.configs = configs;
+    renderWizard();
+  } catch (error) {
+    if (revision !== state.viewRevision) return;
+    main.innerHTML = heading("NUEVA AUDITORÍA", "No se pudo abrir el asistente", esc(error.message), '<button class="btn primary" id="retry-new">Reintentar</button>');
+    $("#retry-new").onclick = showNew;
+  }
 }
 
 function renderWizard() {
   main.innerHTML = `
     <div class="wizard-header">
-      <div class="eyebrow" style="color:var(--accent);">FLUJO GUIADO DE AUDITORÍA</div>
+      <div class="eyebrow ui-color-10d73d12">FLUJO GUIADO DE AUDITORÍA</div>
       <h1>Nueva auditoría</h1>
       <p class="muted">Configuración por etapas de datos, contrato y verificación antes de calcular.</p>
 
@@ -925,22 +981,22 @@ function renderWizard() {
     </div>
 
     <!-- Compact Step Summaries for Completed Steps -->
-    <div id="wizard-summaries" style="margin-bottom:20px;">
-      <div id="step-summary-1" class="step-summary-bar hidden" style="display:none;">
+    <div id="wizard-summaries" class="ui-marginbottom-3c4a3d44">
+      <div id="step-summary-1" class="step-summary-bar hidden">
         <div class="step-summary-info">
           <span class="step-summary-tag">✓ Datos</span>
           <span class="step-summary-desc" id="step-summary-1-text"></span>
         </div>
         <button type="button" class="btn small subtle" id="reopen-step-1">Editar</button>
       </div>
-      <div id="step-summary-2" class="step-summary-bar hidden" style="display:none;">
+      <div id="step-summary-2" class="step-summary-bar hidden">
         <div class="step-summary-info">
           <span class="step-summary-tag">✓ Acuerdo</span>
-          <span class="step-summary-desc" id="step-summary-2-text"></span>
+          <div class="step-summary-desc" id="step-summary-2-text"></div>
         </div>
         <button type="button" class="btn small subtle" id="reopen-step-2">Editar</button>
       </div>
-      <div id="step-summary-3" class="step-summary-bar hidden" style="display:none;">
+      <div id="step-summary-3" class="step-summary-bar hidden">
         <div class="step-summary-info">
           <span class="step-summary-tag">✓ Verificación</span>
           <span class="step-summary-desc" id="step-summary-3-text">Integridad del lote verificada</span>
@@ -950,44 +1006,45 @@ function renderWizard() {
     </div>
 
     <!-- Wizard Steps Content: All 4 panels preserved in DOM -->
+    <p id="matching-progress" role="status" aria-live="polite" hidden></p>
     <div id="wizard-content">
       <!-- STEP 1: DATOS -->
       <div id="step-panel-1" class="wizard-panel">
         <div class="panel">
-          <div style="margin-bottom:20px;">
-            <label for="audit-label" style="font-size:14.5px; font-weight:750;">Nombre del período o lote</label>
-            <input id="audit-label" type="text" placeholder="Ej.: Cierre de septiembre · Transportes Gómez" value="${esc(state.auditLabel || "")}" required style="max-width:560px;">
+          <div class="ui-marginbottom-3c4a3d44">
+            <label for="audit-label" class="ui-fontsize-df949b3e">Nombre del período o lote</label>
+            <input id="audit-label" type="text" placeholder="Ej.: Cierre de septiembre · Transportes Gómez" value="${esc(state.auditLabel || "")}" required class="ui-maxwidth-344a0df9">
           </div>
 
-          <div style="margin-bottom:16px;">
-            <h2 style="margin:0 0 4px; font-size:20px;">Paso 1: Carga de Archivos</h2>
-            <p class="muted" style="margin:0; font-size:13.5px;">Subí las operaciones realizadas (remitos o viajes) y los cargos facturados por el transportista.</p>
+          <div class="ui-marginbottom-7564ec60">
+            <h2 class="ui-margin-9412625c">Paso 1: Carga de Archivos</h2>
+            <p class="muted ui-margin-7406c902">Subí las operaciones realizadas (remitos o viajes) y los cargos facturados por el transportista.</p>
           </div>
 
-          <div class="grid2" style="margin-top:16px;">
+          <div class="grid2 ui-margintop-76977cc9">
             ${renderDropzoneSection("shipments", "Operaciones", "Viajes, despachos o remitos")}
             ${renderDropzoneSection("charges", "Cargos liquidados", "Detalle de cargos y montos del transportista")}
           </div>
 
-          <div class="actions" style="margin-top:24px; justify-content:flex-end;">
+          <div class="actions ui-margintop-91a1fbef">
             <button class="btn primary" id="goto-step-2">Continuar a Acuerdo →</button>
           </div>
         </div>
       </div>
 
       <!-- STEP 2: ACUERDO -->
-      <div id="step-panel-2" class="wizard-panel" style="display:none;">
+      <div id="step-panel-2" class="wizard-panel hidden">
         <div class="panel">
           <h2>Paso 2: Selección del Acuerdo Contractual</h2>
           <p class="muted">Elegí el tarifario pactado con el transportista para auditar los cargos.</p>
 
-          <div class="run-list" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin:20px 0;">
+          <div class="run-list ui-display-a3d2651f">
             ${state.configs
               .filter((c) => c.kind === "agreement")
               .map(
                 (c) => `
                 <div class="agreement-card" data-hash="${c.hash}">
-                  <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+                  <div class="ui-display-d528dea8">
                     <div>
                       <h4 class="agreement-card-title">${esc(c.name)}</h4>
                       <div class="agreement-card-carrier">Transportista: <strong>${esc(c.payload?.carrier || "Pactado")}</strong></div>
@@ -997,9 +1054,11 @@ function renderWizard() {
                   <div class="agreement-card-meta">
                     <span>Moneda <strong>${esc(c.payload?.currency || "ARS")}</strong></span>
                     <span>·</span>
-                    <span>${Array.isArray(c.payload?.rules) ? c.payload.rules.length : 1} regla(s)</span>
+                    <span>${c.payload?.versions?.length || 0} versión(es)</span>
+                    <span>·</span>
+                    <span>${agreementRuleCount(c.payload)} regla(s) configuradas</span>
                   </div>
-                  <div style="display:flex; justify-content:flex-end; margin-top:14px;">
+                  <div class="ui-display-a9e01b95">
                     <button type="button" class="btn small primary select-agreement-btn" data-hash="${c.hash}">Seleccionar</button>
                   </div>
                 </div>
@@ -1008,8 +1067,8 @@ function renderWizard() {
               .join("") || '<p class="muted">No hay acuerdos guardados. Cargá uno desde JSON.</p>'}
           </div>
 
-          <div style="display:flex; gap:14px; align-items:flex-end; margin-top:16px; flex-wrap:wrap;">
-            <div class="field" style="margin:0; flex:1; min-width:260px;">
+          <div class="ui-display-1a968e4a">
+            <div class="field ui-margin-f6efb71d">
               <label for="agreement-select">O seleccionar desde el listado</label>
               <select id="agreement-select">
                 <option value="">Seleccionar acuerdo…</option>
@@ -1022,32 +1081,33 @@ function renderWizard() {
                   .join("")}
               </select>
             </div>
-            <div class="field" style="margin:0;">
+            <div class="field ui-margin-38965f9b">
               <label>Importar acuerdo JSON</label>
-              <input type="file" id="agreement-file" accept=".json" style="padding:8px 10px; font-size:13px;">
+              <input type="file" id="agreement-file" accept=".json" class="ui-padding-45d64fe9">
+              <p id="agreement-load-status" role="status" aria-live="polite"></p>
             </div>
           </div>
 
-          <div class="panel-advanced" style="margin-top:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <strong style="font-size:13.5px;">Modo avanzado: Editor de acuerdos y evidencia (JSON)</strong>
+          <div class="panel-advanced ui-margintop-910f53fb">
+            <div class="ui-display-c8cc40c3">
+              <strong class="ui-fontsize-6c0edc58">Modo avanzado: Editor de acuerdos y evidencia (JSON)</strong>
               <button class="btn subtle small" type="button" id="toggle-agreements">Mostrar/Ocultar JSON</button>
             </div>
             <div id="agreements-advanced-body" class="panel-advanced-body hidden">
               <label for="agreements">Acuerdos (lista JSON)</label>
               <textarea id="agreements" rows="7" spellcheck="false">[]</textarea>
-              <div style="margin-top:10px;">
+              <div class="ui-margintop-726e8b31">
                 <label for="evidence">Evidencia previa (lista JSON opcional)</label>
                 <textarea id="evidence" rows="3">[]</textarea>
               </div>
-              <div style="margin-top:10px;">
+              <div class="ui-margintop-726e8b31">
                 <label for="coverage">Alcance por acuerdo (JSON)</label>
                 <textarea id="coverage" rows="3">{}</textarea>
               </div>
             </div>
           </div>
 
-          <div class="actions" style="margin-top:28px; justify-content:space-between;">
+          <div class="actions ui-margintop-bf9413de">
             <button class="btn" id="back-to-step-1">← Volver a Datos</button>
             <button class="btn primary" id="goto-step-3">Continuar a Verificación →</button>
           </div>
@@ -1055,36 +1115,37 @@ function renderWizard() {
       </div>
 
       <!-- STEP 3: VERIFICACIÓN -->
-      <div id="step-panel-3" class="wizard-panel" style="display:none;">
+      <div id="step-panel-3" class="wizard-panel hidden">
         <div class="panel">
           <h2>Paso 3: Verificación Previa</h2>
           <p class="muted">Revisá la consistencia del lote antes de ejecutar el motor de auditoría determinista.</p>
+          <div id="matching-check-step3" role="status" aria-live="polite"></div>
 
-          <div class="field" style="margin:16px 0;">
+          <div class="field ui-margin-5de38404">
             <label for="audit-label-step3">Nombre de la auditoría</label>
-            <input id="audit-label-step3" type="text" value="${esc(state.auditLabel || "")}" required style="max-width:560px;">
+            <input id="audit-label-step3" type="text" value="${esc(state.auditLabel || "")}" required class="ui-maxwidth-344a0df9">
           </div>
 
-          <div class="grid2" style="margin:16px 0;">
-            <div style="padding:16px 18px; background:#f9fbf8; border:1px solid var(--line); border-radius:var(--radius-sm);">
-              <h3 style="margin:0 0 6px; font-size:15px;">Operaciones preparadas</h3>
+          <div class="grid2 ui-margin-5de38404">
+            <div class="ui-padding-041145b1">
+              <h3 class="ui-margin-7cb69eb0">Operaciones preparadas</h3>
               <div id="verify-shipments-summary"></div>
             </div>
-            <div style="padding:16px 18px; background:#f9fbf8; border:1px solid var(--line); border-radius:var(--radius-sm);">
-              <h3 style="margin:0 0 6px; font-size:15px;">Cargos liquidados preparados</h3>
+            <div class="ui-padding-041145b1">
+              <h3 class="ui-margin-7cb69eb0">Cargos liquidados preparados</h3>
               <div id="verify-charges-summary"></div>
             </div>
           </div>
 
-          <div class="banner info" style="margin:20px 0 0;">
-            <div style="font-size:20px; line-height:1;">ⓘ</div>
+          <div class="banner info ui-margin-3b5bc8f9">
+            <div class="ui-fontsize-87e06f45">ⓘ</div>
             <div>
-              <strong>Revisión de integridad garantizada</strong>
-              <p style="margin:2px 0 0;">Las filas rechazadas o no identificadas no se omiten silenciosamente; se conservan como incidencias de datos para garantizar trazabilidad total.</p>
+              <strong>Revisá las incidencias antes de ejecutar</strong>
+              <p class="ui-margin-b2f2f5fb">Las advertencias y filas rechazadas figuran arriba. Una advertencia no bloquea automáticamente la auditoría; verificá su alcance antes de interpretar los resultados.</p>
             </div>
           </div>
 
-          <div class="actions" style="margin-top:28px; justify-content:space-between;">
+          <div class="actions ui-margintop-bf9413de">
             <button class="btn" id="back-to-step-2">← Volver a Acuerdo</button>
             <button class="btn primary" id="goto-step-4">Continuar a Ejecución →</button>
           </div>
@@ -1092,18 +1153,19 @@ function renderWizard() {
       </div>
 
       <!-- STEP 4: EJECUTAR -->
-      <div id="step-panel-4" class="wizard-panel" style="display:none;">
-        <div class="panel" style="text-align:center; padding:40px 24px;">
-          <div style="font-size:44px; margin-bottom:12px;">⚡</div>
+      <div id="step-panel-4" class="wizard-panel hidden">
+        <div class="panel ui-textalign-aafb9ae4">
+          <div class="ui-fontsize-7213c457">⚡</div>
           <h2>Listo para auditar</h2>
-          <p class="muted" style="max-width:560px; margin:0 auto 24px; font-size:14.5px; line-height:1.6;">
+          <div id="matching-check-step4" role="status" aria-live="polite"></div>
+          <p class="muted ui-maxwidth-2cb2dbe7">
             Auditoría: <strong id="step4-audit-label">${esc(state.auditLabel || "Sin título")}</strong><br>
             El motor procesará los cálculos en este equipo de forma determinista, generando la cadena de decisión y los reportes exportables.
           </p>
-          <button class="btn primary" id="execute" style="padding:15px 34px; font-size:15.5px; font-weight:750;">
+          <button class="btn primary ui-padding-a7d43ac2" id="execute">
             Ejecutar auditoría local →
           </button>
-          <div style="margin-top:20px;">
+          <div class="ui-margintop-910f53fb">
             <button class="btn subtle" id="back-to-step-3">← Revisar configuración</button>
           </div>
         </div>
@@ -1134,6 +1196,10 @@ function renderWizard() {
   $("#goto-step-3").onclick = () => goToStep(3);
 
   const updateSelectedAgreementCard = (hash) => {
+    state.agreementRevision += 1;
+    state.agreementReadPending = false;
+    state.matchingCheck = null;
+    $("#agreement-load-status").textContent = "";
     document.querySelectorAll(".agreement-card").forEach((card) => {
       const isSelected = card.dataset.hash === hash;
       card.classList.toggle("selected", isSelected);
@@ -1176,12 +1242,39 @@ function renderWizard() {
     if (found) {
       $("#agreements").value = JSON.stringify([found.payload], null, 2);
       updateSelectedAgreementCard(found.hash);
+    } else {
+      $("#agreements").value = "[]";
+      updateSelectedAgreementCard("");
     }
   };
 
   $("#agreement-file").onchange = (event) =>
     busy(null, async () => {
-      const parsed = JSON.parse(await event.target.files[0].text());
+      const file = event.target.files[0];
+      if (!file) return;
+      updateSelectedAgreementCard("");
+      $("#agreement-select").value = "";
+      $("#agreements").value = "[]";
+      const revision = state.agreementRevision;
+      const viewRevision = state.viewRevision;
+      state.agreementReadPending = true;
+      $("#agreement-load-status").textContent = "Leyendo el acuerdo seleccionado…";
+      let parsed;
+      try {
+        const content = await file.text();
+        if (revision !== state.agreementRevision || viewRevision !== state.viewRevision) return;
+        parsed = JSON.parse(content);
+      } catch {
+        if (revision === state.agreementRevision && viewRevision === state.viewRevision) {
+          notice("No se pudo leer el acuerdo. Volvé a seleccionar un archivo JSON válido o un acuerdo guardado.", true);
+        }
+        return;
+      } finally {
+        if (revision === state.agreementRevision && viewRevision === state.viewRevision) {
+          state.agreementReadPending = false;
+          $("#agreement-load-status").textContent = "Revisá la configuración antes de continuar.";
+        }
+      }
       $("#agreements").value = JSON.stringify(
         Array.isArray(parsed) ? parsed : [parsed],
         null,
@@ -1189,13 +1282,14 @@ function renderWizard() {
       );
       notice("Archivo de acuerdo cargado correctamente.");
     });
+  $("#agreements").oninput = () => {
+    updateSelectedAgreementCard("");
+    $("#agreement-select").value = "";
+  };
 
   $("#toggle-agreements").onclick = () => {
     const body = $("#agreements-advanced-body");
-    if (body) {
-      body.classList.toggle("hidden");
-      body.style.display = body.classList.contains("hidden") ? "none" : "block";
-    }
+    if (body) body.classList.toggle("hidden");
   };
 
   // Setup Step 3 Handlers
@@ -1219,25 +1313,17 @@ function renderWizard() {
   $("#back-to-step-3").onclick = () => goToStep(3);
   $("#execute").onclick = (event) =>
     busy(event.target, async () => {
+      if (state.agreementReadPending) throw new Error("Esperá a que termine de cargar el acuerdo.");
       if (!state.imports.shipments || !state.imports.charges)
         throw new Error(
           "Validar ambos archivos con sus columnas antes de ejecutar.",
         );
-      const label = state.auditLabel || $("#audit-label")?.value.trim() || "Auditoría local";
-      const values = Object.values(state.imports);
-      const dataset = {
-        label,
-        shipments: state.imports.shipments.records,
-        charges: state.imports.charges.records,
-        agreements: JSON.parse($("#agreements")?.value || "[]"),
-        evidence: JSON.parse($("#evidence")?.value || "[]"),
-        coverage: JSON.parse($("#coverage")?.value || "{}"),
-        mappings: values.map((r) => r.mapping),
-        documents: Object.fromEntries(
-          values.map((r) => [r.document, r.filename]),
-        ),
-        issues: values.flatMap((r) => r.issues),
-      };
+      const dataset = auditDataset();
+      if (state.matchingCheck !== matchingSignature(dataset)) {
+        notice("El lote cambió. Revisá la verificación actualizada antes de ejecutar.", true);
+        await goToStep(3);
+        return;
+      }
       const result = await post("/api/audit", dataset);
       await openRun(result.run_id);
     });
@@ -1245,18 +1331,121 @@ function renderWizard() {
   goToStep(1);
 }
 
-function goToStep(step) {
+function auditDataset() {
+  const values = Object.values(state.imports);
+  return {
+    label: state.auditLabel || $("#audit-label")?.value.trim() || "Auditoría local",
+    shipments: state.imports.shipments.records,
+    charges: state.imports.charges.records,
+    agreements: JSON.parse($("#agreements")?.value || "[]"),
+    evidence: JSON.parse($("#evidence")?.value || "[]"),
+    coverage: JSON.parse($("#coverage")?.value || "{}"),
+    mappings: values.map((r) => r.mapping),
+    documents: Object.fromEntries(values.map((r) => [r.document, r.filename])),
+    issues: values.flatMap((r) => r.issues),
+  };
+}
+
+function matchingSignature(dataset) {
+  const { label, ...content } = dataset;
+  return JSON.stringify(content);
+}
+
+function matchingConflictDetails(conflicts, dataset) {
+  if (!conflicts.length) return "";
+  const shipments = new Map(dataset.shipments.map((s) => [s.id, s]));
+  const charges = new Map(dataset.charges.map((c) => [c.id, c]));
+  const operationList = (ids) => ids.slice(0, 8).map((id) => {
+    const shipment = shipments.get(id);
+    return shipment ? `${esc(id)} (referencia ${esc(shipment.reference || "vacía")})` : `${esc(id)} (no existe en el lote)`;
+  }).join(", ") + (ids.length > 8 ? `; y ${ids.length - 8} más, disponibles en la traza completa` : "") || "ninguna operación";
+  const reasons = {
+    conflict: "Las claves y el vínculo explícito se contradicen.",
+    invalid: "El vínculo explícito no es válido.",
+    ambiguous: "Las claves señalan varias operaciones; hace falta precisar la vinculación.",
+    unmatched: "Las claves no señalan una operación del lote; revisá la referencia o el archivo de operaciones.",
+  };
+  return `<ul class="matching-conflicts">${conflicts.map((conflict) => `
+    <li><strong>Cargo ${esc(conflict.charge_id)}</strong> · referencia ${esc(charges.get(conflict.charge_id)?.reference || "vacía")}
+      <p>${reasons[conflict.comparison] || "Revisar la vinculación."}</p>
+      <p>Según las claves del archivo: ${operationList(conflict.key_candidate_ids || [])}.</p>
+      ${conflict.method === "explicit" ? `<p>Según la vinculación explícita: ${operationList(conflict.shipment_ids || [])}.</p>` : ""}
+      ${conflict.invalid_targets?.empty ? "<p>La lista de destinos está vacía.</p>" : ""}
+      ${conflict.invalid_targets?.repeated?.length ? `<p>Destinos repetidos: ${operationList(conflict.invalid_targets.repeated)}.</p>` : ""}
+      ${conflict.invalid_targets?.other_carrier?.length ? `<p>Destinos de otro transportista: ${operationList(conflict.invalid_targets.other_carrier)}.</p>` : ""}
+    </li>`).join("")}</ul>`;
+}
+
+function matchingPending(pending) {
+  const progress = $("#matching-progress");
+  if (progress) {
+    progress.hidden = !pending;
+    progress.textContent = pending ? "Verificando las vinculaciones del lote…" : "";
+  }
+  for (const id of ["step-nav-3", "step-nav-4", "goto-step-3", "goto-step-4", "execute"]) {
+    const button = $(`#${id}`);
+    if (button) button.disabled = pending;
+  }
+}
+
+async function goToStep(step) {
+  const matchingRevision = ++state.matchingRevision;
+  const viewRevision = state.viewRevision;
+  state.matchingCheck = null;
+  state.matchingConflicts = 0;
+  matchingPending(false);
+  for (const id of ["matching-check-step3", "matching-check-step4"]) {
+    const element = $(`#${id}`);
+    if (element) element.replaceChildren();
+  }
   if (step > 1 && (!state.imports.shipments || !state.imports.charges)) {
     notice("Validá los archivos de operaciones y cargos antes de continuar.", true);
     return;
   }
   if (step > 2) {
+    if (state.agreementReadPending) {
+      notice("Esperá a que termine de cargar el acuerdo antes de verificar.", true);
+      return;
+    }
     try {
       const agreements = JSON.parse($("#agreements")?.value || "[]");
       if (!Array.isArray(agreements) || !agreements.length) throw new Error();
     } catch {
       notice("Seleccioná un acuerdo válido antes de verificar el lote.", true);
       return;
+    }
+    matchingPending(true);
+    try {
+      const dataset = auditDataset();
+      const signature = matchingSignature(dataset);
+      const check = await post("/api/audit/preflight", dataset);
+      if (matchingRevision !== state.matchingRevision || viewRevision !== state.viewRevision) return;
+      if (signature !== matchingSignature(auditDataset())) {
+        notice("El lote cambió durante la verificación. Volvé a verificarlo antes de continuar.", true);
+        return;
+      }
+      state.matchingCheck = signature;
+      state.matchingConflicts = check.total_issues + check.skipped_charges;
+      // A successful retry replaces the failed check; do not leave a stale error toast.
+      const previousNotice = $("#notice");
+      if (previousNotice) previousNotice.hidden = true;
+      clearTimeout(notice.timer);
+      const warning = state.matchingConflicts ? `
+        <section class="matching-warning">
+          <strong>${state.matchingConflicts} vinculación(es) requieren revisión</strong>
+          <p>${check.counts.invalid} inválida(s), ${check.counts.conflict} contradictoria(s), ${check.counts.ambiguous} ambigua(s) y ${check.counts.unmatched} sin operación encontrada.</p>
+          <p>Los cargos señalados no confirmarán diferencias. Tampoco los grupos de sus operaciones candidatas. Corregí la vinculación o
+          el formato en Acuerdo; también podés guardar la auditoría con esos casos en revisión.</p>
+          ${check.skipped_charges ? `<p>${check.skipped_charges} cargo(s) no se pudieron vincular por un acuerdo, transportista o moneda incompatibles. Revisá esos datos; la auditoría conservará el motivo de cada caso.</p>` : ""}
+          ${matchingConflictDetails(check.issues, dataset)}
+          ${check.total_issues > check.issues.length ? `<p>Se muestran ${check.issues.length} de ${check.total_issues} incidencias de vinculación. La auditoría conservará el detalle de todas.</p>` : ""}
+        </section>` : "<p>Vinculaciones comprobadas con las claves disponibles: no se encontraron incidencias. Las reglas, vigencias y evidencias se evaluarán al auditar.</p>";
+      for (const id of ["matching-check-step3", "matching-check-step4"]) $("#" + id).innerHTML = warning;
+    } catch (error) {
+      if (matchingRevision === state.matchingRevision && viewRevision === state.viewRevision) notice(error.message, true);
+      return;
+    } finally {
+      if (matchingRevision === state.matchingRevision && viewRevision === state.viewRevision) matchingPending(false);
     }
   }
   // Sync label
@@ -1280,9 +1469,7 @@ function goToStep(step) {
       if (circle) circle.textContent = state.wizardStep > i ? "✓" : i;
     }
     const panel = $(`#step-panel-${i}`);
-    if (panel) {
-      panel.style.display = (i === step) ? "block" : "none";
-    }
+    if (panel) panel.classList.toggle("hidden", i !== step);
   }
 
   // Update compact step summary bars for completed steps
@@ -1302,35 +1489,18 @@ function goToStep(step) {
         s1Text.innerHTML = `<strong>${sCount} operaciones</strong> · <strong>${cCount} cargos</strong> · ${totalRej} rechazos`;
       }
       sum1.classList.remove("hidden");
-      sum1.style.display = "flex";
     } else {
       sum1.classList.add("hidden");
-      sum1.style.display = "none";
     }
   }
 
   if (sum2) {
     if (step > 2) {
-      let agrName = "Acuerdo contractual";
-      let agrDetail = "ARS";
-      try {
-        const rawAgr = JSON.parse($("#agreements")?.value || "[]");
-        if (rawAgr.length > 0) {
-          agrName = rawAgr[0].carrier || rawAgr[0].name || "Acuerdo seleccionado";
-          const rules = Array.isArray(rawAgr[0].rules) ? rawAgr[0].rules.length : 1;
-          const curr = rawAgr[0].currency || "ARS";
-          agrDetail = `${rules} regla(s) · ${curr}`;
-        }
-      } catch (e) {}
       const s2Text = $("#step-summary-2-text");
-      if (s2Text) {
-        s2Text.innerHTML = `Acuerdo <strong>${esc(agrName)}</strong> · ${esc(agrDetail)}`;
-      }
+      if (s2Text) s2Text.innerHTML = agreementSummary(auditDataset().agreements);
       sum2.classList.remove("hidden");
-      sum2.style.display = "flex";
     } else {
       sum2.classList.add("hidden");
-      sum2.style.display = "none";
     }
   }
 
@@ -1338,15 +1508,17 @@ function goToStep(step) {
     if (step > 3) {
       const sCount = state.imports.shipments?.accepted || 0;
       const cCount = state.imports.charges?.accepted || 0;
+      const issueCount = (state.imports.shipments?.issues?.length || 0) + (state.imports.charges?.issues?.length || 0);
       const s3Text = $("#step-summary-3-text");
       if (s3Text) {
-        s3Text.innerHTML = `Lote verificado (${sCount} operaciones, ${cCount} cargos listos para auditar)`;
+        const verification = state.matchingConflicts
+          ? `Lote con <strong>${state.matchingConflicts} vinculación(es) en revisión</strong> (${sCount} operaciones, ${cCount} cargos)`
+          : `Vinculaciones comprobadas (${sCount} operaciones, ${cCount} cargos listos para auditar)`;
+        s3Text.innerHTML = `${verification} · ${issueCount} incidencia(s) de importación; editar para ver detalle`;
       }
       sum3.classList.remove("hidden");
-      sum3.style.display = "flex";
     } else {
       sum3.classList.add("hidden");
-      sum3.style.display = "none";
     }
   }
 
@@ -1359,21 +1531,59 @@ function updateStep3Summaries() {
   const sImp = state.imports.shipments;
   const cImp = state.imports.charges;
 
+  const importSummary = (result, title, role) => result
+    ? `<p class="verify-import-count">✓ ${result.accepted} filas aceptadas · ${result.rejected.length} rechazadas</p>
+       <p class="muted verify-import-file">Archivo: ${esc(result.filename)} (${result.records.length} registros)</p>
+       ${renderImportIssues(result.issues, role)}`
+    : `<p class="verify-import-missing">⚠ Archivo de ${title} aún no validado en Paso 1.</p>`;
+
   const sContainer = $("#verify-shipments-summary");
-  if (sContainer) {
-    sContainer.innerHTML = sImp
-      ? `<p style="font-size:15px; font-weight:700; color:#1b6d49; margin:4px 0;">✓ ${sImp.accepted} filas aceptadas · ${sImp.rejected.length} rechazadas</p>
-         <p class="muted" style="font-size:13px; margin:0;">Archivo: ${esc(sImp.filename)} (${sImp.records.length} registros)</p>`
-      : `<p style="color:var(--amber); font-weight:650;">⚠ Archivo de operaciones aún no validado en Paso 1.</p>`;
-  }
+  if (sContainer) sContainer.innerHTML = importSummary(sImp, "operaciones", "shipments");
 
   const cContainer = $("#verify-charges-summary");
-  if (cContainer) {
-    cContainer.innerHTML = cImp
-      ? `<p style="font-size:15px; font-weight:700; color:#1b6d49; margin:4px 0;">✓ ${cImp.accepted} filas aceptadas · ${cImp.rejected.length} rechazadas</p>
-         <p class="muted" style="font-size:13px; margin:0;">Archivo: ${esc(cImp.filename)} (${cImp.records.length} registros)</p>`
-      : `<p style="color:var(--amber); font-weight:650;">⚠ Archivo de cargos aún no validado en Paso 1.</p>`;
-  }
+  if (cContainer) cContainer.innerHTML = importSummary(cImp, "cargos", "charges");
+  bindImportIssues($("#step-panel-3"));
+}
+
+function renderImportIssues(issues, role) {
+  if (!issues?.length) return '<p class="verify-no-issues">Sin incidencias de importación.</p>';
+  const warnings = issues.filter((issue) => issue.category === "warning").length;
+  return `<details class="import-issues" data-role="${role}"><summary>${issues.length} incidencia(s) de importación (${warnings} advertencia(s)); ver detalle</summary>
+    <div class="import-issue-page"></div></details>`;
+}
+
+function bindImportIssues(container) {
+  container.querySelectorAll(".import-issues").forEach((details) => {
+    const issues = state.imports[details.dataset.role].issues;
+    const body = $(".import-issue-page", details);
+    const size = 50;
+    const pages = Math.ceil(issues.length / size);
+    let page = 0;
+    const render = () => {
+      if (!details.open) {
+        body.replaceChildren();
+        return;
+      }
+      const start = page * size;
+      body.innerHTML = `<p role="status">Incidencias ${start + 1}–${Math.min(start + size, issues.length)} de ${issues.length}</p>
+        <ol start="${start + 1}">${issues.slice(start, start + size).map((issue) => `<li>${esc(issue.message)}</li>`).join("")}</ol>
+        ${pages > 1 ? `<div class="issue-navigation">
+          <button type="button" class="btn small issue-prev" ${page === 0 ? "disabled" : ""}>Anteriores</button>
+          <label>Página <input class="issue-page-number" aria-label="Página de incidencias" type="number" min="1" max="${pages}" value="${page + 1}"> de ${pages}</label>
+          <button type="button" class="btn small issue-next" ${page + 1 === pages ? "disabled" : ""}>Siguientes</button>
+        </div>` : ""}`;
+      if (pages > 1) {
+        $(".issue-prev", body).onclick = () => { page -= 1; render(); };
+        $(".issue-next", body).onclick = () => { page += 1; render(); };
+        $(".issue-page-number", body).onchange = (event) => {
+          const requested = Number(event.target.value);
+          if (Number.isInteger(requested) && requested >= 1 && requested <= pages) page = requested - 1;
+          render();
+        };
+      }
+    };
+    details.ontoggle = render;
+  });
 }
 
 function renderDropzoneSection(role, title, subtitle) {
@@ -1382,8 +1592,8 @@ function renderDropzoneSection(role, title, subtitle) {
   );
   return `
     <div class="file-upload-block">
-      <div style="margin-bottom:4px;">
-        <h3 style="margin:0; font-size:16px;">
+      <div class="ui-marginbottom-ae01e5f4">
+        <h3 class="ui-margin-3165a35a">
           <span>${title}</span>
           <span class="file-subtitle">${subtitle}</span>
         </h3>
@@ -1396,15 +1606,15 @@ function renderDropzoneSection(role, title, subtitle) {
           <div class="dropzone-title">Arrastrá el archivo acá o seleccioná uno</div>
           <div class="dropzone-hint">CSV, XLSX o XLS</div>
           <!-- Hidden standard file input -->
-          <input id="file-${role}" type="file" accept=".csv,.xlsx,.xls" class="sr-only-file" style="display:none;">
+          <input id="file-${role}" type="file" accept=".csv,.xlsx,.xls" class="sr-only-file">
         </div>
 
-        <div id="file-loaded-${role}" class="file-loaded-card hidden" style="display:none;">
+        <div id="file-loaded-${role}" class="file-loaded-card hidden">
           <div class="file-loaded-info">
-            <span style="font-size:18px;">📄</span>
+            <span class="ui-fontsize-d64c8cb3">📄</span>
             <div>
-              <strong id="file-name-${role}" style="font-size:13.5px;"></strong>
-              <div id="file-meta-${role}" class="muted" style="font-size:12px;"></div>
+              <strong id="file-name-${role}" class="ui-fontsize-6c0edc58"></strong>
+              <div id="file-meta-${role}" class="muted ui-fontsize-c42f23b8"></div>
             </div>
           </div>
           <button type="button" class="btn small subtle" id="change-file-${role}">Cambiar archivo</button>
@@ -1412,22 +1622,22 @@ function renderDropzoneSection(role, title, subtitle) {
       </div>
 
       <!-- Formato reconocido / Configurar columnas -->
-      <div id="format-box-${role}" class="format-recognition hidden" style="display:none; margin-top:8px;">
-        <div style="display:flex; align-items:center; gap:10px;">
+      <div id="format-box-${role}" class="format-recognition hidden ui-margintop-a33b8fc2">
+        <div class="ui-display-8ba0c206">
           <span class="format-icon" id="format-icon-${role}">✓</span>
           <div>
-            <div id="format-title-${role}" style="font-weight:750; font-size:13px;"></div>
-            <div id="format-sub-${role}" class="muted" style="font-size:12px;"></div>
+            <div id="format-title-${role}" class="ui-fontweight-0e4e2896"></div>
+            <div id="format-sub-${role}" class="muted ui-fontsize-c42f23b8"></div>
           </div>
         </div>
         <button type="button" class="btn subtle small" id="toggle-mapping-${role}">Configurar columnas</button>
       </div>
 
       <!-- Panel de configuración de columnas (colapsado por defecto) -->
-      <div id="columns-panel-${role}" class="columns-panel hidden" style="display:none; margin-top:8px;">
-        <div class="field" style="margin:0;">
-          <label for="saved-${role}" style="font-size:12.5px;">Seleccionar formato guardado</label>
-          <select id="saved-${role}" style="font-size:13px; padding:6px 10px;">
+      <div id="columns-panel-${role}" class="columns-panel hidden ui-margintop-a33b8fc2">
+        <div class="field ui-margin-38965f9b">
+          <label for="saved-${role}" class="ui-fontsize-2ca3a889">Seleccionar formato guardado</label>
+          <select id="saved-${role}" class="ui-fontsize-998d0b51">
             <option value="">Seleccionar o autodetectar formato…</option>
             ${configs.map((c) => `<option value="${c.hash}">${esc(c.name)}</option>`).join("")}
           </select>
@@ -1435,24 +1645,24 @@ function renderDropzoneSection(role, title, subtitle) {
       </div>
 
       <!-- Modo avanzado JSON colapsado -->
-      <div class="advanced-toggle" style="margin-top:4px;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <button class="btn subtle small" type="button" id="toggle-advanced-${role}" style="font-size:12px; padding:4px 8px;">
+      <div class="advanced-toggle ui-margintop-36e81f86">
+        <div class="ui-display-5ffb91a2">
+          <button class="btn subtle small ui-fontsize-6e744f89" type="button" id="toggle-advanced-${role}">
             ▸ Opciones avanzadas: mapping JSON manual
           </button>
         </div>
-        <div id="advanced-mapping-body-${role}" class="panel-advanced-body hidden" style="display:none; margin-top:8px;">
-          <input id="mapping-file-${role}" type="file" accept=".json" aria-label="Cargar mapping de ${title}" style="margin-bottom:8px; font-size:12px;">
-          <label for="mapping-${role}" style="font-size:12px;">Mapping JSON</label>
-          <textarea id="mapping-${role}" rows="5" spellcheck="false" placeholder="Pegar definición JSON de columnas" style="font-size:12px; font-family:monospace;"></textarea>
+        <div id="advanced-mapping-body-${role}" class="panel-advanced-body hidden ui-margintop-a33b8fc2">
+          <input id="mapping-file-${role}" type="file" accept=".json" aria-label="Cargar mapping de ${title}" class="ui-marginbottom-467b3b62">
+          <label for="mapping-${role}" class="ui-fontsize-c42f23b8">Mapping JSON</label>
+          <textarea id="mapping-${role}" rows="5" spellcheck="false" placeholder="Pegar definición JSON de columnas" class="ui-fontsize-09761da4"></textarea>
         </div>
       </div>
 
-      <div style="margin-top:6px;">
-        <button class="btn" id="validate-${role}" style="width:100%;">Validar ${title.toLowerCase()}</button>
+      <div class="ui-margintop-1d436efc">
+        <button class="btn ui-width-9ccc4ca9" id="validate-${role}">Validar ${title.toLowerCase()}</button>
       </div>
 
-      <div class="import-result" id="result-${role}" style="background:#fafcfb; border:1px solid #dbe3dc; border-radius:6px; padding:10px 14px; margin-top:4px; font-size:13px;">
+      <div class="import-result ui-background-c7a1b982" id="result-${role}">
         Validar para ver filas aceptadas, rechazos y origen de los datos.
       </div>
     </div>
@@ -1517,14 +1727,12 @@ function setupStep1Handlers() {
     if (toggleMappingBtn && columnsPanel) {
       toggleMappingBtn.onclick = () => {
         columnsPanel.classList.toggle("hidden");
-        columnsPanel.style.display = columnsPanel.classList.contains("hidden") ? "none" : "block";
       };
     }
 
     if (toggleAdvancedBtn && advancedBody) {
       toggleAdvancedBtn.onclick = () => {
         advancedBody.classList.toggle("hidden");
-        advancedBody.style.display = advancedBody.classList.contains("hidden") ? "none" : "block";
       };
     }
 
@@ -1533,24 +1741,63 @@ function setupStep1Handlers() {
     );
 
     $(`#saved-${role}`).onchange = (event) => {
+      cancelMappingRead(role);
       const found = configs.find((c) => c.hash === event.target.value);
       if (found) {
+        state.mappingSource[role] = "saved";
         $(`#mapping-${role}`).value = JSON.stringify(found.payload, null, 2);
         updateFormatBox(role, true, found.name);
+      } else {
+        state.mappingSource[role] = null;
+        $(`#mapping-${role}`).value = "";
+        updateFormatBox(role, false);
       }
       invalidateImport(role);
     };
 
     $(`#mapping-file-${role}`).onchange = (event) =>
       busy(null, async () => {
-        $(`#mapping-${role}`).value = await event.target.files[0].text();
+        const file = event.target.files[0];
+        if (!file) return;
+        cancelMappingRead(role);
         invalidateImport(role);
+        const revision = state.mappingRevision[role];
+        const viewRevision = state.viewRevision;
+        $(`#mapping-${role}`).value = "";
+        updateManualFormat(role);
+        state.mappingReadPending[role] = true;
+        syncValidationButton(role);
+        $(`#format-title-${role}`).textContent = "Leyendo mapping manual…";
+        try {
+          const content = await file.text();
+          if (revision !== state.mappingRevision[role] || viewRevision !== state.viewRevision) return;
+          $(`#mapping-${role}`).value = content;
+          updateManualFormat(role);
+          invalidateImport(role);
+        } catch {
+          if (revision === state.mappingRevision[role] && viewRevision === state.viewRevision) {
+            notice("No se pudo leer el mapping. Volvé a seleccionar el archivo o elegí un formato guardado y validá nuevamente.", true);
+          }
+        } finally {
+          if (revision === state.mappingRevision[role] && viewRevision === state.viewRevision) {
+            state.mappingReadPending[role] = false;
+            updateManualFormat(role);
+            syncValidationButton(role);
+          }
+        }
       });
 
-    $(`#mapping-${role}`).oninput = () => invalidateImport(role);
+    $(`#mapping-${role}`).oninput = () => {
+      cancelMappingRead(role);
+      updateManualFormat(role);
+      invalidateImport(role);
+    };
 
-    $(`#validate-${role}`).onclick = (event) =>
-      busy(event.target, async () => {
+    $(`#validate-${role}`).onclick = (event) => {
+      const validationView = state.viewRevision;
+      state.importPending[role] = true;
+      return busy(event.target, async () => {
+        if (state.mappingReadPending[role]) throw new Error("Esperá a que termine de cargar el mapping.");
         const file = fileInput.files[0];
         if (!file) throw new Error("Seleccionar el archivo a importar.");
         const mapping = JSON.parse($(`#mapping-${role}`).value || "{}");
@@ -1567,19 +1814,10 @@ function setupStep1Handlers() {
         if (revision !== state.importRevision[role] || viewRevision !== state.viewRevision) return;
         state.imports[role] = result;
         $(`#result-${role}`).innerHTML = `
-          <strong style="color:#1b6d49; font-size:14px;">✓ ${result.accepted} filas aceptadas · ${result.rejected.length} rechazadas</strong>
-          <p class="muted" style="margin:4px 0 0; font-size:12px;">Hoja: ${esc(result.sheet)} · Archivo original conservado</p>
-          ${
-            result.issues.length
-              ? "<ul style='margin-top:6px;'>" +
-                result.issues
-                  .slice(0, 5)
-                  .map((i) => `<li>${esc(i.message)}</li>`)
-                  .join("") +
-                "</ul>"
-              : ""
-          }
-          <details style="margin-top:8px;">
+          <strong class="ui-color-e4fa61d1">✓ ${result.accepted} filas aceptadas · ${result.rejected.length} rechazadas</strong>
+          <p class="muted ui-margin-138901e5">Hoja: ${esc(result.sheet)} · Archivo original conservado</p>
+          ${renderImportIssues(result.issues, role)}
+          <details class="ui-margintop-a33b8fc2">
             <summary>Vista previa del origen (${result.preview.length} filas)</summary>
             <div class="table-wrap">
               <table>
@@ -1593,9 +1831,29 @@ function setupStep1Handlers() {
             </div>
           </details>
         `;
-        notice(`Importación de ${role === "shipments" ? "operaciones" : "cargos"} validada con éxito.`);
+        bindImportIssues($(`#result-${role}`));
+        notice(
+          `Validación de ${role === "shipments" ? "operaciones" : "cargos"} completada: ${result.accepted} aceptadas, ${result.rejected.length} rechazadas y ${result.issues.length} incidencias. Revisá el detalle antes de continuar.`,
+        );
+      }).finally(() => {
+        if (validationView === state.viewRevision) {
+          state.importPending[role] = false;
+          syncValidationButton(role);
+        }
       });
+    };
   }
+}
+
+function syncValidationButton(role) {
+  const button = $(`#validate-${role}`);
+  if (button) button.disabled = state.mappingReadPending[role] || state.importPending[role];
+}
+
+function cancelMappingRead(role) {
+  state.mappingRevision[role] += 1;
+  state.mappingReadPending[role] = false;
+  syncValidationButton(role);
 }
 
 function handleFileSelected(role, file) {
@@ -1611,9 +1869,7 @@ function handleFileSelected(role, file) {
     fileName.textContent = `${file.name} · ${sizeStr} ✓`;
     fileMeta.textContent = `Archivo listo para procesar en este equipo`;
     loadedCard.classList.remove("hidden");
-    loadedCard.style.display = "flex";
     dropzone.classList.add("hidden");
-    dropzone.style.display = "none";
   }
 
   // Pre-fill suggested audit label if empty
@@ -1629,9 +1885,20 @@ function handleFileSelected(role, file) {
     (c) => c.kind === "mapping" && c.payload.entity === role,
   );
   if (configs.length === 1 && !$(`#saved-${role}`).value) {
-    $(`#saved-${role}`).value = configs[0].hash;
-    $(`#mapping-${role}`).value = JSON.stringify(configs[0].payload, null, 2);
-    updateFormatBox(role, true, configs[0].name);
+    if (state.mappingSource[role] === "manual") {
+      updateManualFormat(role);
+    } else {
+      $(`#saved-${role}`).value = configs[0].hash;
+      $(`#mapping-${role}`).value = JSON.stringify(configs[0].payload, null, 2);
+      state.mappingSource[role] = "saved";
+      updateFormatBox(role, true, configs[0].name);
+    }
+  } else if ($(`#saved-${role}`).value) {
+    const selected = configs.find((c) => c.hash === $(`#saved-${role}`).value);
+    if (selected && state.mappingSource[role] !== "manual") updateFormatBox(role, true, selected.name);
+    else updateManualFormat(role);
+  } else if (state.mappingSource[role] === "manual") {
+    updateManualFormat(role);
   } else {
     updateFormatBox(role, false);
   }
@@ -1648,27 +1915,45 @@ function updateFormatBox(role, recognized, formatName = "") {
 
   if (!box) return;
   box.classList.remove("hidden");
-  box.style.display = "flex";
 
   if (recognized) {
-    box.className = "format-recognition recognized";
+    box.classList.add("recognized");
     if (icon) icon.textContent = "✓";
     if (title) title.textContent = `Formato seleccionado: ${formatName}`;
     if (sub) sub.textContent = "Validá el archivo para comprobar sus columnas";
     if (columnsPanel) {
       columnsPanel.classList.add("hidden");
-      columnsPanel.style.display = "none";
     }
   } else {
-    box.className = "format-recognition";
+    box.classList.remove("recognized");
     if (icon) icon.textContent = "⚙";
     if (title) title.textContent = "Configurar columnas";
     if (sub) sub.textContent = "Elegí o personalizá el formato de columnas";
     if (columnsPanel) {
       columnsPanel.classList.remove("hidden");
-      columnsPanel.style.display = "block";
     }
   }
+}
+
+function updateManualFormat(role) {
+  state.mappingSource[role] = "manual";
+  const saved = $(`#saved-${role}`);
+  if (saved) saved.value = "";
+  let name = "JSON pendiente de validar";
+  try {
+    const mapping = JSON.parse($(`#mapping-${role}`).value);
+    if (mapping.id) name = `${mapping.id}${mapping.version ? `@${mapping.version}` : ""}`;
+  } catch {
+    // Keep the source explicit while validation reports JSON syntax errors.
+  }
+  updateFormatBox(role, true, name);
+  $(`#format-box-${role}`)?.classList.remove("recognized");
+  const icon = $(`#format-icon-${role}`);
+  if (icon) icon.textContent = "✎";
+  const title = $(`#format-title-${role}`);
+  const sub = $(`#format-sub-${role}`);
+  if (title) title.textContent = state.mappingReadPending[role] ? "Leyendo mapping manual…" : `Mapping manual: ${name}`;
+  if (sub) sub.textContent = "Validá el archivo para comprobar este JSON";
 }
 
 function invalidateImport(role) {
@@ -1695,7 +1980,7 @@ async function showConfigs() {
     "Los cambios crean versiones inmutables por contenido. Las auditorías anteriores preservan intacta su configuración.",
     `<button class="btn" id="import-config-btn">Importar configuración</button>
      <button class="btn primary" id="toggle-create-config">＋ Nueva versión (Modo avanzado)</button>
-     <input type="file" id="import-config-file" accept=".json" class="sr-only-file" style="display:none;">`,
+     <input type="file" id="import-config-file" accept=".json" class="sr-only-file">`,
   );
 
   const agreements = state.configs.filter((c) => c.kind === "agreement");
@@ -1707,22 +1992,23 @@ async function showConfigs() {
       <section class="panel">
         <h2>Acuerdos guardados (${agreements.length})</h2>
         <p class="muted">Términos contractuales y reglas pactadas con los transportistas.</p>
-        <div class="run-list" style="display:flex; flex-direction:column; gap:16px; margin-top:18px;">
+        <div class="run-list ui-display-7e9ff71e">
           ${agreements
             .map(
               (c) => `
-              <div class="run-card-rich" style="padding:14px 18px; gap:8px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <strong style="font-size:15px;">${esc(c.name)}</strong>
+              <div class="run-card-rich ui-padding-10702f48">
+                <div class="ui-display-5ffb91a2">
+                  <strong class="ui-fontsize-e49c04bf">${esc(c.name)}</strong>
                   <span class="badge PASS">Válido ✓</span>
                 </div>
-                <div style="font-size:12.5px; color:var(--muted); margin-top:2px;">
+                <div class="ui-fontsize-ecee40b8">
                   Transportista: <strong>${esc(c.payload?.carrier || "Transportista pactado")}</strong>
                 </div>
-                <div style="font-size:12.5px; color:var(--muted); margin-top:2px;">
-                  Vigencia: <strong>${esc(c.payload?.versions ? `${c.payload.versions[0]?.valid_from || "Inicio"} a ${c.payload.versions[0]?.valid_to || "abierta"}` : "Vigente")}</strong> · Moneda: <strong>${esc(c.payload?.currency || "ARS")}</strong> · <strong>${Array.isArray(c.payload?.rules) ? c.payload.rules.length : 1} regla(s)</strong>
+                <div class="ui-fontsize-ecee40b8">
+                  Versiones: <strong>${c.payload?.versions?.length || 0}</strong> · Moneda: <strong>${esc(c.payload?.currency || "ARS")}</strong> · <strong>${agreementRuleCount(c.payload)} regla(s) configuradas</strong>
                 </div>
-                <div style="display:flex; justify-content:flex-end; align-items:center; margin-top:8px; border-top:1px solid #edf1eb; padding-top:8px;">
+                <details class="agreement-summary-detail"><summary>Ver vigencias y reglas</summary><ul>${agreementVersionList(c.payload)}</ul></details>
+                <div class="ui-display-3e08c89c">
                   <div class="actions">
                     <button class="btn small" data-view-config="${c.hash}">Ver</button>
                     <button class="btn small" data-clone-config="${c.hash}">Duplicar versión</button>
@@ -1739,19 +2025,19 @@ async function showConfigs() {
       <section class="panel">
         <h2>Formatos de columnas (${mappings.length})</h2>
         <p class="muted">Mapeos de CSV y planillas de cálculo de transportistas.</p>
-        <div class="run-list" style="display:flex; flex-direction:column; gap:16px; margin-top:18px;">
+        <div class="run-list ui-display-7e9ff71e">
           ${mappings
             .map(
               (c) => `
-              <div class="run-card-rich" style="padding:14px 18px; gap:8px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <strong style="font-size:15px;">${esc(c.name)}</strong>
-                  <span class="badge" style="background:#edf2ed; color:var(--ink);">Entidad: ${esc(c.payload?.entity || "archivo")}</span>
+              <div class="run-card-rich ui-padding-10702f48">
+                <div class="ui-display-5ffb91a2">
+                  <strong class="ui-fontsize-e49c04bf">${esc(c.name)}</strong>
+                  <span class="badge ui-background-c0b28249">Entidad: ${esc(c.payload?.entity || "archivo")}</span>
                 </div>
-                <div style="font-size:12.5px; color:var(--muted); margin-top:2px;">
+                <div class="ui-fontsize-ecee40b8">
                   Columnas mapeadas: <strong>${c.payload?.columns?.length || 0}</strong> · Delimitador: <code>${esc(c.payload?.delimiter || ",")}</code>
                 </div>
-                <div style="display:flex; justify-content:flex-end; align-items:center; margin-top:8px; border-top:1px solid #edf1eb; padding-top:8px;">
+                <div class="ui-display-3e08c89c">
                   <button class="btn small" data-view-config="${c.hash}">Ver en editor →</button>
                 </div>
               </div>
@@ -1763,12 +2049,12 @@ async function showConfigs() {
     </div>
 
     <!-- Editor de Configuración (Modo Avanzado colapsable) -->
-    <details id="advanced-config-panel" class="panel" style="margin-top:24px;">
-      <summary style="font-size:15px; font-weight:750; color:var(--ink);">Modo avanzado: Editor JSON de acuerdos y formatos</summary>
+    <details id="advanced-config-panel" class="panel ui-margintop-04bbec5e">
+      <summary class="ui-fontsize-adca191a">Modo avanzado: Editor JSON de acuerdos y formatos</summary>
       <p class="hint">Al guardar, se genera una nueva versión por hash SHA-256 inmutable. Los datos históricos no se modifican.</p>
-      <div class="field" style="margin-top:14px;">
+      <div class="field ui-margintop-8d842990">
         <label for="config-kind">Tipo de configuración</label>
-        <select id="config-kind" style="max-width:320px;">
+        <select id="config-kind" class="ui-maxwidth-85b149cc">
           <option value="agreement">Acuerdo contractual</option>
           <option value="mapping">Formato de columnas (Mapping)</option>
         </select>
@@ -1861,8 +2147,8 @@ function showGuide() {
       "Un control que se puede reconstruir",
       "Guía metodológica para trabajar con un acuerdo real y auditorías de precisión.",
     ) +
-    `<div class="panel guide" style="max-width:920px;">
-      <ol style="padding-left:22px; line-height:1.8; font-size:14px;">
+    `<div class="panel guide ui-maxwidth-5882c1c5">
+      <ol class="ui-paddingleft-579ff797">
         <li><strong>Conservar los originales.</strong> Reuní operaciones, liquidación, contrato y documentos del período ya controlado por el cliente en sus formatos nativos.</li>
         <li><strong>Configurar formatos.</strong> Indicá exactamente hoja, encabezados, separadores, fechas y equivalencias de conceptos. Revisá todas las filas rechazadas.</li>
         <li><strong>Confirmar el acuerdo.</strong> El cliente debe validar vigencias, fecha relevante, unidades, fórmulas, moneda, redondeos, tolerancias y evidencia requerida. No deduzcas estas reglas del importe cobrado.</li>
@@ -1872,16 +2158,16 @@ function showGuide() {
         <li><strong>Exportar y respaldar.</strong> El paquete conserva los originales, los datos normalizados, el resultado, las decisiones y los reportes verificables.</li>
       </ol>
     </div>
-    <div class="grid2" style="max-width:920px;">
+    <div class="grid2 ui-maxwidth-5882c1c5">
       ${Object.entries(labels)
         .map(
           ([key, label]) => `
-        <div class="panel" style="margin:0;">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+        <div class="panel ui-margin-38965f9b">
+          <div class="ui-display-225efa96">
             ${badge(key)}
-            <strong style="font-size:15px;">${label}</strong>
+            <strong class="ui-fontsize-e49c04bf">${label}</strong>
           </div>
-          <p class="muted" style="font-size:13px; margin:0;">
+          <p class="muted ui-fontsize-81ebc5d3">
             ${
               key === "PASS"
                 ? "El importe facturado coincide con el cálculo respaldado dentro de la tolerancia."

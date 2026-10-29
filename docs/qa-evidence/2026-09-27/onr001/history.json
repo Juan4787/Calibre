@@ -1,0 +1,31 @@
+{
+  "archive": "output/overnight-review/logs/browser-explicit-result.zip",
+  "sha256_before": "e9a0580b743bc1f0c408bb7d9620123f81dbad90fc786b29a233b2141d1a1ad2",
+  "sha256_after": "e9a0580b743bc1f0c408bb7d9620123f81dbad90fc786b29a233b2141d1a1ad2",
+  "original_engine": "0.1.0",
+  "run_id": "47a07a299d4926c77d24a0865dc1da32a6bf728e030efb83e4240efc012c4662",
+  "original_net_ARS": "353",
+  "checks": [
+    {
+      "command": [
+        ".venv/bin/freight-audit",
+        "verify-bundle",
+        "output/overnight-review/logs/browser-explicit-result.zip"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"run_id\": \"47a07a299d4926c77d24a0865dc1da32a6bf728e030efb83e4240efc012c4662\",\n  \"integrity\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        ".venv/bin/freight-audit",
+        "verify-bundle",
+        "output/overnight-review/logs/browser-explicit-result.zip",
+        "--replay"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "{\"error\":\"El paquete corresponde a otro artefacto del motor; usar esa versión para reproducirlo.\"}\n"
+    }
+  ]
+}

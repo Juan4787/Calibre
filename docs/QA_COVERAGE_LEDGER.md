@@ -12,6 +12,10 @@ Commit base: `9ad568670f8d9b71627677645f7bd5268b84c23b`; huella del código y pr
 
 ## Ejecuciones adjuntas
 
+**Adición ONR-002 a ONR-005 (27/09/2026):** [decisiones y límites](ONR_002_005_RESOLUTION.md), [recibo y evidencia](qa-evidence/2026-09-27/onr002-005/README.md). La UI cuenta los acuerdos/versiones/reglas realmente cargados, identifica el mapping manual, conserva advertencias pre-ejecución y usa CSS compatible con la CSP. `verify.sh`: 254 tests y build exitoso; Chromium real: recorridos de Datos, Verificación, Ejecución, resultado, detalle, configuraciones y guía; sin rechazos CSP. Esta ejecución acredita esos casos de QA-39, pero **QA-39 permanece PARTIAL** y no se extrapola a layouts/clientes reales, todos los navegadores ni accesibilidad exhaustiva. Se conserva la historia anterior y sus fechas.
+
+**Adición ONR-001 (cierre 27/09/2026):** [decisión y alcance](ONR_001_RESOLUTION.md), [evidencia y recibo](qa-evidence/2026-09-27/onr001/README.md). Motor 0.1.1: 254 tests, E2E Chromium con archivos y recuperación de estados, tres mutantes causales, replay/historia y wheel/sdist instalados. Las ejecuciones de suite/navegador son del 23/09; la comprobación de paquetes y recopilación del 27/09. El recibo identifica hashes y límites de la evidencia. ONR-001 queda corregido localmente; QA-20 continúa PARTIAL. Las filas anteriores conservan su fecha y alcance histórico.
+
 | Recibo | Código y log verificables | Salida | Comando |
 |---|---|---|---|
 | docs/qa-evidence/2026-09-23/qa-20260923-v2-delivery.json | Sí | 0 | `.venv/bin/python scripts/verify_delivery.py --output output/delivery-verification-20260923-v2.json` |
@@ -47,7 +51,7 @@ Commit base: `9ad568670f8d9b71627677645f7bd5268b84c23b`; huella del código y pr
 | QA-17 — Fecha civil y seriales de Excel | P0 | PARTIAL | 4 |
 | QA-18 — Reglas/condiciones y AST acotado | P0 | PARTIAL | 4 |
 | QA-19 — Lookup/bandas sin desempate arbitrario | P0 | PARTIAL | 2 |
-| QA-20 — Claves, aliases y vínculos explícitos | P0 | PARTIAL | 3 |
+| QA-20 — Claves, aliases y vínculos explícitos | P0 | PARTIAL | 11 |
 | QA-21 — Ambigüedad propagada a grupos parciales | P0 | PARTIAL | 2 |
 | QA-22 — Consolidado y cargos por componentes | P0 | PARTIAL | 2 |
 | QA-23 — Asignaciones superpuestas y servicios parciales | P0 | PARTIAL | 1 |
@@ -361,16 +365,18 @@ Comando del subconjunto automatizado:
 
 ## QA-20 — Claves, aliases y vínculos explícitos
 
-**Obligación:** Match exacto declarado; vacíos no empatan; link ausente/repetido/carrier ajeno→UNDETERMINABLE. Contradicción link/claves requiere control adicional pendiente.
+**Obligación:** Match exacto declarado; vacíos no empatan; link ausente/repetido/carrier ajeno→UNDETERMINABLE. Desde 0.1.1, contradicción explicit/claves→REVIEW individual sin esperado/diferencia, confirmada0 y protección de ambos destinos para el mismo acuerdo/concepto/moneda. `one` admite selección entre candidatos; `group` exige el conjunto completo. Sin candidatos se conserva el explicit válido.
 
-**Procedimiento:** 1. Dibujar grafo manual. 2. Aplicar alias sólo al cargo. 3. Vaciar clave. 4. Añadir link inválido y verificar sin fallback.
+**Procedimiento:** Dibujar el grafo manual; aplicar aliases al cargo; vaciar/componer claves; invalidar destino sin fallback; contradecir ambos destinos y liquidaciones; controlar preservación de cargos, UI/preflight, decisiones, exports y nueva corrida corregida.
 
-**Oráculo:** OR-05. **Lo que puede escapar:** Explicito válido estructuralmente puede apuntar a operación equivocada.
+**Oráculo:** OR-03 OR-05. **Lo que puede escapar:** Sin candidatos por claves no hay corroboración independiente de un explicit, y una selección equivocada entre candidatos compatibles no se detecta por precios. La cobertura global de la familia permanece PARTIAL.
+
+**Resolución ONR-001:** decisión, alternativas, límites y evidencia en [ONR_001_RESOLUTION.md](ONR_001_RESOLUTION.md). E2E integrado en `scripts/browser_e2e.py`; mutantes causales M11–M13 en `qa/mutants.json`.
 
 Comando del subconjunto automatizado:
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_engine.py::test_composite_keys_and_directional_alias tests/test_engine.py::test_invalid_explicit_link_never_falls_back tests/test_adversarial.py::test_empty_keys_never_join_to_empty_keys
+.venv/bin/python -m pytest -q tests/test_engine.py::test_composite_keys_and_directional_alias tests/test_engine.py::test_invalid_explicit_link_never_falls_back tests/test_adversarial.py::test_empty_keys_never_join_to_empty_keys tests/test_explicit_link_conflicts.py::test_conflict_never_becomes_pass_or_confirms_money tests/test_explicit_link_conflicts.py::test_conflict_protects_both_scopes_without_poisoning_unrelated_work tests/test_explicit_link_conflicts.py::test_candidate_selection_and_group_completeness tests/test_explicit_link_conflicts.py::test_explicit_remains_usable_when_keys_have_no_candidates tests/test_explicit_link_conflicts.py::test_coverage_does_not_invent_missing_charges_for_conflicted_obligations tests/test_explicit_link_conflicts.py::test_preflight_is_read_only_and_audit_cannot_bypass_conflicts tests/test_explicit_link_conflicts.py::test_decisions_correction_exports_and_replay_preserve_uncertainty tests/test_explicit_link_conflicts.py::test_explicit_set_relation_oracle
 ```
 
 ## QA-21 — Ambigüedad propagada a grupos parciales

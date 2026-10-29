@@ -47,6 +47,146 @@ def key_for(record, agreement, side, trace=None):
     return tuple(values)
 
 
+EXPLICIT_CONFLICT_REASON = (
+    "La vinculación explícita contradice las claves del cargo. Revisar las operaciones indicadas, "
+    "corregir la vinculación o el formato y crear una nueva auditoría. "
+    "No se confirma ningún importe de este cargo."
+)
+RELATED_UNCERTAINTY_REASON = (
+    "Otra línea tiene una vinculación pendiente, inválida o contradictoria que podría afectar a estas operaciones. "
+    "Resolver esa vinculación y crear una nueva auditoría antes de confirmar importes."
+)
+MATCHING_PROBLEMS = {
+    "invalid": (
+        "UNDETERMINABLE",
+        "La vinculación explícita está vacía o contiene operaciones ausentes, repetidas o de otro transportista. "
+        "Revisar los destinos indicados y corregir la vinculación; no se asigna el cargo automáticamente.",
+    ),
+    "conflict": ("REVIEW", EXPLICIT_CONFLICT_REASON),
+    "ambiguous": ("REVIEW", "Hay varias operaciones candidatas; se necesita una vinculación explícita."),
+    "unmatched": (
+        "REVIEW",
+        "No se encontró la operación con las claves configuradas; confirmar la referencia o aportar el registro.",
+    ),
+}
+
+
+def matching_indexes(dataset: Dataset) -> dict:
+    indexes = {}
+    for agreement in dataset.agreements:
+        index = defaultdict(list)
+        for shipment in dataset.shipments:
+            if shipment.carrier == agreement.carrier:
+                key = key_for(shipment, agreement, "shipment")
+                if key is not None:
+                    index[key].append(shipment)
+        indexes[agreement.id] = index
+    return indexes
+
+
+def inspect_explicit_link(charge: Charge, agreement: Agreement, shipments: dict, index: dict):
+    """One policy for preflight and audit; explicit disambiguation is not a silent override."""
+    ids = sorted(agreement.matching.explicit[charge.id])
+    matched = [
+        shipments[sid]
+        for sid in sorted(set(ids))
+        if sid in shipments and shipments[sid].carrier == agreement.carrier
+    ]
+    key_details: list[dict] = []
+    key = key_for(charge, agreement, "charge", key_details)
+    candidate_ids = sorted(s.id for s in index.get(key, []))
+    execution: dict = {
+        "charge_id": charge.id,
+        "method": "explicit",
+        "shipment_ids": ids,
+        "policy": "explicit-consistency-v2",
+        "keys": key_details,
+        "key_candidate_ids": candidate_ids,
+    }
+    if not ids or len(matched) != len(ids):
+        execution["comparison"] = "invalid"
+        execution["invalid_targets"] = {
+            "empty": not ids,
+            "missing": sorted(set(ids) - shipments.keys()),
+            "repeated": sorted(sid for sid, count in Counter(ids).items() if count > 1),
+            "other_carrier": sorted(
+                sid for sid in set(ids) if sid in shipments and shipments[sid].carrier != agreement.carrier
+            ),
+        }
+        execution["affected_shipment_ids"] = sorted({s.id for s in matched} | set(candidate_ids))
+        return matched, execution
+    if not candidate_ids:
+        comparison = "no_key_candidates"
+    else:
+        # `one` permits explicit selection among ambiguous candidates. `group`
+        # declares the whole matching group, so dropping a member is a conflict too.
+        compatible = (
+            set(ids) == set(candidate_ids)
+            if agreement.matching.cardinality == "group"
+            else set(ids) <= set(candidate_ids)
+        )
+        comparison = "compatible" if compatible else "conflict"
+    execution["comparison"] = comparison
+    if comparison == "conflict":
+        execution["affected_shipment_ids"] = sorted(set(ids) | set(candidate_ids))
+    return matched, execution
+
+
+def inspect_matching(charge: Charge, agreement: Agreement, shipments: dict, index: dict):
+    """Classify the association once; candidates describe uncertainty, never an allocation."""
+    if charge.id in agreement.matching.explicit:
+        return inspect_explicit_link(charge, agreement, shipments, index)
+    key_details: list[dict] = []
+    key = key_for(charge, agreement, "charge", key_details)
+    matched = sorted(index.get(key, []), key=lambda s: s.id)
+    execution: dict = {"charge_id": charge.id, "method": "keys", "keys": key_details}
+    comparison = None
+    if not matched:
+        comparison = "unmatched"
+    elif len(matched) > 1 and agreement.matching.cardinality != "group":
+        comparison = "ambiguous"
+    if comparison:
+        execution.update(
+            comparison=comparison,
+            key_candidate_ids=[s.id for s in matched],
+            affected_shipment_ids=[s.id for s in matched],
+        )
+    return matched, execution
+
+
+def matching_preflight(dataset: Dataset) -> dict:
+    """Read-only, bounded matching diagnostics; audit always checks again."""
+    indexes = matching_indexes(dataset)
+    shipments = {s.id: s for s in dataset.shipments}
+    agreements = {a.id: a for a in dataset.agreements}
+    conflicts: list[dict] = []
+    issues: list[dict] = []
+    counts = dict.fromkeys(MATCHING_PROBLEMS, 0)
+    skipped = 0
+    for charge in sorted(dataset.charges, key=lambda c: c.id):
+        agreement = agreements.get(charge.agreement)
+        if agreement is None or charge.carrier != agreement.carrier or charge.currency != agreement.currency:
+            skipped += 1
+            continue
+        _, execution = inspect_matching(charge, agreement, shipments, indexes[agreement.id])
+        comparison = execution.get("comparison")
+        if comparison in counts:
+            counts[comparison] += 1
+            if len(issues) < 50:
+                issues.append(execution)
+        if comparison == "conflict":
+            if len(conflicts) < 50:
+                conflicts.append(execution)
+    return {
+        "total_conflicts": counts["conflict"],
+        "conflicts": conflicts,
+        "total_issues": sum(counts.values()),
+        "counts": counts,
+        "issues": issues,
+        "skipped_charges": skipped,
+    }
+
+
 def select_version(agreement: Agreement, shipments: list[Shipment]):
     chosen = set()
     dates = []
@@ -152,15 +292,7 @@ def audit(dataset: Dataset) -> AuditResult:
 def _audit(dataset: Dataset) -> AuditResult:
     agreements = {a.id: a for a in dataset.agreements}
     shipments = {s.id: s for s in dataset.shipments}
-    indexes: dict = {}
-    for agreement in dataset.agreements:
-        index = defaultdict(list)
-        for shipment in dataset.shipments:
-            if shipment.carrier == agreement.carrier:
-                key = key_for(shipment, agreement, "shipment")
-                if key is not None:
-                    index[key].append(shipment)
-        indexes[agreement.id] = index
+    indexes = matching_indexes(dataset)
     findings = []
     version_lookup_indexes: dict = {}
     match_execution: dict = {}
@@ -177,7 +309,8 @@ def _audit(dataset: Dataset) -> AuditResult:
     group_shipments = {}
     seen_duplicates: dict = defaultdict(list)
     duplicate_ids: set = set()
-    uncertain_allocations: set[tuple[str, str, str, str]] = set()
+    uncertain_allocations: dict[tuple[str, str, str, str], set[str]] = defaultdict(set)
+    uncertain_scopes: set[tuple[str, str]] = set()
     evidence_by_shipment: dict = defaultdict(list)
     evidence_by_charge: dict = defaultdict(list)
     for evidence in dataset.evidence:
@@ -210,54 +343,39 @@ def _audit(dataset: Dataset) -> AuditResult:
                 )
             )
             continue
-        execution: dict = {"charge_id": charge.id}
-        if charge.id in agreement.matching.explicit:
-            execution["method"] = "explicit"
-            ids = agreement.matching.explicit[charge.id]
-            matched = [shipments[sid] for sid in sorted(set(ids)) if sid in shipments]
-            execution["shipment_ids"] = ids
-            if not ids or len(matched) != len(ids) or any(s.carrier != agreement.carrier for s in matched):
-                findings.append(
-                    unresolved(
-                        [charge],
-                        agreement.id,
-                        [],
-                        "UNDETERMINABLE",
-                        "La vinculación explícita contiene operaciones ausentes, repetidas o de otro transportista.",
-                    )
+        matched, execution = inspect_matching(charge, agreement, shipments, indexes[agreement.id])
+        comparison = execution.get("comparison")
+        if comparison in MATCHING_PROBLEMS:
+            status, reason = MATCHING_PROBLEMS[comparison]
+            candidates = execution["affected_shipment_ids"]
+            for sid in candidates:
+                scope = (agreement.id, sid, charge.concept, charge.currency)
+                uncertain_allocations[scope].add(charge.id)
+                uncertain_scopes.add((agreement.id, sid))
+            finding = unresolved(
+                [charge], agreement.id, [shipments[sid] for sid in candidates], status, reason
+            )
+            findings.append(
+                finding.model_copy(
+                    update={
+                        "trace": [
+                            Trace(
+                                op="matching",
+                                details={
+                                    "shipment_ids": candidates,
+                                    "charge_ids": [charge.id],
+                                    "strategy": matching_strategies[agreement.id],
+                                    "execution": [execution],
+                                    "allocation": "unresolved_candidates",
+                                    "reason": reason,
+                                },
+                            )
+                        ]
+                    }
                 )
-                continue
-        else:
-            execution["method"] = "keys"
-            key_details: list[dict] = []
-            key = key_for(charge, agreement, "charge", key_details)
-            execution["keys"] = key_details
-            matched = sorted(indexes[agreement.id].get(key, []), key=lambda s: s.id)
-            if not matched:
-                findings.append(
-                    unresolved(
-                        [charge],
-                        agreement.id,
-                        [],
-                        "REVIEW",
-                        "No se encontró la operación con las claves configuradas; confirmar la referencia o aportar el registro.",
-                    )
-                )
-                continue
-            if len(matched) > 1 and agreement.matching.cardinality != "group":
-                uncertain_allocations.update(
-                    (agreement.id, item.id, charge.concept, charge.currency) for item in matched
-                )
-                findings.append(
-                    unresolved(
-                        [charge],
-                        agreement.id,
-                        matched,
-                        "REVIEW",
-                        "Hay varias operaciones candidatas; se necesita una vinculación explícita.",
-                    )
-                )
-                continue
+            )
+            # Uncertainty protects every plausible scope without assigning this charge to one.
+            continue
         match_execution[charge.id] = execution
         if agreement.matching.duplicate_fields:
             signature = tuple(field_value(charge, field) for field in agreement.matching.duplicate_fields)
@@ -276,8 +394,10 @@ def _audit(dataset: Dataset) -> AuditResult:
         if len(ids) > 1:
             duplicate_ids.update(ids)
     incomplete = any(issue.category in {"file", "mapping", "row"} for issue in dataset.issues)
-    observed_scopes = {(key[0], key[1]) for key in groups}
-    billed_scopes = {key[:4] for key, charges in groups.items() if charges}
+    observed_scopes = {(key[0], sid) for key in groups for sid in key[1]}
+    billed_scopes = {
+        (key[0], sid, key[2], key[3]) for key, charges in groups.items() if charges for sid in key[1]
+    }
     # Optional coverage is explicit. Never infer a missing payable from an unrelated shipment.
     for agreement in dataset.agreements:
         if not agreement.detect_missing or incomplete:
@@ -300,12 +420,18 @@ def _audit(dataset: Dataset) -> AuditResult:
                 version, _ = select_version(agreement, matched)
                 for rule in sorted(version.rules, key=lambda r: r.id):
                     if rule.expected:
-                        already_billed = (
-                            agreement.id,
-                            tuple(s.id for s in matched),
-                            rule.concept,
-                            agreement.currency,
-                        ) in billed_scopes
+                        if any(
+                            (agreement.id, s.id, rule.concept, agreement.currency) in uncertain_allocations
+                            for s in matched
+                        ):
+                            # A disputed charge is present: absence is not established.
+                            continue
+                        # An explicit consolidation still covers each member. If any member
+                        # is billed, absence of the whole obligation has not been established.
+                        already_billed = any(
+                            (agreement.id, s.id, rule.concept, agreement.currency) in billed_scopes
+                            for s in matched
+                        )
                         if not already_billed:
                             group_key = (
                                 agreement.id,
@@ -317,7 +443,9 @@ def _audit(dataset: Dataset) -> AuditResult:
                             groups.setdefault(group_key, [])
                             group_shipments[group_key] = matched
             except EvaluationError:
-                if (agreement.id, tuple(s.id for s in matched)) in observed_scopes:
+                if any((agreement.id, s.id) in uncertain_scopes for s in matched):
+                    continue
+                if any((agreement.id, s.id) in observed_scopes for s in matched):
                     continue
                 group_key = (
                     agreement.id,
@@ -339,7 +467,7 @@ def _audit(dataset: Dataset) -> AuditResult:
     overlapping = {
         group_key
         for allocation_key, group_set in allocations.items()
-        if len(group_set) > 1 or allocation_key[:4] in uncertain_allocations
+        if len(group_set) > 1
         for group_key in group_set
     }
     for group_key in sorted(groups):
@@ -361,6 +489,24 @@ def _audit(dataset: Dataset) -> AuditResult:
                 },
             )
         ]
+        related_uncertainty = sorted(
+            {
+                cid
+                for shipment in matched
+                for cid in uncertain_allocations.get((agreement.id, shipment.id, concept, currency), ())
+            }
+        )
+        matching_reasons = [RELATED_UNCERTAINTY_REASON] if related_uncertainty else []
+        if related_uncertainty:
+            traces.append(
+                Trace(
+                    op="matching_uncertainty",
+                    details={
+                        "unresolved_charge_ids": related_uncertainty,
+                        "reason": RELATED_UNCERTAINTY_REASON,
+                    },
+                )
+            )
         version_id = None
         rule_id = None
         try:
@@ -436,7 +582,7 @@ def _audit(dataset: Dataset) -> AuditResult:
             for charge in charges:
                 evidence_items.update({e.id: e for e in evidence_by_charge[charge.id]})
             evidence_ids, missing = evidence_check(rule, list(evidence_items.values()), matched, charges)
-            reasons = []
+            reasons = list(matching_reasons)
             if missing:
                 reasons.append(
                     "Falta evidencia requerida: "
@@ -452,7 +598,7 @@ def _audit(dataset: Dataset) -> AuditResult:
                 reasons.append(
                     "Hay líneas que coinciden con la clave de posible duplicación configurada; confirmar si corresponden a servicios distintos."
                 )
-            if group_key in overlapping:
+            if group_key in overlapping and not related_uncertainty:
                 reasons.append(
                     "Hay asignaciones superpuestas del mismo concepto; definir qué operaciones cubre cada cargo."
                 )
@@ -510,7 +656,7 @@ def _audit(dataset: Dataset) -> AuditResult:
                     update={
                         "version": version_id,
                         "rule": rule_id,
-                        "reasons": [str(exc)],
+                        "reasons": [*matching_reasons, str(exc)],
                         "trace": [*traces, exc.trace],
                     }
                 )

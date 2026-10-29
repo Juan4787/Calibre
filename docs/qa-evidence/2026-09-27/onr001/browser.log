@@ -1,0 +1,63 @@
+{
+  "run_id": "c6b6ffa287055c659fe8383c2849e3e1cfedcd975b76d90d36e9684ece3babc4",
+  "result_hash": "7bb9bbb353a3b6a38656046978973a44fbfa3d244d74477b81e78be0895599a6",
+  "rows_observed": 46,
+  "channels": {
+    "json": "checked",
+    "xlsx": "checked",
+    "html": "checked",
+    "api": "checked supplied response",
+    "ui": "46 actual DOM rows; all pages; exact cells and statuses"
+  },
+  "onr001": {
+    "conflicting_run": "a8a1bc2cdae436de75c4622907f440c14746470526b160a9314be57089bc7f93",
+    "corrected_run": "8d587e0f965132a99863a49a37b5a2e00bb984f61e15529c20ebed3ec3773ab2",
+    "confirmed_net_conflict": "-75",
+    "confirmed_net_corrected": "-25",
+    "rows_observed": 44,
+    "channels": {
+      "json": "checked",
+      "xlsx": "checked",
+      "html": "checked",
+      "api": "checked supplied response",
+      "ui": "44 actual DOM rows; exact cells and statuses"
+    },
+    "stale_preflight_discarded": true,
+    "retry_verified": true,
+    "decision_preserved_uncertainty": true,
+    "replay_identical": true
+  },
+  "product_path": "/home/usuario/CascadeProjects/CALIBRE/src/freight_audit/__init__.py",
+  "ui_sha256": "fbbbc6e0d777983a2897b350530662d9ca85789f4e033591309b1523afc3cb02",
+  "browser": "153.0.8010.12",
+  "listener_scope": "127.0.0.1 only, inspected in /proc/net/tcp",
+  "network_boundary": {
+    "foreign_origin": "http://127.0.0.1:43509",
+    "browser_readable": false,
+    "runs_created": 0
+  },
+  "passed": true
+}
+	Command being timed: ".venv/bin/python scripts/browser_e2e.py --output-dir output/onr-001-fix/browser-reviewed"
+	User time (seconds): 26.70
+	System time (seconds): 4.87
+	Percent of CPU this job got: 68%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:46.41
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 252260
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 172
+	Minor (reclaiming a frame) page faults: 499555
+	Voluntary context switches: 176664
+	Involuntary context switches: 24466
+	Swaps: 0
+	File system inputs: 32
+	File system outputs: 180912
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

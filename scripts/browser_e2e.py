@@ -137,6 +137,7 @@ def exercise(page, client, destination):
     from playwright.sync_api import expect
 
     page.goto(str(client.base_url))
+    assert page.locator("[style]:not([style=''])").count() == 0
     page.locator("#demo").click()
     expect(page.locator("#findings tr[data-finding-id]").first).to_be_visible()
     runs = client.get("/api/runs").json()
@@ -161,7 +162,12 @@ def exercise(page, client, destination):
 
     page.locator("#filter-status").select_option("FAIL")
     target = by_charge["C-002"]
+    difference_cell = page.locator(f'tr[data-finding-id="{target["id"]}"] td').nth(4)
+    assert difference_cell.evaluate("element => getComputedStyle(element).color") == "rgb(158, 42, 43)"
+    assert difference_cell.evaluate("element => getComputedStyle(element).fontWeight") == "750"
+    assert page.locator("[style]:not([style=''])").count() == 0
     page.locator(f'[data-finding="{target["id"]}"]').click()
+    assert page.locator("#detail-content [style]:not([style=''])").count() == 0
     for action, text in (("APPROVED", "Confirmado"), ("REJECTED", "Rechazado")):
         page.locator("#actor").fill("QA sintética")
         page.locator("#action").select_option(action)
@@ -218,6 +224,9 @@ def exercise(page, client, destination):
         expect(page.locator(f"#mapping-{role}")).to_have_value(
             (ROOT / "fixtures" / f"mapping-{role}.json").read_text()
         )
+        expect(page.locator(f"#format-title-{role}")).to_have_text(
+            f"Mapping manual: {'operaciones-demo' if role == 'shipments' else 'cargos-demo'}@1"
+        )
         if role == "shipments":
             held = []
 
@@ -251,11 +260,43 @@ def exercise(page, client, destination):
     page.locator("#agreement-file").set_input_files(ROOT / "fixtures/agreements.json")
     expect(page.locator("#agreements")).not_to_have_value("[]")
     page.locator("#goto-step-3").click()
+    expect(page.locator("#step-summary-2-text")).to_contain_text("3 acuerdo(s)")
+    expect(page.locator("#step-summary-2-text")).to_contain_text("5 versión(es)")
+    expect(page.locator("#step-summary-2-text")).to_contain_text("10 regla(s) configuradas")
+    for version in ("A-2026-H1", "A-2026-H2", "A-SOLAPADA", "B-1", "C-1"):
+        expect(page.locator("#step-summary-2-text")).to_contain_text(version)
+    page.locator("#step-summary-2-text summary").click()
+    expect(page.locator("#step-summary-2-text ul").first).to_be_visible()
+    expect(page.locator("#verify-charges-summary .import-issues summary")).to_contain_text("1 advertencia(s)")
+    page.locator("#verify-charges-summary .import-issues summary").click()
+    expect(page.locator("#verify-charges-summary .import-issues")).to_contain_text("Concepto sin clasificar")
+    expect(page.locator("#step-panel-3 .banner.info")).to_contain_text(
+        "Revisá las incidencias antes de ejecutar"
+    )
+    assert page.locator("#step-panel-3 [style]:not([style=''])").count() == 0
+    page.screenshot(path=str(destination / "onr002-004-verification.png"), full_page=True)
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.locator("#verify-charges-summary").scroll_into_view_if_needed()
+    expect(page.locator("#verify-charges-summary .import-issues")).to_be_visible()
+    page.screenshot(path=str(destination / "onr002-004-mobile.png"))
+    page.set_viewport_size({"width": 1280, "height": 720})
     page.locator("#goto-step-4").click()
+    expect(page.locator("#step-summary-3-text")).to_contain_text("1 incidencia(s) de importación")
+    expect(page.locator("#step-summary-2-text")).to_contain_text("10 regla(s) configuradas")
     page.locator("#execute").click()
     expect(page.locator("#findings tr[data-finding-id]").first).to_be_visible()
     created = next(r for r in client.get("/api/runs").json() if r["label"] == "QA interfaz actual")
     imported = client.get("/api/runs/" + created["id"]).json()
+    agreements = imported["snapshot"]["agreements"]
+    assert len(agreements) == 3
+    assert sum(len(agreement["versions"]) for agreement in agreements) == 5
+    assert sum(len(version["rules"]) for agreement in agreements for version in agreement["versions"]) == 10
+    assert any("Concepto sin clasificar" in issue["message"] for issue in imported["snapshot"]["issues"])
+    unknown_concept = next(
+        finding for finding in imported["result"]["findings"] if "C-008" in finding["charge_ids"]
+    )
+    assert unknown_concept["status"] == "UNDETERMINABLE"
+    assert unknown_concept["actual"] == "432" and unknown_concept["confirmed_difference"] == "0"
     assert "operaciones-cambiadas.xlsx" in imported["snapshot"]["documents"].values()
     observe(page, imported)
     page.screenshot(path=str(destination / "current-ui.png"), full_page=True)
@@ -337,6 +378,274 @@ def exercise(page, client, destination):
     }
 
 
+def exercise_explicit_conflicts(page, client, destination):
+    """ONR-001: actual file inputs, stale preflight, preserved history and all exports."""
+    from playwright.sync_api import expect
+
+    agreements = json.loads((ROOT / "fixtures/agreements.json").read_text())
+    agreements[0]["matching"]["explicit"] = {"C-001": ["S-002"]}
+    conflict_file = destination / "conflicting-agreements.json"
+    conflict_file.write_text(json.dumps(agreements))
+    corrected = deepcopy(agreements)
+    corrected[0]["matching"]["explicit"] = {"C-001": ["S-001"]}
+    corrected_file = destination / "corrected-agreements.json"
+    corrected_file.write_text(json.dumps(corrected))
+
+    def import_lot(agreement_file, label):
+        page.locator('[data-view="new"]').click()
+        expect(page.locator("#file-shipments")).to_be_attached()
+        page.locator("#audit-label").fill(label)
+        for role, filename in (("shipments", "operaciones.xlsx"), ("charges", "liquidacion.csv")):
+            page.locator(f"#file-{role}").set_input_files(ROOT / "fixtures" / filename)
+            page.locator(f"#mapping-file-{role}").set_input_files(ROOT / "fixtures" / f"mapping-{role}.json")
+            expect(page.locator(f"#mapping-{role}")).to_have_value(
+                (ROOT / "fixtures" / f"mapping-{role}.json").read_text()
+            )
+            page.locator(f"#validate-{role}").click()
+            expect(page.locator(f"#result-{role}")).to_contain_text("aceptadas")
+        page.locator("#goto-step-2").click()
+        page.locator("#agreement-file").set_input_files(agreement_file)
+        expect(page.locator("#agreements")).to_have_value(
+            json.dumps(json.loads(agreement_file.read_text()), indent=2, ensure_ascii=False)
+        )
+
+    runs_before = len(client.get("/api/runs").json())
+    import_lot(conflict_file, "ONR-001 vínculo contradictorio")
+    held = []
+
+    def hold_preflight(route):
+        held.append((route, route.fetch()))
+
+    page.route("**/api/audit/preflight", hold_preflight)
+    page.locator("#goto-step-3").click()
+    for _ in range(100):
+        if held:
+            break
+        page.wait_for_timeout(20)
+    assert held
+    expect(page.locator("#matching-progress")).to_be_visible()
+    expect(page.locator("#execute")).to_be_disabled()
+    page.locator("#step-nav-2").click()
+    page.locator("#agreement-file").set_input_files(corrected_file)
+    expect(page.locator("#agreements")).to_have_value(json.dumps(corrected, indent=2, ensure_ascii=False))
+    held[0][0].fulfill(response=held[0][1])
+    page.unroute("**/api/audit/preflight", hold_preflight)
+    page.wait_for_timeout(100)
+    expect(page.locator("#step-panel-2")).to_be_visible()
+    expect(page.locator("#matching-check-step3")).to_be_empty()
+    page.locator("#goto-step-3").click()
+    expect(page.locator("#step-panel-3")).to_be_visible()
+    expect(page.locator("#matching-check-step3")).to_contain_text("0 contradictoria(s)")
+
+    # A failed check must remain recoverable and must not persist a run.
+    page.locator("#back-to-step-2").click()
+    page.locator("#agreement-file").set_input_files(conflict_file)
+    expect(page.locator("#agreements")).to_have_value(json.dumps(agreements, indent=2, ensure_ascii=False))
+    page.route(
+        "**/api/audit/preflight",
+        lambda route: route.fulfill(
+            status=503,
+            content_type="application/json",
+            body=json.dumps({"error": "Verificación temporalmente no disponible. Reintentar."}),
+        ),
+    )
+    page.locator("#goto-step-3").click()
+    expect(page.locator("#notice")).to_contain_text("Reintentar")
+    expect(page.locator("#step-panel-2")).to_be_visible()
+    assert len(client.get("/api/runs").json()) == runs_before
+    page.unroute("**/api/audit/preflight")
+    page.locator("#step-nav-4").click()  # direct navigation must also check
+    expect(page.locator("#step-panel-4")).to_be_visible()
+    expect(page.locator("#matching-check-step4")).to_contain_text("1 contradictoria(s)")
+    expect(page.locator("#matching-check-step4")).to_contain_text("S-001")
+    expect(page.locator("#matching-check-step4")).to_contain_text("S-002")
+    expect(page.locator("#notice")).not_to_be_visible()
+    expect(page.locator("#step-summary-3-text")).to_contain_text("vinculación(es) en revisión")
+    page.screenshot(path=str(destination / "onr001-preflight.png"), full_page=True)
+    page.locator("#back-to-step-3").click()
+    expect(page.locator("#matching-check-step3")).to_contain_text("no confirmarán diferencias")
+    page.locator("#goto-step-4").click()
+    expect(page.locator("#step-panel-4")).to_be_visible()
+    page.locator("#execute").click()
+    expect(page.locator("#findings tr[data-finding-id]").first).to_be_visible()
+    saved = next(r for r in client.get("/api/runs").json() if r["label"] == "ONR-001 vínculo contradictorio")
+    run = client.get("/api/runs/" + saved["id"]).json()
+    original = deepcopy(run["result"])
+    by_charge = {cid: f for f in original["findings"] for cid in f["charge_ids"]}
+    assert len(original["findings"]) == 44
+    assert by_charge["C-001"]["charge_ids"] == ["C-001"]
+    assert by_charge["C-001"]["status"] == by_charge["C-002"]["status"] == "REVIEW"
+    assert by_charge["C-001"]["expected"] is None and by_charge["C-001"]["difference"] is None
+    assert by_charge["C-001"]["confirmed_difference"] == by_charge["C-002"]["confirmed_difference"] == "0"
+    assert original["summary"]["currencies"]["ARS"]["confirmed_overcharge"] == "0"
+    assert original["summary"]["currencies"]["ARS"]["confirmed_net_difference"] == "-75"
+    assert original["summary"]["currencies"]["ARS"]["actual"] == "43719.4"
+    observations = observe(page, run)
+    page.locator("#filter-status").select_option("REVIEW")
+    page.locator(f'[data-finding="{by_charge["C-001"]["id"]}"]').click()
+    expect(page.locator("#detail-content .matching-conflicts")).to_contain_text("S-001")
+    expect(page.locator("#detail-content .matching-conflicts")).to_contain_text("S-002")
+    expect(page.locator("#detail-content")).to_contain_text("Primero se debe resolver la vinculación")
+    expect(page.locator("#detail-content")).to_contain_text("Pendiente por vinculación")
+    expect(page.locator("#detail-content")).not_to_contain_text("Sin versión aplicable")
+    expect(page.locator("#detail-content")).not_to_contain_text("Sin regla aplicable")
+    expect(page.locator("#detail-content .arithmetic-callout")).to_contain_text("Cálculo pendiente")
+    page.screenshot(path=str(destination / "onr001-detail.png"), full_page=True)
+    page.locator("#detail-content .matching-conflicts").scroll_into_view_if_needed()
+    expect(page.locator("#detail-content .matching-conflicts")).to_be_in_viewport()
+    page.screenshot(path=str(destination / "onr001-matching.png"), full_page=True)
+    page.locator("#actor").fill("Operador sintético ONR-001")
+    page.locator("#action").select_option("EXCEPTION_ACCEPTED")
+    page.locator("#decision-note").fill(
+        "Esta decisión humana no confirma el importe ni resuelve la vinculación"
+    )
+    page.locator('#decision-form button[type="submit"]').click()
+    expect(page.locator(".history").last).to_contain_text("Excepción aceptada")
+    page.locator("#close-detail").click()
+    run = client.get("/api/runs/" + saved["id"]).json()
+    assert run["result"] == original and len(run["decisions"]) == 1
+    page.locator("#replay").click()
+    expect(page.locator("#notice")).to_contain_text("Reproducción idéntica")
+    for fmt, filename in (
+        ("canonical", "audit.json"),
+        ("xlsx", "audit.xlsx"),
+        ("html", "audit.html"),
+        ("zip", "audit.zip"),
+    ):
+        with page.expect_download() as downloading:
+            page.locator(f'a[href$="/export/{fmt}"]').click()
+        downloading.value.save_as(destination / ("onr001-" + filename))
+    assert json.loads((destination / "onr001-audit.json").read_text()) == run
+    bundle_dir = destination / "onr001-export"
+    with zipfile.ZipFile(destination / "onr001-audit.zip") as bundle:
+        assert bundle.testzip() is None
+        bundle.extractall(bundle_dir)  # only our own local producer
+    reconciled = reconcile(bundle_dir, api_run=run)
+    assert not reconciled["errors"], reconciled
+    reconciled["channels"]["ui"] = f"{len(observations)} actual DOM rows; exact cells and statuses"
+    verification = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "freight_audit.cli",
+            "verify-bundle",
+            str(destination / "onr001-audit.zip"),
+            "--replay",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert json.loads(verification.stdout)["identical"]
+    (destination / "onr001-bundle-replay.json").write_text(verification.stdout)
+    (destination / "onr001-observed-ui.json").write_text(
+        json.dumps(observations, ensure_ascii=False, indent=2)
+    )
+
+    import_lot(corrected_file, "ONR-001 vínculo corregido")
+    page.locator("#goto-step-3").click()
+    expect(page.locator("#matching-check-step3")).to_contain_text("0 contradictoria(s)")
+    page.locator("#goto-step-4").click()
+    expect(page.locator("#step-panel-4")).to_be_visible()
+    page.locator("#execute").click()
+    expect(page.locator("#findings tr[data-finding-id]").first).to_be_visible()
+    corrected_run = next(
+        r for r in client.get("/api/runs").json() if r["label"] == "ONR-001 vínculo corregido"
+    )
+    corrected_run = client.get("/api/runs/" + corrected_run["id"]).json()
+    fixed = {cid: f for f in corrected_run["result"]["findings"] for cid in f["charge_ids"]}
+    assert fixed["C-001"]["status"] == "PASS"
+    assert (fixed["C-002"]["status"], fixed["C-002"]["confirmed_difference"]) == ("FAIL", "50")
+    assert corrected_run["id"] != run["id"]
+    assert client.get("/api/runs/" + run["id"]).json()["result"] == original
+    page.locator("#back").click()
+    page.locator(f'[data-run="{run["id"]}"]').click()
+    expect(page.locator("#findings tr[data-finding-id]").first).to_be_visible()
+    assert observe(page, run)  # reopen the old REVIEW run after a corrected audit
+    return {
+        "conflicting_run": run["id"],
+        "corrected_run": corrected_run["id"],
+        "confirmed_net_conflict": "-75",
+        "confirmed_net_corrected": "-25",
+        "rows_observed": len(observations),
+        "channels": reconciled["channels"],
+        "stale_preflight_discarded": True,
+        "retry_verified": True,
+        "decision_preserved_uncertainty": True,
+        "replay_identical": True,
+    }
+
+
+def exercise_manual_mapping(page, destination):
+    """ONR-003: the visible source follows the actual JSON through file and selector changes."""
+    from playwright.sync_api import expect
+
+    # Reopening a wizard must replace the old form before the config request completes.
+    page.locator('[data-view="new"]').click()
+    expect(page.locator("#file-shipments")).to_be_attached()
+    page.locator("#file-shipments").set_input_files(ROOT / "fixtures/operaciones-invalidas.csv")
+    expect(page.locator("#format-title-shipments")).to_contain_text("operaciones-demo@1")
+    manual = ROOT / "fixtures/mapping-invalid.json"
+    page.locator("#mapping-file-shipments").set_input_files(manual)
+    expect(page.locator("#format-title-shipments")).to_have_text("Mapping manual: errores-demo@1")
+    expect(page.locator("#saved-shipments")).to_have_value("")
+    expect(page.locator("#mapping-shipments")).to_have_value(manual.read_text())
+    page.locator("#validate-shipments").click()
+    expect(page.locator("#result-shipments")).to_contain_text("0 filas aceptadas · 1 rechazadas")
+    expect(page.locator("#notice")).to_contain_text("0 aceptadas, 1 rechazadas y 2 incidencias")
+    expect(page.locator("#result-shipments .import-issues")).to_contain_text("2 incidencia(s)")
+    page.screenshot(path=str(destination / "onr003-manual-mapping.png"), full_page=True)
+
+    page.locator("#file-shipments").set_input_files(
+        {
+            "name": "operaciones-invalidas-copia.csv",
+            "mimeType": "text/csv",
+            "buffer": (ROOT / "fixtures/operaciones-invalidas.csv").read_bytes(),
+        }
+    )
+    expect(page.locator("#format-title-shipments")).to_have_text("Mapping manual: errores-demo@1")
+    page.locator("#toggle-mapping-shipments").click()
+    saved_hash = page.locator("#saved-shipments option").nth(1).get_attribute("value")
+    page.locator("#saved-shipments").select_option(saved_hash)
+    expect(page.locator("#format-title-shipments")).to_have_text("Formato seleccionado: operaciones-demo@1")
+    page.locator("#toggle-advanced-shipments").click()
+    page.locator("#mapping-shipments").fill(manual.read_text())
+    expect(page.locator("#format-title-shipments")).to_have_text("Mapping manual: errores-demo@1")
+    expect(page.locator("#saved-shipments")).to_have_value("")
+    assert page.locator("[style]:not([style=''])").count() == 0
+    page.locator('[data-view="audits"]').click()
+    expect(page.locator("#file-shipments")).to_have_count(0)
+    return {
+        "loaded_mapping": "errores-demo@1",
+        "saved_selection_cleared": True,
+        "manual_survives_file_change": True,
+    }
+
+
+def exercise_other_views(page, destination):
+    """The CSP-safe presentation is also exercised outside the wizard and result."""
+    from playwright.sync_api import expect
+
+    page.locator('[data-view="configs"]').click()
+    expect(page.locator("#advanced-config-panel")).to_be_attached()
+    for name, versions, rules in (("A", 3, 6), ("B", 1, 1), ("C", 1, 3)):
+        card = page.locator(".run-card-rich", has_text=f"Acuerdo FICTICIO {name}")
+        expect(card).to_contain_text(f"Versiones: {versions}")
+        expect(card).to_contain_text(f"{rules} regla(s) configuradas")
+        card.locator(".agreement-summary-detail summary").click()
+        expect(card.locator(".agreement-summary-detail li").first).to_be_visible()
+    assert page.locator("[style]:not([style=''])").count() == 0
+    assert page.locator(".run-list").first.evaluate("element => getComputedStyle(element).display") == "flex"
+    page.screenshot(path=str(destination / "onr005-configs.png"))
+    page.locator('[data-view="guide"]').click()
+    expect(page.locator(".guide")).to_be_visible()
+    assert page.locator("[style]:not([style=''])").count() == 0
+    page.screenshot(path=str(destination / "onr005-guide.png"))
+    page.locator('[data-view="audits"]').click()
+    expect(page.locator("#runs-items")).to_be_visible()
+    return {"configs": True, "guide": True, "nonempty_inline_styles": 0}
+
+
 def main():
     from playwright.sync_api import sync_playwright
 
@@ -349,6 +658,7 @@ def main():
     if (args.output_dir / "server.log").exists():
         parser.error("Output directory already used; preserve evidence and choose a new directory")
     errors = []
+    console_errors = []
     with tempfile.TemporaryDirectory(prefix="calibre-browser-") as td:
         with socket.socket() as listener:
             listener.bind(("127.0.0.1", 0))
@@ -410,16 +720,50 @@ def main():
                         context.tracing.start(screenshots=True, snapshots=True, sources=True)
                         page = context.new_page()
                         page.on("pageerror", lambda error: errors.append(str(error)))
+                        page.on(
+                            "console",
+                            lambda message: (
+                                console_errors.append(message.text) if message.type == "error" else None
+                            ),
+                        )
                         try:
                             network_boundary = exercise_cross_origin(context, client, token, port)
                             result = exercise(page, client, args.output_dir)
+                            result["onr003"] = exercise_manual_mapping(page, args.output_dir)
+                            result["onr005_views"] = exercise_other_views(page, args.output_dir)
+                            result["onr001"] = exercise_explicit_conflicts(page, client, args.output_dir)
+                            from scripts.browser_hardening import (
+                                exercise_loading_and_paging,
+                                exercise_uncertainty,
+                            )
+
+                            result["uncertainty"] = exercise_uncertainty(
+                                page, client, args.output_dir, observe
+                            )
+                            result["loading_and_paging"] = exercise_loading_and_paging(
+                                page, client, args.output_dir, ROOT
+                            )
                             assert not errors, errors
+                            csp_rejections = [
+                                message
+                                for message in console_errors
+                                if "Content Security Policy" in message
+                                or "Refused to apply inline style" in message
+                            ]
+                            assert not csp_rejections, csp_rejections
+                            assert all(
+                                "Failed to load resource" in message
+                                and ("422" in message or "503" in message)
+                                for message in console_errors
+                            ), console_errors
                             result.update(
                                 product_path=probe,
                                 ui_sha256=script_hash,
                                 browser=browser.version,
                                 listener_scope=listener_scope,
                                 network_boundary=network_boundary,
+                                console_errors=console_errors,
+                                csp_rejections=csp_rejections,
                                 passed=True,
                             )
                             (args.output_dir / "result.json").write_text(json.dumps(result, indent=2))

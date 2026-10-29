@@ -2,6 +2,10 @@
 
 Revisión técnica: [RIGOR_REVIEW](docs/RIGOR_REVIEW.md) y [avance del 23/09/2026](docs/QA_ADVANCEMENT_2026-09-23.md). Detallan los fallos encontrados, las correcciones, la evidencia ejecutada y los límites pendientes. El [ledger](docs/QA_COVERAGE_LEDGER.md) conserva las obligaciones completas; no declara cobertura total a partir del número de tests.
 
+Motor 0.1.2: [revisión adversarial y correcciones](docs/ONR_HARDENING_0_1_2.md). Los vínculos inválidos, contradictorios y ambiguos protegen también sus operaciones candidatas; no confirman diferencias parciales ni generan faltantes especulativos. Incluye reproducción económica, decisiones, pruebas en navegador y recuperación de auditorías anteriores. La [resolución inicial de ONR-001](docs/ONR_001_RESOLUTION.md) se conserva como historia de 0.1.1.
+
+Interfaz local: [resolución de ONR-002 a ONR-005](docs/ONR_002_005_RESOLUTION.md). Resume todos los acuerdos y versiones configurados, identifica el mapping manual efectivo, conserva las incidencias antes de ejecutar y aplica estilos compatibles con la CSP vigente.
+
 Prototipo B2B local para reconstruir cargos esperados a partir de operaciones, acuerdos versionados y evidencia, compararlos con cargos reales y conservar una explicación reproducible. Todos los fixtures son **completamente ficticios**.
 
 El programa separa PASS, FAIL, REVIEW y UNDETERMINABLE. Sólo una discrepancia objetiva integra las diferencias confirmadas. Ningún importe se presenta como ahorro. Las decisiones humanas no modifican el hallazgo original.

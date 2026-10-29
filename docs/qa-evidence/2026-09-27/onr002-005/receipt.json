@@ -1,0 +1,49 @@
+{
+  "generated_at_utc": "2026-09-27T20:55:09+00:00",
+  "base_commit": "fd62f05392f819896589c2a3b271ad49cdcfafbd",
+  "working_tree": "ONR-001 and ONR-002..005 local changes uncommitted; not a clean release gate",
+  "commands": [
+    "/usr/bin/time -v scripts/verify.sh > output/playwright/onr002-005-20260927-final3/verify.log 2>&1",
+    ".venv/bin/python scripts/browser_e2e.py --output-dir output/playwright/onr002-005-20260927-final3"
+  ],
+  "verify": {
+    "exit_code": 0,
+    "pytest_passed": 254,
+    "pytest_warnings": 2,
+    "wheel_built": true
+  },
+  "browser": {
+    "passed": true,
+    "version": "153.0.8010.12",
+    "csp_rejections": [],
+    "console_errors": [
+      "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+      "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    ],
+    "rows_observed": 46
+  },
+  "wheel_static_assets_match_source": true,
+  "sha256": {
+    "dist/freight_audit-0.1.1-py3-none-any.whl": "4274e1ab63fdc9779429d15dd118e8fff6e75c97392964030366f981a69bc421",
+    "docs/qa-evidence/2026-09-27/onr002-005/current-ui.png": "4b4274659738748b5cafd38f2baf6e785770db720ad65f9b66eb937176a2fd77",
+    "docs/qa-evidence/2026-09-27/onr002-005/onr002-004-mobile.png": "7424234b5b8b9da13ad99ceccdb8568449dc753fa8559c77968b9ae6829a431d",
+    "docs/qa-evidence/2026-09-27/onr002-005/onr002-004-verification.png": "5ac1bdbdc70207323961bec1f50413133424a7e7f160d0ab86275bcc1a3cc10e",
+    "docs/qa-evidence/2026-09-27/onr002-005/onr003-manual-mapping.png": "3016ca197a333cd758518e922fcdedafcd128182b28068562d5d5da98d007efc",
+    "docs/qa-evidence/2026-09-27/onr002-005/onr005-configs.png": "b273f451b0a213aa25b4350f109e6fe3f9273ffb2c27318f14d8a6928d35c10c",
+    "docs/qa-evidence/2026-09-27/onr002-005/onr005-guide.png": "d8e68eeb92fba03d224cf74d122868858fdc6e0d5d38c33cfa15177fa8881525",
+    "docs/qa-evidence/2026-09-27/onr002-005/result.json": "2dc612fa5534865736219921527e8fc425ccfadb6b5008f62b0cb5c2e3e31b60",
+    "docs/qa-evidence/2026-09-27/onr002-005/verify.log": "6235698177aaebecf1350cbc629239d6e697446856dacfe5739023c96f3a7d47",
+    "fixtures/agreements.json": "995c713bb41f5d19569f93474ec80cf8177a8cfcd7af8bfbbd6a360fcb6a71da",
+    "fixtures/liquidacion.csv": "ced3ad5c8dc1f6c0b7a124ada3d198dfccca630e070a2b2fae7f6fd896cecb19",
+    "fixtures/mapping-invalid.json": "047852f077c7968884436ede02b1d4757411f695133f153c74ab584da41f96ff",
+    "fixtures/operaciones-invalidas.csv": "4148c9a2672a0301de184afda153d0ff1fb4432ea6a7bc7acf399706192b4f1a",
+    "scripts/browser_e2e.py": "c29a599f0cd7815906cc3a263ef374ac2f1e199abd31d120b0e2f8ec8af42a75",
+    "src/freight_audit/static/app.css": "b9c496b5ccca3887d4e7bcfc819de9ef251630e0849b4ae68ff486823491e65a",
+    "src/freight_audit/static/app.js": "cba5ab836d7d181e1744fe97e0c11b6684ac210451a7a12f5906565eb565a92d"
+  },
+  "limits": [
+    "synthetic fixtures and one Chromium version",
+    "not a clean-checkout or Windows certification",
+    "no real client or commercial validation"
+  ]
+}
