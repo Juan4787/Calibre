@@ -138,8 +138,8 @@ run_tier_release() {
     
     WHEEL_FILE="$(ls "${ROOT_DIR}"/dist/freight_audit-*.whl | head -n 1)"
     echo "    Installing wheel: $WHEEL_FILE into isolated clean-room..."
-    "$TEMP_VENV/bin/pip" install -r requirements.lock -r requirements-browser.lock
-    "$TEMP_VENV/bin/pip" install --no-deps "$WHEEL_FILE"
+    env -u PYTHONPATH "$TEMP_VENV/bin/python" -m pip install -r requirements.lock -r requirements-browser.lock
+    env -u PYTHONPATH "$TEMP_VENV/bin/python" -m pip install --no-deps --force-reinstall "$WHEEL_FILE"
 
     echo "[5/5] Executing smoke test against installed wheel without checkout access..."
     SITE_PACKAGES="$("$TEMP_VENV/bin/python" -c "import site; print(site.getsitepackages()[0])")"
