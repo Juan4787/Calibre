@@ -10,6 +10,10 @@ El usuario exige documentación completa y directrices que se relean después de
 
 ## Estado exacto
 
+### Corrección posterior de la verificación remota
+
+El workflow del tag v0.2.0, run 40830562663, terminó con fallo en el smoke instalado: pip heredó PYTHONPATH del checkout, reconoció los metadatos de la misma versión como instalada y omitió copiar el wheel al entorno aislado. El smoke fuera del checkout detectó correctamente la ausencia del módulo. Los smoke/E2E instalados locales y los hashes descargados del release habían pasado; no son evidencia de aprobación de ese workflow. Se corrige el aislamiento quitando PYTHONPATH también durante pip y forzando la instalación del wheel. Requiere CI y workflow manual sobre el commit corregido, sin mover el tag histórico ni reemplazar sus artefactos. Rama de esta corrección: engineering/release-install-isolation.
+
 - Cwd: `/home/usuario/CascadeProjects/CALIBRE`.
 - Rama de trabajo actual: `engineering/operations-0.3.0`, creada desde main al terminar etapa 1. La rama anterior queda como historia del PR #1.
 - HEAD inicial publicado: `fd62f05392f819896589c2a3b271ad49cdcfafbd`, versión 0.1.0.
