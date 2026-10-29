@@ -1,0 +1,85 @@
+{
+  "version": "0.3.1",
+  "status": "delivered_final_audit_in_progress",
+  "active_installed_version": "0.3.1",
+  "implementation": "File-backed reporting/HTTP/CLI, budgets, independent totals, verified history, typed matching phase, deterministic build normalizer and hash locks, whole-workspace installer with rollback/recovery; not yet published",
+  "verification": "Canonical verify 349 passed; subsequent installer/build directed 8 passed; full source Chromium E2E and comparable benchmark passed; binary/install/CI delivery pending",
+  "publication": "published",
+  "final_audit": "in_progress",
+  "baseline": {
+    "version": "0.3.0",
+    "charges": 1000,
+    "measured_repetitions": 3,
+    "pipeline_median_seconds": 21.9,
+    "engine_median_seconds": 0.2466,
+    "peak_rss_mib": 181.74
+  },
+  "causal_red_failed": 7,
+  "workbook_directed_passed": 20,
+  "build_normalizer_tests": 2,
+  "installer_tests": 8,
+  "browser": {
+    "passed": true,
+    "desktop": "1280x720",
+    "mobile": "390x844",
+    "large_config_rows": 20000,
+    "visible_table_rows": 20,
+    "all_rows_retained": true
+  },
+  "benchmark": {
+    "charges": 1000,
+    "measured_reps": 3,
+    "oracles_matched": true,
+    "pipeline_median_seconds": 16.0007,
+    "peak_rss_mib": 168.11,
+    "baseline_pipeline_median_seconds": 21.9,
+    "baseline_peak_rss_mib": 181.74,
+    "scope": "same synthetic pipeline including separate XLSX then ZIP; no extrapolation to large clients"
+  },
+  "real_upgrade_rollback": {
+    "passed": true,
+    "actual_installed_wheels": true,
+    "actual_systemd": true,
+    "databases": 4,
+    "new_run_and_client_preserved": true,
+    "occupied_port_reverts_config_and_port": true
+  },
+  "candidate_sdist": "Predates systemd correction; MUST NOT publish candidate sdist; certify final main/tag again",
+  "pull_request": "https://github.com/Juan4787/Calibre/pull/4",
+  "first_pr_ci": "40933933375 success on d7e4dc5; before systemd correction",
+  "full_suite": {
+    "passed": 354,
+    "warnings": 2
+  },
+  "installed_browser": {
+    "passed": true,
+    "wheel_sha256": "e8d45b60170718b233b3363e5c286606fa02433d503c7cde9935d2b5a1daca01",
+    "runtime": "actual venv Python outside checkout; Playwright QA separate"
+  },
+  "ci_before_conditional_lock": {
+    "head": "a03f667ef2d8efa672a22672a0f8f8f94695cbb2",
+    "pr": "40934859058 success",
+    "nightly": "40934858380 success",
+    "platform": "40934863136 failed: Windows conditional colorama unpinned in original lock"
+  },
+  "lock_closure": {
+    "linux_pins_with_browser": 41,
+    "windows_pins_with_browser": 42,
+    "missing_or_incompatible_dependencies": 0,
+    "source": "official PyPI metadata; actual Windows rerun pending"
+  },
+  "installed": "active",
+  "source_commit": "002ca84c592481083470a701e78d66a496d50ddf",
+  "engine_artifact_hash": "dca7228d52b7db230a57a181bd71e8b8d9842960b5b941a247bba5941a50514e",
+  "release": "https://github.com/Juan4787/Calibre/releases/tag/v0.3.1",
+  "final_builds_byte_identical": true,
+  "final_installed_browser": true,
+  "remote_readback_all_four_files_identical": true,
+  "wheel_sha256": "9a1730d49aa1117a1114046c20483086995e0ce21a2b09d7e3380af6a6861795",
+  "sdist_sha256": "b39af9df754f8d48bbe02444fc710e820da20bfc7731e503d735beae2906cc28",
+  "main_ci": 40937886279,
+  "release_ci": 40938020352,
+  "platform_ci": 40937026441,
+  "activated_at": "2026-10-29T19:19:53.315051+00:00",
+  "backup_manifest": "/home/usuario/.local/share/calibre/backups/before-0.3.1-20261029T191951121630Z/manifest.json"
+}

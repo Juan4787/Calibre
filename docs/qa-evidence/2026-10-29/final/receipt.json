@@ -1,0 +1,49 @@
+{
+  "status": "engineering_audit_complete_with_documented_limits",
+  "date": "2026-10-29",
+  "report": "../../../FINAL_AUDIT_2026_10_29.md",
+  "original_audit": "../initial-audit/AUDITORIA.md",
+  "scope": "Three delivered stages, twelve supplied points, A01-A03/N01-N07, eight product recommendations, final installed artifact and destination readback",
+  "delivered_versions": [
+    "0.2.0",
+    "0.3.0",
+    "0.3.1"
+  ],
+  "active_version": "0.3.1",
+  "product_commit": "002ca84c592481083470a701e78d66a496d50ddf",
+  "product_tag": "v0.3.1",
+  "release": "https://github.com/Juan4787/Calibre/releases/tag/v0.3.1",
+  "stage_receipts": [
+    "../stage1/receipt.json",
+    "../stage2/receipt.json",
+    "../stage3/receipt.json"
+  ],
+  "canonical_tests_passed": 354,
+  "mutations_detected": "20/20",
+  "faults_detected_or_prevented": "41/41",
+  "adversarial_imports_passed": "62/62",
+  "native_linux_windows_parity": true,
+  "published_wheel_sha256": "9a1730d49aa1117a1114046c20483086995e0ce21a2b09d7e3380af6a6861795",
+  "volume_evidence": "../stage3/published-ui-volume.json",
+  "live_browser": "live-browser.json",
+  "live_readback": "live-readback.json",
+  "live_database_rows_unchanged": true,
+  "live_database_empty_at_check": true,
+  "all_five_original_databases_preserved": true,
+  "backups_and_rollback": "Verified production backup; actual isolated systemd upgrade/explicit rollback/automatic recovery rehearsed; no test rollback on live installation",
+  "no_open_reproduced_economic_p0_p1_in_tested_enabled_scope": true,
+  "claim_boundary": "No universal correctness/security/performance certification or real-client economic approval",
+  "external_validation_remaining": [
+    "Real client originals, agreed contract and independent truth",
+    "Operator workstation/desktop Excel and actual operating procedure",
+    "Off-device backup destination and operator recovery drill"
+  ],
+  "engineering_debt": [
+    "Full AST combinations exceed finite oracle sample",
+    "Provenance crosscheck shares production reader",
+    "Run model/JSON/HTML remain partly memory resident",
+    "Large _audit phase after bounded typed extraction",
+    "Advanced configuration still uses JSON"
+  ],
+  "documentation_publication": "Protected PR; obtain its exact final commit via git log -1 --format=%H -- docs/CONTINUATION.md; immutable product tag/assets remain unchanged"
+}
