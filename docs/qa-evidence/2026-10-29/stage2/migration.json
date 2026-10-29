@@ -1,0 +1,25 @@
+{
+  "source": "Installed wheel 0.2.0 outside checkout; fictional official fixtures",
+  "old_python": "/home/usuario/.local/share/calibre/releases/0.2.0/bin/python",
+  "historical_run_id": "1a0c5be3ca57b4d17a92afd7beb5f278796b558d2b124ec503b2ca540ed5bbaa",
+  "historical_result_hash": "a7a5827d0394bba23a910ca06860775c493b236363807848ba5c02dc8d49bd8f",
+  "historical_artifact_hash": "f9400cbaf0b4da5b61bd2fb308eeb564156eefb963dfaef83034105d77ec5ca1",
+  "old_fields_identical": [
+    "id",
+    "input_hash",
+    "result_hash",
+    "artifact_hash",
+    "snapshot",
+    "result",
+    "metadata",
+    "created_at",
+    "decisions"
+  ],
+  "schema_after_migration": 2,
+  "old_bundle_integrity_with_new_reader": true,
+  "old_engine_rejects_migrated_schema": true,
+  "rollback_v1_replay_identical": true,
+  "rollback_backup_sha256": "c9cf8f7421ac2c3d1c6ac75e34c8fb8bfb18c9b5bbfb7c87cd87b03abf3e19a5",
+  "production_database_modified": false,
+  "passed": true
+}

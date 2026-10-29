@@ -1,0 +1,7 @@
+Command: bash scripts/verify.sh
+Exit: 0
+330 passed, 2 warnings in 25.91s
+Ruff, mypy src+QA, matrix, JS syntax, compileall, wheel/sdist: passed.
+Mutations: 20/20 killed.
+Adversarial import corpus: 62/62.
+Browser: source release lifecycle passed (see browser.json).

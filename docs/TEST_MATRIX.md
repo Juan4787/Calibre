@@ -623,7 +623,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **CUANDO:** cambio afectado; CI; release; después de incidente
 - **RESPUESTA_SI_FALLA:** IR-02 IR-07 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
-- **SELECTORES:** tests/test_engine.py::test_import_rejects_block_economic_confirmation; tests/test_integration.py::test_invalid_fixture_rejects_visible_rows; tests/test_external_control.py::test_external_inventory_count_and_total_are_independent_blockers; tests/test_external_control.py::test_external_control_cli_exit_codes_and_hash_integrity
+- **SELECTORES:** tests/test_engine.py::test_import_rejects_block_economic_confirmation; tests/test_integration.py::test_invalid_fixture_rejects_visible_rows; tests/test_external_control.py::test_external_inventory_count_and_total_are_independent_blockers; tests/test_external_control.py::test_external_control_cli_exit_codes_and_hash_integrity; tests/test_operations.py::test_document_control_is_bound_to_snapshot_and_not_overwritten; tests/test_operations.py::test_independent_checker_includes_contract_original_not_repeated_in_registry
 - **RUNNERS:** .venv/bin/python scripts/qa.py external-control ARCHIVO_AUDIT_JSON CONTROL_EXTERNO_JSON
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
@@ -636,7 +636,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **INTERVENCION_HUMANA:** sí
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_engine.py::test_import_rejects_block_economic_confirmation tests/test_integration.py::test_invalid_fixture_rejects_visible_rows tests/test_external_control.py::test_external_inventory_count_and_total_are_independent_blockers tests/test_external_control.py::test_external_control_cli_exit_codes_and_hash_integrity
+.venv/bin/python -m pytest -q tests/test_engine.py::test_import_rejects_block_economic_confirmation tests/test_integration.py::test_invalid_fixture_rejects_visible_rows tests/test_external_control.py::test_external_inventory_count_and_total_are_independent_blockers tests/test_external_control.py::test_external_control_cli_exit_codes_and_hash_integrity tests/test_operations.py::test_document_control_is_bound_to_snapshot_and_not_overwritten tests/test_operations.py::test_independent_checker_includes_contract_original_not_repeated_in_registry
 ```
 
 ```bash
@@ -668,7 +668,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **CUANDO:** cambio afectado; CI; release; después de incidente
 - **RESPUESTA_SI_FALLA:** IR-11 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
-- **SELECTORES:** tests/test_importing.py::test_csv_argentine_numbers_zeroes_and_provenance; tests/test_storage_reporting.py::test_tampered_source_detected
+- **SELECTORES:** tests/test_importing.py::test_csv_argentine_numbers_zeroes_and_provenance; tests/test_storage_reporting.py::test_tampered_source_detected; tests/test_operations.py::test_compact_import_request_preserves_all_records; tests/test_operations.py::test_import_reference_integrity_and_cross_workspace
 - **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
@@ -681,7 +681,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **INTERVENCION_HUMANA:** sí
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_importing.py::test_csv_argentine_numbers_zeroes_and_provenance tests/test_storage_reporting.py::test_tampered_source_detected
+.venv/bin/python -m pytest -q tests/test_importing.py::test_csv_argentine_numbers_zeroes_and_provenance tests/test_storage_reporting.py::test_tampered_source_detected tests/test_operations.py::test_compact_import_request_preserves_all_records tests/test_operations.py::test_import_reference_integrity_and_cross_workspace
 ```
 
 ## QA-16
@@ -1242,7 +1242,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **CUANDO:** cambio afectado; CI; release; después de incidente
 - **RESPUESTA_SI_FALLA:** IR-13 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
-- **SELECTORES:** tests/test_backlog_p0_p1.py::test_qa29_client_catalog_and_storage_isolation
+- **SELECTORES:** tests/test_backlog_p0_p1.py::test_qa29_client_catalog_and_storage_isolation; tests/test_operations.py::test_workspace_isolation_and_restore_preserve_history; tests/test_operations.py::test_invalid_workspace_and_corrupt_restore_never_fall_back
 - **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
@@ -1255,7 +1255,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **INTERVENCION_HUMANA:** sí
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_backlog_p0_p1.py::test_qa29_client_catalog_and_storage_isolation
+.venv/bin/python -m pytest -q tests/test_backlog_p0_p1.py::test_qa29_client_catalog_and_storage_isolation tests/test_operations.py::test_workspace_isolation_and_restore_preserve_history tests/test_operations.py::test_invalid_workspace_and_corrupt_restore_never_fall_back
 ```
 
 ## QA-30
@@ -1313,7 +1313,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **RESULTADO_ESPERADO:** Writes históricos bloqueados; load detecta hashes; configuración futura no cambia run. list_runs no verifica integridad: deuda visible, no oráculo.
 - **ORACULO:** OR-06
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** Metadata/created_at fuera del hash actual no está autenticada.
+- **FALSOS_POSITIVOS:** Metadata histórica v1 y created_at no están ligados a la identidad; desde identidad v2 metadata sí se liga. Hash no autentica al operador.
 - **FALSOS_NEGATIVOS:** Rehash malicioso total o truncamiento puede pasar sin copia externa.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** integration
@@ -1324,7 +1324,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **CUANDO:** cambio afectado; CI; release; después de incidente
 - **RESPUESTA_SI_FALLA:** IR-10 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
-- **SELECTORES:** tests/test_storage_reporting.py::test_db_update_delete_blocked; tests/test_storage_reporting.py::test_tampered_result_detected_after_trigger_bypass; tests/test_storage_reporting.py::test_changed_agreement_preserves_history
+- **SELECTORES:** tests/test_storage_reporting.py::test_db_update_delete_blocked; tests/test_storage_reporting.py::test_tampered_result_detected_after_trigger_bypass; tests/test_storage_reporting.py::test_changed_agreement_preserves_history; tests/test_operations.py::test_new_identity_also_protects_documentary_metadata; tests/test_operations.py::test_revision_links_preserve_previous_result
 - **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
@@ -1337,7 +1337,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **INTERVENCION_HUMANA:** no
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_storage_reporting.py::test_db_update_delete_blocked tests/test_storage_reporting.py::test_tampered_result_detected_after_trigger_bypass tests/test_storage_reporting.py::test_changed_agreement_preserves_history
+.venv/bin/python -m pytest -q tests/test_storage_reporting.py::test_db_update_delete_blocked tests/test_storage_reporting.py::test_tampered_result_detected_after_trigger_bypass tests/test_storage_reporting.py::test_changed_agreement_preserves_history tests/test_operations.py::test_new_identity_also_protects_documentary_metadata tests/test_operations.py::test_revision_links_preserve_previous_result
 ```
 
 ## QA-32
@@ -1447,7 +1447,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **CUANDO:** cambio afectado; CI; release; después de incidente
 - **RESPUESTA_SI_FALLA:** IR-12 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
-- **SELECTORES:** tests/test_storage_reporting.py::test_migration_reopening_and_consistent_backup
+- **SELECTORES:** tests/test_storage_reporting.py::test_migration_reopening_and_consistent_backup; tests/test_operations.py::test_workspace_isolation_and_restore_preserve_history; tests/test_operations.py::test_restore_rejects_foreign_sqlite_and_altered_originals
 - **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
@@ -1460,7 +1460,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **INTERVENCION_HUMANA:** sí
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_storage_reporting.py::test_migration_reopening_and_consistent_backup
+.venv/bin/python -m pytest -q tests/test_storage_reporting.py::test_migration_reopening_and_consistent_backup tests/test_operations.py::test_workspace_isolation_and_restore_preserve_history tests/test_operations.py::test_restore_rejects_foreign_sqlite_and_altered_originals
 ```
 
 ## QA-35
@@ -1513,9 +1513,9 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **SEVERIDAD:** CRITICAL
 - **INVARIANTE:** INV-20 INV-25
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
-- **FIXTURE_DATOS:** Base vacía, schema v1, schema futuro v2, v0 no vacío y schema incompleto; futura migración interrumpida.
-- **PASOS_EXACTOS:** 1. Abrir copias de cada estado. 2. Para una futura migración: preservar backup con hash externo, interrumpir antes/después de cada DDL y restaurar/reintentar. 3. Comparar corridas históricas y originales.
-- **RESULTADO_ESPERADO:** Vacía inicializa schema 1; versión futura se rechaza; v1 reabre sin cambios. v0 no vacío o incompleto requiere validación pendiente. No se certifica una migración real.
+- **FIXTURE_DATOS:** Base vacía, schema v1 con identidad histórica, v1 corrupta para fallar DDL, schema futuro 99; base creada con wheel 0.2 en ensayo separado.
+- **PASOS_EXACTOS:** 1. Preservar backup externo. 2. Abrir copia v1 y comprobar historia/identidad. 3. Forzar fallo al crear índice y comprobar rollback de imports/user_version. 4. Abrir respaldo v1 con wheel 0.2 y replay.
+- **RESULTADO_ESPERADO:** Vacía inicializa schema 2; versión futura se rechaza; migración v1→2 conserva resultados y fallos de DDL no dejan schema parcial. El wheel viejo rechaza v2; su respaldo v1 reproduce. No certifica corte eléctrico ni Windows del operador.
 - **ORACULO:** OR-06
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
 - **FALSOS_POSITIVOS:** No inventar downgrade de schema futuro.
@@ -1529,7 +1529,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **CUANDO:** migración; release con cambio de schema
 - **RESPUESTA_SI_FALLA:** IR-10 IR-12 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
-- **SELECTORES:** tests/test_storage_reporting.py::test_newer_database_schema_is_not_opened; tests/test_storage_reporting.py::test_migration_reopening_and_consistent_backup
+- **SELECTORES:** tests/test_storage_reporting.py::test_newer_database_schema_is_not_opened; tests/test_storage_reporting.py::test_migration_reopening_and_consistent_backup; tests/test_operations.py::test_schema_v1_migration_preserves_old_identity_and_result; tests/test_operations.py::test_failed_v2_migration_rolls_back_schema_changes
 - **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
@@ -1542,7 +1542,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **INTERVENCION_HUMANA:** no
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_storage_reporting.py::test_newer_database_schema_is_not_opened tests/test_storage_reporting.py::test_migration_reopening_and_consistent_backup
+.venv/bin/python -m pytest -q tests/test_storage_reporting.py::test_newer_database_schema_is_not_opened tests/test_storage_reporting.py::test_migration_reopening_and_consistent_backup tests/test_operations.py::test_schema_v1_migration_preserves_old_identity_and_result tests/test_operations.py::test_failed_v2_migration_rolls_back_schema_changes
 ```
 
 ## QA-37

@@ -6,6 +6,7 @@ import hashlib
 import io
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -17,6 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def command(arguments, *, cwd=ROOT, environment=None):
+    if environment is None:
+        environment = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
     result = subprocess.run(
         arguments, cwd=cwd, env=environment, capture_output=True, text=True, check=False, timeout=600
     )
@@ -113,7 +116,7 @@ def smoke(installed_python, checkout, workdir):
     ).strip()
 
 
-def verify(output):
+def verify(output, artifacts_out=None):
     if command_bytes(["git", "status", "--porcelain", "--untracked-files=all"]).strip():
         raise RuntimeError("Commit or remove worktree changes before delivery verification")
     commit = command(["git", "rev-parse", "HEAD"]).strip()
@@ -199,6 +202,14 @@ def verify(output):
             "sdist_smoke": sdist_smoke,
             "scope": "Clean source, package content and installed behavior on this OS; not Windows Excel or field validation",
         }
+        if artifacts_out is not None:
+            artifacts_out.mkdir(parents=True, exist_ok=False)
+            for artifact in artifacts[0].values():
+                shutil.copyfile(artifact, artifacts_out / artifact.name)
+            (artifacts_out / "SHA256SUMS.txt").write_text(
+                "".join(f"{sha(path.read_bytes())}  {path.name}\n" for path in artifacts[0].values())
+            )
+            report["verified_artifacts"] = str(artifacts_out.resolve())
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(json.dumps(report, indent=2, ensure_ascii=False))
@@ -207,4 +218,8 @@ def verify(output):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
-    verify(parser.parse_args().output)
+    parser.add_argument(
+        "--artifacts-out", type=Path, help="Preserve the exact checked wheel and sdist in a new directory"
+    )
+    args = parser.parse_args()
+    verify(args.output, args.artifacts_out)

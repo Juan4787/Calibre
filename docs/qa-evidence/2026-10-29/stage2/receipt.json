@@ -1,0 +1,45 @@
+{
+  "version": "0.3.0",
+  "engine_artifact_hash": "fdd667513b48127a6a1c2e1475e05a6c27326e30d82841851d7777db7a8e702f",
+  "canonical_verify": true,
+  "full_suite": {
+    "passed": 330,
+    "warnings": 2
+  },
+  "causal_initial": {
+    "before_failed": 7,
+    "after_passed": 7
+  },
+  "operations_tests": 15,
+  "mutations": {
+    "killed": 20,
+    "total": 20
+  },
+  "imports": {
+    "passed": 62,
+    "total": 62
+  },
+  "browser": {
+    "passed": true,
+    "desktop": "1280x720",
+    "mobile": "390x844",
+    "browser_plugin": "No active browser tools; installed Playwright fallback"
+  },
+  "volume": {
+    "operations": 36000,
+    "priced_charges": 1,
+    "request_bytes": 1480,
+    "old_request_bytes": 48528135,
+    "replay_identical": true
+  },
+  "migration": {
+    "old_installed_wheel": "0.2.0",
+    "schema_before": 1,
+    "schema_after": 2,
+    "history_preserved": true,
+    "rollback_v1_replay": true
+  },
+  "publication": "pending",
+  "installed": "pending; active version remains 0.2.0",
+  "scope": "Fictional inputs only; real client and operator Windows Excel pending"
+}

@@ -146,7 +146,7 @@ def test_migration_reopening_and_consistent_backup(tmp_path, make_dataset):
     with pytest.raises(ValueError):
         store.backup(backup)
     with store.connect() as conn:
-        assert conn.execute("PRAGMA user_version").fetchone()[0] == 1
+        assert conn.execute("PRAGMA user_version").fetchone()[0] == 2
 
 
 def test_workbook_is_real_and_has_exact_money_and_no_formulas(tmp_path, make_dataset):

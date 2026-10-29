@@ -13,6 +13,7 @@ from pathlib import Path
 
 from . import ENGINE_VERSION
 from .canonical import bytes_hash, canonical, digest, load_json
+from .document_control import documentary_control
 from .engine import audit
 from .local_paths import checked_output_path
 from .models import AuditResult, Charge, Dataset, Decision, Shipment
@@ -36,12 +37,24 @@ def engine_artifact_hash() -> str:
                 "engine.py",
                 "importing.py",
                 "provenance.py",
+                "document_control.py",
+                "storage.py",
             )
         }
     )
 
 
 RUNNING_ARTIFACT_HASH = engine_artifact_hash()
+
+
+def importer_artifact_hash() -> str:
+    root = Path(__file__).parent
+    return digest(
+        {
+            name: bytes_hash((root / name).read_bytes())
+            for name in ("canonical.py", "models.py", "importing.py")
+        }
+    )
 
 
 def environment() -> dict:
@@ -51,13 +64,24 @@ def environment() -> dict:
     }
 
 
+def run_identity(input_hash: str, result_hash: str, artifact_hash: str, metadata: dict) -> str:
+    if not isinstance(metadata, dict):
+        raise IntegrityError(
+            "Los metadatos de la auditoría no tienen un formato válido; restaurar una copia verificada."
+        )
+    components = [input_hash, result_hash, artifact_hash]
+    if metadata.get("run_identity_version") == 2:
+        components.append(digest(metadata))
+    return digest(components)
+
+
 class Store:
     def __init__(self, path: str | Path):
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.connect() as conn:
             version = conn.execute("PRAGMA user_version").fetchone()[0]
-            if version > 1:
+            if version > 2:
                 raise IntegrityError(
                     "La base pertenece a una versión más nueva; abrir con esa versión del programa."
                 )
@@ -70,7 +94,16 @@ class Store:
                     CREATE INDEX IF NOT EXISTS decisions_run ON decisions(run_id, seq);
                     PRAGMA user_version=1;
                 """)
-            for table in ("sources", "configs", "runs", "decisions"):
+            if version < 2:
+                conn.execute("BEGIN IMMEDIATE")
+                conn.execute(
+                    "CREATE TABLE IF NOT EXISTS imports (id TEXT PRIMARY KEY, artifact_hash TEXT NOT NULL, payload TEXT NOT NULL, created_at TEXT NOT NULL)"
+                )
+                conn.execute(
+                    "CREATE INDEX IF NOT EXISTS runs_parent ON runs(json_extract(snapshot, '$.parent_run_id'))"
+                )
+                conn.execute("PRAGMA user_version=2")
+            for table in ("sources", "configs", "runs", "decisions", "imports"):
                 for operation in ("UPDATE", "DELETE"):
                     conn.execute(
                         f"CREATE TRIGGER IF NOT EXISTS immutable_{table}_{operation} BEFORE {operation} ON {table} BEGIN SELECT RAISE(ABORT, 'immutable history'); END"
@@ -116,7 +149,49 @@ class Store:
             rows = conn.execute("SELECT * FROM configs ORDER BY created_at DESC, hash").fetchall()
         return [{**dict(row), "payload": load_json(row["payload"])} for row in rows]
 
+    def save_import(self, imported: dict) -> str:
+        self.source(imported["document"])
+        payload = canonical(imported)
+        if len(payload.encode()) > 128 * 1024 * 1024:
+            raise ValueError(
+                "El lote normalizado supera el presupuesto de importación; dividirlo en períodos más pequeños antes de continuar."
+            )
+        artifact = importer_artifact_hash()
+        identifier = digest([artifact, bytes_hash(payload.encode())])
+        with self.connect() as conn:
+            conn.execute(
+                "INSERT OR IGNORE INTO imports VALUES (?,?,?,?)",
+                (identifier, artifact, payload, datetime.now(UTC).isoformat()),
+            )
+        return identifier
+
+    def load_import(self, identifier: str) -> dict:
+        with self.connect() as conn:
+            row = conn.execute("SELECT * FROM imports WHERE id=?", (identifier,)).fetchone()
+        if row is None:
+            raise KeyError("La importación no existe en este espacio; volver a validar el archivo.")
+        if digest([row["artifact_hash"], bytes_hash(row["payload"].encode())]) != identifier:
+            raise IntegrityError(
+                "La importación conservada no supera el cotejo; volver a validar desde el original."
+            )
+        if row["artifact_hash"] != importer_artifact_hash():
+            raise ValueError(
+                "El lector cambió desde la validación. Volver a validar los originales con esta versión antes de auditar."
+            )
+        imported = load_json(row["payload"])
+        self.source(imported["document"])
+        return imported
+
     def save(self, dataset: Dataset, result: AuditResult) -> str:
+        control = documentary_control(dataset)
+        if control["status"] == "mismatch":
+            raise ValueError(
+                "El control documental no coincide. "
+                + " ".join(control["problems"])
+                + " Corregir el alcance o los archivos antes de conservar la auditoría."
+            )
+        if dataset.parent_run_id:
+            self.load(dataset.parent_run_id)
         if engine_artifact_hash() != RUNNING_ARTIFACT_HASH:
             raise IntegrityError(
                 "El programa cambió mientras estaba abierto. Cerrar y reiniciar el servicio local antes de guardar una nueva auditoría."
@@ -147,7 +222,14 @@ class Store:
         input_hash = bytes_hash(dataset_json.encode())
 
         artifact_hash = engine_artifact_hash()
-        run_id = digest([input_hash, result_hash, artifact_hash])
+        metadata = {
+            **environment(),
+            "provenance": provenance,
+            "document_control": control,
+            "workspace": self.identity(),
+            "run_identity_version": 2,
+        }
+        run_id = run_identity(input_hash, result_hash, artifact_hash, metadata)
         with self.connect() as conn:
             conn.execute(
                 "INSERT OR IGNORE INTO runs VALUES (?,?,?,?,?,?,?,?)",
@@ -158,7 +240,7 @@ class Store:
                     artifact_hash,
                     dataset_json,
                     result_json,
-                    canonical({**environment(), "provenance": provenance}),
+                    canonical(metadata),
                     datetime.now(UTC).isoformat(),
                 ),
             )
@@ -173,7 +255,12 @@ class Store:
         for record in records:
             hashes.update(ref.document for ref in record.provenance.values())
         hashes.update(e.document_hash for e in dataset.evidence if e.document_hash)
+        hashes.update(c.document_hash for c in dataset.contract_sources)
         return sorted(hashes)
+
+    def identity(self) -> dict:
+        identities = [c["payload"] for c in self.configs() if c["kind"] == "workspace_identity"]
+        return identities[-1] if identities else {"id": "main", "name": "Sin cliente asignado"}
 
     def list_runs(self) -> list[dict]:
         with self.connect() as conn:
@@ -189,10 +276,11 @@ class Store:
             raise KeyError("La auditoría no existe.")
         snapshot = load_json(row["snapshot"])
         result = load_json(row["result"])
+        metadata = load_json(row["metadata"])
         if (
             digest(snapshot) != row["input_hash"]
             or digest(result) != row["result_hash"]
-            or digest([row["input_hash"], row["result_hash"], row["artifact_hash"]]) != run_id
+            or run_identity(row["input_hash"], row["result_hash"], row["artifact_hash"], metadata) != run_id
         ):
             raise IntegrityError("La auditoría guardada no supera la verificación de integridad.")
         for source_hash in self.source_hashes(Dataset.model_validate(snapshot)):
@@ -201,9 +289,18 @@ class Store:
             **dict(row),
             "snapshot": snapshot,
             "result": result,
-            "metadata": load_json(row["metadata"]),
+            "metadata": metadata,
             "decisions": self.decisions(run_id),
+            "revisions": self.revisions(run_id),
         }
+
+    def revisions(self, run_id: str) -> list[dict]:
+        with self.connect() as conn:
+            rows = conn.execute(
+                "SELECT id, created_at, json_extract(snapshot, '$.label') label, json_extract(snapshot, '$.revision_kind') kind FROM runs WHERE json_extract(snapshot, '$.parent_run_id')=? ORDER BY created_at, id",
+                (run_id,),
+            ).fetchall()
+        return [dict(row) for row in rows]
 
     def replay(self, run_id: str) -> dict:
         run = self.load(run_id)

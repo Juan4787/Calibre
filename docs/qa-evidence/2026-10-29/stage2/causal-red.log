@@ -1,0 +1,162 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+______________ test_compact_import_request_preserves_all_records _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-15/test_compact_import_request_pr0')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}
+
+    def test_compact_import_request_preserves_all_records(tmp_path, raw_dataset):
+        with authorized_client(tmp_path / "refs.db") as client:
+>           refs = upload(client, rows=1200)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_operations.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <starlette.testclient.TestClient object at 0x7930034ba210>, rows = 1200
+
+    def upload(client, rows=1):
+        refs = {}
+        for role, (data, config) in inputs(rows).items():
+            response = client.post("/api/import", files={"file": (role + ".csv", data)}, data={"mapping": canonical(config), "compact": "true"})
+            assert response.status_code == 200, response.text
+            result = response.json()
+>           assert "records" not in result, "Compact import must not send authoritative records through the browser"
+E           AssertionError: Compact import must not send authoritative records through the browser
+E           assert 'records' not in {'document': 'e989b70b4d2c302927e43394f291f89be88d25049541d385522891a65287dd2c', 'filename': 'shipments.csv', 'sheet': 'CSV', 'sheets': ['CSV'], ...}
+
+tests/test_operations.py:37: AssertionError
+_________ test_compact_request_rejects_injected_records_and_wrong_role _________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-15/test_compact_request_rejects_i0')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}
+
+    def test_compact_request_rejects_injected_records_and_wrong_role(tmp_path, raw_dataset):
+        with authorized_client(tmp_path / "tamper.db") as client:
+>           refs = upload(client)
+                   ^^^^^^^^^^^^^^
+
+tests/test_operations.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <starlette.testclient.TestClient object at 0x793001cf3a10>, rows = 1
+
+    def upload(client, rows=1):
+        refs = {}
+        for role, (data, config) in inputs(rows).items():
+            response = client.post("/api/import", files={"file": (role + ".csv", data)}, data={"mapping": canonical(config), "compact": "true"})
+            assert response.status_code == 200, response.text
+            result = response.json()
+>           assert "records" not in result, "Compact import must not send authoritative records through the browser"
+E           AssertionError: Compact import must not send authoritative records through the browser
+E           assert 'records' not in {'document': '3971f2b8857f00a5bc8a3ccff58a5c629bbaf05b299fedd740ee8f13b44f86c7', 'filename': 'shipments.csv', 'sheet': 'CSV', 'sheets': ['CSV'], ...}
+
+tests/test_operations.py:37: AssertionError
+_______ test_compact_import_issues_are_bounded_and_all_pages_accessible ________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-15/test_compact_import_issues_are0')
+
+    def test_compact_import_issues_are_bounded_and_all_pages_accessible(tmp_path):
+        with authorized_client(tmp_path / "issues.db") as client:
+            data, config = inputs()["charges"]
+            config["concept_map"] = {"different": "base"}
+            data = data.splitlines()[0] + b"\n" + b"".join(f"C{i};L;R;C;A;unknown-{i};100;ARS\n".encode() for i in range(121))
+            response = client.post("/api/import", files={"file": ("warnings.csv", data)}, data={"mapping": canonical(config), "compact": "true"})
+            result = response.json()
+>           assert result["issue_count"] == 121 and len(result["issues"]) <= 50
+                   ^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'issue_count'
+
+tests/test_operations.py:88: KeyError
+________ test_document_control_is_bound_to_snapshot_and_not_overwritten ________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-15/test_document_control_is_bound0')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}
+
+    def test_document_control_is_bound_to_snapshot_and_not_overwritten(tmp_path, raw_dataset):
+        with authorized_client(tmp_path / "control.db") as client:
+>           refs = upload(client)
+                   ^^^^^^^^^^^^^^
+
+tests/test_operations.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+client = <starlette.testclient.TestClient object at 0x793001da0e90>, rows = 1
+
+    def upload(client, rows=1):
+        refs = {}
+        for role, (data, config) in inputs(rows).items():
+            response = client.post("/api/import", files={"file": (role + ".csv", data)}, data={"mapping": canonical(config), "compact": "true"})
+            assert response.status_code == 200, response.text
+            result = response.json()
+>           assert "records" not in result, "Compact import must not send authoritative records through the browser"
+E           AssertionError: Compact import must not send authoritative records through the browser
+E           assert 'records' not in {'document': '3971f2b8857f00a5bc8a3ccff58a5c629bbaf05b299fedd740ee8f13b44f86c7', 'filename': 'shipments.csv', 'sheet': 'CSV', 'sheets': ['CSV'], ...}
+
+tests/test_operations.py:37: AssertionError
+_________________ test_revision_links_preserve_previous_result _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-15/test_revision_links_preserve_p0')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}
+
+    def test_revision_links_preserve_previous_result(tmp_path, raw_dataset):
+        with authorized_client(tmp_path / "revision.db") as client:
+            original = client.post("/api/audit", json=raw_dataset).json()["run_id"]
+            before = client.get("/api/runs/" + original).json()
+            revised = deepcopy(raw_dataset)
+            revised.update(parent_run_id=original, revision_kind="correction", revision_note="Independent synthetic correction")
+            revised["charges"][0]["amount"] = "130"
+            response = client.post("/api/audit", json=revised)
+>           assert response.status_code == 200, response.text
+E           AssertionError: {"error":"Hay campos inválidos en los datos o la configuración. Corregir los campos indicados y volver a validar.","details":[{"field":"parent_run_id","message":"Extra inputs are not permitted"},{"field":"revision_kind","message":"Extra inputs are not permitted"},{"field":"revision_note","message":"Extra inputs are not permitted"}]}
+E           assert 422 == 200
+E            +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+
+tests/test_operations.py:130: AssertionError
+_____ test_contract_reference_requires_preserved_document_and_valid_target _____
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-15/test_contract_reference_requir0')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...r': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}], ...}
+
+    def test_contract_reference_requires_preserved_document_and_valid_target(tmp_path, raw_dataset):
+        with authorized_client(tmp_path / "contract.db") as client:
+            attachment = client.post("/api/evidence-file", files={"file": ("contract.pdf", b"synthetic contract fixture")}).json()
+            raw_dataset["contract_sources"] = [{"document_hash": attachment["document_hash"], "agreement": "A", "version": "V1", "rule": "R1", "page": 1, "approved_by": "Synthetic QA", "approved_on": "2026-10-29"}]
+            response = client.post("/api/audit", json=raw_dataset)
+>           assert response.status_code == 200, response.text
+E           AssertionError: {"error":"Hay campos inválidos en los datos o la configuración. Corregir los campos indicados y volver a validar.","details":[{"field":"contract_sources","message":"Extra inputs are not permitted"}]}
+E           assert 422 == 200
+E            +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+
+tests/test_operations.py:143: AssertionError
+________ test_health_identifies_installed_engine_without_creating_runs _________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-15/test_health_identifies_install0')
+
+    def test_health_identifies_installed_engine_without_creating_runs(tmp_path):
+        with authorized_client(tmp_path / "health.db") as client:
+            result = client.get("/api/health")
+>           assert result.status_code == 200
+E           assert 404 == 200
+E            +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/test_operations.py:153: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /home/usuario/CascadeProjects/CALIBRE/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv/lib/python3.12/site-packages/starlette/testclient.py:53
+  /home/usuario/CascadeProjects/CALIBRE/.venv/lib/python3.12/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_operations.py::test_compact_import_request_preserves_all_records
+FAILED tests/test_operations.py::test_compact_request_rejects_injected_records_and_wrong_role
+FAILED tests/test_operations.py::test_compact_import_issues_are_bounded_and_all_pages_accessible
+FAILED tests/test_operations.py::test_document_control_is_bound_to_snapshot_and_not_overwritten
+FAILED tests/test_operations.py::test_revision_links_preserve_previous_result
+FAILED tests/test_operations.py::test_contract_reference_requires_preserved_document_and_valid_target
+FAILED tests/test_operations.py::test_health_identifies_installed_engine_without_creating_runs
+7 failed, 2 warnings in 1.82s

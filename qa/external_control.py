@@ -75,6 +75,11 @@ def compare_external_control(run: dict, control: dict) -> dict:
     errors = integrity_errors(run)
     snapshot = run["snapshot"]
     recorded_sources = set(snapshot["documents"])
+    for records in (snapshot["shipments"], snapshot["charges"]):
+        for record in records:
+            recorded_sources.update(ref["document"] for ref in record.get("provenance", {}).values())
+    recorded_sources.update(e["document_hash"] for e in snapshot["evidence"] if e.get("document_hash"))
+    recorded_sources.update(c["document_hash"] for c in snapshot.get("contract_sources", []))
     if recorded_sources != set(sources):
         errors.append("External source inventory differs from the saved audit")
     actual_shipments: Counter[str] = Counter()

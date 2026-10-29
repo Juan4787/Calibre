@@ -186,6 +186,8 @@
       "items": {
         "type": "string"
       },
+      "maxItems": 10,
+      "minItems": 1,
       "title": "Date Formats",
       "type": "array"
     },

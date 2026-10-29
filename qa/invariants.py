@@ -50,7 +50,10 @@ def integrity_errors(run: dict) -> list[str]:
     for key, payload in (("input_hash", "snapshot"), ("result_hash", "result")):
         if stable_hash(run[payload]) != run[key]:
             errors.append(f"INV-28 {key}: content differs from recorded hash")
-    expected_id = stable_hash([run["input_hash"], run["result_hash"], run["artifact_hash"]])
+    identity = [run["input_hash"], run["result_hash"], run["artifact_hash"]]
+    if run.get("metadata", {}).get("run_identity_version") == 2:
+        identity.append(stable_hash(run["metadata"]))
+    expected_id = stable_hash(identity)
     if run["id"] != expected_id:
         errors.append("INV-28 run id mismatch")
     previous = run["id"]

@@ -1,0 +1,33 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_new_identity_also_protects_documentary_metadata _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-20/test_new_identity_also_protect0')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}
+
+    def test_new_identity_also_protects_documentary_metadata(tmp_path, raw_dataset):
+        store = Store(tmp_path / "metadata.db")
+        dataset = Dataset.model_validate(raw_dataset)
+        run_id = store.save(dataset, audit(dataset))
+        run = store.load(run_id)
+        run["metadata"]["provenance"]["checked_records"] = 999
+        with store.connect() as connection:
+            connection.execute("DROP TRIGGER immutable_runs_UPDATE")
+            connection.execute("UPDATE runs SET metadata=? WHERE id=?", (canonical(run["metadata"]), run_id))
+>       with pytest.raises(IntegrityError):
+E       Failed: DID NOT RAISE IntegrityError
+
+tests/test_operations.py:265: Failed
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /home/usuario/CascadeProjects/CALIBRE/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv/lib/python3.12/site-packages/starlette/testclient.py:53
+  /home/usuario/CascadeProjects/CALIBRE/.venv/lib/python3.12/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_operations.py::test_new_identity_also_protects_documentary_metadata
+1 failed, 9 deselected, 2 warnings in 1.02s

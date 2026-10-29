@@ -69,7 +69,13 @@ def inventory(db: Path, filters: dict[str, str] | None = None) -> dict:
                 snapshot, result, metadata = (
                     json_load(row[key]) for key in ("snapshot", "result", "metadata")
                 )
-                run = {**dict(row), "snapshot": snapshot, "result": result, "decisions": []}
+                run = {
+                    **dict(row),
+                    "snapshot": snapshot,
+                    "result": result,
+                    "metadata": metadata,
+                    "decisions": [],
+                }
                 failures = integrity_errors(run)
                 if failures:
                     entry["reasons"] = [

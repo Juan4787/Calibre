@@ -3,7 +3,7 @@ from pathlib import Path
 from .canonical import load_json
 from .importing import MAX_FILE_BYTES, ImportMapping, import_data
 from .local_paths import read_bounded
-from .models import Agreement, Dataset
+from .models import Agreement, ContractSource, Dataset
 from .storage import Store
 
 
@@ -53,6 +53,13 @@ def load_project(path: Path, store: Store, *, allow_external_paths: bool = False
         if len(found) != 1:
             raise ValueError("Un adjunto no tiene una referencia de evidencia única.")
         found[0]["document_hash"] = source_hash
+    contract_sources = []
+    for citation in project.get("contract_sources", []):
+        citation = dict(citation)
+        filename = citation.pop("file")
+        source_hash = store.put_source(read_source(filename, MAX_FILE_BYTES))
+        documents[source_hash] = Path(filename).name
+        contract_sources.append(ContractSource.model_validate({**citation, "document_hash": source_hash}))
     return Dataset(
         label=project["label"],
         shipments=records["shipments"],
@@ -63,4 +70,11 @@ def load_project(path: Path, store: Store, *, allow_external_paths: bool = False
         mappings=mappings,
         documents=documents,
         coverage=project.get("coverage", {}),
+        contract_sources=contract_sources,
+        external_control=load_json(read_source(project["external_control"], 2 * 1024 * 1024))
+        if project.get("external_control")
+        else None,
+        parent_run_id=project.get("parent_run_id"),
+        revision_kind=project.get("revision_kind"),
+        revision_note=project.get("revision_note"),
     ), imports

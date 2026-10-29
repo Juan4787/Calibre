@@ -14,7 +14,7 @@ from openpyxl.utils import get_column_letter
 from .canonical import bytes_hash, canonical, digest, load_json
 from .local_paths import checked_output_path
 from .models import Dataset
-from .storage import IntegrityError, Store
+from .storage import IntegrityError, Store, run_identity
 
 STATUS_LABELS = {
     "PASS": "Coincide",
@@ -33,11 +33,19 @@ def provenance_note(run: dict) -> str:
     proof = run.get("metadata", {}).get("provenance")
     if not proof:
         return "Auditoría histórica sin registro de cotejo contra originales. La completitud documental requiere control independiente."
-    return (
+    note = (
         f"{proof['checked_records']} registros cotejados contra archivos y formatos conservados; "
         f"{proof['declared_records']} aportados sin cotejo. "
         "El cotejo no certifica autenticidad, contrato ni documentación completa del período."
     )
+    control = run.get("metadata", {}).get("document_control")
+    if control:
+        note += " " + (
+            "Control documental: inventario, cantidades e importes coinciden con el control aportado."
+            if control["status"] == "matched"
+            else "Control documental independiente pendiente."
+        )
+    return note
 
 
 class ReportLimitError(ValueError):
@@ -379,7 +387,8 @@ def verify_bundle(data: bytes) -> dict:
             if (
                 digest(run["snapshot"]) != run["input_hash"]
                 or digest(run["result"]) != run["result_hash"]
-                or digest([run["input_hash"], run["result_hash"], run["artifact_hash"]]) != run["id"]
+                or run_identity(run["input_hash"], run["result_hash"], run["artifact_hash"], run["metadata"])
+                != run["id"]
                 or run["id"] != manifest["run_id"]
             ):
                 raise IntegrityError("Los hashes de auditoría no coinciden.")
