@@ -1,0 +1,87 @@
+....................F................................................... [ 75%]
+.......................                                                  [100%]
+=================================== FAILURES ===================================
+______________________ test_explicit_set_relation_oracle _______________________
+
+    @settings(max_examples=40, deadline=None)
+>   @given(
+            
+        cardinality=st.sampled_from(["one", "group"]),
+        targets=st.sets(st.sampled_from(["S1", "S2", "S3"]), min_size=1),
+    )
+
+tests/test_explicit_link_conflicts.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cardinality = 'one', targets = {'S1', 'S2'}
+
+    @settings(max_examples=40, deadline=None)
+    @given(
+        cardinality=st.sampled_from(["one", "group"]),
+        targets=st.sets(st.sampled_from(["S1", "S2", "S3"]), min_size=1),
+    )
+    def test_explicit_set_relation_oracle(cardinality, targets):
+        from freight_audit.fixtures import agreement, const, rule, version
+    
+        data = {
+            "label": "Synthetic independent set oracle",
+            "shipments": [
+                {
+                    "id": sid,
+                    "reference": "key" if sid in {"S1", "S2"} else "other",
+                    "carrier": "C",
+                    "attributes": {"service_date": {"type": "date", "value": "2026-05-01"}},
+                }
+                for sid in ("S1", "S2", "S3")
+            ],
+            "charges": [
+                {
+                    "id": "C1",
+                    "reference": "key",
+                    "carrier": "C",
+                    "agreement": "A",
+                    "settlement": "L",
+                    "currency": "ARS",
+                    "concept": "base",
+                    "amount": "100",
+                }
+            ],
+            "agreements": [agreement("A", "C", [version("V", [rule("R", "base", const("100", "ARS"))])])],
+        }
+        data["agreements"][0]["matching"].update(
+            cardinality=cardinality, explicit={"C1": sorted(targets, reverse=True)}
+        )
+        # Independent finite set oracle, no call to matching/key helpers.
+        compatible = targets <= {"S1", "S2"} if cardinality == "one" else targets == {"S1", "S2"}
+        result = compute(data)
+        assert result.findings[0].status == ("PASS" if compatible else "REVIEW")
+        reordered = deepcopy(data)
+        reordered["agreements"][0]["matching"]["explicit"]["C1"].reverse()
+        reordered["shipments"].reverse()
+>       assert canonical(compute(reordered)) == canonical(result)
+E       assert '{"engine_ver...findings":1}}' == '{"engine_ver...findings":1}}'
+E         
+E         Skipping 786 identical leading characters in diff, use -v to show
+E         Skipping 530 identical trailing characters in diff, use -v to show
+E         - on_hash":"c54d4884605f97a7d167f0dd44746399ce605b0fab97b1a402042f27cedb84ae","duplicate_fields":["reference","concept","amount"],"keys":[{"charge":"reference","shipment":"reference"}]}},"op":"matching","output":null},{"children":[],"details":{"date_field":"service_date","dates":[{"date":"2026-05-01","shipment_id":"S1"},{"date":"2026-05-01","shipment_id":"S2"}],"source_note":"Ejemplo totalmente ficticio. Sin valor contractual ni evidencia de...
+E         
+E         ...Full output truncated (4 lines hidden), use '-vv' to show
+E       Failing test case: test_explicit_set_relation_oracle(
+E           cardinality='one',  # or any other generated value
+E           targets={'S1', 'S2'},
+E       )
+
+tests/test_explicit_link_conflicts.py:251: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /home/usuario/CascadeProjects/CALIBRE/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv/lib/python3.12/site-packages/starlette/testclient.py:53
+  /home/usuario/CascadeProjects/CALIBRE/.venv/lib/python3.12/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_explicit_link_conflicts.py::test_explicit_set_relation_oracle
+1 failed, 94 passed, 2 warnings in 2.50s

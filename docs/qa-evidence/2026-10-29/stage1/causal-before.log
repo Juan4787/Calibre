@@ -1,0 +1,614 @@
+FFFFFFFFFFFFFFFFFFFFFFFFF                                                [100%]
+=================================== FAILURES ===================================
+_ test_mapping_rejects_non_civil_or_repeated_date_directives[%d/%m/%Y %H:%M:%S%z] _
+
+fmt = '%d/%m/%Y %H:%M:%S%z'
+
+    @pytest.mark.parametrize("fmt", ["%d/%m/%Y %H:%M:%S%z", "%Y-%m-%dT%H:%M", "%Y/%m/%d %Z", "%Y/%m/%d/%Y"])
+    def test_mapping_rejects_non_civil_or_repeated_date_directives(fmt):
+>       with pytest.raises(ValidationError):
+E       Failed: DID NOT RAISE ValidationError
+
+tests/test_audit_hardening.py:26: Failed
+__ test_mapping_rejects_non_civil_or_repeated_date_directives[%Y-%m-%dT%H:%M] __
+
+fmt = '%Y-%m-%dT%H:%M'
+
+    @pytest.mark.parametrize("fmt", ["%d/%m/%Y %H:%M:%S%z", "%Y-%m-%dT%H:%M", "%Y/%m/%d %Z", "%Y/%m/%d/%Y"])
+    def test_mapping_rejects_non_civil_or_repeated_date_directives(fmt):
+>       with pytest.raises(ValidationError):
+E       Failed: DID NOT RAISE ValidationError
+
+tests/test_audit_hardening.py:26: Failed
+___ test_mapping_rejects_non_civil_or_repeated_date_directives[%Y/%m/%d %Z] ____
+
+fmt = '%Y/%m/%d %Z'
+
+    @pytest.mark.parametrize("fmt", ["%d/%m/%Y %H:%M:%S%z", "%Y-%m-%dT%H:%M", "%Y/%m/%d %Z", "%Y/%m/%d/%Y"])
+    def test_mapping_rejects_non_civil_or_repeated_date_directives(fmt):
+>       with pytest.raises(ValidationError):
+E       Failed: DID NOT RAISE ValidationError
+
+tests/test_audit_hardening.py:26: Failed
+___ test_mapping_rejects_non_civil_or_repeated_date_directives[%Y/%m/%d/%Y] ____
+
+fmt = '%Y/%m/%d/%Y'
+
+    @pytest.mark.parametrize("fmt", ["%d/%m/%Y %H:%M:%S%z", "%Y-%m-%dT%H:%M", "%Y/%m/%d %Z", "%Y/%m/%d/%Y"])
+    def test_mapping_rejects_non_civil_or_repeated_date_directives(fmt):
+>       with pytest.raises(ValidationError):
+E       Failed: DID NOT RAISE ValidationError
+
+tests/test_audit_hardening.py:26: Failed
+____________ test_uncorroborated_explicit_never_confirms[100-99999] ____________
+
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}
+reference = '99999', amount = '100'
+
+    @pytest.mark.parametrize("reference", ["99999", ""])
+    @pytest.mark.parametrize("amount", ["100", "130", "-100"])
+    def test_uncorroborated_explicit_never_confirms(raw_dataset, reference, amount):
+        raw_dataset["charges"][0].update(reference=reference, amount=amount)
+        raw_dataset["agreements"][0]["matching"]["explicit"] = {"C1": ["S1"]}
+        ds = Dataset.model_validate(raw_dataset)
+        f = audit(ds).findings[0]
+>       assert (f.status, f.actual, f.expected, f.confirmed_difference) == ("REVIEW", amount, None, "0")
+E       AssertionError: assert ('PASS', '100', '100', '0') == ('REVIEW', '100', None, '0')
+E         
+E         At index 0 diff: 'PASS' != 'REVIEW'
+E         Use -v to get more diff
+
+tests/test_audit_hardening.py:37: AssertionError
+______________ test_uncorroborated_explicit_never_confirms[100-] _______________
+
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}
+reference = '', amount = '100'
+
+    @pytest.mark.parametrize("reference", ["99999", ""])
+    @pytest.mark.parametrize("amount", ["100", "130", "-100"])
+    def test_uncorroborated_explicit_never_confirms(raw_dataset, reference, amount):
+        raw_dataset["charges"][0].update(reference=reference, amount=amount)
+        raw_dataset["agreements"][0]["matching"]["explicit"] = {"C1": ["S1"]}
+        ds = Dataset.model_validate(raw_dataset)
+        f = audit(ds).findings[0]
+>       assert (f.status, f.actual, f.expected, f.confirmed_difference) == ("REVIEW", amount, None, "0")
+E       AssertionError: assert ('PASS', '100', '100', '0') == ('REVIEW', '100', None, '0')
+E         
+E         At index 0 diff: 'PASS' != 'REVIEW'
+E         Use -v to get more diff
+
+tests/test_audit_hardening.py:37: AssertionError
+____________ test_uncorroborated_explicit_never_confirms[130-99999] ____________
+
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}
+reference = '99999', amount = '130'
+
+    @pytest.mark.parametrize("reference", ["99999", ""])
+    @pytest.mark.parametrize("amount", ["100", "130", "-100"])
+    def test_uncorroborated_explicit_never_confirms(raw_dataset, reference, amount):
+        raw_dataset["charges"][0].update(reference=reference, amount=amount)
+        raw_dataset["agreements"][0]["matching"]["explicit"] = {"C1": ["S1"]}
+        ds = Dataset.model_validate(raw_dataset)
+        f = audit(ds).findings[0]
+>       assert (f.status, f.actual, f.expected, f.confirmed_difference) == ("REVIEW", amount, None, "0")
+E       AssertionError: assert ('FAIL', '130', '100', '30') == ('REVIEW', '130', None, '0')
+E         
+E         At index 0 diff: 'FAIL' != 'REVIEW'
+E         Use -v to get more diff
+
+tests/test_audit_hardening.py:37: AssertionError
+______________ test_uncorroborated_explicit_never_confirms[130-] _______________
+
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}
+reference = '', amount = '130'
+
+    @pytest.mark.parametrize("reference", ["99999", ""])
+    @pytest.mark.parametrize("amount", ["100", "130", "-100"])
+    def test_uncorroborated_explicit_never_confirms(raw_dataset, reference, amount):
+        raw_dataset["charges"][0].update(reference=reference, amount=amount)
+        raw_dataset["agreements"][0]["matching"]["explicit"] = {"C1": ["S1"]}
+        ds = Dataset.model_validate(raw_dataset)
+        f = audit(ds).findings[0]
+>       assert (f.status, f.actual, f.expected, f.confirmed_difference) == ("REVIEW", amount, None, "0")
+E       AssertionError: assert ('FAIL', '130', '100', '30') == ('REVIEW', '130', None, '0')
+E         
+E         At index 0 diff: 'FAIL' != 'REVIEW'
+E         Use -v to get more diff
+
+tests/test_audit_hardening.py:37: AssertionError
+___________ test_uncorroborated_explicit_never_confirms[-100-99999] ____________
+
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}
+reference = '99999', amount = '-100'
+
+    @pytest.mark.parametrize("reference", ["99999", ""])
+    @pytest.mark.parametrize("amount", ["100", "130", "-100"])
+    def test_uncorroborated_explicit_never_confirms(raw_dataset, reference, amount):
+        raw_dataset["charges"][0].update(reference=reference, amount=amount)
+        raw_dataset["agreements"][0]["matching"]["explicit"] = {"C1": ["S1"]}
+        ds = Dataset.model_validate(raw_dataset)
+        f = audit(ds).findings[0]
+>       assert (f.status, f.actual, f.expected, f.confirmed_difference) == ("REVIEW", amount, None, "0")
+E       AssertionError: assert ('FAIL', '-10...'100', '-200') == ('REVIEW', '-100', None, '0')
+E         
+E         At index 0 diff: 'FAIL' != 'REVIEW'
+E         Use -v to get more diff
+
+tests/test_audit_hardening.py:37: AssertionError
+______________ test_uncorroborated_explicit_never_confirms[-100-] ______________
+
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}
+reference = '', amount = '-100'
+
+    @pytest.mark.parametrize("reference", ["99999", ""])
+    @pytest.mark.parametrize("amount", ["100", "130", "-100"])
+    def test_uncorroborated_explicit_never_confirms(raw_dataset, reference, amount):
+        raw_dataset["charges"][0].update(reference=reference, amount=amount)
+        raw_dataset["agreements"][0]["matching"]["explicit"] = {"C1": ["S1"]}
+        ds = Dataset.model_validate(raw_dataset)
+        f = audit(ds).findings[0]
+>       assert (f.status, f.actual, f.expected, f.confirmed_difference) == ("REVIEW", amount, None, "0")
+E       AssertionError: assert ('FAIL', '-10...'100', '-200') == ('REVIEW', '-100', None, '0')
+E         
+E         At index 0 diff: 'FAIL' != 'REVIEW'
+E         Use -v to get more diff
+
+tests/test_audit_hardening.py:37: AssertionError
+__________ test_uncorroborated_adjustment_protects_related_obligation __________
+
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}
+
+    def test_uncorroborated_adjustment_protects_related_obligation(raw_dataset):
+        raw_dataset["charges"][0].update(reference="99999", amount="-100")
+        raw_dataset["charges"].append({**raw_dataset["charges"][0], "id": "C2", "reference": "00001", "amount": "150"})
+        raw_dataset["agreements"][0]["matching"].update(explicit={"C1": ["S1"]}, duplicate_fields=[])
+        result = audit(Dataset.model_validate(raw_dataset))
+>       assert {f.status for f in result.findings} == {"REVIEW"}
+E       AssertionError: assert {'FAIL'} == {'REVIEW'}
+E         
+E         Extra items in the left set:
+E         'FAIL'
+E         Extra items in the right set:
+E         'REVIEW'
+E         Use -v to get more diff
+
+tests/test_audit_hardening.py:48: AssertionError
+________________ test_date_text_comparison_is_not_a_typed_match ________________
+
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}
+
+    def test_date_text_comparison_is_not_a_typed_match(raw_dataset):
+        raw_dataset["agreements"][0]["versions"][0]["rules"][0]["when"] = op(
+            "eq", attr("service_date"), const("2026-05-01", kind="text")
+        )
+        f = audit(Dataset.model_validate(raw_dataset)).findings[0]
+>       assert f.status == "UNDETERMINABLE" and f.confirmed_difference == "0"
+E       AssertionError: assert ('PASS' == 'UNDETERMINABLE'
+E         
+E         - UNDETERMINABLE
+E         + PASS)
+
+tests/test_audit_hardening.py:58: AssertionError
+_____________ test_xls_hidden_data_obeys_same_policy_as_xlsx[row] ______________
+
+mode = 'row'
+
+    @pytest.mark.parametrize("mode", ["row", "column", "sheet"])
+    def test_xls_hidden_data_obeys_same_policy_as_xlsx(mode):
+        workbook = xlwt.Workbook()
+        sheet = workbook.add_sheet("Data")
+        if mode == "sheet":
+            workbook.add_sheet("Visible")
+            sheet.visibility = 1
+        for r, values in enumerate([["id", "ref", "weight", "date"], ["S1", "00001", "10", "01/05/2026"]]):
+            for c, value in enumerate(values):
+                sheet.write(r, c, value)
+        if mode == "row":
+            sheet.row(1).hidden = True
+        if mode == "column":
+            sheet.col(2).hidden = True
+        data = BytesIO()
+        workbook.save(data)
+>       with pytest.raises(ImportErrorDetail, match="ocult"):
+E       Failed: DID NOT RAISE ImportErrorDetail
+
+tests/test_audit_hardening.py:77: Failed
+____________ test_xls_hidden_data_obeys_same_policy_as_xlsx[column] ____________
+
+mode = 'column'
+
+    @pytest.mark.parametrize("mode", ["row", "column", "sheet"])
+    def test_xls_hidden_data_obeys_same_policy_as_xlsx(mode):
+        workbook = xlwt.Workbook()
+        sheet = workbook.add_sheet("Data")
+        if mode == "sheet":
+            workbook.add_sheet("Visible")
+            sheet.visibility = 1
+        for r, values in enumerate([["id", "ref", "weight", "date"], ["S1", "00001", "10", "01/05/2026"]]):
+            for c, value in enumerate(values):
+                sheet.write(r, c, value)
+        if mode == "row":
+            sheet.row(1).hidden = True
+        if mode == "column":
+            sheet.col(2).hidden = True
+        data = BytesIO()
+        workbook.save(data)
+>       with pytest.raises(ImportErrorDetail, match="ocult"):
+E       Failed: DID NOT RAISE ImportErrorDetail
+
+tests/test_audit_hardening.py:77: Failed
+____________ test_xls_hidden_data_obeys_same_policy_as_xlsx[sheet] _____________
+
+mode = 'sheet'
+
+    @pytest.mark.parametrize("mode", ["row", "column", "sheet"])
+    def test_xls_hidden_data_obeys_same_policy_as_xlsx(mode):
+        workbook = xlwt.Workbook()
+        sheet = workbook.add_sheet("Data")
+        if mode == "sheet":
+            workbook.add_sheet("Visible")
+            sheet.visibility = 1
+        for r, values in enumerate([["id", "ref", "weight", "date"], ["S1", "00001", "10", "01/05/2026"]]):
+            for c, value in enumerate(values):
+                sheet.write(r, c, value)
+        if mode == "row":
+            sheet.row(1).hidden = True
+        if mode == "column":
+            sheet.col(2).hidden = True
+        data = BytesIO()
+        workbook.save(data)
+>       with pytest.raises(ImportErrorDetail, match="ocult"):
+E       Failed: DID NOT RAISE ImportErrorDetail
+
+tests/test_audit_hardening.py:77: Failed
+_ test_save_rejects_provenance_or_normalized_value_changed_after_import[value] _
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-1/test_save_rejects_provenance_o0')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'weight':...r': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}], ...}
+alteration = 'value'
+
+    @pytest.mark.parametrize("alteration", ["value", "raw", "row", "column", "transform", "constant"])
+    def test_save_rejects_provenance_or_normalized_value_changed_after_import(tmp_path, raw_dataset, alteration):
+        data = csv_data("S1;00001;9;01/05/2026\n")
+        config = mapping()
+        imported = import_data(data, "source.csv", config)
+        raw_dataset.update(shipments=imported["records"], mappings=[config.model_dump(mode="json")], documents={imported["document"]: "source.csv"})
+        record = raw_dataset["shipments"][0]
+        ref = record["provenance"]["attributes.weight"]
+        if alteration == "value":
+            record["attributes"]["weight"]["value"] = "10"
+        elif alteration == "raw":
+            ref["raw"] = "10"
+        elif alteration == "row":
+            ref["row"] = 3
+        elif alteration == "column":
+            ref["column"] = "date"
+        elif alteration == "transform":
+            ref["transform"] = "unrecorded@1:decimal"
+        else:
+            record["carrier"] = "OTHER"
+        store = Store(tmp_path / "sources.db")
+        store.put_source(data)
+        ds = Dataset.model_validate(raw_dataset)
+>       with pytest.raises(ValueError, match="original|procedencia|origen"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_hardening.py:104: Failed
+__ test_save_rejects_provenance_or_normalized_value_changed_after_import[raw] __
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-1/test_save_rejects_provenance_o1')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'weight':...r': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}], ...}
+alteration = 'raw'
+
+    @pytest.mark.parametrize("alteration", ["value", "raw", "row", "column", "transform", "constant"])
+    def test_save_rejects_provenance_or_normalized_value_changed_after_import(tmp_path, raw_dataset, alteration):
+        data = csv_data("S1;00001;9;01/05/2026\n")
+        config = mapping()
+        imported = import_data(data, "source.csv", config)
+        raw_dataset.update(shipments=imported["records"], mappings=[config.model_dump(mode="json")], documents={imported["document"]: "source.csv"})
+        record = raw_dataset["shipments"][0]
+        ref = record["provenance"]["attributes.weight"]
+        if alteration == "value":
+            record["attributes"]["weight"]["value"] = "10"
+        elif alteration == "raw":
+            ref["raw"] = "10"
+        elif alteration == "row":
+            ref["row"] = 3
+        elif alteration == "column":
+            ref["column"] = "date"
+        elif alteration == "transform":
+            ref["transform"] = "unrecorded@1:decimal"
+        else:
+            record["carrier"] = "OTHER"
+        store = Store(tmp_path / "sources.db")
+        store.put_source(data)
+        ds = Dataset.model_validate(raw_dataset)
+>       with pytest.raises(ValueError, match="original|procedencia|origen"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_hardening.py:104: Failed
+__ test_save_rejects_provenance_or_normalized_value_changed_after_import[row] __
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-1/test_save_rejects_provenance_o2')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'weight':...r': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}], ...}
+alteration = 'row'
+
+    @pytest.mark.parametrize("alteration", ["value", "raw", "row", "column", "transform", "constant"])
+    def test_save_rejects_provenance_or_normalized_value_changed_after_import(tmp_path, raw_dataset, alteration):
+        data = csv_data("S1;00001;9;01/05/2026\n")
+        config = mapping()
+        imported = import_data(data, "source.csv", config)
+        raw_dataset.update(shipments=imported["records"], mappings=[config.model_dump(mode="json")], documents={imported["document"]: "source.csv"})
+        record = raw_dataset["shipments"][0]
+        ref = record["provenance"]["attributes.weight"]
+        if alteration == "value":
+            record["attributes"]["weight"]["value"] = "10"
+        elif alteration == "raw":
+            ref["raw"] = "10"
+        elif alteration == "row":
+            ref["row"] = 3
+        elif alteration == "column":
+            ref["column"] = "date"
+        elif alteration == "transform":
+            ref["transform"] = "unrecorded@1:decimal"
+        else:
+            record["carrier"] = "OTHER"
+        store = Store(tmp_path / "sources.db")
+        store.put_source(data)
+        ds = Dataset.model_validate(raw_dataset)
+>       with pytest.raises(ValueError, match="original|procedencia|origen"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_hardening.py:104: Failed
+_ test_save_rejects_provenance_or_normalized_value_changed_after_import[column] _
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-1/test_save_rejects_provenance_o3')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'weight':...r': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}], ...}
+alteration = 'column'
+
+    @pytest.mark.parametrize("alteration", ["value", "raw", "row", "column", "transform", "constant"])
+    def test_save_rejects_provenance_or_normalized_value_changed_after_import(tmp_path, raw_dataset, alteration):
+        data = csv_data("S1;00001;9;01/05/2026\n")
+        config = mapping()
+        imported = import_data(data, "source.csv", config)
+        raw_dataset.update(shipments=imported["records"], mappings=[config.model_dump(mode="json")], documents={imported["document"]: "source.csv"})
+        record = raw_dataset["shipments"][0]
+        ref = record["provenance"]["attributes.weight"]
+        if alteration == "value":
+            record["attributes"]["weight"]["value"] = "10"
+        elif alteration == "raw":
+            ref["raw"] = "10"
+        elif alteration == "row":
+            ref["row"] = 3
+        elif alteration == "column":
+            ref["column"] = "date"
+        elif alteration == "transform":
+            ref["transform"] = "unrecorded@1:decimal"
+        else:
+            record["carrier"] = "OTHER"
+        store = Store(tmp_path / "sources.db")
+        store.put_source(data)
+        ds = Dataset.model_validate(raw_dataset)
+>       with pytest.raises(ValueError, match="original|procedencia|origen"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_hardening.py:104: Failed
+_ test_save_rejects_provenance_or_normalized_value_changed_after_import[transform] _
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-1/test_save_rejects_provenance_o4')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'weight':...r': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}], ...}
+alteration = 'transform'
+
+    @pytest.mark.parametrize("alteration", ["value", "raw", "row", "column", "transform", "constant"])
+    def test_save_rejects_provenance_or_normalized_value_changed_after_import(tmp_path, raw_dataset, alteration):
+        data = csv_data("S1;00001;9;01/05/2026\n")
+        config = mapping()
+        imported = import_data(data, "source.csv", config)
+        raw_dataset.update(shipments=imported["records"], mappings=[config.model_dump(mode="json")], documents={imported["document"]: "source.csv"})
+        record = raw_dataset["shipments"][0]
+        ref = record["provenance"]["attributes.weight"]
+        if alteration == "value":
+            record["attributes"]["weight"]["value"] = "10"
+        elif alteration == "raw":
+            ref["raw"] = "10"
+        elif alteration == "row":
+            ref["row"] = 3
+        elif alteration == "column":
+            ref["column"] = "date"
+        elif alteration == "transform":
+            ref["transform"] = "unrecorded@1:decimal"
+        else:
+            record["carrier"] = "OTHER"
+        store = Store(tmp_path / "sources.db")
+        store.put_source(data)
+        ds = Dataset.model_validate(raw_dataset)
+>       with pytest.raises(ValueError, match="original|procedencia|origen"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_hardening.py:104: Failed
+_ test_save_rejects_provenance_or_normalized_value_changed_after_import[constant] _
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-1/test_save_rejects_provenance_o5')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'OTHER', 'attributes': {'weig...r': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}], ...}
+alteration = 'constant'
+
+    @pytest.mark.parametrize("alteration", ["value", "raw", "row", "column", "transform", "constant"])
+    def test_save_rejects_provenance_or_normalized_value_changed_after_import(tmp_path, raw_dataset, alteration):
+        data = csv_data("S1;00001;9;01/05/2026\n")
+        config = mapping()
+        imported = import_data(data, "source.csv", config)
+        raw_dataset.update(shipments=imported["records"], mappings=[config.model_dump(mode="json")], documents={imported["document"]: "source.csv"})
+        record = raw_dataset["shipments"][0]
+        ref = record["provenance"]["attributes.weight"]
+        if alteration == "value":
+            record["attributes"]["weight"]["value"] = "10"
+        elif alteration == "raw":
+            ref["raw"] = "10"
+        elif alteration == "row":
+            ref["row"] = 3
+        elif alteration == "column":
+            ref["column"] = "date"
+        elif alteration == "transform":
+            ref["transform"] = "unrecorded@1:decimal"
+        else:
+            record["carrier"] = "OTHER"
+        store = Store(tmp_path / "sources.db")
+        store.put_source(data)
+        ds = Dataset.model_validate(raw_dataset)
+>       with pytest.raises(ValueError, match="original|procedencia|origen"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_audit_hardening.py:104: Failed
+______________________ test_every_export_checks_originals ______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-1/test_every_export_checks_origi0')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...r': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}], ...}
+
+    def test_every_export_checks_originals(tmp_path, raw_dataset):
+        path = tmp_path / "corruption.db"
+        store = Store(path)
+        source = store.put_source(b"synthetic original")
+        raw_dataset["documents"] = {source: "original.txt"}
+        ds = Dataset.model_validate(raw_dataset)
+        rid = store.save(ds, audit(ds))
+        with store.connect() as conn:
+            conn.execute("DROP TRIGGER immutable_sources_UPDATE")
+            conn.execute("UPDATE sources SET data=?", (b"corrupt",))
+        with TestClient(create_app(path), raise_server_exceptions=False) as client:
+            for fmt in ("canonical", "html", "xlsx", "zip"):
+>               assert client.get(f"/api/runs/{rid}/export/{fmt}").status_code == 422, fmt
+E               AssertionError: canonical
+E               assert 200 == 422
+E                +  where 200 = <Response [200 OK]>.status_code
+E                +    where <Response [200 OK]> = get('/api/runs/cea18faa6a6ead1d76a519ecfc2ef98ec7bd486c32e98a5212a77fd3fa2bfeff/export/canonical')
+E                +      where get = <starlette.testclient.TestClient object at 0x7e6d92449520>.get
+
+tests/test_audit_hardening.py:120: AssertionError
+_______________ test_xml_control_character_keeps_complete_bundle _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-1/test_xml_control_character_kee0')
+raw_dataset = {'label': 'synthetic XML boundary', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'w...r': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}], ...}
+
+    def test_xml_control_character_keeps_complete_bundle(tmp_path, raw_dataset):
+        data = csv_data("S1;00001;10;01/05/2026\n")
+        raw_dataset["label"] = "synthetic XML boundary"
+        imported = import_data(data, "source.csv", mapping())
+        raw_dataset["shipments"] = imported["records"]
+        raw_dataset["shipments"][0]["attributes"]["note"] = {"type": "text", "value": "bad\x01value"}
+        raw_dataset["evidence"] = [{"id": "E", "kind": "note", "shipment_ids": ["S1"], "note": "bad\x01value"}]
+        store = Store(tmp_path / "xml.db")
+        store.put_source(data)
+        ds = Dataset.model_validate(raw_dataset)
+        rid = store.save(ds, audit(ds))
+>       run = verify_bundle(bundle_bytes(store, rid))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_audit_hardening.py:134: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/freight_audit/reporting.py:304: in bundle_bytes
+    files["auditoria.xlsx"] = workbook_bytes(run)
+                              ^^^^^^^^^^^^^^^^^^^
+src/freight_audit/reporting.py:182: in workbook_bytes
+    sheet(
+src/freight_audit/reporting.py:89: in sheet
+    ws.append(values)
+.venv/lib/python3.12/site-packages/openpyxl/worksheet/worksheet.py:673: in append
+    cell = Cell(self, row=row_idx, column=col_idx, value=content)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openpyxl/cell/cell.py:119: in __init__
+    self.value = value
+    ^^^^^^^^^^
+.venv/lib/python3.12/site-packages/openpyxl/cell/cell.py:218: in value
+    self._bind_value(value)
+.venv/lib/python3.12/site-packages/openpyxl/cell/cell.py:197: in _bind_value
+    value = self.check_string(value)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Cell 'Evidencia'.F2>, value = 'bad\x01value'
+
+    def check_string(self, value):
+        """Check string coding, length, and line break character"""
+        if value is None:
+            return
+        # convert to str string
+        if not isinstance(value, str):
+            value = str(value, self.encoding)
+        value = str(value)
+        # string must never be longer than 32,767 characters
+        # truncate if necessary
+        value = value[:32767]
+        if next(ILLEGAL_CHARACTERS_RE.finditer(value), None):
+>           raise IllegalCharacterError(f"{value} cannot be used in worksheets.")
+E           openpyxl.utils.exceptions.IllegalCharacterError: badvalue cannot be used in worksheets.
+
+.venv/lib/python3.12/site-packages/openpyxl/cell/cell.py:165: IllegalCharacterError
+__________ test_external_control_exact_independent_of_decimal_context __________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-1/test_external_control_exact_in0')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...r': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}], ...}
+
+    def test_external_control_exact_independent_of_decimal_context(tmp_path, raw_dataset):
+        store = Store(tmp_path / "external.db")
+        source = store.put_source(b"synthetic source")
+        amount = "9" * 36
+        raw_dataset["documents"] = {source: "source.csv"}
+        ref = {"document": source, "filename": "source.csv", "sheet": "CSV", "row": 2, "column": "id", "raw": "S1", "transform": "external"}
+        raw_dataset["shipments"][0]["provenance"] = {"id": deepcopy(ref)}
+        raw_dataset["charges"][0].update(amount=amount, provenance={"amount": {**ref, "column": "amount", "raw": amount}})
+        ds = Dataset.model_validate(raw_dataset)
+        rid = store.save(ds, audit(ds))
+        control = {"schema": "freight-audit-external-control/v1", "source_hashes": [source], "shipments_by_source": {source: 1}, "charges_by_source": {source: 1}, "charge_totals_by_source": {source: {"ARS": amount}}, "shipment_count": 1, "charge_count": 1, "actual_by_currency": {"ARS": amount}}
+        for precision in (8, 28, 80):
+            with localcontext() as context:
+                context.prec = precision
+>               assert compare_external_control(store.load(rid), control)["passed"]
+E               assert False
+
+tests/test_audit_hardening.py:152: AssertionError
+_______________ test_bounded_reader_rejects_before_materializing _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-1/test_bounded_reader_rejects_be0')
+
+    def test_bounded_reader_rejects_before_materializing(tmp_path):
+>       from freight_audit.local_paths import read_bounded
+E       ImportError: cannot import name 'read_bounded' from 'freight_audit.local_paths' (/home/usuario/CascadeProjects/CALIBRE/src/freight_audit/local_paths.py)
+
+tests/test_audit_hardening.py:156: ImportError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /home/usuario/CascadeProjects/CALIBRE/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv/lib/python3.12/site-packages/starlette/testclient.py:53
+  /home/usuario/CascadeProjects/CALIBRE/.venv/lib/python3.12/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_audit_hardening.py::test_mapping_rejects_non_civil_or_repeated_date_directives[%d/%m/%Y %H:%M:%S%z]
+FAILED tests/test_audit_hardening.py::test_mapping_rejects_non_civil_or_repeated_date_directives[%Y-%m-%dT%H:%M]
+FAILED tests/test_audit_hardening.py::test_mapping_rejects_non_civil_or_repeated_date_directives[%Y/%m/%d %Z]
+FAILED tests/test_audit_hardening.py::test_mapping_rejects_non_civil_or_repeated_date_directives[%Y/%m/%d/%Y]
+FAILED tests/test_audit_hardening.py::test_uncorroborated_explicit_never_confirms[100-99999]
+FAILED tests/test_audit_hardening.py::test_uncorroborated_explicit_never_confirms[100-]
+FAILED tests/test_audit_hardening.py::test_uncorroborated_explicit_never_confirms[130-99999]
+FAILED tests/test_audit_hardening.py::test_uncorroborated_explicit_never_confirms[130-]
+FAILED tests/test_audit_hardening.py::test_uncorroborated_explicit_never_confirms[-100-99999]
+FAILED tests/test_audit_hardening.py::test_uncorroborated_explicit_never_confirms[-100-]
+FAILED tests/test_audit_hardening.py::test_uncorroborated_adjustment_protects_related_obligation
+FAILED tests/test_audit_hardening.py::test_date_text_comparison_is_not_a_typed_match
+FAILED tests/test_audit_hardening.py::test_xls_hidden_data_obeys_same_policy_as_xlsx[row]
+FAILED tests/test_audit_hardening.py::test_xls_hidden_data_obeys_same_policy_as_xlsx[column]
+FAILED tests/test_audit_hardening.py::test_xls_hidden_data_obeys_same_policy_as_xlsx[sheet]
+FAILED tests/test_audit_hardening.py::test_save_rejects_provenance_or_normalized_value_changed_after_import[value]
+FAILED tests/test_audit_hardening.py::test_save_rejects_provenance_or_normalized_value_changed_after_import[raw]
+FAILED tests/test_audit_hardening.py::test_save_rejects_provenance_or_normalized_value_changed_after_import[row]
+FAILED tests/test_audit_hardening.py::test_save_rejects_provenance_or_normalized_value_changed_after_import[column]
+FAILED tests/test_audit_hardening.py::test_save_rejects_provenance_or_normalized_value_changed_after_import[transform]
+FAILED tests/test_audit_hardening.py::test_save_rejects_provenance_or_normalized_value_changed_after_import[constant]
+FAILED tests/test_audit_hardening.py::test_every_export_checks_originals - As...
+FAILED tests/test_audit_hardening.py::test_xml_control_character_keeps_complete_bundle
+FAILED tests/test_audit_hardening.py::test_external_control_exact_independent_of_decimal_context
+FAILED tests/test_audit_hardening.py::test_bounded_reader_rejects_before_materializing
+25 failed, 2 warnings in 2.39s

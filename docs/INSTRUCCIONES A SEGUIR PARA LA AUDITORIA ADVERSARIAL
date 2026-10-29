@@ -1,0 +1,1206 @@
+REVISIÓN AUTÓNOMA NOCTURNA — CALIBRE / FREIGHT AUDIT
+
+MISIÓN
+
+Tu trabajo durante toda esta ejecución es encontrar errores, defectos,
+inconsistencias, riesgos y puntos débiles reales de Calibre.
+
+Buscá problemas de TODO TIPO, incluyendo pero no limitado a:
+
+- errores de lógica;
+- errores económicos;
+- bugs funcionales;
+- falsos PASS / falsos FAIL;
+- falsos REVIEW / UNDETERMINABLE;
+- matching incorrecto;
+- selección incorrecta de acuerdos, versiones o reglas;
+- problemas de importación;
+- pérdida, duplicación o corrupción de datos;
+- persistencia incorrecta;
+- replay inconsistente;
+- errores de provenance;
+- errores de exportación;
+- inconsistencias entre JSON / XLSX / HTML / API / UI;
+- errores de estados;
+- problemas de decisiones humanas;
+- problemas de concurrencia;
+- problemas de filesystem;
+- problemas de seguridad local;
+- problemas de rendimiento;
+- consumo excesivo de memoria;
+- errores de UI;
+- errores de UX;
+- workflows confusos;
+- información material que el usuario pueda interpretar mal;
+- errores que disminuyan la confianza;
+- fricciones que dificulten adopción;
+- errores que puedan llevar a una mala decisión administrativa;
+- problemas que puedan generar costos para el cliente;
+- problemas que puedan generar costos de soporte;
+- problemas que dificulten vender, instalar, configurar o usar Calibre;
+- comportamientos incompatibles con el propósito real del producto.
+
+IMPORTANTE:
+
+NO busques errores de forma indiscriminada desde el principio.
+
+La investigación debe avanzar estrictamente desde:
+
+    mayor impacto real
+        ↓
+    problemas frecuentes
+        ↓
+    problemas operativos importantes
+        ↓
+    problemas comerciales / de confianza
+        ↓
+    problemas de UX
+        ↓
+    edge cases
+        ↓
+    problemas raros y benignos
+        ↓
+    cosmética
+
+No invertir tiempo importante en casos rarísimos mientras queden superficies
+de riesgo material sin investigar.
+
+======================================================================
+0. REGLA FUNDAMENTAL: ENTENDER EL PRODUCTO ANTES DE CRITICARLO
+======================================================================
+
+ANTES de buscar bugs:
+
+1. Leé el código y documentación suficiente para entender qué es Calibre.
+2. Entendé:
+   - quién lo usa;
+   - para qué problema;
+   - qué decisiones soporta;
+   - qué significa PASS;
+   - qué significa FAIL;
+   - qué significa REVIEW;
+   - qué significa UNDETERMINABLE;
+   - cómo se importan datos;
+   - cómo se representan acuerdos;
+   - cómo se seleccionan reglas/versiones;
+   - cómo funciona matching;
+   - cómo funciona evidencia;
+   - cómo se guardan corridas;
+   - cómo funciona replay;
+   - cómo se exporta;
+   - cómo funciona la UI;
+   - qué decisiones quedan siempre en manos humanas.
+
+3. Leé especialmente, si existen:
+   - README;
+   - project.md;
+   - DELIVERY.md;
+   - RELEASE_CRITERIA.md;
+   - RIGOR_REVIEW.md;
+   - documentación QA;
+   - qa/catalog.py;
+   - tests existentes;
+   - documentación de arquitectura;
+   - documentación de producto;
+   - documentación de fases anteriores.
+
+4. Construí primero un documento breve:
+
+    output/overnight-review/PRODUCT_MODEL.md
+
+Debe explicar con tus palabras:
+
+- qué problema resuelve Calibre;
+- usuario esperado;
+- workflow principal;
+- activos críticos;
+- conclusiones económicas posibles;
+- cosas que Calibre deliberadamente NO debe decidir;
+- superficies donde un error sería más caro.
+
+NO empieces a reportar “bugs” antes de tener suficiente contexto.
+
+Un comportamiento sólo es un bug si contradice:
+- el contrato del producto;
+- sus invariantes;
+- la expectativa razonable del usuario;
+- o genera un riesgo material.
+
+No reportes algo simplemente porque “podría diseñarse distinto”.
+
+======================================================================
+1. PROHIBICIÓN ABSOLUTA DE CORREGIR PRODUCCIÓN
+======================================================================
+
+TENÉS PROHIBIDO MODIFICAR CÓDIGO PRODUCTIVO.
+
+No modificar:
+
+    src/
+    lógica del engine
+    storage
+    importing
+    reporting
+    API
+    UI productiva
+    schemas
+    modelos
+    workflows de producto
+    configuración productiva
+
+NO:
+- arreglar bugs;
+- refactorizar;
+- optimizar;
+- limpiar código;
+- cambiar textos;
+- corregir estilos;
+- modificar comportamiento;
+- “mejorar” arquitectura;
+- cambiar thresholds;
+- cambiar reglas;
+- cambiar tests existentes para que pasen.
+
+TU FUNCIÓN ES INVESTIGAR, NO REPARAR.
+
+ÚNICA EXCEPCIÓN:
+
+Podés crear NUEVOS:
+- tests;
+- harnesses;
+- fixtures sintéticos;
+- scripts de diagnóstico;
+- reproducer scripts;
+- capturas;
+- archivos de evidencia;
+- informes.
+
+Preferentemente mantenelos aislados en:
+
+    output/overnight-review/
+
+o, si necesitan integración con pytest:
+
+    tests/overnight_review/
+
+NO modificar tests preexistentes salvo necesidad estricta para instrumentación,
+y si ocurre, documentarlo expresamente.
+
+NO borrar evidencia.
+
+NO hacer:
+
+    git checkout .
+    git reset --hard
+    git clean -fd
+    git add .
+    force push
+
+NO commit ni push salvo instrucción expresa.
+
+======================================================================
+2. BASELINE OBLIGATORIO
+======================================================================
+
+ANTES de investigar:
+
+registrar:
+
+    git rev-parse HEAD
+    git rev-parse origin/main
+    git status --porcelain
+
+Crear:
+
+    output/overnight-review/BASELINE.md
+
+Registrar:
+
+- HEAD;
+- origin/main;
+- árbol limpio/sucio;
+- Python;
+- OS;
+- RAM;
+- CPU;
+- dependencias relevantes;
+- comandos disponibles;
+- estado inicial de tests.
+
+Ejecutar una baseline razonable:
+
+    scripts/verify.sh
+
+y conservar la salida.
+
+Si baseline ya falla:
+NO atribuir automáticamente esos fallos a tu investigación.
+
+Registrarlos como:
+
+    BASELINE_EXISTING_FAILURE
+
+======================================================================
+3. PRINCIPIO DE PRIORIZACIÓN
+======================================================================
+
+Clasificá TODOS los problemas usando estas prioridades.
+
+-------------------------
+P0 — CRÍTICO
+-------------------------
+
+Puede:
+
+- producir una conclusión económica incorrecta;
+- confirmar dinero que no debería confirmarse;
+- ocultar una discrepancia real;
+- inventar una discrepancia material;
+- mezclar monedas;
+- seleccionar tarifa/regla/vigencia incorrecta;
+- perder o duplicar cargos;
+- corromper historia;
+- alterar una auditoría ya preservada;
+- permitir datos de un cliente/caso en otro;
+- perder evidencia;
+- generar un bundle aparentemente válido pero incorrecto;
+- mostrar en UI una conclusión diferente a la del motor;
+- permitir una decisión administrativa material basada en información falsa;
+- destruir datos;
+- romper integridad o trazabilidad;
+- causar exposición de datos o ejecución peligrosa.
+
+INVESTIGAR PRIMERO.
+
+-------------------------
+P1 — ALTO
+-------------------------
+
+Puede:
+
+- bloquear workflows habituales;
+- provocar mucho trabajo manual recurrente;
+- causar una interpretación razonablemente peligrosa;
+- generar falsos positivos frecuentes;
+- generar falsos negativos frecuentes;
+- impedir auditar un formato normal;
+- causar pérdida significativa de confianza;
+- producir inconsistencias visibles entre reportes;
+- romper instalación/uso en un entorno esperado;
+- consumir recursos desproporcionadamente en uso normal;
+- hacer que el operador repita trabajo;
+- inducir errores humanos de forma plausible.
+
+INVESTIGAR DESPUÉS DE P0.
+
+-------------------------
+P2 — MEDIO
+-------------------------
+
+Puede:
+
+- generar fricción frecuente;
+- dificultar entender resultados;
+- crear workflows confusos;
+- aumentar soporte;
+- ralentizar operación;
+- esconder información secundaria;
+- producir UX claramente deficiente;
+- generar errores recuperables.
+
+-------------------------
+P3 — BAJO
+-------------------------
+
+- cosmética;
+- alineación;
+- copy menor;
+- edge cases de baja probabilidad;
+- inconsistencias visuales sin impacto operativo;
+- problemas raros y benignos.
+
+NO dedicar tiempo significativo a P3 mientras exista una superficie P0/P1
+sin explorar.
+
+======================================================================
+4. ADEMÁS DE SEVERIDAD, MEDIR PROBABILIDAD
+======================================================================
+
+Para cada finding asignar:
+
+FRECUENCIA:
+
+    COMMON
+    PLAUSIBLE
+    UNCOMMON
+    RARE
+    UNKNOWN
+
+Y:
+
+IMPACTO COMERCIAL:
+
+    CRITICAL
+    HIGH
+    MEDIUM
+    LOW
+    NONE
+
+Ejemplo:
+
+Un bug que sólo ocurre con una celda Excel extremadamente extraña puede ser
+P1 pero RARE.
+
+Una confusión en el flujo que ocurre en cada nueva auditoría puede ser P1
+COMMON aunque no cambie números.
+
+======================================================================
+5. ORDEN OBLIGATORIO DE INVESTIGACIÓN
+======================================================================
+
+NO elegir áreas al azar.
+
+Seguir este orden:
+
+======================================================================
+FASE A — DINERO Y CONCLUSIONES
+======================================================================
+
+Investigar primero todo lo que pueda cambiar dinero o certeza:
+
+- cálculo expected;
+- actual;
+- difference;
+- confirmed_difference;
+- tolerancias;
+- signo;
+- redondeo;
+- currency;
+- unidades;
+- mínimos/máximos;
+- porcentajes;
+- lookup;
+- bandas;
+- vigencias;
+- selección de reglas;
+- selección de versiones;
+- evidencia requerida;
+- REVIEW;
+- UNDETERMINABLE;
+- missing evidence;
+- missing data;
+- overlapping rules;
+- overlapping versions.
+
+Intentar producir:
+
+- falso PASS;
+- falso FAIL;
+- diferencia confirmada cuando no corresponde;
+- dinero confirmado desde REVIEW;
+- dinero confirmado desde UNDETERMINABLE;
+- mezcla de monedas;
+- error de signo;
+- error de frontera.
+
+======================================================================
+FASE B — MATCHING Y CONSERVACIÓN
+======================================================================
+
+Investigar:
+
+- 1:1;
+- 1:N;
+- N:1;
+- ambiguous matching;
+- duplicate candidates;
+- explicit links;
+- aliases;
+- claves vacías;
+- claves repetidas;
+- mismo remito en liquidaciones distintas;
+- settlements;
+- grupos parciales;
+- operaciones compartidas;
+- cargos sin operación;
+- operaciones sin cargo esperado;
+- cargos duplicados legítimos.
+
+Buscar especialmente:
+
+- cargos perdidos;
+- cargos contados dos veces;
+- expected duplicado;
+- expected omitido;
+- confirmación parcial incorrecta.
+
+======================================================================
+FASE C — IMPORTACIÓN REALISTA
+======================================================================
+
+CSV/XLSX/XLS:
+
+- columnas movidas;
+- columnas duplicadas;
+- cabeceras vacías;
+- multiline;
+- espacios;
+- encoding;
+- fechas;
+- decimales argentinos;
+- IDs con ceros;
+- celdas numéricas;
+- fórmulas;
+- hojas múltiples;
+- hojas ocultas;
+- filas ocultas;
+- filas vacías;
+- merged cells;
+- errores;
+- archivos truncados;
+- archivos parcialmente válidos;
+- tipos extraños.
+
+Priorizar errores plausibles en archivos administrativos reales.
+
+======================================================================
+FASE D — PERSISTENCIA E HISTORIA
+======================================================================
+
+Investigar:
+
+- save;
+- load;
+- replay;
+- decisiones;
+- hashes;
+- sources;
+- configuraciones;
+- backups;
+- reopen;
+- crash boundaries;
+- idempotencia;
+- concurrencia;
+- versiones.
+
+Buscar:
+
+- historia que cambia;
+- replay que usa configuración nueva;
+- decisiones que alteran findings;
+- fuentes que se pierden;
+- corrida parcialmente guardada;
+- datos corruptos aceptados.
+
+======================================================================
+FASE E — REPORTES Y REPRESENTACIONES
+======================================================================
+
+Comparar:
+
+    motor
+    SQLite
+    API
+    audit.json
+    XLSX
+    HTML
+    bundle
+    UI
+
+Buscar cualquier diferencia material en:
+
+- importes;
+- monedas;
+- estados;
+- reglas;
+- versiones;
+- IDs;
+- razones;
+- evidence;
+- decisions;
+- completeness.
+
+======================================================================
+FASE F — UI / UX OPERATIVA
+======================================================================
+
+NO evaluar sólo estética.
+
+Recorrer workflows reales:
+
+1. crear auditoría;
+2. cargar archivos;
+3. mapping;
+4. elegir acuerdo;
+5. verificar;
+6. ejecutar;
+7. encontrar discrepancias;
+8. encontrar casos REVIEW;
+9. abrir explicación;
+10. registrar decisión;
+11. exportar;
+12. volver a auditorías.
+
+Buscar:
+
+- información equivocada;
+- estados contradictorios;
+- controles que parecen habilitados cuando no deberían;
+- acciones ambiguas;
+- información crítica poco visible;
+- datos demasiado técnicos para usuario normal;
+- errores que requieren refrescar;
+- stale state;
+- filtros que cambian resumen;
+- clicks inesperados;
+- scroll problemático;
+- inputs confusos;
+- feedback insuficiente;
+- loading sin indicar;
+- errores sin recovery;
+- componentes que dificulten trabajo repetitivo.
+
+PREGUNTA CENTRAL:
+
+“¿Puede una persona administrativa cometer razonablemente un error importante
+porque esta interfaz la lleva a interpretarlo mal?”
+
+Eso es prioritario.
+
+No reportar cada preferencia estética como bug.
+
+======================================================================
+FASE G — RIESGO COMERCIAL
+======================================================================
+
+Buscar problemas que puedan:
+
+- hacer perder confianza en una demo;
+- hacer parecer que Calibre inventa números;
+- obligar a explicar demasiado el sistema;
+- requerir intervención del desarrollador en cada uso;
+- dificultar onboarding;
+- requerir mappings artesanales recurrentes;
+- requerir JSON para tareas normales;
+- generar soporte frecuente;
+- impedir que el cliente reproduzca lo ocurrido;
+- hacer difícil demostrar el valor;
+- producir reportes que el cliente no puede usar;
+- hacer que un caso normal parezca un error;
+- prometer más certeza de la que existe.
+
+No inventar “riesgos comerciales” abstractos.
+
+Relacionarlos con un workflow concreto.
+
+======================================================================
+FASE H — PERFORMANCE Y RECURSOS
+======================================================================
+
+Sólo después de superficies lógicas principales:
+
+- memoria;
+- CPU;
+- tiempo;
+- DB;
+- bundle;
+- JSON;
+- HTML;
+- XLSX;
+- API;
+- UI;
+- datasets medianos;
+- datasets grandes.
+
+Buscar regresiones plausibles.
+
+No hacer stress absurdo como sustituto de bugs reales.
+
+======================================================================
+FASE I — SEGURIDAD / ROBUSTEZ
+======================================================================
+
+Investigar defensivamente:
+
+- archivos maliciosos;
+- ZIP;
+- XML;
+- paths;
+- filenames;
+- symlinks;
+- traversal;
+- overwrite;
+- localhost boundary;
+- Origin/Host/token;
+- HTML injection;
+- Excel formula injection;
+- payload sizes;
+- malformed inputs.
+
+Sólo usar fixtures sintéticos controlados.
+
+No realizar acciones destructivas ni atacar infraestructura externa.
+
+======================================================================
+FASE J — EDGE CASES
+======================================================================
+
+SOLAMENTE cuando las áreas anteriores hayan sido razonablemente agotadas:
+
+- combinaciones raras;
+- límites extremos;
+- inputs poco probables;
+- escenarios cosméticos;
+- situaciones benignas.
+
+======================================================================
+6. NO DUPLICAR FINDINGS
+======================================================================
+
+Antes de crear un finding:
+
+buscar si ya existe uno con la misma causa raíz.
+
+NO crear cinco bugs distintos para:
+
+- síntoma UI;
+- síntoma API;
+- síntoma JSON;
+- síntoma XLSX;
+
+si todos provienen de la misma causa.
+
+Crear:
+
+    UNA CAUSA RAÍZ
+
+y debajo:
+
+    Manifestaciones afectadas.
+
+Separar findings sólo cuando sean causas diferentes.
+
+======================================================================
+7. EVIDENCIA MÍNIMA PARA REPORTAR UN BUG
+======================================================================
+
+No reportar sospechas vagas como bugs confirmados.
+
+Cada finding debe incluir:
+
+ID:
+    ONR-001, ONR-002, ...
+
+TÍTULO:
+    una frase causal y específica.
+
+PRIORIDAD:
+    P0 / P1 / P2 / P3
+
+FRECUENCIA:
+    COMMON / PLAUSIBLE / UNCOMMON / RARE / UNKNOWN
+
+CONFIANZA:
+    CONFIRMED
+    STRONG_EVIDENCE
+    SUSPECTED
+    INCONCLUSIVE
+
+CAPA:
+    engine
+    importing
+    matching
+    storage
+    reporting
+    API
+    UI
+    UX
+    security
+    performance
+    commercial
+    cross-layer
+
+PRECONDICIONES:
+    qué debe ocurrir.
+
+REPRODUCCIÓN:
+    pasos exactos.
+
+EXPECTED:
+    qué debería ocurrir.
+
+OBSERVED:
+    qué ocurrió.
+
+EVIDENCIA:
+    logs;
+    JSON;
+    screenshot;
+    test;
+    hashes;
+    DB;
+    trace;
+    DOM;
+    etc.
+
+IMPACTO ECONÓMICO:
+    si aplica.
+
+IMPACTO OPERATIVO:
+    si aplica.
+
+IMPACTO COMERCIAL:
+    si aplica.
+
+BLAST RADIUS:
+    qué otros workflows podrían verse afectados.
+
+WORKAROUND:
+    si existe.
+
+CAUSA SOSPECHADA:
+    solamente si existe evidencia.
+
+NO corregir.
+
+======================================================================
+8. DIFERENCIAR BUG, RIESGO Y MEJORA
+======================================================================
+
+Clasificar:
+
+BUG:
+    comportamiento incorrecto demostrado.
+
+DESIGN_RISK:
+    comportamiento actual válido pero peligroso/confuso en uso real.
+
+PRODUCT_GAP:
+    caso importante que el producto no puede representar.
+
+UX_FRICTION:
+    workflow correcto pero innecesariamente difícil.
+
+COMMERCIAL_RISK:
+    puede afectar adopción, confianza o costo de soporte.
+
+PERFORMANCE_LIMIT:
+    límite medido.
+
+SECURITY_RISK:
+    superficie defensiva concreta.
+
+SUSPECTED:
+    evidencia insuficiente.
+
+NO mezclar estas categorías.
+
+======================================================================
+9. TESTS NUEVOS
+======================================================================
+
+Cuando encuentres algo reproducible, crear un test si aporta valor.
+
+Un test nuevo debe:
+
+- fallar contra el comportamiento actual si es un bug confirmado;
+- tener nombre causal;
+- contener el mínimo fixture necesario;
+- no duplicar cobertura trivial;
+- no modificar producción.
+
+Guardarlo en:
+
+    tests/overnight_review/
+
+si pytest lo permite.
+
+Si el test requiere infraestructura especial:
+
+    output/overnight-review/reproducers/ONR-XXX/
+
+NO convertir un test en “fix”.
+
+======================================================================
+10. INDEPENDENCIA DEL ORÁCULO
+======================================================================
+
+No derives expected usando la misma función que estás probando.
+
+Ejemplo incorrecto:
+
+    expected = engine.calculate(...)
+    assert engine.calculate(...) == expected
+
+Para dinero:
+usar cálculo manual / Decimal / Fraction / fixture explícito.
+
+Para conservation:
+recontar IDs independientemente.
+
+Para reportes:
+leerlos con herramienta distinta a la que los produce cuando sea posible.
+
+Para UI:
+comparar DOM visible con datos persistidos/API.
+
+Para provenance:
+volver al archivo original.
+
+======================================================================
+11. INVESTIGACIÓN ADVERSARIAL
+======================================================================
+
+No limitarte al happy path.
+
+Cuando una propiedad parece funcionar:
+
+preguntá:
+
+- ¿qué entrada mínima la rompe?
+- ¿qué pasa justo en el límite?
+- ¿qué pasa si falta un dato?
+- ¿qué pasa si hay dos candidatos?
+- ¿qué pasa si hay cero candidatos?
+- ¿qué pasa si cambio orden?
+- ¿qué pasa si repito?
+- ¿qué pasa si cierro/reabro?
+- ¿qué pasa si proceso otra corrida entre medio?
+- ¿qué pasa si cambia sólo una moneda?
+- ¿qué pasa si el archivo contiene un dato extra no esperado?
+- ¿qué pasa si el usuario vuelve atrás?
+- ¿qué pasa con estado stale?
+- ¿qué pasa si la operación se repite?
+
+======================================================================
+12. PRESUPUESTO DE TIEMPO
+======================================================================
+
+Trabajá hasta que termine la sesión disponible.
+
+Pero priorizá tiempo aproximadamente así mientras existan superficies útiles:
+
+40%:
+    P0 economía / certeza / matching / conservación
+
+20%:
+    importación + persistencia + replay
+
+15%:
+    cross-layer / reportes / API / UI semantic correctness
+
+10%:
+    UX + riesgo operativo/comercial
+
+10%:
+    robustez / security / filesystem / performance
+
+5%:
+    edge cases / cosmética
+
+Estos porcentajes son guía, no obligación rígida.
+
+Si encontrás un P0:
+profundizá inmediatamente su blast radius antes de continuar.
+
+======================================================================
+13. NO QUEDARSE ATRAPADO
+======================================================================
+
+Si un experimento consume demasiado tiempo:
+
+- documentar INCONCLUSIVE;
+- registrar qué faltó;
+- pasar al siguiente vector.
+
+No dedicar horas a reparar el harness salvo que desbloquee múltiples pruebas P0/P1.
+
+No quedarse reintentando el mismo fallo de infraestructura.
+
+======================================================================
+14. ARTEFACTOS DE SALIDA
+======================================================================
+
+Crear:
+
+output/overnight-review/
+├── PRODUCT_MODEL.md
+├── BASELINE.md
+├── FINDINGS.md
+├── FINDINGS.json
+├── COVERAGE_LOG.md
+├── EXECUTION_LOG.md
+├── OPEN_QUESTIONS.md
+├── reproducers/
+│   ├── ONR-001/
+│   ├── ONR-002/
+│   └── ...
+├── screenshots/
+├── logs/
+└── SUMMARY.md
+
+======================================================================
+15. FINDINGS.md
+======================================================================
+
+Ordenar SIEMPRE:
+
+1. P0
+2. P1
+3. P2
+4. P3
+
+Dentro de cada prioridad:
+
+    mayor impacto × mayor frecuencia primero.
+
+NO ordenar por momento de descubrimiento.
+
+======================================================================
+16. COVERAGE_LOG.md
+======================================================================
+
+Registrar también TODO LO INVESTIGADO QUE NO FALLÓ.
+
+Ejemplo:
+
+    engine/tolerance boundaries
+        7 casos
+        no issue found
+
+    bundle tampering
+        4 mutaciones
+        detected correctly
+
+    UI stale run switching
+        3 secuencias
+        no divergence found
+
+Esto evita que el tercero piense que algo no fue examinado.
+
+IMPORTANTE:
+
+“No encontré bug” NO significa “certificado”.
+
+Usar:
+
+    NO_ISSUE_FOUND_IN_TESTED_CASES
+
+======================================================================
+17. SUMMARY.md
+======================================================================
+
+Al terminar, producir una síntesis para el tercero que continuará el trabajo.
+
+Debe contener:
+
+A. Estado general observado.
+
+B. Top 10 findings por prioridad real.
+
+C. P0/P1 que deberían corregirse antes de piloto real.
+
+D. Problemas que podrían generar dinero incorrecto.
+
+E. Problemas que podrían generar pérdida de confianza.
+
+F. Problemas que pueden aumentar soporte/onboarding.
+
+G. Problemas de UI/UX con impacto operativo real.
+
+H. Riesgos inconclusos que merecen investigación.
+
+I. Qué superficies fueron examinadas profundamente.
+
+J. Qué superficies quedaron casi sin explorar.
+
+K. Tests nuevos creados.
+
+L. Archivos productivos modificados:
+
+    DEBE SER:
+        NINGUNO
+
+si cumpliste la misión.
+
+======================================================================
+18. REGLA PARA UI/UX
+======================================================================
+
+NO penalizar la UI sólo porque no coincide con tu preferencia estética.
+
+Reportar UI/UX cuando exista al menos uno:
+
+- error de comprensión probable;
+- acción equivocada plausible;
+- información material oculta;
+- jerarquía que induce interpretación incorrecta;
+- workflow innecesariamente costoso y frecuente;
+- pérdida de contexto;
+- inconsistencia de estados;
+- accesibilidad material;
+- imposibilidad práctica de realizar una tarea;
+- fricción repetitiva que afecta adopción.
+
+Cosmética pura:
+P3.
+
+======================================================================
+19. REGLA PARA RIESGO COMERCIAL
+======================================================================
+
+No inventar marketing.
+
+Preguntar:
+
+“¿Este comportamiento puede razonablemente hacer que un cliente:
+- desconfíe del cálculo;
+- no entienda qué ocurrió;
+- necesite llamar al desarrollador;
+- abandone el onboarding;
+- no pueda defender un resultado;
+- deba rehacer manualmente trabajo;
+- o concluya que el producto no le sirve?”
+
+Si sí:
+documentar el workflow exacto y la evidencia.
+
+======================================================================
+20. RESPETO DE LIMITACIONES CONOCIDAS
+======================================================================
+
+Antes de reportar un comportamiento como bug:
+
+comprobar si está explícitamente documentado como:
+
+- limitación;
+- alcance deliberado;
+- comportamiento conservador;
+- estado REVIEW;
+- estado UNDETERMINABLE;
+- feature fuera de scope.
+
+Una limitación documentada puede seguir siendo:
+
+    PRODUCT_GAP
+    COMMERCIAL_RISK
+
+pero no debe etiquetarse falsamente como bug.
+
+======================================================================
+21. NO CONFIAR CIEGAMENTE EN TESTS EXISTENTES
+======================================================================
+
+Los tests existentes son evidencia, no verdad.
+
+Puede existir:
+
+- implementación y test equivocados de la misma manera;
+- coverage ausente;
+- oráculo compartido;
+- assertion débil;
+- test que sólo comprueba status code;
+- test que no comprueba side effects;
+- test que pasa por razón accidental.
+
+Usarlos para entender el contrato.
+
+Después intentar construir evidencia independiente.
+
+======================================================================
+22. CUANDO APARECE UN ERROR IMPORTANTE
+======================================================================
+
+Si encontrás P0 o P1:
+
+1. congelar reproducer;
+2. no corregir;
+3. reducir al caso mínimo;
+4. comprobar repetibilidad;
+5. explorar blast radius;
+6. determinar si afecta:
+   - datos históricos;
+   - nuevas corridas;
+   - UI;
+   - reportes;
+   - exports;
+   - decisiones;
+7. crear test regresivo;
+8. documentar;
+9. continuar buscando otros errores.
+
+NO gastar toda la noche en un solo finding si ya quedó suficientemente
+demostrado.
+
+======================================================================
+23. PROHIBIDO INFLAR RESULTADOS
+======================================================================
+
+NO afirmar:
+
+- “todo correcto”;
+- “100% seguro”;
+- “certificado”;
+- “cobertura completa”;
+- “no existen más bugs”;
+- “producción lista”;
+
+basándote en esta revisión.
+
+La salida debe describir sólo:
+
+    qué examinaste
+    qué encontraste
+    qué no encontraste
+    qué quedó desconocido
+
+======================================================================
+24. CRITERIO DE CALIDAD DEL TRABAJO
+======================================================================
+
+Un buen resultado nocturno NO es:
+
+    “Encontré 73 problemas.”
+
+Un buen resultado es:
+
+    “Encontré 4 problemas materiales perfectamente reproducibles,
+     7 riesgos de menor nivel,
+     descarté 35 hipótesis,
+     dejé evidencia exacta,
+     y no toqué producción.”
+
+Priorizá SEÑAL sobre volumen.
+
+======================================================================
+25. INSTRUCCIÓN FINAL
+
+Actuá como auditor adversarial independiente.
+
+Tu trabajo NO es defender Calibre.
+Tu trabajo tampoco es destruirlo con escenarios absurdos.
+
+Tu trabajo es encontrar las formas PLAUSIBLES en que el producto podría:
+
+- equivocarse;
+- inducir una mala decisión;
+- perder datos;
+- ocultar incertidumbre;
+- generar costos;
+- generar trabajo innecesario;
+- perder confianza;
+- o fallar en una operación real.
+
+Empezá por aquello que sería más caro si estuviera mal.
+
+Sólo cuando hayas agotado razonablemente esas superficies, bajá hacia
+problemas raros, benignos o cosméticos.
+
+Documentá absolutamente todo.
+
+NO CORRIJAS PRODUCCIÓN.
+
+La persona que lea tu informe decidirá qué debe corregirse.
+
+no ausmas que no hay error solo porque pasa cierto tipo de test o E2E simple, testea E2E en navegador real, cuidando la ram de la pc. Hay errores que solo se ven cuando se imita al maximo el comportamiento de un usuario real    
+tambien te autorizo a cerrar todos los procesos que esten abiertos que no contribuyan al analisis y que ocupen ram

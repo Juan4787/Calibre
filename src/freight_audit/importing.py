@@ -64,7 +64,7 @@ class ImportMapping(Model):
     encoding: Literal["utf-8-sig", "cp1252"] = "utf-8-sig"
     decimal_separator: Literal[".", ","] = ","
     thousands_separator: Literal[".", ",", "", " "] = "."
-    date_formats: list[str] = Field(default_factory=lambda: ["%d/%m/%Y"])
+    date_formats: list[str] = Field(default_factory=lambda: ["%d/%m/%Y"], min_length=1, max_length=10)
     columns: list[ColumnMapping] = Field(min_length=1)
     concept_map: dict[str, str] = Field(default_factory=dict)
     allow_xls_cached_values: bool = False
@@ -93,13 +93,14 @@ class ImportMapping(Model):
                 if column.type != expected_type:
                     raise ValueError(f"El campo '{column.target}' requiere tipo {expected_type}.")
         for fmt in self.date_formats:
-            if (
-                "%Y" not in fmt
-                or "%m" not in fmt
-                or "%d" not in fmt
-                or any(token in fmt for token in ("%y", "%b", "%B", "%x", "%c"))
+            directives = re.findall(r"%(.)", fmt)
+            if not re.fullmatch(r"(?:[^%]|%[Ymd%])+", fmt) or any(
+                directives.count(token) != 1 for token in ("Y", "m", "d")
             ):
-                raise ValueError("Las fechas requieren día, mes numérico y año de cuatro dígitos.")
+                raise ValueError(
+                    "Las fechas requieren día, mes numérico y año de cuatro dígitos, una vez cada uno. "
+                    "No admitir hora ni zona horaria: definir primero la fecha contractual."
+                )
         return self
 
 
@@ -321,6 +322,10 @@ def read_table(data: bytes, filename: str, mapping: ImportMapping) -> Tabular:
                 if name not in names:
                     raise ImportErrorDetail(f"No existe la hoja '{name}'.")
                 sheet_xls = workbook_xls.sheet_by_name(name)
+                if sheet_xls.visibility:
+                    raise ImportErrorDetail(
+                        "La hoja seleccionada está oculta; hacerla visible y revisar su alcance antes de importar."
+                    )
                 if sheet_xls.nrows > MAX_ROWS or sheet_xls.ncols > MAX_COLUMNS:
                     raise ImportErrorDetail("El libro XLS supera el límite de importación.")
                 rows = []
@@ -348,6 +353,18 @@ def read_table(data: bytes, filename: str, mapping: ImportMapping) -> Tabular:
                             )
                         )
                     rows.append(xls_row)
+                if any(
+                    info.hidden and any(cell.value not in (None, "") for cell in rows[index])
+                    for index, info in sheet_xls.rowinfo_map.items()
+                    if index < len(rows)
+                ) or any(
+                    info.hidden
+                    and any(index < len(row) and row[index].value not in (None, "") for row in rows)
+                    for index, info in sheet_xls.colinfo_map.items()
+                ):
+                    raise ImportErrorDetail(
+                        "La hoja contiene datos ocultos; hacer visibles filas y columnas y revisar el alcance antes de importar."
+                    )
                 return Tabular(names, name, rows, warnings)
             finally:
                 workbook_xls.release_resources()

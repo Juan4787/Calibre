@@ -1551,6 +1551,17 @@ footer {
 }
 
 @media (max-width: 768px) {
+  .head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .head > div {
+    min-width: 0;
+  }
+  .head .btn {
+    max-width: 100%;
+    white-space: normal;
+  }
   .sidebar {
     position: static;
     width: 100%;
@@ -1583,4 +1594,555 @@ footer {
   .wizard-steps::before {
     display: none;
   }
+}
+.matching-warning {
+  border: 1px solid var(--amber);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.matching-conflicts { padding-left: 22px; overflow-wrap: anywhere; }
+.matching-conflicts li { margin: 12px 0; }
+.matching-conflicts p { margin: 6px 0; }
+
+/* CSP-safe presentation rules migrated from app.js. Shared declarations are deduplicated. */
+.finding-difference {
+  font-weight: 750;
+}
+
+.finding-difference-fail {
+  color: var(--red);
+}
+
+.finding-difference-review {
+  color: var(--amber);
+}
+
+.agreement-summary-detail {
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+
+.agreement-summary-detail summary,
+.import-issues summary {
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.agreement-summary-detail ul,
+.import-issues ol {
+  margin: 8px 0 0;
+  padding-left: 22px;
+}
+
+.import-issues {
+  margin-top: 10px;
+  color: var(--amber);
+}
+
+.import-issues li {
+  color: var(--ink-secondary);
+  overflow-wrap: anywhere;
+}
+
+.issue-navigation {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.issue-navigation label {
+  margin: 0;
+}
+
+.issue-page-number {
+  display: inline-block;
+  width: 80px;
+}
+
+.verify-import-count {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1b6d49;
+  margin: 4px 0;
+}
+
+.verify-import-file {
+  font-size: 13px;
+  margin: 0;
+}
+
+.verify-import-missing {
+  color: var(--amber);
+  font-weight: 650;
+}
+
+.verify-no-issues {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.ui-fontsize-b9cba918 {
+  font-size:44px;
+  color:var(--accent);
+}
+
+.ui-justifycontent-1025a90c {
+  justify-content:center;
+  margin-top:20px;
+}
+
+.ui-fontsize-0e7fe10f {
+  font-size:22px;
+  line-height:1;
+}
+
+.ui-margin-b2f2f5fb {
+  margin:2px 0 0;
+}
+
+.ui-display-141abdf4 {
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.ui-textalign-253c882b {
+  text-align:center;
+  padding:32px 20px;
+  color:var(--muted);
+}
+
+.ui-fontsize-997b3b04 {
+  font-size:22px;
+}
+
+.ui-marginleft-f89ec43d {
+  margin-left:auto;
+  font-size:13px;
+}
+
+.ui-margin-ebd1dbfe {
+  margin:4px 0 0;
+  font-size:13px;
+}
+
+.ui-margintop-04bbec5e {
+  margin-top:24px;
+}
+
+.ui-fontsize-c42f23b8 {
+  font-size:12px;
+}
+
+.ui-fontsize-025fe512 {
+  font-size:11px;
+}
+
+.ui-fontweight-94760884 {
+  font-weight:600;
+  margin:4px 0;
+}
+
+.ui-color-10d73d12 {
+  color:var(--accent);
+}
+
+.ui-margin-698a2e6f {
+  margin:0;
+  font-size:24px;
+}
+
+.ui-margintop-1d436efc {
+  margin-top:6px;
+}
+
+.ui-marginleft-c3b08bda {
+  margin-left:10px;
+  font-size:13px;
+}
+
+.ui-fontsize-5ca1e82b {
+  font-size:12px;
+  margin:4px 0 0;
+}
+
+.ui-fontsize-afce41d9 {
+  font-size:14px;
+  line-height:1.5;
+  margin:0 0 10px;
+}
+
+.ui-background-ef9abbd6 {
+  background:#f9faf7;
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:10px 14px;
+  font-size:13px;
+  color:var(--ink-secondary);
+  margin-top:14px;
+}
+
+.ui-fontsize-7d717343 {
+  font-size:12px;
+  font-weight:750;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:14px 0 6px;
+}
+
+.ui-padding-496cf7c8 {
+  padding: 0 32px 18px;
+}
+
+.ui-margin-38965f9b {
+  margin:0;
+}
+
+.ui-fontweight-b44ef607 {
+  font-weight:750;
+  color:var(--accent);
+}
+
+.ui-margintop-b6d781cb {
+  margin-top:12px;
+}
+
+.ui-padding-fea5994f {
+  padding: 0 32px 24px;
+}
+
+.ui-margintop-1294519f {
+  margin-top:0;
+}
+
+.ui-width-9ccc4ca9 {
+  width:100%;
+}
+
+.ui-maxheight-d1cb98d5 {
+  max-height: 220px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.ui-bordertop-fd7dfba1 {
+  border-top:1.5px solid var(--line);
+  padding-top:16px;
+}
+
+.ui-fontsize-74b1bec6 {
+  font-size:14px;
+  font-weight:750;
+  color:var(--ink);
+}
+
+.ui-marginbottom-4636770b {
+  margin-bottom:12px;
+}
+
+.ui-marginbottom-3c4a3d44 {
+  margin-bottom:20px;
+}
+
+.ui-fontsize-df949b3e {
+  font-size:14.5px;
+  font-weight:750;
+}
+
+.ui-maxwidth-344a0df9 {
+  max-width:560px;
+}
+
+.ui-marginbottom-7564ec60 {
+  margin-bottom:16px;
+}
+
+.ui-margin-9412625c {
+  margin:0 0 4px;
+  font-size:20px;
+}
+
+.ui-margin-7406c902 {
+  margin:0;
+  font-size:13.5px;
+}
+
+.ui-margintop-76977cc9 {
+  margin-top:16px;
+}
+
+.ui-margintop-91a1fbef {
+  margin-top:24px;
+  justify-content:flex-end;
+}
+
+.ui-display-a3d2651f {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+  gap:16px;
+  margin:20px 0;
+}
+
+.ui-display-d528dea8 {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+
+.ui-display-a9e01b95 {
+  display:flex;
+  justify-content:flex-end;
+  margin-top:14px;
+}
+
+.ui-display-1a968e4a {
+  display:flex;
+  gap:14px;
+  align-items:flex-end;
+  margin-top:16px;
+  flex-wrap:wrap;
+}
+
+.ui-margin-f6efb71d {
+  margin:0;
+  flex:1;
+  min-width:260px;
+}
+
+.ui-padding-45d64fe9 {
+  padding:8px 10px;
+  font-size:13px;
+}
+
+.ui-margintop-910f53fb {
+  margin-top:20px;
+}
+
+.ui-display-c8cc40c3 {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+}
+
+.ui-fontsize-6c0edc58 {
+  font-size:13.5px;
+}
+
+.ui-margintop-726e8b31 {
+  margin-top:10px;
+}
+
+.ui-margintop-bf9413de {
+  margin-top:28px;
+  justify-content:space-between;
+}
+
+.ui-margin-5de38404 {
+  margin:16px 0;
+}
+
+.ui-padding-041145b1 {
+  padding:16px 18px;
+  background:#f9fbf8;
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+}
+
+.ui-margin-7cb69eb0 {
+  margin:0 0 6px;
+  font-size:15px;
+}
+
+.ui-margin-3b5bc8f9 {
+  margin:20px 0 0;
+}
+
+.ui-fontsize-87e06f45 {
+  font-size:20px;
+  line-height:1;
+}
+
+.ui-textalign-aafb9ae4 {
+  text-align:center;
+  padding:40px 24px;
+}
+
+.ui-fontsize-7213c457 {
+  font-size:44px;
+  margin-bottom:12px;
+}
+
+.ui-maxwidth-2cb2dbe7 {
+  max-width:560px;
+  margin:0 auto 24px;
+  font-size:14.5px;
+  line-height:1.6;
+}
+
+.ui-padding-a7d43ac2 {
+  padding:15px 34px;
+  font-size:15.5px;
+  font-weight:750;
+}
+
+.ui-marginbottom-ae01e5f4 {
+  margin-bottom:4px;
+}
+
+.ui-margin-3165a35a {
+  margin:0;
+  font-size:16px;
+}
+
+.ui-fontsize-d64c8cb3 {
+  font-size:18px;
+}
+
+.ui-margintop-a33b8fc2 {
+  margin-top:8px;
+}
+
+.ui-display-8ba0c206 {
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.ui-fontweight-0e4e2896 {
+  font-weight:750;
+  font-size:13px;
+}
+
+.ui-fontsize-2ca3a889 {
+  font-size:12.5px;
+}
+
+.ui-fontsize-998d0b51 {
+  font-size:13px;
+  padding:6px 10px;
+}
+
+.ui-margintop-36e81f86 {
+  margin-top:4px;
+}
+
+.ui-display-5ffb91a2 {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.ui-fontsize-6e744f89 {
+  font-size:12px;
+  padding:4px 8px;
+}
+
+.ui-marginbottom-467b3b62 {
+  margin-bottom:8px;
+  font-size:12px;
+}
+
+.ui-fontsize-09761da4 {
+  font-size:12px;
+  font-family:monospace;
+}
+
+.ui-background-c7a1b982 {
+  background:#fafcfb;
+  border:1px solid #dbe3dc;
+  border-radius:6px;
+  padding:10px 14px;
+  margin-top:4px;
+  font-size:13px;
+}
+
+.ui-color-e4fa61d1 {
+  color:#1b6d49;
+  font-size:14px;
+}
+
+.ui-margin-138901e5 {
+  margin:4px 0 0;
+  font-size:12px;
+}
+
+.ui-display-7e9ff71e {
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  margin-top:18px;
+}
+
+.ui-padding-10702f48 {
+  padding:14px 18px;
+  gap:8px;
+}
+
+.ui-fontsize-e49c04bf {
+  font-size:15px;
+}
+
+.ui-fontsize-ecee40b8 {
+  font-size:12.5px;
+  color:var(--muted);
+  margin-top:2px;
+}
+
+.ui-display-3e08c89c {
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  margin-top:8px;
+  border-top:1px solid #edf1eb;
+  padding-top:8px;
+}
+
+.ui-background-c0b28249 {
+  background:#edf2ed;
+  color:var(--ink);
+}
+
+.ui-fontsize-adca191a {
+  font-size:15px;
+  font-weight:750;
+  color:var(--ink);
+}
+
+.ui-margintop-8d842990 {
+  margin-top:14px;
+}
+
+.ui-maxwidth-85b149cc {
+  max-width:320px;
+}
+
+.ui-maxwidth-5882c1c5 {
+  max-width:920px;
+}
+
+.ui-paddingleft-579ff797 {
+  padding-left:22px;
+  line-height:1.8;
+  font-size:14px;
+}
+
+.ui-display-225efa96 {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.ui-fontsize-81ebc5d3 {
+  font-size:13px;
+  margin:0;
 }

@@ -1,0 +1,49 @@
+{
+  "workbook_generations_in_export_run": 1,
+  "date_compared_to_text": {
+    "status": "PASS",
+    "expected": "100",
+    "condition_output": [
+      true
+    ]
+  },
+  "external_control_precision_28": {
+    "passed": false,
+    "errors": [
+      "External per-source charge totals differ from the saved audit",
+      "External currency totals differ from the saved audit"
+    ],
+    "observed": {
+      "source_hashes": [
+        "4fb43eb8bea802bf53ef3b81e52ed7f72195a6f34fc20c7068374c4f1a001d5a"
+      ],
+      "shipment_count": 1,
+      "charge_count": 1,
+      "actual_by_currency": {
+        "ARS": "1.000000000000000000000000000E+36"
+      }
+    },
+    "scope": "Independent input required; comparison cannot establish that external documents or controls are complete"
+  },
+  "external_control_precision_80": {
+    "passed": true,
+    "errors": [],
+    "observed": {
+      "source_hashes": [
+        "4fb43eb8bea802bf53ef3b81e52ed7f72195a6f34fc20c7068374c4f1a001d5a"
+      ],
+      "shipment_count": 1,
+      "charge_count": 1,
+      "actual_by_currency": {
+        "ARS": "999999999999999999999999999999999999"
+      }
+    },
+    "scope": "Independent input required; comparison cannot establish that external documents or controls are complete"
+  },
+  "control_csv_export_statuses": {
+    "canonical": 200,
+    "html": 200,
+    "xlsx": 500,
+    "zip": 500
+  }
+}

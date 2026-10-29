@@ -1,0 +1,55 @@
+{
+  "url": "http://127.0.0.1:33379",
+  "browser": "153.0.8010.12",
+  "viewports": {
+    "1280": {
+      "viewport": 1280,
+      "document": 1280,
+      "text_min": 13.5
+    },
+    "390": {
+      "viewport": 390,
+      "document": 390,
+      "text_min": 13.5
+    }
+  },
+  "page_errors": [],
+  "upload_dom": {
+    "dropzone_tag": "DIV",
+    "dropzone_tabindex": -1,
+    "dropzone_role": null,
+    "input_display": "none",
+    "input_labels": [],
+    "tabbable_file_inputs": 0
+  },
+  "keyboard_tab_order": [
+    "☷ Acuerdos y formatos",
+    "ⓘ Guía de trabajo",
+    "step-nav-1",
+    "step-nav-2",
+    "step-nav-3",
+    "step-nav-4",
+    "audit-label",
+    "toggle-advanced-shipments",
+    "validate-shipments",
+    "toggle-advanced-charges",
+    "validate-charges",
+    "goto-step-2",
+    "Saltar al contenido\n    \n      F∕AFREIGHTAUDI",
+    "Saltar al contenido",
+    "F∕AFREIGHTAUDIT",
+    "▤ Auditorías",
+    "＋ Nueva auditoría",
+    "☷ Acuerdos y formatos",
+    "ⓘ Guía de trabajo",
+    "step-nav-1",
+    "step-nav-2",
+    "step-nav-3"
+  ],
+  "mouse_opens_file_chooser": true,
+  "results_search": {
+    "labelCount": 0,
+    "ariaLabel": null,
+    "placeholder": "Buscar por referencia, concepto o regla…"
+  }
+}

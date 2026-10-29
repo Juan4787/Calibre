@@ -1,0 +1,242 @@
+{
+  "1000": {
+    "reps": 3,
+    "correctness_verified": true,
+    "total_wall": {
+      "median": 21.4616,
+      "min": 20.0563,
+      "max": 24.6215,
+      "mean": 22.0465,
+      "stdev": 2.3381
+    },
+    "total_cpu": {
+      "median": 20.832,
+      "min": 19.8554,
+      "max": 23.662,
+      "mean": 21.4498
+    },
+    "peak_rss_mb": 184.81,
+    "stages": {
+      "1_input_read": {
+        "wall": {
+          "median": 0.0004,
+          "min": 0.0003,
+          "max": 0.0005,
+          "mean": 0.0004,
+          "stdev": 0.0001
+        },
+        "cpu": {
+          "median": 0.0004,
+          "min": 0.0003,
+          "max": 0.0005,
+          "mean": 0.0004
+        },
+        "peak_rss_mb": 53.12
+      },
+      "2_import": {
+        "wall": {
+          "median": 0.1877,
+          "min": 0.1761,
+          "max": 0.1907,
+          "mean": 0.1848,
+          "stdev": 0.0077
+        },
+        "cpu": {
+          "median": 0.1877,
+          "min": 0.1737,
+          "max": 0.1907,
+          "mean": 0.184
+        },
+        "peak_rss_mb": 61.19
+      },
+      "3_normalization": {
+        "wall": {
+          "median": 0.0693,
+          "min": 0.0677,
+          "max": 0.0737,
+          "mean": 0.0702,
+          "stdev": 0.0031
+        },
+        "cpu": {
+          "median": 0.0691,
+          "min": 0.0677,
+          "max": 0.0737,
+          "mean": 0.0702
+        },
+        "peak_rss_mb": 76.61
+      },
+      "4_audit": {
+        "wall": {
+          "median": 0.2505,
+          "min": 0.2482,
+          "max": 0.2652,
+          "mean": 0.2546,
+          "stdev": 0.0093
+        },
+        "cpu": {
+          "median": 0.2505,
+          "min": 0.2472,
+          "max": 0.2652,
+          "mean": 0.2543
+        },
+        "peak_rss_mb": 90.61,
+        "charges_per_sec": 3770.1,
+        "findings_per_sec": 3770.1
+      },
+      "5_store_save": {
+        "wall": {
+          "median": 0.7709,
+          "min": 0.7123,
+          "max": 0.8606,
+          "mean": 0.7813,
+          "stdev": 0.0747
+        },
+        "cpu": {
+          "median": 0.7446,
+          "min": 0.6941,
+          "max": 0.8159,
+          "mean": 0.7515
+        },
+        "peak_rss_mb": 107.53,
+        "db_size_bytes": 4767744
+      },
+      "6_store_load": {
+        "wall": {
+          "median": 0.2013,
+          "min": 0.1963,
+          "max": 0.2171,
+          "mean": 0.2049,
+          "stdev": 0.0108
+        },
+        "cpu": {
+          "median": 0.1986,
+          "min": 0.1947,
+          "max": 0.2147,
+          "mean": 0.2027
+        },
+        "peak_rss_mb": 107.53
+      },
+      "7_replay": {
+        "wall": {
+          "median": 0.5202,
+          "min": 0.5147,
+          "max": 0.5767,
+          "mean": 0.5372,
+          "stdev": 0.0343
+        },
+        "cpu": {
+          "median": 0.5113,
+          "min": 0.5099,
+          "max": 0.569,
+          "mean": 0.5301
+        },
+        "peak_rss_mb": 116.71
+      },
+      "8_export_json": {
+        "wall": {
+          "median": 0.0834,
+          "min": 0.0771,
+          "max": 0.0854,
+          "mean": 0.082,
+          "stdev": 0.0043
+        },
+        "cpu": {
+          "median": 0.0833,
+          "min": 0.0769,
+          "max": 0.0853,
+          "mean": 0.0819
+        },
+        "peak_rss_mb": 116.71,
+        "size_bytes": 4574639
+      },
+      "9_export_xlsx": {
+        "wall": {
+          "median": 7.9508,
+          "min": 7.8305,
+          "max": 10.2137,
+          "mean": 8.665,
+          "stdev": 1.3426
+        },
+        "cpu": {
+          "median": 7.8902,
+          "min": 7.7654,
+          "max": 9.8785,
+          "mean": 8.5114
+        },
+        "peak_rss_mb": 155.15,
+        "size_bytes": 790041,
+        "status": "PASS"
+      },
+      "10_export_html": {
+        "wall": {
+          "median": 0.0073,
+          "min": 0.0063,
+          "max": 0.0077,
+          "mean": 0.0071,
+          "stdev": 0.0007
+        },
+        "cpu": {
+          "median": 0.0063,
+          "min": 0.0061,
+          "max": 0.0072,
+          "mean": 0.0065
+        },
+        "peak_rss_mb": 155.15,
+        "size_bytes": 183801,
+        "status": "PASS"
+      },
+      "11_bundle_zip": {
+        "wall": {
+          "median": 10.0802,
+          "min": 8.523,
+          "max": 10.7346,
+          "mean": 9.7793,
+          "stdev": 1.1361
+        },
+        "cpu": {
+          "median": 9.559,
+          "min": 8.4758,
+          "max": 10.1824,
+          "mean": 9.4057
+        },
+        "peak_rss_mb": 184.81,
+        "size_bytes": 831023,
+        "status": "PASS"
+      },
+      "12_verify_bundle": {
+        "wall": {
+          "median": 0.5205,
+          "min": 0.5133,
+          "max": 0.5757,
+          "mean": 0.5365,
+          "stdev": 0.0341
+        },
+        "cpu": {
+          "median": 0.5185,
+          "min": 0.5058,
+          "max": 0.5728,
+          "mean": 0.5324
+        },
+        "peak_rss_mb": 184.81,
+        "status": "PASS",
+        "verified": true
+      },
+      "13_api_retrieval": {
+        "wall": {
+          "median": 0.8946,
+          "min": 0.8908,
+          "max": 1.0444,
+          "mean": 0.9433,
+          "stdev": 0.0876
+        },
+        "cpu": {
+          "median": 0.8828,
+          "min": 0.8827,
+          "max": 0.991,
+          "mean": 0.9188
+        },
+        "peak_rss_mb": 184.81
+      }
+    }
+  }
+}

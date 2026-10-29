@@ -1,0 +1,256 @@
+{
+  "schema": "calibre/onr001-evidence/v1",
+  "assembled_at_utc": "2026-09-27T07:28:16.571220+00:00",
+  "base_commit": "fd62f05392f819896589c2a3b271ad49cdcfafbd",
+  "publication": "local worktree; no commit or push in this task",
+  "status": "ONR-001 corrected under explicit-consistency-v1; QA-20 remains PARTIAL",
+  "engine_version": "0.1.1",
+  "engine_artifact_hash": "882ff21e6f6d8d91c5fe2e6e36ab8549a2b85c0fce5aee76919a26d758fabc48",
+  "ui_sha256": "fbbbc6e0d777983a2897b350530662d9ca85789f4e033591309b1523afc3cb02",
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.39",
+  "python": "3.12.3",
+  "source_fingerprints": {
+    "captured": "after executions, at evidence assembly; not a before/after test-time capture",
+    "scope": "product, tests, QA, scripts, fixtures, schemas, packaging configuration; excludes docs and generated output",
+    "digest_method": "sha256 of sorted compact JSON object {relative_path: sha256(bytes)}",
+    "digest": "b836bdbcd5d64dd0db3af931e1527b59c022aa4b5f0e4a93c90a1cee1ea2e5aa",
+    "files": {
+      "MANIFEST.in": "02b0f46810defe13b28b0b667cb3fbfbcfedecb500f85fb664b527b6d794763b",
+      "fixtures/agreements.json": "995c713bb41f5d19569f93474ec80cf8177a8cfcd7af8bfbbd6a360fcb6a71da",
+      "fixtures/authorization.txt": "1f6c01d30807ff18bd051cba581a3efcda5444d55960df9a33c36ed4072fd532",
+      "fixtures/evidence.json": "31a784977f172d85e00ed0a567e0b61377ef5995df52ab3e8d490b25918f2fc1",
+      "fixtures/external-control.json": "e76e30287f21d939526298147537a28c8b729609b1249fe6c89a6bd4f6cea34d",
+      "fixtures/liquidacion.csv": "ced3ad5c8dc1f6c0b7a124ada3d198dfccca630e070a2b2fae7f6fd896cecb19",
+      "fixtures/mapping-charges.json": "7ef8783e3e2b19402c3b17351c076b7b04ff4f51db5b13081b9743d730bdf4e3",
+      "fixtures/mapping-invalid.json": "047852f077c7968884436ede02b1d4757411f695133f153c74ab584da41f96ff",
+      "fixtures/mapping-shipments.json": "ca241ff68b1ccb1f40a088de075001001896bc16c34ee47056965b36da532fb3",
+      "fixtures/operaciones-invalidas.csv": "4148c9a2672a0301de184afda153d0ff1fb4432ea6a7bc7acf399706192b4f1a",
+      "fixtures/operaciones.xlsx": "2505cb3b3dfc0f034ca96fca88ec297bb12c8299811daea79b7673efb1a0d29e",
+      "fixtures/project.json": "a8f8a38f6d2a5b95a3e0819fc27e7ae82ff6c44d9f0a10d2b4a83cb1bd16ca9d",
+      "fixtures/second-client/agreements.json": "3c07afa7637fa438efe8cd6cfc038fd6e0cce2e704cfbf9ea001bf5237b22253",
+      "fixtures/second-client/invoice.xlsx": "22bd68fbc9c3efffd2bf6238d6c52cc3a56e324cab833e39586c8cdbdf195d81",
+      "fixtures/second-client/mapping-charges.json": "31d52db521c092d2f80b6e53383ca187360ca6ed60299142a133434add8fb2ea",
+      "fixtures/second-client/mapping-shipments.json": "0d4e8d7d8cb6d19902d6259087177d01deaca1aaaf9681bc4884b744c6120939",
+      "fixtures/second-client/movements.csv": "020bdeb3e21a8e3577a6c2226b04e3a92c1e388fa42878a1b63af8e6c90d640f",
+      "fixtures/second-client/project.json": "1cedcecf0981d926b2876f75645b8d93ba72a5d41fb8405e2f81a2e6ab50b58a",
+      "pyproject.toml": "f722b92eeb6e69d89ddf1cd02b8028e980856a2382a91b653ca953e2e3cb4ce4",
+      "qa/__init__.py": "5cebf0fdc3d97957174db20d6f6b9a748b07740c5e8c47eb732573a091b9d404",
+      "qa/catalog.py": "4884972c29e4270db4a716efeba43d738559d95733f2d67f79bffe5865d0cd5f",
+      "qa/catalog_tools.py": "796b545fe37c83b95b8938f1034c4fdcd0004d3a3e28e822090cbc3a57050c6d",
+      "qa/evidence.py": "fd01045bfa446a871674b80ce2e273de963e4a7593cacd064f34137f5ebe767d",
+      "qa/external_control.py": "526dfed8d51d4d106c7d1ab3055301c831de03c55e4ef3abb6c6b008d89fae9f",
+      "qa/gates.py": "21ec71e1650f2f3b713bff79cc533fbb02a3e4a23a697e7ba28c8743c2f695e7",
+      "qa/generators.py": "0e50281e926d855a5bb74a58d3188f2f87b3bb77153ef180109722a66cf4171d",
+      "qa/impact.py": "2ff22ea3b5b4b343e429481cae1a0855429a0871d15b9b94c7c7658ff223a40e",
+      "qa/invariants.py": "14aa1dbd34ea863f2ad100694b5f252fde897a458836830e3fbb2570c625079f",
+      "qa/mutants.json": "3838bf8a4caca2f37cb65775f80052e10400b762e3938c0cbabff4b96380e632",
+      "qa/mutation.py": "919da6f461eff08b7c7c130289b74596f2e7e27f459b0cd5ce9d4571b4999d89",
+      "qa/reconcile.py": "d4c150a15825d2dbbbfa0dadb8109008e9e751df882d6b33edd4bc56be3b9fbb",
+      "qa/reference.py": "d0730eeb0dc067a01ef4890355835940a0dfd4ba8f0665fb7949ee54259ed8b8",
+      "requirements.lock": "45f11cbc00a936d427e6f94c03c27072fc190bf6f971f51853dd18231729259e",
+      "scripts/benchmark.py": "e6fef9e2a73c4050cfac42ee9fdd005cb6e4489f07998eb2e6ce55a78e10b9c4",
+      "scripts/browser_e2e.py": "91e0557bd46a077e01732cff49118ca5c257e6d718b34f1f1aa37dc159a22edb",
+      "scripts/build_qa_coverage_ledger.py": "e0e377ea589beb113a307969052823d387eca4476e756bb1b4dac462d097c3f9",
+      "scripts/ci_reconcile_fixtures.py": "e394140ca199d9508069ec544d4e3ddc373e4dadc65cd9296cc0f30719364eef",
+      "scripts/qa.py": "0c63c232395b087546fa57dac76eda086f8b4a87b3365b1c3b3493d81d31da75",
+      "scripts/record_check.py": "b87dba285686600d5ebdaf55e37b9b9098d142fec5aab8c880c7d03382694d3f",
+      "scripts/run_ci_tier.sh": "de9b9c8994a837c1f166fdc9a5fa1992b17e1f6b610eff46aa68b249b111af57",
+      "scripts/smoke_wheel.py": "3dcfc3f8d5055133454b3a72c706c19e87a9110bf3ce097eceab0c7441e7f051",
+      "scripts/start-local.ps1": "d31f1a9d46a5df589760c1ad1b045a14bf49d294a4c169f06361fe25e29e6783",
+      "scripts/start-local.sh": "2bd457025723f646ffcc89b997248ce6f9ad42a175bde0ecc56cdd03210125c0",
+      "scripts/verify.sh": "f7c9a75ae898e0fcdbca6631ea0a978e52230addfb7af329ac246aa5c2b5ac2f",
+      "scripts/verify_delivery.py": "c175d87d3291240c7121a4b0a804469cfe39063ecc77fa814e9400f731ab29b7",
+      "src/freight_audit/__init__.py": "583343dfd3c7c5ca36114aed44182427669461542e4ca41c8c5bcad0b97a26a3",
+      "src/freight_audit/canonical.py": "d91e487a02e0c62041fbb9234366cc4f7fa7014c45d2742149de0b5c6ede9821",
+      "src/freight_audit/cli.py": "37c3f9dc849ca95645c73ed7591b946d112595aa964047fb5a2a871b002e7dd8",
+      "src/freight_audit/engine.py": "4c0d91abc63afa7828cd86812b2784dadf0f42ca5633096b232b1605bc6e222f",
+      "src/freight_audit/fixtures.py": "9923b14713549da18ef1584ffd4b774638cdea3d9a76b7d95b3860dfc8970f39",
+      "src/freight_audit/importing.py": "adb0b2d8f05f8bf2a31d6d2a7fd468bc2bb3d303acb3caee610e313a7b21294b",
+      "src/freight_audit/local_paths.py": "174114eba3a289d098507e453a6ddff385a389aa42f7e0ffd3e3c30dc5d4f6a6",
+      "src/freight_audit/models.py": "afc5c06e330da3ab011748154686767a8f5e7d98762672b23a4c0e5769b9d5bb",
+      "src/freight_audit/project.py": "a176c930222b69ec3290ff355feee3aea3c0431fa0d48c52bd79d40002998baf",
+      "src/freight_audit/reporting.py": "365f2f21f4884e7ac410a5aa1f7f7cb148c9898f7f18e97f89f0ed8a099db640",
+      "src/freight_audit/rules.py": "b83ecbcee6646df7f7cbff0e8efc6d368dd23111d41fcec74e77b5424c9cd406",
+      "src/freight_audit/server.py": "0f9971183a4b128ba745e5c707c65a12e2a878dd53a5ba901b79b037b959783e",
+      "src/freight_audit/static/app.css": "173f5e5a5f630a205ba7dd3d3461da1a27b87d6c9c14fc617d929311f1c1ca83",
+      "src/freight_audit/static/app.js": "fbbbc6e0d777983a2897b350530662d9ca85789f4e033591309b1523afc3cb02",
+      "src/freight_audit/static/favicon.svg": "7d3cd50534fc12d250ec8c219e2afd0dbf765c80e98a6dc379697d08156ae7f0",
+      "src/freight_audit/static/index.html": "6a9d68501598dd46ee74786f1f2f98167a3ff3f4a0db795a0da4964150fb24fe",
+      "src/freight_audit/storage.py": "6886dec87af23294f43bd9e342312fe514687569eac083d7fe754128df0e15c5",
+      "tests/conftest.py": "e1a5b35cc7effca2c102ae03306eee85d654b16a568952d4f78a289736d62305",
+      "tests/fuzz_corpus/README.md": "2d78f86861c2c32dd5332566caaa0c4275e19218e02d32ff14148c56780954f9",
+      "tests/fuzz_corpus/bad-grouping.csv": "c312ea7743ba5e5b4c7157c1c784b91f503d70e2ad4efc021f23c87e199f7eae",
+      "tests/fuzz_corpus/manifest.json": "1c66eb242a628c5662375212ad61fd1b696ef6d5192f3bb81895e3ce86edd247",
+      "tests/fuzz_corpus/mapping.json": "f6c92982a7cb43a0cdaa2d28d19f28fba230e4b0953a1e65bfed0a4d69f50414",
+      "tests/fuzz_corpus/multiline.csv": "9e33ed6c858b60e43995b8ba81acff814b426e138fadb3e880671ba4bb8a80f2",
+      "tests/fuzz_corpus/valid-argentine.csv": "e10783e9e9b6fe3ecc0b368dcca2181e2576bb4f22380fbb6eb550a0c204338a",
+      "tests/golden/demo.json": "d6be5d63ed6506af5103dc1ec6f29fdbb3c36c1d3e9cf7468b5fe20ff8708bf9",
+      "tests/golden/producer-e861667-v1.json": "229876af81f3eedb7ede8c948b0ebf6f40ae1ed13954303201a5b4ffde81380a",
+      "tests/golden/producer-e861667-v1.zip": "51e1248263d2a5af86ace5f79127b69c633bc6442a7f6741988a193009602f18",
+      "tests/golden/second-client.json": "fe562f6225f4722a830102f196f81058c010f4b7831c1031abc3af8ce7e8fb5b",
+      "tests/test_adversarial.py": "4fb7a649e241ac4a23b1cbea71f2f587ba8a362cac4bd9cd7e771858b5e41f9d",
+      "tests/test_backlog_p0_p1.py": "decdaa50652b7319e8bba6f0f71a452f579918ee9f7c83b78ea016078731a74b",
+      "tests/test_bundle_v1_v2.py": "9d4956cc061ce1c20c47097ea058e0b3951accd6bbbddc22086a218bf27e0d95",
+      "tests/test_engine.py": "4eecc515fbf76c1283826d3c175dbe983e26945911d0b2c75d5dba93f8bee30e",
+      "tests/test_explicit_link_conflicts.py": "29678f58dbf06aff2510828ea438e97e3835145359e41b998b0b7e76fb68b6d0",
+      "tests/test_external_control.py": "04fbfdc152ad6ca6f89dab663f2a092dd58607621db55be75f4d1c5e5a5bc9f0",
+      "tests/test_importing.py": "de666776e22cc6a535c5aab83fe45f90ee53ea2460a545942d053d659622ee29",
+      "tests/test_integration.py": "4c8c032842821671e31beb66c5a1e4f00840684039371ae2d3669b415f039f35",
+      "tests/test_mutation_verdict.py": "ba4883522638652af359bc30477eee3545939cb754f36d2a214eeac2c60e81cd",
+      "tests/test_qa_gates.py": "48550ae908c7fcfa5002564d3774c22fa44ecf60cbff7d3f7be73f78006945b0",
+      "tests/test_qa_infrastructure.py": "d526567d0c80726495818cfd283ee5518c5ae12343f57360d2d9639a902eccbf",
+      "tests/test_review_regressions.py": "0cb18897b4496a45e4ca7a56efcd70ab358659013ea45cf19464f8aaf57f85d3",
+      "tests/test_security_paths.py": "d73cb4a881593b8ad94a1173ec1c53925aec3930271b84c6f2659ac4a7dc9f2c",
+      "tests/test_storage_reporting.py": "7857eb4bf6a209b76ca77e953f7afda5ff7ab278f2c39c2e7701e73da009a4fa"
+    }
+  },
+  "checks": {
+    "verify": {
+      "date": "2026-09-23",
+      "command": "scripts/verify.sh",
+      "exit_code": 0,
+      "tests_passed": 254,
+      "warnings": 2,
+      "elapsed_seconds": 28.25,
+      "time_v_max_rss_kib": 92532,
+      "log": "verify.log"
+    },
+    "browser": {
+      "date": "2026-09-23",
+      "command": ".venv/bin/python scripts/browser_e2e.py --output-dir output/onr-001-fix/browser-reviewed",
+      "exit_code": 0,
+      "elapsed_seconds": 46.41,
+      "time_v_max_rss_kib": 252260,
+      "result": "browser-result.json",
+      "log": "browser.log"
+    },
+    "mutations": {
+      "date": "2026-09-23",
+      "command": ".venv/bin/python scripts/qa.py mutate --ids M11 M12 M13 --execute",
+      "exit_code": 0,
+      "outcomes": {
+        "M11": "killed",
+        "M12": "killed",
+        "M13": "killed"
+      },
+      "result": "mutations.json"
+    },
+    "history": {
+      "date": "2026-09-23",
+      "result": "history.json",
+      "integrity_exit_code": 0,
+      "replay_exit_code": 2,
+      "replay_result": "expected artifact mismatch"
+    },
+    "installed_packages": {
+      "date": "2026-09-27",
+      "command": ".venv/bin/python output/onr-001-fix/probe-installed.py",
+      "exit_code": 0,
+      "script": "probe-installed.py",
+      "result": "installed-packages.json",
+      "clean_dependency_environment": false
+    }
+  },
+  "historical_run": "47a07a299d4926c77d24a0865dc1da32a6bf728e030efb83e4240efc012c4662",
+  "corrected_engine_conflict_run": "a8a1bc2cdae436de75c4622907f440c14746470526b160a9314be57089bc7f93",
+  "evidence_files": {
+    "before.txt": {
+      "sha256": "10b08eaaaabfd2a4b77a13d1edef87e2614edcb05fdd8761d606db58e58e1de0",
+      "bytes": 1081,
+      "original_path": "output/onr-001-fix/before.txt",
+      "original_mtime_utc": "2026-09-23T15:27:37.504187+00:00"
+    },
+    "red-tests.txt": {
+      "sha256": "b4dc039ae95e5151d077fde98d3ca2242213e2c4f45000d5679731c086c300e8",
+      "bytes": 2308,
+      "original_path": "output/onr-001-fix/red-tests.txt",
+      "original_mtime_utc": "2026-09-23T15:27:45.528142+00:00"
+    },
+    "core-first.txt": {
+      "sha256": "fbd16595d5597b41c1850122306ccebda2524635d256ad064d5735c6ad4b11ab",
+      "bytes": 4691,
+      "original_path": "output/onr-001-fix/core-first.txt",
+      "original_mtime_utc": "2026-09-23T15:29:18.774648+00:00"
+    },
+    "core-green.txt": {
+      "sha256": "82ac5101fbf6e7a328b9742c896f325b445775e0def6396a6d3faa0e358f6117",
+      "bytes": 1056,
+      "original_path": "output/onr-001-fix/core-green.txt",
+      "original_mtime_utc": "2026-09-23T15:34:23.188122+00:00"
+    },
+    "verify.log": {
+      "sha256": "e2e2f1803e25933d622de86d1b61c8b37cd8e93fe97ab6d95b39c06365b78082",
+      "bytes": 56292,
+      "original_path": "output/onr-001-fix/verify-final.log",
+      "original_mtime_utc": "2026-09-23T15:49:39.900223+00:00"
+    },
+    "browser.log": {
+      "sha256": "94727bd8bc2bd52feb9fb0cd896f17c4291a58fb21045a298e616a219a016bb2",
+      "bytes": 2269,
+      "original_path": "output/onr-001-fix/browser-reviewed.log",
+      "original_mtime_utc": "2026-09-23T15:48:23.113641+00:00"
+    },
+    "browser-result.json": {
+      "sha256": "f14a9104a89b85b8d972fa3003ff6668887a6e6f7769142c5af9005a620ac993",
+      "bytes": 1444,
+      "original_path": "output/onr-001-fix/browser-reviewed/result.json",
+      "original_mtime_utc": "2026-09-23T15:48:20.925653+00:00"
+    },
+    "mutations.json": {
+      "sha256": "54e609ac059fbb70f31e91a288f0ca83092fdc1d72208247c24e1d0337bf0ce0",
+      "bytes": 13904,
+      "original_path": "output/onr-001-fix/mutations.json",
+      "original_mtime_utc": "2026-09-23T15:41:00.414032+00:00"
+    },
+    "history.json": {
+      "sha256": "3b18b9185627675473c5d8da9ae6593949104d5898954419dcba8d55e46fa94b",
+      "bytes": 1103,
+      "original_path": "output/onr-001-fix/history.json",
+      "original_mtime_utc": "2026-09-23T15:46:50.305146+00:00"
+    },
+    "installed-packages.json": {
+      "sha256": "4f5cffd8a059c53d2e5e8b50dea392dc0680c4518cc92731d066ee38e2487c3c",
+      "bytes": 2417,
+      "original_path": "output/onr-001-fix/installed-packages.json",
+      "original_mtime_utc": "2026-09-27T07:24:01.573801+00:00"
+    },
+    "probe-installed.py": {
+      "sha256": "a58f8cc56b904d312d3186bc3572fd2a0ddce38626a6257a4ab3a3f85252db9b",
+      "bytes": 3541,
+      "original_path": "output/onr-001-fix/probe-installed.py",
+      "original_mtime_utc": "2026-09-23T15:49:11.628377+00:00"
+    },
+    "preflight.png": {
+      "sha256": "60402cccf0a33831bc3343adc5c1923f36639be1d0c9ae6c99220d990124eb05",
+      "bytes": 144277,
+      "original_path": "output/onr-001-fix/browser-reviewed/onr001-preflight.png",
+      "original_mtime_utc": "2026-09-23T15:48:03.336749+00:00"
+    },
+    "matching.png": {
+      "sha256": "cbb951152a39f76ad3f08d5155ba6c7f183e4ae4508ce4eaec5a5f9fcd000361",
+      "bytes": 257903,
+      "original_path": "output/onr-001-fix/browser-reviewed/onr001-matching.png",
+      "original_mtime_utc": "2026-09-23T15:48:09.538715+00:00"
+    },
+    "before.zip": {
+      "sha256": "e9a0580b743bc1f0c408bb7d9620123f81dbad90fc786b29a233b2141d1a1ad2",
+      "bytes": 76317,
+      "original_path": "output/overnight-review/logs/browser-explicit-result.zip",
+      "original_mtime_utc": "2026-09-23T08:24:27.496802+00:00"
+    },
+    "after.zip": {
+      "sha256": "dab36c7c43226db2cd4b76fb74a11801ba5a0920087b43c1795a13faa677e52f",
+      "bytes": 78114,
+      "original_path": "output/onr-001-fix/browser-reviewed/onr001-audit.zip",
+      "original_mtime_utc": "2026-09-23T15:48:11.787703+00:00"
+    }
+  },
+  "limits": [
+    "Fictional fixtures; no validation of real contracts or savings.",
+    "No global matching, QA, commercial or production certification.",
+    "Memory values are time -v maximum RSS, not simultaneous aggregate of all browser processes.",
+    "Only these targeted mutants are certified killed by these test executions.",
+    "Installed packages reuse existing dependencies; clean commit delivery gate and new Windows validation not executed.",
+    "Browser source includes known pre-existing inline-style CSP issues outside ONR-001."
+  ]
+}

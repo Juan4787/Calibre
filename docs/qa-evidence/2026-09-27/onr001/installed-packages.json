@@ -1,0 +1,65 @@
+{
+  "scope": "wheel and sdist installed outside checkout; dependencies reused from current .venv, no clean lock/platform certification",
+  "artifacts": [
+    {
+      "artifact": "dist/freight_audit-0.1.1-py3-none-any.whl",
+      "sha256": "2387aa98f8b6775f4669539be4a46f99527aa106a0a7e2360c1cc3c6cd98ebe1",
+      "installed_product_files_compared": [
+        "freight_audit/__init__.py",
+        "freight_audit/canonical.py",
+        "freight_audit/cli.py",
+        "freight_audit/engine.py",
+        "freight_audit/fixtures.py",
+        "freight_audit/importing.py",
+        "freight_audit/local_paths.py",
+        "freight_audit/models.py",
+        "freight_audit/project.py",
+        "freight_audit/reporting.py",
+        "freight_audit/rules.py",
+        "freight_audit/server.py",
+        "freight_audit/static/app.css",
+        "freight_audit/static/app.js",
+        "freight_audit/static/favicon.svg",
+        "freight_audit/static/index.html",
+        "freight_audit/storage.py"
+      ],
+      "install_exit_code": 0,
+      "smoke_exit_code": 0,
+      "smoke_stdout": "Installed wheel: static UI, generated fixtures, audit, persistence, replay and export passed.\n",
+      "onr001_probe": {
+        "engine_version": "0.1.1",
+        "installed_result_equal": true
+      }
+    },
+    {
+      "artifact": "dist/freight_audit-0.1.1.tar.gz",
+      "sha256": "a4d4e785cba38c5de0d173d446a850dbd9f2c1edf29ebf375415f4b6ee7bdd7f",
+      "installed_product_files_compared": [
+        "freight_audit/__init__.py",
+        "freight_audit/canonical.py",
+        "freight_audit/cli.py",
+        "freight_audit/engine.py",
+        "freight_audit/fixtures.py",
+        "freight_audit/importing.py",
+        "freight_audit/local_paths.py",
+        "freight_audit/models.py",
+        "freight_audit/project.py",
+        "freight_audit/reporting.py",
+        "freight_audit/rules.py",
+        "freight_audit/server.py",
+        "freight_audit/static/app.css",
+        "freight_audit/static/app.js",
+        "freight_audit/static/favicon.svg",
+        "freight_audit/static/index.html",
+        "freight_audit/storage.py"
+      ],
+      "install_exit_code": 0,
+      "smoke_exit_code": 0,
+      "smoke_stdout": "Installed wheel: static UI, generated fixtures, audit, persistence, replay and export passed.\n",
+      "onr001_probe": {
+        "engine_version": "0.1.1",
+        "installed_result_equal": true
+      }
+    }
+  ]
+}

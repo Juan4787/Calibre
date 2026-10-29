@@ -39,11 +39,14 @@ def dimensions(unit: str | None) -> dict[str, int]:
 class Atom:
     value: Scalar
     units: dict[str, int]
+    kind: str = "decimal"
 
     @classmethod
     def of(cls, value: Value):
         return cls(
-            number(str(value.value)) if value.type == "decimal" else value.value, dimensions(value.unit)
+            number(str(value.value)) if value.type == "decimal" else value.value,
+            dimensions(value.unit),
+            value.type,
         )
 
     def text(self):
@@ -172,11 +175,13 @@ class Evaluator:
         if expr.op in {"and", "or", "not"}:
             flags = [v.boolean() for v in values]
             return Atom(
-                not flags[0] if expr.op == "not" else all(flags) if expr.op == "and" else any(flags), {}
+                not flags[0] if expr.op == "not" else all(flags) if expr.op == "and" else any(flags),
+                {},
+                "boolean",
             )
         if expr.op in {"eq", "gt", "gte", "lt", "lte"}:
             a, b = values
-            if type(a.value) is not type(b.value) or a.units != b.units:
+            if a.kind != b.kind or type(a.value) is not type(b.value) or a.units != b.units:
                 raise EvaluationError("La comparación mezcla tipos o unidades diferentes.")
             if expr.op == "eq":
                 result = a.value == b.value
@@ -185,7 +190,7 @@ class Evaluator:
                 result = {"gt": left > right, "gte": left >= right, "lt": left < right, "lte": left <= right}[
                     expr.op
                 ]
-            return Atom(result, {})
+            return Atom(result, {}, "boolean")
         nums = [value.decimal() for value in values]
         units = values[0].units.copy()
         if expr.op in {"add", "sub", "min", "max"}:

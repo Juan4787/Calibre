@@ -6,7 +6,8 @@ from pathlib import Path
 from .canonical import canonical, digest, load_json
 from .engine import audit
 from .fixtures import generate, run_demo
-from .importing import ImportMapping, import_data
+from .importing import MAX_FILE_BYTES, ImportMapping, import_data
+from .local_paths import read_bounded
 from .models import Agreement, Dataset, Decision
 from .project import load_project
 from .reporting import export_run, verify_bundle
@@ -27,6 +28,11 @@ def main():
     run_parser = commands.add_parser("run", help="Auditar un proyecto con archivos y mappings")
     run_parser.add_argument("project", type=Path)
     run_parser.add_argument("--out", type=Path)
+    run_parser.add_argument(
+        "--allow-external-paths",
+        action="store_true",
+        help="Permitir expresamente archivos de confianza fuera de la carpeta del proyecto",
+    )
     normalized = commands.add_parser("audit-json")
     normalized.add_argument("dataset", type=Path)
     normalized.add_argument("--out", type=Path)
@@ -84,11 +90,11 @@ def main():
             uvicorn.run(create_app(Path(args.db)), host="127.0.0.1", port=args.port, workers=1)
             return
         elif args.command == "preview":
-            mapping = ImportMapping.model_validate(load_json(args.mapping.read_bytes()))
-            imported = import_data(args.file.read_bytes(), args.file.name, mapping)
+            mapping = ImportMapping.model_validate(load_json(read_bounded(args.mapping, 8 * 1024 * 1024)))
+            imported = import_data(read_bounded(args.file, MAX_FILE_BYTES), args.file.name, mapping)
             result = {key: value for key, value in imported.items() if key != "records"}
         elif args.command == "verify-bundle":
-            run = verify_bundle(args.bundle.read_bytes())
+            run = verify_bundle(read_bounded(args.bundle, 500 * 1024 * 1024))
             result = {"run_id": run["id"], "integrity": True}
             if args.replay:
                 if run["artifact_hash"] != engine_artifact_hash():
@@ -107,9 +113,11 @@ def main():
                     result["export"] = export_run(store, result["run_id"], args.out)
             elif args.command in {"run", "audit-json"}:
                 if args.command == "run":
-                    dataset, imports = load_project(args.project, store)
+                    dataset, imports = load_project(
+                        args.project, store, allow_external_paths=args.allow_external_paths
+                    )
                 else:
-                    dataset = Dataset.model_validate(load_json(args.dataset.read_bytes()))
+                    dataset = Dataset.model_validate(load_json(read_bounded(args.dataset, 150 * 1024 * 1024)))
                     imports = {}
                 computed = audit(dataset)
                 run_id = store.save(dataset, computed)
@@ -122,7 +130,7 @@ def main():
                 result = export_run(store, args.run_id, args.out)
             elif args.command == "decide":
                 result = store.add_decision(
-                    args.run_id, Decision.model_validate(load_json(args.decision.read_bytes()))
+                    args.run_id, Decision.model_validate(load_json(read_bounded(args.decision, 1024 * 1024)))
                 )
             elif args.command == "backup":
                 store.backup(args.destination)

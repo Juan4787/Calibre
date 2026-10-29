@@ -14,7 +14,7 @@ from pydantic import ValidationError
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from .canonical import canonical, load_json
-from .engine import audit
+from .engine import audit, matching_preflight
 from .fixtures import generate, run_demo
 from .importing import MAX_FILE_BYTES, ImportMapping, import_data, source_filename
 from .models import Agreement, Dataset, Decision
@@ -163,6 +163,11 @@ def create_app(db_path: Path) -> FastAPI:
             "document_hash": store.put_source(data),
             "filename": source_filename(file.filename or "adjunto"),
         }
+
+    @app.post("/api/audit/preflight")
+    async def preflight(request: Request):
+        dataset = Dataset.model_validate(load_json(await request.body()))
+        return matching_preflight(dataset)
 
     @app.post("/api/audit")
     async def run_audit(request: Request):

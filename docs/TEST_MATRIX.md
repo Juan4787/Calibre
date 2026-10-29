@@ -858,12 +858,12 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **INVARIANTE:** INV-09 INV-26
 - **PRECONDICIONES:** Entorno aislado; originales preservados; expected independiente. Base B y matrices exactas en QA_CASES.md.
 - **FIXTURE_DATOS:** Taxonomía matching1→1/compuesto/alias; clave vacía; explícito inválido/contradictorio
-- **PASOS_EXACTOS:** 1. Dibujar grafo manual. 2. Aplicar alias sólo al cargo. 3. Vaciar clave. 4. Añadir link inválido y verificar sin fallback.
-- **RESULTADO_ESPERADO:** Match exacto declarado; vacíos no empatan; link ausente/repetido/carrier ajeno→UNDETERMINABLE. Contradicción link/claves requiere control adicional pendiente.
+- **PASOS_EXACTOS:** 1. Dibujar grafo manual. 2. Aplicar alias sólo al cargo. 3. Vaciar clave. 4. Añadir link inválido sin fallback. 5. Contradecir claves y proteger ambos destinos, incluso otra liquidación. 6. Verificar preflight, historia y exports; corregir el vínculo en una nueva corrida.
+- **RESULTADO_ESPERADO:** Match exacto declarado; vacíos no empatan; link ausente/repetido/carrier ajeno→UNDETERMINABLE y candidatos protegidos; ambigüedad también protege cobertura; consolidación explícita no crea faltantes duplicados. ONR-001: explicit contradictorio→REVIEW sin expected/difference y confirmada0; grupos relacionados sin confirmación. one permite selección dentro de candidatos; group exige conjunto completo; sin candidatos, explicit válido sigue admitido.
 - **ORACULO:** OR-05
 - **FALLA:** Cualquier contradicción al resultado esperado, omisión de salida requerida o excepción sin clasificar. Una prueba no ejecutada queda pendiente.
-- **FALSOS_POSITIVOS:** Precedencia explicit sobre keys es contrato actual; no confundirla con detección de intención errónea.
-- **FALSOS_NEGATIVOS:** Explicito válido estructuralmente puede apuntar a operación equivocada.
+- **FALSOS_POSITIVOS:** Explicit dentro de candidatos one o sin candidatos puede ser legítimo; no bloquearlo sólo por usar IDs.
+- **FALSOS_NEGATIVOS:** Sin candidato por claves no hay contradicción contrastable: explicit válido todavía puede reflejar intención equivocada. Ver docs/ONR_001_RESOLUTION.md.
 - **AUTOMATIZABLE:** sí
 - **TIPO_IDEAL:** integration
 - **COSTO_EJECUCION:** bajo
@@ -873,7 +873,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **CUANDO:** cambio afectado; CI; release; después de incidente
 - **RESPUESTA_SI_FALLA:** IR-04 + IR-COMMON (INCIDENT_RESPONSE.md)
 - **ESTADO_COBERTURA:** parcial
-- **SELECTORES:** tests/test_engine.py::test_composite_keys_and_directional_alias; tests/test_engine.py::test_invalid_explicit_link_never_falls_back; tests/test_adversarial.py::test_empty_keys_never_join_to_empty_keys
+- **SELECTORES:** tests/test_engine.py::test_composite_keys_and_directional_alias; tests/test_engine.py::test_invalid_explicit_link_never_falls_back; tests/test_adversarial.py::test_empty_keys_never_join_to_empty_keys; tests/test_explicit_link_conflicts.py::test_conflict_never_becomes_pass_or_confirms_money; tests/test_explicit_link_conflicts.py::test_conflict_protects_both_scopes_without_poisoning_unrelated_work; tests/test_explicit_link_conflicts.py::test_candidate_selection_and_group_completeness; tests/test_explicit_link_conflicts.py::test_explicit_without_key_candidates_requires_review; tests/test_explicit_link_conflicts.py::test_coverage_does_not_invent_missing_charges_for_conflicted_obligations; tests/test_explicit_link_conflicts.py::test_preflight_is_read_only_and_audit_cannot_bypass_conflicts; tests/test_explicit_link_conflicts.py::test_decisions_correction_exports_and_replay_preserve_uncertainty; tests/test_explicit_link_conflicts.py::test_explicit_set_relation_oracle; tests/test_matching_uncertainty.py::test_invalid_link_protects_each_plausible_scope; tests/test_matching_uncertainty.py::test_negative_adjustment_cannot_reverse_a_confirmed_sign; tests/test_matching_uncertainty.py::test_uncertain_charge_is_not_also_reported_as_missing; tests/test_matching_uncertainty.py::test_coverage_does_not_duplicate_an_explicit_consolidation; tests/test_matching_uncertainty.py::test_preflight_reports_invalid_ambiguous_and_unmatched_without_persisting; tests/test_matching_uncertainty.py::test_preflight_detail_limit_does_not_limit_uncertainty
 - **RUNNERS:** Pendiente: sin selector automatizado
 - **IMPACTO:** 5
 - **PROBABILIDAD:** 3
@@ -886,7 +886,7 @@ Seleccionar: `.venv/bin/python scripts/qa.py matrix --priority P0 P1`. Ejecutar 
 - **INTERVENCION_HUMANA:** no
 
 ```bash
-.venv/bin/python -m pytest -q tests/test_engine.py::test_composite_keys_and_directional_alias tests/test_engine.py::test_invalid_explicit_link_never_falls_back tests/test_adversarial.py::test_empty_keys_never_join_to_empty_keys
+.venv/bin/python -m pytest -q tests/test_engine.py::test_composite_keys_and_directional_alias tests/test_engine.py::test_invalid_explicit_link_never_falls_back tests/test_adversarial.py::test_empty_keys_never_join_to_empty_keys tests/test_explicit_link_conflicts.py::test_conflict_never_becomes_pass_or_confirms_money tests/test_explicit_link_conflicts.py::test_conflict_protects_both_scopes_without_poisoning_unrelated_work tests/test_explicit_link_conflicts.py::test_candidate_selection_and_group_completeness tests/test_explicit_link_conflicts.py::test_explicit_without_key_candidates_requires_review tests/test_explicit_link_conflicts.py::test_coverage_does_not_invent_missing_charges_for_conflicted_obligations tests/test_explicit_link_conflicts.py::test_preflight_is_read_only_and_audit_cannot_bypass_conflicts tests/test_explicit_link_conflicts.py::test_decisions_correction_exports_and_replay_preserve_uncertainty tests/test_explicit_link_conflicts.py::test_explicit_set_relation_oracle tests/test_matching_uncertainty.py::test_invalid_link_protects_each_plausible_scope tests/test_matching_uncertainty.py::test_negative_adjustment_cannot_reverse_a_confirmed_sign tests/test_matching_uncertainty.py::test_uncertain_charge_is_not_also_reported_as_missing tests/test_matching_uncertainty.py::test_coverage_does_not_duplicate_an_explicit_consolidation tests/test_matching_uncertainty.py::test_preflight_reports_invalid_ambiguous_and_unmatched_without_persisting tests/test_matching_uncertainty.py::test_preflight_detail_limit_does_not_limit_uncertainty
 ```
 
 ## QA-21

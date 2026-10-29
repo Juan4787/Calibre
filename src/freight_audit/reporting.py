@@ -7,6 +7,7 @@ import zipfile
 from pathlib import Path
 
 from openpyxl import Workbook
+from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 
@@ -26,6 +27,17 @@ STATUS_LABELS = {
 MAX_XLSX_ROWS = 1_048_576
 MAX_XLSX_CELL_CHARS = 32_767
 MAX_BUNDLE_UNCOMPRESSED_BYTES = 500 * 1024 * 1024
+
+
+def provenance_note(run: dict) -> str:
+    proof = run.get("metadata", {}).get("provenance")
+    if not proof:
+        return "Auditoría histórica sin registro de cotejo contra originales. La completitud documental requiere control independiente."
+    return (
+        f"{proof['checked_records']} registros cotejados contra archivos y formatos conservados; "
+        f"{proof['declared_records']} aportados sin cotejo. "
+        "El cotejo no certifica autenticidad, contrato ni documentación completa del período."
+    )
 
 
 class ReportLimitError(ValueError):
@@ -86,6 +98,16 @@ def workbook_bytes(run: dict) -> bytes:
                 raise ReportLimitError(
                     "El detalle supera los límites de filas o de texto por celda de Excel. Exportar el paquete completo: audit.json conserva todos los datos sin truncar."
                 )
+            if any(
+                ILLEGAL_CHARACTERS_RE.search(value)
+                or any(ord(c) in {0xFFFE, 0xFFFF} or 0xD800 <= ord(c) <= 0xDFFF for c in value)
+                for value in values
+            ):
+                workbook.close()
+                raise ReportLimitError(
+                    "Hay texto que Excel no puede representar. Exportar el paquete completo: "
+                    "el JSON y los originales conservan los valores sin alterarlos."
+                )
             ws.append(values)
             row_count += 1
         # All imported text and exact decimal money are explicit strings, never formulas.
@@ -116,6 +138,7 @@ def workbook_bytes(run: dict) -> bytes:
         + [
             ["", "Importación completa", summary["import_complete"]],
             ["", "Definición", summary["economic_definition"]],
+            ["", "Procedencia", provenance_note(run)],
             [
                 "",
                 "Nota",
@@ -287,6 +310,7 @@ def html_report(run: dict) -> str:
         if not summary["import_complete"]
         else ""
     )
+    warnings += "<p>Origen de los datos: " + escape(provenance_note(run)) + "</p>"
     return f"""<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Freight Audit · Informe</title><style>body{{font:14px system-ui;color:#18312e;margin:40px;line-height:1.5}}h1{{font-size:32px}}table{{border-collapse:collapse;width:100%;margin:24px 0;font-size:12px}}th,td{{border-bottom:1px solid #cdd9d4;padding:10px;text-align:left;vertical-align:top}}th{{background:#edf3ef}}.warning{{padding:16px;background:#fff0d5}}small{{overflow-wrap:anywhere}}@media print{{body{{margin:12mm}}thead{{display:table-header-group}}tr{{break-inside:avoid}}}}</style><body><p>FREIGHT AUDIT / INFORME LOCAL</p><h1>{escape(run["snapshot"]["label"])}</h1><p>{summary["determinable_findings"]} de {summary["total_findings"]} hallazgos determinables. Estado técnico y decisión humana se conservan por separado.</p>{warnings}<table><thead><tr><th>Moneda</th><th>Facturado aceptado</th><th>Determinable</th><th>Exceso determinado</th><th>Defecto determinado</th><th>En revisión</th><th>Indeterminado</th></tr></thead><tbody>{totals}</tbody></table><p>{escape(summary["economic_definition"])}</p><table><thead><tr><th>Operaciones</th><th>Concepto</th><th>Estado</th><th>Facturado</th><th>Esperado</th><th>Diferencia confirmada</th><th>Motivo</th></tr></thead><tbody>{rows}</tbody></table><p>Decisiones humanas registradas: {len(run["decisions"])}. El detalle, las fuentes y los cálculos están en el XLSX y en audit.json.</p><small>Auditoría {escape(run["id"])}<br>Resultado {escape(run["result_hash"])}<br>Motor {escape(run["artifact_hash"])}</small></body></html>"""
 
 

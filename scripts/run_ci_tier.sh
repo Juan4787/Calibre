@@ -55,6 +55,9 @@ run_tier_pr() {
     echo "[7/8] Pytest full regression suite..."
     "$PYTEST" -q tests/
 
+    echo "[Causal gate] Adversarial import corpus, including hidden-data policy..."
+    "$PYTHON" output/e2e/import_adversarial/test_import_adversarial.py --output-dir "output/ci/pr-imports-$(date +%s)"
+
     echo "[8/8] Python compilation and distribution build..."
     "$PYTHON" -m compileall -q -x '/(isolated_env|__pycache__)/' src output/e2e
     "$PYTHON" -m build

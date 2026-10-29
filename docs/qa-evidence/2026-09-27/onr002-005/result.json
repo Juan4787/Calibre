@@ -1,0 +1,55 @@
+{
+  "run_id": "c6b6ffa287055c659fe8383c2849e3e1cfedcd975b76d90d36e9684ece3babc4",
+  "result_hash": "7bb9bbb353a3b6a38656046978973a44fbfa3d244d74477b81e78be0895599a6",
+  "rows_observed": 46,
+  "channels": {
+    "json": "checked",
+    "xlsx": "checked",
+    "html": "checked",
+    "api": "checked supplied response",
+    "ui": "46 actual DOM rows; all pages; exact cells and statuses"
+  },
+  "onr003": {
+    "loaded_mapping": "errores-demo@1",
+    "saved_selection_cleared": true,
+    "manual_survives_file_change": true
+  },
+  "onr005_views": {
+    "configs": true,
+    "guide": true,
+    "nonempty_inline_styles": 0
+  },
+  "onr001": {
+    "conflicting_run": "a8a1bc2cdae436de75c4622907f440c14746470526b160a9314be57089bc7f93",
+    "corrected_run": "8d587e0f965132a99863a49a37b5a2e00bb984f61e15529c20ebed3ec3773ab2",
+    "confirmed_net_conflict": "-75",
+    "confirmed_net_corrected": "-25",
+    "rows_observed": 44,
+    "channels": {
+      "json": "checked",
+      "xlsx": "checked",
+      "html": "checked",
+      "api": "checked supplied response",
+      "ui": "44 actual DOM rows; exact cells and statuses"
+    },
+    "stale_preflight_discarded": true,
+    "retry_verified": true,
+    "decision_preserved_uncertainty": true,
+    "replay_identical": true
+  },
+  "product_path": "/home/usuario/CascadeProjects/CALIBRE/src/freight_audit/__init__.py",
+  "ui_sha256": "cba5ab836d7d181e1744fe97e0c11b6684ac210451a7a12f5906565eb565a92d",
+  "browser": "153.0.8010.12",
+  "listener_scope": "127.0.0.1 only, inspected in /proc/net/tcp",
+  "network_boundary": {
+    "foreign_origin": "http://127.0.0.1:39969",
+    "browser_readable": false,
+    "runs_created": 0
+  },
+  "console_errors": [
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "csp_rejections": [],
+  "passed": true
+}

@@ -1,0 +1,69 @@
+{
+  "run_id": "f08bd83db9b75e94547d954074017c858fd1af0c7860e839b046e4c09e07590a",
+  "result_hash": "a7a5827d0394bba23a910ca06860775c493b236363807848ba5c02dc8d49bd8f",
+  "rows_observed": 46,
+  "channels": {
+    "json": "checked",
+    "xlsx": "checked",
+    "html": "checked",
+    "api": "checked supplied response",
+    "ui": "46 actual DOM rows; all pages; exact cells and statuses"
+  },
+  "onr003": {
+    "loaded_mapping": "errores-demo@1",
+    "saved_selection_cleared": true,
+    "manual_survives_file_change": true
+  },
+  "onr005_views": {
+    "configs": true,
+    "guide": true,
+    "nonempty_inline_styles": 0
+  },
+  "onr001": {
+    "conflicting_run": "6959d5aa85c643b5a9ac8d7a727e46d1c3a44c92039b5518d28bd0ba83edf81c",
+    "corrected_run": "8468c7ff4c91201ec704419c809480d0233d3e1e8e52cc6b1df5cfc01c51a6ea",
+    "confirmed_net_conflict": "-75",
+    "confirmed_net_corrected": "-25",
+    "rows_observed": 44,
+    "channels": {
+      "json": "checked",
+      "xlsx": "checked",
+      "html": "checked",
+      "api": "checked supplied response",
+      "ui": "44 actual DOM rows; exact cells and statuses"
+    },
+    "stale_preflight_discarded": true,
+    "retry_verified": true,
+    "decision_preserved_uncertainty": true,
+    "replay_identical": true
+  },
+  "uncertainty": {
+    "invalid_net": "0",
+    "corrected_net": "-50",
+    "false_missing": 0,
+    "history_preserved": true
+  },
+  "loading_and_paging": {
+    "config_fetch_race": "protected",
+    "file_read_races": "protected",
+    "warning_count": 121,
+    "max_list_rows": 50,
+    "mobile_width": 390
+  },
+  "product_path": "/home/usuario/CascadeProjects/CALIBRE/src/freight_audit/__init__.py",
+  "ui_sha256": "43ad6f4bb4753f9b43275b96e864f522dde237d111ab70dce95629d17d8f129d",
+  "browser": "153.0.8010.12",
+  "listener_scope": "127.0.0.1 only, inspected in /proc/net/tcp",
+  "network_boundary": {
+    "foreign_origin": "http://127.0.0.1:35929",
+    "browser_readable": false,
+    "runs_created": 0
+  },
+  "console_errors": [
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "csp_rejections": [],
+  "passed": true
+}
