@@ -1,0 +1,1086 @@
+{
+  "timestamp": "2026-10-29T18:54:38.647113",
+  "source_digest": "d5d3227ff22176e520ad46137bbb0855fa5bda7b36c8678206fddb4317c047fd",
+  "product_path": "/home/runner/work/Calibre/Calibre/src/freight_audit/__init__.py",
+  "artifact_hash": "dca7228d52b7db230a57a181bd71e8b8d9842960b5b941a247bba5941a50514e",
+  "gate_passed": true,
+  "total_cases": 62,
+  "passed": 62,
+  "failed": 0,
+  "results": [
+    {
+      "test_id": "CSV-01",
+      "block": "5B",
+      "description": "CRLF line endings in standard UTF-8",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "rejected": []
+      },
+      "observed": {
+        "accepted": 1,
+        "rejected": []
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-02",
+      "block": "5B",
+      "description": "UTF-8 with BOM stripped cleanly",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "id": "S1"
+      },
+      "observed": {
+        "accepted": 1,
+        "id": "S1"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-03",
+      "block": "5B",
+      "description": "Pure Unix LF line endings",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "weight": "100.5"
+      },
+      "observed": {
+        "accepted": 1,
+        "weight": "100.5"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-04",
+      "block": "5B",
+      "description": "Pipe delimiter (|)",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "ref": "R1"
+      },
+      "observed": {
+        "accepted": 1,
+        "ref": "R1"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-05",
+      "block": "5B",
+      "description": "Quoted field containing delimiter",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "ref": "Buenos Aires, CABA"
+      },
+      "observed": {
+        "accepted": 1,
+        "ref": "Buenos Aires, CABA"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-06",
+      "block": "5B",
+      "description": "Escaped double quotes in quoted text",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "ref": "Transporte \"El Rapido\" SA"
+      },
+      "observed": {
+        "accepted": 1,
+        "ref": "Transporte \"El Rapido\" SA"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-07",
+      "block": "5B",
+      "description": "Multiline cell inside quotes with physical row tracking",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "ref": "Linea 1\nLinea 2"
+      },
+      "observed": {
+        "accepted": 1,
+        "ref": "Linea 1\nLinea 2"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-08",
+      "block": "5B",
+      "description": "Whitespace stripped cleanly around delimiters and values",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "id": "S1",
+        "ref": "0001"
+      },
+      "observed": {
+        "accepted": 1,
+        "id": "S1"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-09",
+      "block": "5B",
+      "description": "Duplicate header aborts file",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "error_match": "aparece 2 veces"
+      },
+      "observed": {
+        "message": "La columna 'weight' aparece 2 veces; corregir encabezados o mapping."
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-10",
+      "block": "5B",
+      "description": "Missing required header aborts file",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "error_match": "aparece 0 veces"
+      },
+      "observed": {
+        "message": "La columna 'ref' aparece 0 veces; corregir encabezados o mapping."
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-11",
+      "block": "5B",
+      "description": "Extra column beyond declared headers rejected at row level",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ],
+        "issue": "Fila 2: hay valores fuera de las columnas declaradas; revisar separadores y encabezados."
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-12",
+      "block": "5B",
+      "description": "Short row with missing required value rejected safely",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-13",
+      "block": "5B",
+      "description": "Argentine number format (1.234.567,89)",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "weight": "1234567.89"
+      },
+      "observed": {
+        "accepted": 1,
+        "weight": "1234567.89"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-14",
+      "block": "5B",
+      "description": "Anglo number format (1,234,567.89)",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "weight": "1234567.89"
+      },
+      "observed": {
+        "accepted": 1,
+        "weight": "1234567.89"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-15",
+      "block": "5B",
+      "description": "Negative amount (-150,00) in charges",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "amount": "-150"
+      },
+      "observed": {
+        "accepted": 1,
+        "amount": "-150"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-16",
+      "block": "5B",
+      "description": "Explicit positive sign (+150,00) safely rejected by strict decimal regex",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ],
+        "issue": "Fila 2, campo 'amount', valor '+150,00': Número inválido para los separadores configurados; revisar agrupadores y decimales."
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-17",
+      "block": "5B",
+      "description": "Leading zeros preserved without truncation (0000456)",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "ref": "0000456"
+      },
+      "observed": {
+        "accepted": 1,
+        "ref": "0000456"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-18",
+      "block": "5B",
+      "description": "Unicode characters and tildes preserved intact",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "ref": "Cañuelas - Güemes"
+      },
+      "observed": {
+        "accepted": 1,
+        "ref": "Cañuelas - Güemes"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-19",
+      "block": "5B",
+      "description": "Non-breaking space in number safely rejected without ad-hoc conversion",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "CSV-20",
+      "block": "5B",
+      "description": "Truncated CSV inside quotes aborts with ImportErrorDetail",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "error_match": "No se pudo leer el archivo"
+      },
+      "observed": {
+        "message": "No se pudo leer el archivo. Verificar formato, codificación y que el libro no esté dañado ni protegido con contraseña."
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-01",
+      "block": "5C",
+      "description": "Standard numeric cell in XLSX",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "weight": "45.67"
+      },
+      "observed": {
+        "accepted": 1,
+        "weight": "45.67"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-02",
+      "block": "5C",
+      "description": "Number stored as text in XML (t='s')",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "ref": "00123"
+      },
+      "observed": {
+        "accepted": 1,
+        "ref": "00123"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-03",
+      "block": "5C",
+      "description": "High-precision XML token preserves exact decimal without float loss",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "weight": "1000000000000000.01"
+      },
+      "observed": {
+        "accepted": 1,
+        "weight": "1000000000000000.01"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-04",
+      "block": "5C",
+      "description": "Scientific notation (1.25E+04 -> 12500) preserved with exact raw",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "weight": "12500",
+        "raw": "1.25E+04"
+      },
+      "observed": {
+        "accepted": 1,
+        "weight": "12500",
+        "raw": "1.25E+04"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-05",
+      "block": "5C",
+      "description": "Formula with cached value rejected safely by unaudited formula policy",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ],
+        "issue": "Fila 2, campo 'attributes.weight', valor '=10*2': La celda contiene una fórmula o un error de Excel; aportar el valor verificado."
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-06",
+      "block": "5C",
+      "description": "Formula without cached value rejected safely",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-07",
+      "block": "5C",
+      "description": "Excel native error token (#DIV/0!) rejected safely",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-08",
+      "block": "5C",
+      "description": "Excel serial date parsed to exact ISO YYYY-MM-DD",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "date": "2025-12-09"
+      },
+      "observed": {
+        "accepted": 1,
+        "date": "2025-12-09"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-09",
+      "block": "5C",
+      "description": "Multisheet workbook without sheet selection aborts file",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "error_match": "varias hojas"
+      },
+      "observed": {
+        "message": "El libro tiene varias hojas. Seleccionar una hoja explícitamente: Data, Resumen"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-10",
+      "block": "5C",
+      "description": "Nonexistent sheet requested aborts file",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "error_match": "No existe la hoja 'Facturacion'"
+      },
+      "observed": {
+        "message": "No existe la hoja 'Facturacion'. Disponibles: Data."
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-11",
+      "block": "5C",
+      "description": "Hidden data rejected; visible copy preserves values and coordinates",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "hidden_rejected": true,
+        "visible_accepted": 1,
+        "weight": "80",
+        "row": 2
+      },
+      "observed": {
+        "hidden_rejected": true,
+        "visible_accepted": 1
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-12",
+      "block": "5C",
+      "description": "Merged cell secondary empty target rejected safely",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ],
+        "issue": "Fila 2, campo 'reference', valor '': Falta un valor obligatorio."
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-13",
+      "block": "5C",
+      "description": "Sparse rows preserve exact physical coordinates (row 2 and row 4)",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 2,
+        "rows": [
+          2,
+          4
+        ]
+      },
+      "observed": {
+        "accepted": 2,
+        "rows": [
+          2,
+          4
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-14",
+      "block": "5C",
+      "description": "Empty row block skipped without shifting physical row coordinate (row 8)",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 2,
+        "rows": [
+          2,
+          8
+        ]
+      },
+      "observed": {
+        "accepted": 2,
+        "rows": [
+          2,
+          8
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-15",
+      "block": "5C",
+      "description": "Values outside header range rejected at row level",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-16",
+      "block": "5C",
+      "description": "Corrupt XLSX file aborts cleanly with ImportErrorDetail",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "error_match": "No se pudo leer el archivo"
+      },
+      "observed": {
+        "message": "No se pudo leer el archivo. Verificar formato, codificación y que el libro no esté dañado ni protegido con contraseña."
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-17",
+      "block": "5C",
+      "description": "Numeric ID with numeric_text='reject' safely warns of leading zero risk",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ],
+        "issue": "Fila 2, campo 'reference', valor '123': El identificador está guardado como número y puede haber perdido ceros iniciales; convertir a texto o configurar el formato explícito."
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "XLSX-18",
+      "block": "5C",
+      "description": "Numeric ID with numeric_text='formatted' and '000000' format gives exact '000123'",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "ref": "000123"
+      },
+      "observed": {
+        "accepted": 1,
+        "ref": "000123"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "PROV-01",
+      "block": "5D",
+      "description": "Exhaustive SourceRef contract verification across all 7 fields",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "doc": "c021a75528b2bcae2f5c0bea269f2e9e746a52d9588fd99a9772955bd2ef4646",
+        "row": 2,
+        "col": "weight",
+        "raw": "100,5"
+      },
+      "observed": {
+        "doc": "c021a75528b2bcae2f5c0bea269f2e9e746a52d9588fd99a9772955bd2ef4646",
+        "row": 2,
+        "col": "weight",
+        "raw": "100,5"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "PROV-02",
+      "block": "5D",
+      "description": "Filename rename changes provenance metadata without altering economics",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "records_equal": true,
+        "renamed_fn": "factura_revisada_2026.csv"
+      },
+      "observed": {
+        "records_equal": true,
+        "observed_fn": "factura_revisada_2026.csv"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "PROV-03",
+      "block": "5D",
+      "description": "Vertical shift of 3 blank rows updates provenance row to 5",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "row": 5
+      },
+      "observed": {
+        "accepted": 1,
+        "row": 5
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "PROV-04",
+      "block": "5D",
+      "description": "Horizontal column reordering updates provenance column accurately",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "weight_col": "weight",
+        "id_col": "id"
+      },
+      "observed": {
+        "accepted": 1,
+        "weight_col": "weight",
+        "id_col": "id"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "PROV-05",
+      "block": "5D",
+      "description": "Dynamic attributes preserve individual provenance without collision",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "weight_raw": "100,5",
+        "vol_raw": "2,5"
+      },
+      "observed": {
+        "weight_raw": "100,5",
+        "vol_raw": "2,5"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "PROV-06",
+      "block": "5D",
+      "description": "Constant mapping records explicit (constante del mapping) in provenance",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "column": "(constante del mapping)",
+        "raw": "CAMIONERA_CENTRAL"
+      },
+      "observed": {
+        "column": "(constante del mapping)",
+        "raw": "CAMIONERA_CENTRAL"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "REJ-01",
+      "block": "5E",
+      "description": "Ambiguous number format (1.23 when expecting thousands dot) safely rejected",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "REJ-02",
+      "block": "5E",
+      "description": "Ambiguous date (05/06/2026 matching multiple formats) rejected safely",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ],
+        "issue": "Fila 2, campo 'attributes.service_date', valor '05/06/2026': La fecha es inválida o ambigua para los formatos configurados; revisar día, mes y año."
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "REJ-03",
+      "block": "5E",
+      "description": "Date with non-zero time component rejected without silent truncation",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ],
+        "issue": "Fila 2, campo 'attributes.service_date', valor '2026-06-01T14:30:00': La fecha incluye hora o zona horaria; definir primero la fecha contractual sin truncarla silenciosamente."
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "REJ-04",
+      "block": "5E",
+      "description": "Duplicate business ID in same batch rejects duplicate row without overwrite",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "rejected": [
+          3
+        ]
+      },
+      "observed": {
+        "accepted": 1,
+        "rejected": [
+          3
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "REJ-05",
+      "block": "5E",
+      "description": "Ambiguous boolean ('quizas') rejected without default fallback",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "REJ-06",
+      "block": "5E",
+      "description": "Missing mandatory amount rejected safely (never silently assumed 0)",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [
+          2
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "REJ-07",
+      "block": "5E",
+      "description": "Unmapped concept classified as external with audit warning",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 1,
+        "concept": "external:CONCEPTO_DESCONOCIDO",
+        "warning": true
+      },
+      "observed": {
+        "accepted": 1,
+        "concept": "external:CONCEPTO_DESCONOCIDO",
+        "warning": "warning"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "REJ-08",
+      "block": "5E",
+      "description": "Zero byte file aborts with ImportErrorDetail",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "error_match": "No existe la fila de encabezados"
+      },
+      "observed": {
+        "message": "No existe la fila de encabezados seleccionada."
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "REJ-09",
+      "block": "5E",
+      "description": "Headers-only file yields 0 records and 0 rejects consistently without crashing",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 0,
+        "rejected": [],
+        "issues": []
+      },
+      "observed": {
+        "accepted": 0,
+        "rejected": [],
+        "issues": []
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "REJ-10",
+      "block": "5E",
+      "description": "Completely blank row between data rows safely skipped without corruption",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 2,
+        "rejected": []
+      },
+      "observed": {
+        "accepted": 2,
+        "rejected": []
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "MET-01",
+      "block": "5F",
+      "description": "Format Invariance: CSV vs XLSX economic equivalence across all fields",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "accepted": 3,
+        "economic_equal": true
+      },
+      "observed": {
+        "csv_acc": 3,
+        "xlsx_acc": 3,
+        "economic_equal": true
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "MET-02",
+      "block": "5F",
+      "description": "Separator Invariance: Argentine 1.250,75 == Anglo 1,250.75 -> 1250.75",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "val_arg": "1250.75",
+        "val_anglo": "1250.75"
+      },
+      "observed": {
+        "val_arg": "1250.75",
+        "val_anglo": "1250.75"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "MET-03",
+      "block": "5F",
+      "description": "Column Permutation Invariance: Reordering physical columns produces identical records",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "records_identical": true
+      },
+      "observed": {
+        "records_identical": true
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "MET-04",
+      "block": "5F",
+      "description": "Row Permutation Invariance: Batch multiset and aggregated sum are identical",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "ids_equal": true,
+        "sum_equal": true
+      },
+      "observed": {
+        "ids_equal": true,
+        "sum_equal": true
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "MET-05",
+      "block": "5F",
+      "description": "Whitespace Invariance: Spaces around delimiters stripped identically",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "records_identical": true
+      },
+      "observed": {
+        "records_identical": true
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "MET-06",
+      "block": "5F",
+      "description": "Material Sensitivity: 1 cent difference (1250.75 vs 1250.76) strictly distinguishes records",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "amt_diff": true,
+        "hash_diff": true
+      },
+      "observed": {
+        "amt_a": "1250.75",
+        "amt_b": "1250.76",
+        "hash_diff": true
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "MET-07",
+      "block": "5F",
+      "description": "Date Boundary Sensitivity: 2026-06-30 vs 2026-07-01 preserves exact distinct contractual dates",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "date_a": "2026-06-30",
+        "date_b": "2026-07-01"
+      },
+      "observed": {
+        "date_a": "2026-06-30",
+        "date_b": "2026-07-01"
+      },
+      "notes": ""
+    },
+    {
+      "test_id": "MET-08",
+      "block": "5F",
+      "description": "Identifier Sensitivity: S-100 vs S-101 never collides or truncates",
+      "passed": true,
+      "status": "PASS",
+      "expected": {
+        "id_a": "S-100",
+        "id_b": "S-101"
+      },
+      "observed": {
+        "id_a": "S-100",
+        "id_b": "S-101"
+      },
+      "notes": ""
+    }
+  ]
+}

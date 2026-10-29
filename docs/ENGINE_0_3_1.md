@@ -80,3 +80,12 @@ python3 scripts/install_local.py --recover
 ```
 
 Mantener releases anteriores, backups, manifest y recibos privados. Respaldar fuera de este equipo es un paso del operador: una copia local no acredita recuperación ante pérdida del disco. El ensayo automático usa datos ficticios; no equivale al piloto de un cliente ni a Windows/Excel de escritorio.
+
+
+## Verificación entre plataformas e identidad de ejecución
+
+Desde0.3.0 la identidad física incluye metadata, incluida la versión exacta de Python. Los runners nativos consultados usaron Linux3.12.15 y Windows3.12.10: idénticos inputs, motor, resultados y trazas producen IDs físicos distintos por diseño. El antiguo fingerprintv2 comparaba esos IDs como si fueran portables y falló en los tres datasets, sin divergencia económica.
+
+El fingerprint QA **calibre-platform/v3** conserva cada ID original y su metadata completos en identities. El gate verifica su preimagen e identidad física antes de comparar. La comparación portable incluye hashes completos de input/resultado/motor, hallazgos/trazas y TODA metadata salvo el campo explícito python; las versiones de bibliotecas, control documental, procedencia y espacio de trabajo siguen comparándose. Una identidad física alterada, metadata que no corresponde, falta de prueba, cambio de versión/regla/importe o digest incorrecto bloquea el gate. No se reescribe ninguna corrida de producto ni se excluyen hashes de resultados. Evidencia histórica v2 requiere regenerar; no se convierte el recibo fallido en aprobado.
+
+Reproducción causal: mismo dataset, versiones de Python simuladas idénticas a las observadas en CI; función anterior extraída del commit609e625 rechaza la paridad, función nueva la acepta verificando las identidades. La ejecución nativa v3 sigue siendo obligatoria: una simulación de metadata no acredita Windows. Ver recibo de etapa para el resultado remoto real.

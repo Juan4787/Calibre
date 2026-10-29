@@ -65,8 +65,8 @@ def fingerprint_errors(fingerprint: dict) -> list[str]:
     """Reject absent, truncated or ambiguous evidence before comparing it."""
     errors = []
     runs = fingerprint.get("runs")
-    if fingerprint.get("schema") != "calibre-platform/v2":
-        errors.append("Fingerprint schema must be calibre-platform/v2; regenerate historical evidence")
+    if fingerprint.get("schema") != "calibre-platform/v3":
+        errors.append("Fingerprint schema must be calibre-platform/v3; regenerate historical evidence")
     if not isinstance(runs, list) or not runs:
         return errors + ["Fingerprint has no runs"]
     encoded = json.dumps(runs, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
@@ -75,7 +75,38 @@ def fingerprint_errors(fingerprint: dict) -> list[str]:
     labels = [run.get("dataset_label") for run in runs]
     if any(not label for label in labels) or len(set(labels)) != len(labels):
         errors.append("Missing or duplicate dataset labels")
+    identities = fingerprint.get("identities")
+    if not isinstance(identities, list) or len(identities) != len(runs):
+        return errors + ["Missing actual run identity proofs"]
+    proof_labels = [entry.get("dataset_label") for entry in identities]
+    if set(proof_labels) != set(labels) or len(set(proof_labels)) != len(proof_labels):
+        return errors + ["Missing or duplicate actual identity labels"]
+    proofs = {entry["dataset_label"]: entry for entry in identities}
+
+    def hashed(value):
+        return hashlib.sha256(
+            json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+
     for run in runs:
+        proof = proofs[run["dataset_label"]]
+        metadata = proof.get("metadata")
+        components = [run.get("snapshot_hash"), run.get("result_hash"), run.get("engine_artifact_hash")]
+        if not isinstance(metadata, dict) or metadata.get("run_identity_version") not in {None, 2}:
+            errors.append("Missing or unsupported actual identity metadata")
+        else:
+            actual_components = (
+                [*components, hashed(metadata)] if metadata.get("run_identity_version") == 2 else components
+            )
+            portable_metadata = {key: value for key, value in metadata.items() if key != "python"}
+            if hashed(actual_components) != proof.get("run_id"):
+                errors.append("Actual metadata-bound run identity mismatch")
+            if (
+                not run.get("result_hash")
+                or portable_metadata != run.get("portable_metadata")
+                or hashed([*components, hashed(portable_metadata)]) != run.get("portable_run_id")
+            ):
+                errors.append("Portable identity or metadata mismatch")
         findings = run.get("findings", [])
         if not findings or not run.get("snapshot_hash") or not run.get("engine_artifact_hash"):
             errors.append("Missing findings, snapshot identity or engine identity")

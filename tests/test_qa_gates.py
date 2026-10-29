@@ -177,3 +177,43 @@ def test_import_runner_rejects_no_executed_cases(monkeypatch, tmp_path):
     assert runner.main() == 2
     report = json.loads((destination / "adversarial_import_results.json").read_text())
     assert report["gate_passed"] is False and report["total_cases"] == 0
+
+
+def test_portable_fingerprint_validates_machine_bound_identities_without_comparing_them(
+    tmp_path, make_dataset, monkeypatch
+):
+    from freight_audit.canonical import digest
+    from freight_audit.engine import audit
+    from freight_audit.storage import Store
+    from output.e2e.platform_scale.compare_fingerprints import compare_runs
+    from output.e2e.platform_scale.run_platform_suite import compute_semantic_fingerprint
+
+    dataset = make_dataset()
+    result = audit(dataset)
+    fingerprints = []
+    ids = []
+    for python_version in ("3.12.15", "3.12.10"):
+        monkeypatch.setattr(
+            "freight_audit.storage.environment",
+            lambda python_version=python_version: {"python": python_version, "packages": {"fixture": "1"}},
+        )
+        store = Store(tmp_path / (python_version + ".db"))
+        identifier = store.save(dataset, result)
+        ids.append(identifier)
+        fingerprints.append(compute_semantic_fingerprint(store, [identifier]))
+    assert ids[0] != ids[1], "Metadata-bound identities must preserve the actual environment"
+    assert compare_runs(fingerprints[0]["runs"], fingerprints[1]["runs"])[0]
+    assert all(not fingerprint_errors(fp) for fp in fingerprints)
+    changed = deepcopy(fingerprints[0])
+    changed["identities"][0]["run_id"] = "0" * 64
+    assert fingerprint_errors(changed), "Physical identity remains mandatory and independently checked"
+    changed = deepcopy(fingerprints[0])
+    changed["identities"][0]["metadata"]["python"] = "invented"
+    assert fingerprint_errors(changed)
+    changed = deepcopy(fingerprints[0])
+    changed["runs"][0]["findings"][0]["version"] = "wrong version"
+    changed["digest"] = digest(changed["runs"])
+    assert not compare_runs(fingerprints[0]["runs"], changed["runs"])[0]
+    changed = deepcopy(fingerprints[0])
+    changed["identities"] = []
+    assert fingerprint_errors(changed)
