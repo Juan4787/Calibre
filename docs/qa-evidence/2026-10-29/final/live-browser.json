@@ -1,0 +1,132 @@
+{
+  "passed": true,
+  "checked_at": "2026-10-29T22:33:04.951241+00:00",
+  "url": "http://127.0.0.1:8765",
+  "read_only": true,
+  "browser_version": "153.0.8010.12",
+  "views": [
+    {
+      "viewport": [
+        1280,
+        720
+      ],
+      "title": "Freight Audit · Control respaldado",
+      "runs_text": "▤\nDel cargo a la evidencia.\n\nImportá operaciones y liquidaciones, seleccioná el acuerdo y reconstruí el importe esperado. Todo se procesa de forma segura en este equipo.\n\nExplorar demostración ficticia\n\n32 operaciones · 3 acuerdos distintos · 4 estados de certeza",
+      "horizontal_overflow": false
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "title": "Freight Audit · Control respaldado",
+      "runs_text": "▤\nDel cargo a la evidencia.\n\nImportá operaciones y liquidaciones, seleccioná el acuerdo y reconstruí el importe esperado. Todo se procesa de forma segura en este equipo.\n\nExplorar demostración ficticia\n\n32 operaciones · 3 acuerdos distintos · 4 estados de certeza",
+      "horizontal_overflow": false
+    }
+  ],
+  "page_errors": [],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/"
+    },
+    {
+      "method": "GET",
+      "path": "/static/app.css"
+    },
+    {
+      "method": "GET",
+      "path": "/static/app.js"
+    },
+    {
+      "method": "GET",
+      "path": "/api/session"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs"
+    },
+    {
+      "method": "GET",
+      "path": "/"
+    },
+    {
+      "method": "GET",
+      "path": "/static/app.css"
+    },
+    {
+      "method": "GET",
+      "path": "/static/app.js"
+    },
+    {
+      "method": "GET",
+      "path": "/api/session"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs"
+    }
+  ],
+  "database_before": {
+    "configs": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "decisions": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "imports": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "sources": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "sqlite_sequence": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "database_after": {
+    "configs": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "decisions": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "imports": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runs": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "sources": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "sqlite_sequence": {
+      "rows": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "all_database_rows_unchanged": true,
+  "scope": "Live installed service, empty operational database, no demo or write action"
+}

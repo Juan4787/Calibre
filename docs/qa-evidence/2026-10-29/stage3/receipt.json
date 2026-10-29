@@ -1,30 +1,74 @@
 {
   "version": "0.3.1",
-  "status": "in_progress",
-  "active_installed_version": "0.3.0",
-  "implementation": "File-backed reporting/HTTP/CLI, budgets, independent totals, verified history, typed matching phase, deterministic build normalizer and hash locks, whole-workspace installer with rollback/recovery; not yet published",
-  "verification": "Canonical verify 349 passed; subsequent installer/build directed 8 passed; full source Chromium E2E and comparable benchmark passed; binary/install/CI delivery pending",
-  "publication": "pending",
-  "final_audit": "pending",
-  "baseline": {
-    "version": "0.3.0",
-    "charges": 1000,
-    "measured_repetitions": 3,
-    "pipeline_median_seconds": 21.9,
-    "engine_median_seconds": 0.2466,
-    "peak_rss_mib": 181.74
+  "status": "delivered_and_audited_with_explicit_limits",
+  "publication": "published",
+  "installed": "active",
+  "source_commit": "002ca84c592481083470a701e78d66a496d50ddf",
+  "reviewed_head": "85a6192a9b3b905f76785ae0f54a150886452d1e",
+  "source_tree": "40c85f58af1a29ea66f3ce0e80d0a1f5db28a943",
+  "pull_request": "https://github.com/Juan4787/Calibre/pull/4",
+  "release": "https://github.com/Juan4787/Calibre/releases/tag/v0.3.1",
+  "engine_artifact_hash": "dca7228d52b7db230a57a181bd71e8b8d9842960b5b941a247bba5941a50514e",
+  "wheel_sha256": "9a1730d49aa1117a1114046c20483086995e0ce21a2b09d7e3380af6a6861795",
+  "sdist_sha256": "b39af9df754f8d48bbe02444fc710e820da20bfc7731e503d735beae2906cc28",
+  "verification_file_sha256": "66548c9810c2fe9ac8658abd7a4ae85f0eb59919b929153f3364c63a6ac3c426",
+  "full_suite": {
+    "passed": 354,
+    "warnings": 2,
+    "evidence": "verify-354.log"
   },
-  "causal_red_failed": 7,
-  "workbook_directed_passed": 20,
-  "build_normalizer_tests": 2,
-  "installer_tests": 8,
+  "ci": {
+    "pull_request": 40936962120,
+    "main": 40937886279,
+    "release": 40938020352,
+    "platforms": 40937026441,
+    "nightly": 40934858380,
+    "all_conclusions": "success",
+    "nightly_scope": "Same final engine product; later changes were Windows conditional dependency and QA physical/portable identity comparison"
+  },
+  "nightly": {
+    "mutations_detected": "20/20",
+    "faults_detected_or_prevented": "41/41",
+    "healthy_controls": "12/12",
+    "healthy_false_positives": 0,
+    "adversarial_imports": "62/62"
+  },
+  "native_platforms": {
+    "linux": "24/24",
+    "windows": "24/24",
+    "additional_windows_installed_tests": 9,
+    "datasets_compared": 3,
+    "divergences": 0,
+    "physical_identities_preserved": true,
+    "evidence": "platform-v3/"
+  },
+  "lock_closure": {
+    "linux_pins_with_browser": 41,
+    "windows_pins_with_browser": 42,
+    "missing_or_incompatible_dependencies": 0,
+    "source": "Official PyPI metadata and successful native installations"
+  },
+  "build": {
+    "final_builds_byte_identical": true,
+    "wheel_members": 25,
+    "sdist_members": 361,
+    "evidence": "final-delivery.json",
+    "toolchain_scope": "Python 3.12.3, zlib 1.3, fixed tools, source epoch 1793301115"
+  },
+  "remote_readback": {
+    "all_four_files_byte_identical": true,
+    "evidence": "remote-readback.json"
+  },
   "browser": {
-    "passed": true,
+    "source_passed": true,
+    "final_installed_passed": true,
     "desktop": "1280x720",
     "mobile": "390x844",
+    "all_product_files_match_source": true,
     "large_config_rows": 20000,
     "visible_table_rows": 20,
-    "all_rows_retained": true
+    "all_rows_retained": true,
+    "evidence": "final-installed-browser.json"
   },
   "benchmark": {
     "charges": 1000,
@@ -42,31 +86,63 @@
     "actual_systemd": true,
     "databases": 4,
     "new_run_and_client_preserved": true,
-    "occupied_port_reverts_config_and_port": true
+    "occupied_port_reverts_config_and_port": true,
+    "evidence": "real-upgrade-rollback.json"
   },
-  "candidate_sdist": "Predates systemd correction; MUST NOT publish candidate sdist; certify final main/tag again",
-  "pull_request": "https://github.com/Juan4787/Calibre/pull/4",
-  "first_pr_ci": "40933933375 success on d7e4dc5; before systemd correction",
-  "full_suite": {
-    "passed": 352,
-    "warnings": 2,
-    "scope": "before final conditional-lock regression; latter directed 11passed; exact PR CI pending"
-  },
-  "installed_browser": {
+  "published_wheel_ui_volume": {
     "passed": true,
-    "wheel_sha256": "e8d45b60170718b233b3363e5c286606fa02433d503c7cde9935d2b5a1daca01",
-    "runtime": "actual venv Python outside checkout; Playwright QA separate"
+    "operations": 36000,
+    "priced_charges": 1,
+    "checked_records": 36001,
+    "canonical_bytes": 47272034,
+    "max_request_bytes": 1567,
+    "xlsx_in_bundle": false,
+    "full_json_and_originals_verified": true,
+    "elapsed_seconds": 110.216,
+    "server_peak_rss_mib": 876.03125,
+    "minimum_host_available_mib": 1107.6015625,
+    "watchdog_aborted": false,
+    "evidence": "published-ui-volume.json",
+    "runner": "../../../../scripts/audit_ui_volume.py",
+    "scope": "Fictional 36000 operations and ONE priced charge; not 36000 priced charges or a real client"
   },
-  "ci_before_conditional_lock": {
-    "head": "a03f667ef2d8efa672a22672a0f8f8f94695cbb2",
-    "pr": "40934859058 success",
-    "nightly": "40934858380 success",
-    "platform": "40934863136 failed: Windows conditional colorama unpinned in original lock"
+  "activation": {
+    "activated_at": "2026-10-29T19:19:53.315051+00:00",
+    "backup_manifest": "/home/usuario/.local/share/calibre/backups/before-0.3.1-20261029T191951121630Z/manifest.json",
+    "evidence": "activation.json",
+    "service": "calibre-freight.service",
+    "url": "http://127.0.0.1:8765"
   },
-  "lock_closure": {
-    "linux_pins_with_browser": 41,
-    "windows_pins_with_browser": 42,
-    "missing_or_incompatible_dependencies": 0,
-    "source": "official PyPI metadata; actual Windows rerun pending"
-  }
+  "live_read_only": {
+    "passed": true,
+    "all_database_rows_unchanged": true,
+    "desktop_and_mobile": true,
+    "evidence": "../final/live-browser.json"
+  },
+  "original_databases_preserved": {
+    "count": 5,
+    "all_logical_rows_equal_initial_backups": true,
+    "evidence": "original-databases-preserved.json"
+  },
+  "final_audit": {
+    "status": "completed_engineering_scope",
+    "report": "../../../FINAL_AUDIT_2026_10_29.md",
+    "receipt": "../final/receipt.json"
+  },
+  "historical_evidence": {
+    "candidate_sdist": "Predates installer fixes; never published. See candidate-delivery.json. Final assets are from 002ca84.",
+    "preclosure_receipt": "receipt-before-final-audit.json",
+    "initial_volume": "real-ui-volume.json",
+    "failed_rehearsals": "SYSTEMD_REHEARSAL.md",
+    "platform_v2_failure": "platform-v2-differences.json"
+  },
+  "limits": [
+    "Real client documents/contract and independent business approval not supplied",
+    "Native Windows CI does not certify operator workstation or desktop Excel",
+    "Off-device backup and operator recovery drill not demonstrated",
+    "Finite independent oracle and same-reader provenance crosscheck",
+    "No 50000/100000 priced-charge certification; resource budgets can reject work or Excel representation",
+    "Local single-system-user trust; no operator authentication, database encryption or external signature",
+    "Bounded matching refactor; remaining engine size and advanced JSON configuration are documented maintenance/UX debt"
+  ]
 }

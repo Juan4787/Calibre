@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "scope": "Real Chromium and installed wheel, fictional 36000 operations/one priced charge; not 36000 priced charges or a real client",
+  "operations": 36000,
+  "charges": 1,
+  "checked_records": 36001,
+  "actual": "100",
+  "expected": "100",
+  "confirmed_net_difference": "0",
+  "document_control": "matched",
+  "ui_requests": [
+    {
+      "path": "/api/audit/preflight",
+      "bytes": 1001,
+      "import_roles": [
+        "charges",
+        "shipments"
+      ]
+    },
+    {
+      "path": "/api/audit/preflight",
+      "bytes": 1567,
+      "import_roles": [
+        "charges",
+        "shipments"
+      ]
+    },
+    {
+      "path": "/api/audit/preflight",
+      "bytes": 1567,
+      "import_roles": [
+        "charges",
+        "shipments"
+      ]
+    },
+    {
+      "path": "/api/audit",
+      "bytes": 1567,
+      "import_roles": [
+        "charges",
+        "shipments"
+      ]
+    }
+  ],
+  "canonical_bytes": 47272034,
+  "canonical_identical_to_bundle": true,
+  "complete_json_and_originals_verified": true,
+  "installed_cli_bundle_replay_identical": true,
+  "xlsx_in_bundle": false,
+  "xlsx_warning": "La planilla supera el presupuesto de representaci\u00f3n. Exportar el paquete completo: el JSON y los originales conservan todos los datos sin truncar.\nNo se incluy\u00f3 una planilla parcial.\n",
+  "console_page_errors": [],
+  "telemetry": {
+    "server_peak_rss_mib": 876.03125,
+    "minimum_host_available_mib": 1107.6015625,
+    "aborted": false
+  },
+  "elapsed_seconds": 110.216,
+  "engine_artifact_hash": "dca7228d52b7db230a57a181bd71e8b8d9842960b5b941a247bba5941a50514e",
+  "wheel_sha256": "9a1730d49aa1117a1114046c20483086995e0ce21a2b09d7e3380af6a6861795"
+}

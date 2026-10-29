@@ -1,6 +1,6 @@
 # FREIGHT AUDIT
 
-La instalación local entregada se abre en **http://127.0.0.1:8765**. Operación, espacios de cliente, control documental, respaldos, restauración y contratos de compatibilidad de la siguiente etapa: [guía operativa 0.3.0](docs/ENGINE_0_3_0.md) y [recursos/actualización 0.3.1](docs/ENGINE_0_3_1.md). Consultar la bitácora para distinguir versión en desarrollo de versión efectivamente instalada.
+La instalación local **0.3.1** entregada se abre en **http://127.0.0.1:8765**. [Auditoría final del 29/10/2026](docs/FINAL_AUDIT_2026_10_29.md): cambios por etapa, comprobaciones, distribución exacta y límites pendientes. Operación, espacios de cliente, control documental, respaldos, restauración y contratos de compatibilidad: [guía operativa 0.3.0](docs/ENGINE_0_3_0.md) y [recursos/actualización 0.3.1](docs/ENGINE_0_3_1.md). Consultar la bitácora para distinguir versión en desarrollo de versión efectivamente instalada.
 
 Continuidad del trabajo: [directrices obligatorias](AGENTS.md), [bitácora actual](docs/CONTINUATION.md), [plan por etapas](docs/STAGED_HARDENING_2026_10_29.md) y [contrato 0.2.0](docs/ENGINE_0_2_0.md). El estado de publicación/instalación se registra con evidencia; una versión de trabajo no implica una entrega publicada.
 
@@ -19,6 +19,8 @@ El sistema de QA parte de [TEST_STRATEGY](docs/TEST_STRATEGY.md). La [matriz ope
 [QA_DELIVERY](docs/QA_DELIVERY.md) resume las 22 decisiones de testing, incidentes, uso y delegación.
 
 ## Inicio rápido — Linux/macOS, Python 3.12+
+
+Estos comandos crean una instalación desde fuentes. En este equipo, el servicio entregado ya ocupa el puerto 8765; para desarrollo separado usar `--port 8766` y abrir ese puerto, con una base de pruebas diferente.
 
 ```bash
 python3 -m venv .venv
@@ -40,7 +42,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\freight-audit.exe serve --port 8765
 ```
 
-El [workflow de portabilidad](https://github.com/Juan4787/Calibre/actions/runs/35823451264) instaló el wheel fuera del checkout en un runner Windows y cotejó sus tres huellas completas con Linux. La instalación en la PC Windows de uso, Excel de escritorio y el procedimiento operativo del cliente siguen pendientes. No se entrega todavía un instalador firmado ni un ejecutable autocontenido.
+El [workflow de portabilidad](https://github.com/Juan4787/Calibre/actions/runs/40937026441) instaló el wheel fuera del checkout en un runner Windows y cotejó tres datasets con Linux, verificando identidades físicas por entorno y paridad semántica conforme al protocolo QA v3. La instalación en la PC Windows de uso, Excel de escritorio y el procedimiento operativo del cliente siguen pendientes. No se entrega todavía un instalador firmado ni un ejecutable autocontenido.
 
 ## Auditoría sin UI
 
@@ -66,7 +68,7 @@ El backup exige un nombre nuevo, rechaza enlaces simbólicos en la ruta y public
 
 - `audit.json`: resultado, snapshot, metadata e historial de decisiones.
 - El formato v2 incluye snapshot, acuerdos, mappings, evidencia y procedencia dentro de `audit.json`; `snapshot.json` sólo aparece en paquetes antiguos v1.
-- `auditoria.xlsx`: ocho hojas operativas, importes decimales exactos como texto, filtros y encabezados fijos.
+- `auditoria.xlsx`: ocho hojas operativas, importes decimales exactos como texto, filtros y encabezados fijos. Si sólo la representación Excel excede su presupuesto o admite texto no representable, el paquete incluye una advertencia explícita y conserva JSON/originales completos, sin planilla parcial.
 - `reporte.html`: resumen autocontenido, imprimible a PDF desde el navegador.
 - `sources/`: documentos originales por su hash de contenido.
 - `manifest.json`: hashes de los archivos exportados.
@@ -109,6 +111,6 @@ Node sólo se usa para la comprobación de sintaxis de la UI, no para ejecutar e
 
 ## Límites deliberados
 
-Editor JSON, sin constructor visual de reglas; servicio de un solo usuario en loopback; sin autenticación ni cifrado de base; identidad del operador declarada; XLS con aceptación explícita de valores guardados; sin OCR, IA, impuestos genéricos, conciliación de totales de documentos, prorrateo automático ni integración ERP. La UI no fue diseñada ni certificada todavía para navegación interactiva de 100.000 hallazgos. El JSON conserva el resultado autoritativo.
+Editor JSON, sin constructor visual de reglas; servicio de un solo usuario en loopback; sin autenticación ni cifrado de base; identidad del operador declarada; XLS con aceptación explícita de valores guardados; sin OCR, IA, impuestos genéricos, extracción automática de totales documentales, prorrateo automático ni integración ERP. La UI no fue diseñada ni certificada todavía para navegación interactiva de 100.000 hallazgos. El JSON conserva el resultado autoritativo.
 
 El costo de interpretar acuerdos, onboarding, frecuencia real de errores, beneficio incremental y disposición a pagar siguen sin validarse. No construir SaaS, billing o integraciones externas antes de medir el primer caso real.

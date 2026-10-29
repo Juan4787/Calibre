@@ -21,8 +21,9 @@ Cada entrega requiere: commit identificado, pruebas del caso que fallaba, regres
 ## Estado
 
 - Preservación inicial: código y archivos sin seguimiento guardados fuera del repo; copias SQLite verificadas de las cinco bases locales existentes. Ninguna se declara base de producción.
-- Implementación y recibos por etapa: se incorporan al completar sus verificaciones.
+- Los recibos de cada etapa conservan su alcance, gates, hashes y límites; la auditoría final los contrasta con el destino publicado.
 
 - Etapa 1: entregada 0.2.0, release y primera instalación local verificadas.
 - Etapa 2: entregada 0.3.0, PR #3/main 7724b5a, CI PR/main/release aprobadas, assets exactos descargados y servicio activo con schema2. Recibo stage2/receipt.json.
-- Etapa activa: 3, rendimiento/distribución; recibo stage3/receipt.json (pendiente de implementación). Auditoría final pendiente.
+- Etapa 3: entregada 0.3.1, PR #4/main/tag 002ca84c; CI PR/main/release y Linux/Windows aprobadas. Cuatro assets descargados idénticos e instalación activa. [Recibo](qa-evidence/2026-10-29/stage3/receipt.json).
+- Auditoría final de ingeniería: completada con los límites explícitos y hechos externos pendientes del [informe](FINAL_AUDIT_2026_10_29.md) y [recibo final](qa-evidence/2026-10-29/final/receipt.json). La publicación de esta documentación se realiza por PR protegido, sin sustituir el tag ni sus assets.

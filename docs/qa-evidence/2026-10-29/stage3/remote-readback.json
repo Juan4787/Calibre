@@ -1,0 +1,26 @@
+{
+  "release": "https://github.com/Juan4787/Calibre/releases/tag/v0.3.1",
+  "published": true,
+  "files": {
+    "SHA256SUMS.txt": {
+      "sha256": "d4c24d7447cb6dd439579671e16a3c24130498e9b300fb44e8335586a32fde19",
+      "bytes": 289,
+      "download_byte_identical": true
+    },
+    "freight_audit-0.3.1-py3-none-any.whl": {
+      "sha256": "9a1730d49aa1117a1114046c20483086995e0ce21a2b09d7e3380af6a6861795",
+      "bytes": 103313,
+      "download_byte_identical": true
+    },
+    "freight_audit-0.3.1.tar.gz": {
+      "sha256": "b39af9df754f8d48bbe02444fc710e820da20bfc7731e503d735beae2906cc28",
+      "bytes": 743088,
+      "download_byte_identical": true
+    },
+    "delivery-verification.json": {
+      "sha256": "66548c9810c2fe9ac8658abd7a4ae85f0eb59919b929153f3364c63a6ac3c426",
+      "bytes": 2612,
+      "download_byte_identical": true
+    }
+  }
+}
