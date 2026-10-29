@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "engine_artifact_hash": "f9400cbaf0b4da5b61bd2fb308eeb564156eefb963dfaef83034105d77ec5ca1",
+  "product_digest": "9e168f61355b54c50df74b363c5c2d5855832cd44707bf7040890bdb785b7a9a",
+  "causal_before": {
+    "failed": 25
+  },
+  "causal_after": {
+    "passed": 25
+  },
+  "full_suite": {
+    "passed": 315,
+    "warnings": 2
+  },
+  "cross_flow": {
+    "passed": 107
+  },
+  "imports": {
+    "passed": 62,
+    "total": 62
+  },
+  "mutations": {
+    "killed": 20,
+    "total": 20
+  },
+  "browser": {
+    "passed": true
+  },
+  "publication": "pending",
+  "installed": "pending",
+  "scope": "Synthetic local verification; no real-client or Windows Excel certification"
+}

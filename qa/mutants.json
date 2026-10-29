@@ -190,5 +190,53 @@
     ],
     "failure_signal": "assert 4 == 2",
     "reason": "La cobertura reconoce cada miembro de una consolidación explícita."
+  },
+  {
+    "id": "M17",
+    "family": "QA-20",
+    "path": "src/freight_audit/engine.py",
+    "before": "comparison = \"uncorroborated\"",
+    "after": "comparison = \"compatible\"",
+    "selectors": [
+      "tests/test_audit_hardening.py::test_uncorroborated_explicit_never_confirms"
+    ],
+    "failure_signal": "At index 0 diff:",
+    "reason": "Un vínculo sin corroboración no puede confirmar dinero."
+  },
+  {
+    "id": "M18",
+    "family": "QA-04",
+    "path": "src/freight_audit/rules.py",
+    "before": "a.kind != b.kind or type(a.value)",
+    "after": "type(a.value)",
+    "selectors": [
+      "tests/test_audit_hardening.py::test_date_text_comparison_is_not_a_typed_match"
+    ],
+    "failure_signal": "'PASS' == 'UNDETERMINABLE'",
+    "reason": "Fecha y texto no son el mismo tipo semántico."
+  },
+  {
+    "id": "M19",
+    "family": "QA-15",
+    "path": "src/freight_audit/storage.py",
+    "before": "provenance = check_provenance(dataset, self.source)",
+    "after": "provenance = {}",
+    "selectors": [
+      "tests/test_audit_hardening.py::test_save_rejects_provenance_or_normalized_value_changed_after_import"
+    ],
+    "failure_signal": "assert rejected",
+    "reason": "Datos/citas alterados deben fallar frente al original conservado."
+  },
+  {
+    "id": "M20",
+    "family": "QA-37",
+    "path": "src/freight_audit/storage.py",
+    "before": "for source_hash in self.source_hashes(Dataset.model_validate(snapshot)):\n            self.source(source_hash)",
+    "after": "# Documentary source validation disabled",
+    "selectors": [
+      "tests/test_audit_hardening.py::test_every_export_checks_originals"
+    ],
+    "failure_signal": "200 == 422",
+    "reason": "Cada exportación exige originales íntegros."
   }
 ]

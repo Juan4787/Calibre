@@ -485,11 +485,25 @@ def run_5c_xlsx_tests():
     # XLSX-11: Hidden row
     try:
         data = load_fixture("xlsx_11_hidden_row.xlsx")
-        res = import_data(data, "xlsx_11_hidden_row.xlsx", map_std)
-        passed = res["accepted"] == 1 and res["records"][0]["attributes"]["weight"]["value"] == "80"
-        collector.record("XLSX-11", "5C", "Hidden row read faithfully without coordinate corruption", passed,
-                         {"accepted": 1, "weight": "80"},
-                         {"accepted": res["accepted"], "weight": res["records"][0]["attributes"]["weight"]["value"] if res["records"] else None})
+        try:
+            import_data(data, "xlsx_11_hidden_row.xlsx", map_std)
+        except ImportErrorDetail as error:
+            blocked = "ocult" in str(error)
+        else:
+            blocked = False
+        import openpyxl
+        book = openpyxl.load_workbook(io.BytesIO(data))
+        for sheet in book:
+            for row in sheet.row_dimensions.values():
+                row.hidden = False
+        visible = io.BytesIO()
+        book.save(visible)
+        book.close()
+        res = import_data(visible.getvalue(), "xlsx_11_visible.xlsx", map_std)
+        passed = blocked and res["accepted"] == 1 and res["records"][0]["attributes"]["weight"]["value"] == "80" and res["records"][0]["provenance"]["id"]["row"] == 2
+        collector.record("XLSX-11", "5C", "Hidden data rejected; visible copy preserves values and coordinates", passed,
+                         {"hidden_rejected": True, "visible_accepted": 1, "weight": "80", "row": 2},
+                         {"hidden_rejected": blocked, "visible_accepted": res["accepted"]})
     except Exception as e:
         collector.record("XLSX-11", "5C", "Hidden row read faithfully without coordinate corruption", False,
                          {"accepted": 1}, {"error": str(e)})

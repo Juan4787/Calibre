@@ -63,6 +63,11 @@ MATCHING_PROBLEMS = {
         "Revisar los destinos indicados y corregir la vinculación; no se asigna el cargo automáticamente.",
     ),
     "conflict": ("REVIEW", EXPLICIT_CONFLICT_REASON),
+    "uncorroborated": (
+        "REVIEW",
+        "La vinculación explícita no pudo corroborarse con las claves disponibles. "
+        "Revisar el original y corregir la referencia o su equivalencia antes de confirmar importes.",
+    ),
     "ambiguous": ("REVIEW", "Hay varias operaciones candidatas; se necesita una vinculación explícita."),
     "unmatched": (
         "REVIEW",
@@ -99,7 +104,7 @@ def inspect_explicit_link(charge: Charge, agreement: Agreement, shipments: dict,
         "charge_id": charge.id,
         "method": "explicit",
         "shipment_ids": ids,
-        "policy": "explicit-consistency-v2",
+        "policy": "explicit-consistency-v3",
         "keys": key_details,
         "key_candidate_ids": candidate_ids,
     }
@@ -116,7 +121,7 @@ def inspect_explicit_link(charge: Charge, agreement: Agreement, shipments: dict,
         execution["affected_shipment_ids"] = sorted({s.id for s in matched} | set(candidate_ids))
         return matched, execution
     if not candidate_ids:
-        comparison = "no_key_candidates"
+        comparison = "uncorroborated"
     else:
         # `one` permits explicit selection among ambiguous candidates. `group`
         # declares the whole matching group, so dropping a member is a conflict too.
@@ -127,7 +132,7 @@ def inspect_explicit_link(charge: Charge, agreement: Agreement, shipments: dict,
         )
         comparison = "compatible" if compatible else "conflict"
     execution["comparison"] = comparison
-    if comparison == "conflict":
+    if comparison in {"conflict", "uncorroborated"}:
         execution["affected_shipment_ids"] = sorted(set(ids) | set(candidate_ids))
     return matched, execution
 

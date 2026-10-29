@@ -3,8 +3,10 @@
 import re
 from collections import Counter, defaultdict
 from decimal import Decimal, InvalidOperation
+from fractions import Fraction
 
 from .invariants import integrity_errors
+from .reference import quantize
 
 
 def _amount(value):
@@ -16,7 +18,7 @@ def _amount(value):
         raise ValueError("External amount is not a decimal string") from exc
     if not number.is_finite():
         raise ValueError("External amount is not finite")
-    return number
+    return Fraction(number)
 
 
 def _count(value):
@@ -77,10 +79,10 @@ def compare_external_control(run: dict, control: dict) -> dict:
         errors.append("External source inventory differs from the saved audit")
     actual_shipments: Counter[str] = Counter()
     actual_charges: Counter[str] = Counter()
-    actual_source_totals: defaultdict[str, defaultdict[str, Decimal]] = defaultdict(
-        lambda: defaultdict(Decimal)
+    actual_source_totals: defaultdict[str, defaultdict[str, Fraction]] = defaultdict(
+        lambda: defaultdict(Fraction)
     )
-    actual_currency_totals: defaultdict[str, Decimal] = defaultdict(Decimal)
+    actual_currency_totals: defaultdict[str, Fraction] = defaultdict(Fraction)
     for role, records, field, counter in (
         ("shipment", snapshot["shipments"], "id", actual_shipments),
         ("charge", snapshot["charges"], "amount", actual_charges),
@@ -118,7 +120,10 @@ def compare_external_control(run: dict, control: dict) -> dict:
             "source_hashes": sorted(recorded_sources),
             "shipment_count": len(snapshot["shipments"]),
             "charge_count": len(snapshot["charges"]),
-            "actual_by_currency": {key: str(value) for key, value in sorted(actual_currency_totals.items())},
+            "actual_by_currency": {
+                key: quantize(value, 12, "ROUND_DOWN")
+                for key, value in sorted(actual_currency_totals.items())
+            },
         },
         "scope": "Independent input required; comparison cannot establish that external documents or controls are complete",
     }

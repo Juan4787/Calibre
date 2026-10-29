@@ -175,6 +175,16 @@ def reconcile(directory: Path, *, api_run=None, observed_ui=None) -> dict:
                     [cell.value for cell in row] for row in workbook["Resumen"].iter_rows(min_row=2)
                 ]
                 actual_summary = [row for row in actual_summary if row[1] != "Nota"]
+                proof = run.get("metadata", {}).get("provenance")
+                if proof or any(row[1] == "Procedencia" for row in actual_summary):
+                    note = (
+                        f"{proof['checked_records']} registros cotejados contra archivos y formatos conservados; "
+                        f"{proof['declared_records']} aportados sin cotejo. "
+                        "El cotejo no certifica autenticidad, contrato ni documentación completa del período."
+                        if proof
+                        else "Auditoría histórica sin registro de cotejo contra originales. La completitud documental requiere control independiente."
+                    )
+                    wanted.append(["", "Procedencia", note])
                 if rows(actual_summary) != rows(wanted):
                     errors.append("INV-23 XLSX Resumen: metrics differ")
                 compare(

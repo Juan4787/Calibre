@@ -1,0 +1,15 @@
+{
+  "commit": "fd62f05392f819896589c2a3b271ad49cdcfafbd",
+  "engine_artifact_hash": "a90bebb6296256569bf2f01babb7ab1cb4e82addeb5e44c3c1c2db9268d59ea3",
+  "environment": {
+    "python": "3.12.3",
+    "packages": {
+      "pydantic": "2.13.5",
+      "openpyxl": "3.1.5",
+      "xlrd": "2.0.2"
+    }
+  },
+  "audited_at": "2026-10-29",
+  "scope": "Local dirty 0.1.2 plus clean fd62f053 engine probe; synthetic fixtures only",
+  "git_status": " M README.md\n M docs/ARCHITECTURE.md\n M docs/QA_COVERAGE_LEDGER.md\n M docs/RULES_AND_IMPORTS.md\n M docs/TEST_MATRIX.csv\n M docs/TEST_MATRIX.md\n M pyproject.toml\n M qa/catalog.py\n M qa/mutants.json\n M scripts/browser_e2e.py\n M src/freight_audit/__init__.py\n M src/freight_audit/engine.py\n M src/freight_audit/server.py\n M src/freight_audit/static/app.css\n M src/freight_audit/static/app.js\n M tests/golden/demo.json\n M tests/golden/second-client.json\n?? \"docs/INSTRUCCIONES A SEGUIR PARA LA AUDITORIA ADVERSARIAL\"\n?? docs/ONR_001_RESOLUTION.md\n?? docs/ONR_002_005_RESOLUTION.md\n?? docs/ONR_HARDENING_0_1_2.md\n?? docs/qa-evidence/2026-09-27/\n?? scripts/browser_hardening.py\n?? tests/test_explicit_link_conflicts.py\n?? tests/test_matching_uncertainty.py\n"
+}

@@ -1,14 +1,24 @@
 from pathlib import Path
 
 from .canonical import load_json
-from .importing import ImportMapping, import_data
+from .importing import MAX_FILE_BYTES, ImportMapping, import_data
+from .local_paths import read_bounded
 from .models import Agreement, Dataset
 from .storage import Store
 
 
-def load_project(path: Path, store: Store) -> tuple[Dataset, dict]:
-    project = load_json(path.read_bytes())
+def load_project(path: Path, store: Store, *, allow_external_paths: bool = False) -> tuple[Dataset, dict]:
+    project = load_json(read_bounded(path, 8 * 1024 * 1024))
     root = path.parent
+
+    def read_source(name, limit):
+        candidate = root / name
+        if not allow_external_paths and not candidate.resolve().is_relative_to(root.resolve()):
+            raise ValueError(
+                "Una fuente está fuera de la carpeta del proyecto; conservarla dentro o habilitar expresamente rutas externas de confianza."
+            )
+        return read_bounded(candidate, limit)
+
     records = {}
     mappings = []
     documents = {}
@@ -16,10 +26,10 @@ def load_project(path: Path, store: Store) -> tuple[Dataset, dict]:
     imports = {}
     for role in ("shipments", "charges"):
         config = project[role]
-        mapping = ImportMapping.model_validate(load_json((root / config["mapping"]).read_bytes()))
+        mapping = ImportMapping.model_validate(load_json(read_source(config["mapping"], 8 * 1024 * 1024)))
         if mapping.entity != role:
             raise ValueError(f"El mapping no corresponde a {role}.")
-        data = (root / config["file"]).read_bytes()
+        data = read_source(config["file"], MAX_FILE_BYTES)
         imported = import_data(data, Path(config["file"]).name, mapping)
         source_hash = store.put_source(data)
         documents[source_hash] = Path(config["file"]).name
@@ -29,13 +39,14 @@ def load_project(path: Path, store: Store) -> tuple[Dataset, dict]:
         imports[role] = {"accepted": imported["accepted"], "rejected": imported["rejected"]}
         store.save_config("mapping", f"{mapping.id}@{mapping.version}", mapping.model_dump(mode="json"))
     agreements = [
-        Agreement.model_validate(value) for value in load_json((root / project["agreements"]).read_bytes())
+        Agreement.model_validate(value)
+        for value in load_json(read_source(project["agreements"], 8 * 1024 * 1024))
     ]
     for agreement in agreements:
         store.save_config("agreement", agreement.name, agreement.model_dump(mode="json"))
-    evidence = load_json((root / project["evidence"]).read_bytes()) if project.get("evidence") else []
+    evidence = load_json(read_source(project["evidence"], 8 * 1024 * 1024)) if project.get("evidence") else []
     for attachment in project.get("attachments", []):
-        data = (root / attachment["file"]).read_bytes()
+        data = read_source(attachment["file"], MAX_FILE_BYTES)
         source_hash = store.put_source(data)
         documents[source_hash] = Path(attachment["file"]).name
         found = [item for item in evidence if item["id"] == attachment["evidence_id"]]

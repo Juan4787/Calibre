@@ -481,7 +481,7 @@ FAMILIES = [
             "tests/test_explicit_link_conflicts.py::test_conflict_never_becomes_pass_or_confirms_money",
             "tests/test_explicit_link_conflicts.py::test_conflict_protects_both_scopes_without_poisoning_unrelated_work",
             "tests/test_explicit_link_conflicts.py::test_candidate_selection_and_group_completeness",
-            "tests/test_explicit_link_conflicts.py::test_explicit_remains_usable_when_keys_have_no_candidates",
+            "tests/test_explicit_link_conflicts.py::test_explicit_without_key_candidates_requires_review",
             "tests/test_explicit_link_conflicts.py::test_coverage_does_not_invent_missing_charges_for_conflicted_obligations",
             "tests/test_explicit_link_conflicts.py::test_preflight_is_read_only_and_audit_cannot_bypass_conflicts",
             "tests/test_explicit_link_conflicts.py::test_decisions_correction_exports_and_replay_preserve_uncertainty",

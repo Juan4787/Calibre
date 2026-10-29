@@ -1,0 +1,25 @@
+ M README.md
+ M docs/ARCHITECTURE.md
+ M docs/QA_COVERAGE_LEDGER.md
+ M docs/RULES_AND_IMPORTS.md
+ M docs/TEST_MATRIX.csv
+ M docs/TEST_MATRIX.md
+ M pyproject.toml
+ M qa/catalog.py
+ M qa/mutants.json
+ M scripts/browser_e2e.py
+ M src/freight_audit/__init__.py
+ M src/freight_audit/engine.py
+ M src/freight_audit/server.py
+ M src/freight_audit/static/app.css
+ M src/freight_audit/static/app.js
+ M tests/golden/demo.json
+ M tests/golden/second-client.json
+?? "docs/INSTRUCCIONES A SEGUIR PARA LA AUDITORIA ADVERSARIAL"
+?? docs/ONR_001_RESOLUTION.md
+?? docs/ONR_002_005_RESOLUTION.md
+?? docs/ONR_HARDENING_0_1_2.md
+?? docs/qa-evidence/2026-09-27/
+?? scripts/browser_hardening.py
+?? tests/test_explicit_link_conflicts.py
+?? tests/test_matching_uncertainty.py

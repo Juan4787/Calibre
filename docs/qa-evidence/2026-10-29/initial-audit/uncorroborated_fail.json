@@ -1,0 +1,22 @@
+{
+  "status": "FAIL",
+  "actual": "130",
+  "expected": "100",
+  "confirmed_difference": "30",
+  "shipment_ids": [
+    "S2"
+  ],
+  "preflight": {
+    "total_conflicts": 0,
+    "conflicts": [],
+    "total_issues": 0,
+    "counts": {
+      "invalid": 0,
+      "conflict": 0,
+      "ambiguous": 0,
+      "unmatched": 0
+    },
+    "issues": [],
+    "skipped_charges": 0
+  }
+}

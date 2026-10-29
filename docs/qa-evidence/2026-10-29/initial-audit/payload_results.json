@@ -1,0 +1,11 @@
+{
+  "source_bytes": 877792,
+  "rows": 36000,
+  "rejected": 0,
+  "normalized_request_bytes": 34364329,
+  "http_limit": 33554432,
+  "preflight_http_status": 413,
+  "preflight_message": {
+    "error": "La solicitud supera 32 MB. Dividir el archivo o usar la herramienta de línea de comandos."
+  }
+}

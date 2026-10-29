@@ -16,6 +16,7 @@ from .canonical import bytes_hash, canonical, digest, load_json
 from .engine import audit
 from .local_paths import checked_output_path
 from .models import AuditResult, Charge, Dataset, Decision, Shipment
+from .provenance import check_provenance
 
 
 class IntegrityError(ValueError):
@@ -27,7 +28,15 @@ def engine_artifact_hash() -> str:
     return digest(
         {
             name: bytes_hash((root / name).read_bytes())
-            for name in ("__init__.py", "canonical.py", "models.py", "rules.py", "engine.py")
+            for name in (
+                "__init__.py",
+                "canonical.py",
+                "models.py",
+                "rules.py",
+                "engine.py",
+                "importing.py",
+                "provenance.py",
+            )
         }
     )
 
@@ -131,6 +140,7 @@ class Store:
 
         for source_hash in self.source_hashes(dataset):
             self.source(source_hash)
+        provenance = check_provenance(dataset, self.source)
 
         # Serialize dataset once and compute hash directly
         dataset_json = canonical(dataset)
@@ -148,7 +158,7 @@ class Store:
                     artifact_hash,
                     dataset_json,
                     result_json,
-                    canonical(environment()),
+                    canonical({**environment(), "provenance": provenance}),
                     datetime.now(UTC).isoformat(),
                 ),
             )
@@ -185,6 +195,8 @@ class Store:
             or digest([row["input_hash"], row["result_hash"], row["artifact_hash"]]) != run_id
         ):
             raise IntegrityError("La auditoría guardada no supera la verificación de integridad.")
+        for source_hash in self.source_hashes(Dataset.model_validate(snapshot)):
+            self.source(source_hash)
         return {
             **dict(row),
             "snapshot": snapshot,

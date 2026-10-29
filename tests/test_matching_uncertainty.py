@@ -141,7 +141,13 @@ def test_preflight_reports_invalid_ambiguous_and_unmatched_without_persisting(tm
         client.headers["X-Freight-Local"] = client.get("/api/session").json()["token"]
         preview = client.post("/api/audit/preflight", json=lot).json()
         assert preview["total_issues"] == 3
-        assert preview["counts"] == {"invalid": 1, "conflict": 0, "ambiguous": 1, "unmatched": 1}
+        assert preview["counts"] == {
+            "invalid": 1,
+            "conflict": 0,
+            "ambiguous": 1,
+            "unmatched": 1,
+            "uncorroborated": 0,
+        }
         assert {e["charge_id"] for e in preview["issues"]} == {"C1", "INDEPENDENT", "UNMATCHED"}
         assert client.get("/api/runs").json() == []
         assert client.get("/api/configs").json() == []
@@ -172,6 +178,15 @@ def test_coverage_does_not_duplicate_an_explicit_consolidation(lot, valid_date):
     lot["charges"] = lot["charges"][:1]
     lot["charges"][0]["reference"] = "explicit-only"
     agreement = lot["agreements"][0]
+    # A valid consolidation must now be corroborated. Keep distinct references
+    # while matching on an explicitly declared shared batch key.
+    lot["charges"][0]["attributes"] = {"batch": {"type": "text", "value": "B"}}
+    for shipment in lot["shipments"]:
+        shipment["attributes"]["batch"] = {
+            "type": "text",
+            "value": "B" if shipment["id"] in {"S1", "S2"} else shipment["id"],
+        }
+    agreement["matching"]["keys"] = [{"charge": "attributes.batch", "shipment": "attributes.batch"}]
     agreement["matching"]["explicit"] = {"C1": ["S1", "S2"]}
     agreement["detect_missing"] = True
     agreement["versions"][0]["rules"][0]["expected"] = True
@@ -182,6 +197,9 @@ def test_coverage_does_not_duplicate_an_explicit_consolidation(lot, valid_date):
     result = calculate(lot)
     assert len(result.findings) == 2
     assert [f.shipment_ids for f in result.findings if not f.charge_ids] == [["S3"]]
+    billed = next(f for f in result.findings if f.charge_ids)
+    assert billed.status == ("FAIL" if valid_date else "UNDETERMINABLE")
+    assert billed.confirmed_difference == ("-200" if valid_date else "0")
 
 
 def test_invalid_alias_candidates_and_other_concept_are_isolated(lot):

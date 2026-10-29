@@ -336,6 +336,7 @@ function renderAudit() {
       `${run.snapshot.shipments.length} operaciones · ${run.snapshot.charges.length} cargos aceptados · ${run.snapshot.agreements.length} acuerdos`,
       `<button class="btn" id="back">← Auditorías</button><a class="btn primary" href="/api/runs/${run.id}/export/zip">↓ Exportar paquete</a>`,
     ) +
+    `<div class="banner info"><p>${run.metadata?.provenance ? `${run.metadata.provenance.checked_records} registro(s) cotejados contra archivos y formatos conservados; ${run.metadata.provenance.declared_records} aportados sin cotejo.` : "Esta auditoría histórica no registra un cotejo de datos contra originales."} La documentación completa del período requiere un control independiente.</p></div>` +
     (!summary.import_complete
       ? `<div class="banner warning">
           <div class="ui-fontsize-997b3b04">⚠</div>
@@ -638,7 +639,7 @@ function showDetail(id) {
     documentsUsed.push(`Configuración ${f.agreement}, versión ${f.version}, regla ${f.rule}`);
   }
 
-  const conflictingLinks = f.trace.flatMap((t) => t.details.execution || []).filter((e) => ["conflict", "invalid", "ambiguous", "unmatched"].includes(e.comparison));
+  const conflictingLinks = f.trace.flatMap((t) => t.details.execution || []).filter((e) => ["conflict", "invalid", "ambiguous", "unmatched", "uncorroborated"].includes(e.comparison));
   const relatedConflicts = f.trace.flatMap((t) => t.op === "matching_uncertainty" ? t.details.unresolved_charge_ids : t.op === "matching_conflict" ? t.details.conflicting_charge_ids : []);
   const versionLabel = conflictingLinks.length ? "Pendiente por vinculación" : f.version || "Sin versión aplicable";
   const ruleLabel = conflictingLinks.length ? "Pendiente por vinculación" : f.rule || "Sin regla aplicable";
@@ -1364,6 +1365,7 @@ function matchingConflictDetails(conflicts, dataset) {
     invalid: "El vínculo explícito no es válido.",
     ambiguous: "Las claves señalan varias operaciones; hace falta precisar la vinculación.",
     unmatched: "Las claves no señalan una operación del lote; revisá la referencia o el archivo de operaciones.",
+    uncorroborated: "El destino explícito no pudo corroborarse con las claves; revisá el original y la referencia.",
   };
   return `<ul class="matching-conflicts">${conflicts.map((conflict) => `
     <li><strong>Cargo ${esc(conflict.charge_id)}</strong> · referencia ${esc(charges.get(conflict.charge_id)?.reference || "vacía")}
@@ -1433,7 +1435,7 @@ async function goToStep(step) {
       const warning = state.matchingConflicts ? `
         <section class="matching-warning">
           <strong>${state.matchingConflicts} vinculación(es) requieren revisión</strong>
-          <p>${check.counts.invalid} inválida(s), ${check.counts.conflict} contradictoria(s), ${check.counts.ambiguous} ambigua(s) y ${check.counts.unmatched} sin operación encontrada.</p>
+          <p>${check.counts.invalid} inválida(s), ${check.counts.conflict} contradictoria(s), ${check.counts.ambiguous} ambigua(s), ${check.counts.unmatched} sin operación encontrada y ${check.counts.uncorroborated} sin corroboración.</p>
           <p>Los cargos señalados no confirmarán diferencias. Tampoco los grupos de sus operaciones candidatas. Corregí la vinculación o
           el formato en Acuerdo; también podés guardar la auditoría con esos casos en revisión.</p>
           ${check.skipped_charges ? `<p>${check.skipped_charges} cargo(s) no se pudieron vincular por un acuerdo, transportista o moneda incompatibles. Revisá esos datos; la auditoría conservará el motivo de cada caso.</p>` : ""}

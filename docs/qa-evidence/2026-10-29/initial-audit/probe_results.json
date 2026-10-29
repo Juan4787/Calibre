@@ -1,0 +1,116 @@
+{
+  "explicit_with_other_key_candidate": {
+    "status": "REVIEW",
+    "actual": "100",
+    "expected": null,
+    "confirmed_difference": "0",
+    "shipment_ids": [
+      "S1",
+      "S2"
+    ]
+  },
+  "explicit_without_key_candidate": {
+    "status": "PASS",
+    "actual": "100",
+    "expected": "100",
+    "confirmed_difference": "0",
+    "shipment_ids": [
+      "S2"
+    ],
+    "preflight": {
+      "total_conflicts": 0,
+      "conflicts": [],
+      "total_issues": 0,
+      "counts": {
+        "invalid": 0,
+        "conflict": 0,
+        "ambiguous": 0,
+        "unmatched": 0
+      },
+      "issues": [],
+      "skipped_charges": 0
+    }
+  },
+  "timestamp.csv": {
+    "accepted": 1,
+    "date": "2026-05-01",
+    "version": "V1",
+    "status": "PASS",
+    "actual": "100",
+    "expected": "100",
+    "confirmed_difference": "0",
+    "shipment_ids": [
+      "S1"
+    ]
+  },
+  "timestamp.xlsx": {
+    "accepted": 1,
+    "date": "2026-05-01",
+    "version": "V1",
+    "status": "PASS",
+    "actual": "100",
+    "expected": "100",
+    "confirmed_difference": "0",
+    "shipment_ids": [
+      "S1"
+    ]
+  },
+  "forged_provenance": {
+    "source_weight": "9",
+    "normalized_weight": "10",
+    "finding": {
+      "status": "PASS",
+      "actual": "100",
+      "expected": "100",
+      "confirmed_difference": "0",
+      "shipment_ids": [
+        "S1"
+      ]
+    },
+    "replay_identical": true,
+    "bundle_verified": true
+  },
+  "corrupt_original_http_statuses": {
+    "canonical": 200,
+    "html": 200,
+    "xlsx": 200,
+    "zip": 422,
+    "load": 200,
+    "replay": 422
+  },
+  "control_character_export": {
+    "run_saved": true,
+    "http": {
+      "canonical": 200,
+      "html": 200,
+      "xlsx": 200,
+      "zip": 200
+    }
+  },
+  "control_character_csv": {
+    "accepted": 1,
+    "audit_status": "PASS",
+    "zip_error": "IllegalCharacterError"
+  },
+  "xls_hidden_row": {
+    "accepted": 1,
+    "rejected": [],
+    "warnings": [
+      "XLS: se usan valores guardados; confirmar que las fórmulas estaban recalculadas antes de guardar."
+    ]
+  },
+  "xls_hidden_column": {
+    "accepted": 1,
+    "rejected": [],
+    "warnings": [
+      "XLS: se usan valores guardados; confirmar que las fórmulas estaban recalculadas antes de guardar."
+    ]
+  },
+  "xls_hidden_sheet": {
+    "accepted": 1,
+    "rejected": [],
+    "warnings": [
+      "XLS: se usan valores guardados; confirmar que las fórmulas estaban recalculadas antes de guardar."
+    ]
+  }
+}

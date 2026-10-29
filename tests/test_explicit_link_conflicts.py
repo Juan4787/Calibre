@@ -108,11 +108,12 @@ def test_candidate_selection_and_group_completeness(raw_dataset, cardinality, ex
 
 
 @pytest.mark.parametrize("reference", ["no-automatic-candidate", ""])
-def test_explicit_remains_usable_when_keys_have_no_candidates(conflicting, reference):
+def test_explicit_without_key_candidates_requires_review(conflicting, reference):
     conflicting["charges"][0]["reference"] = reference
     f = compute(conflicting).findings[0]
-    assert f.status == "PASS" and f.shipment_ids == ["S2"]
-    assert f.trace[0].details["execution"][0]["comparison"] == "no_key_candidates"
+    assert f.status == "REVIEW" and f.shipment_ids == ["S2"]
+    assert f.expected is None and f.confirmed_difference == "0"
+    assert f.trace[0].details["execution"][0]["comparison"] == "uncorroborated"
 
 
 def test_aliases_are_applied_before_conflict_comparison(conflicting):
