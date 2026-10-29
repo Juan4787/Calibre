@@ -1,0 +1,12 @@
+{
+  "demo": {
+    "previous": "0.3.0",
+    "current": "0.3.1",
+    "all_other_fields_equal": true
+  },
+  "second-client": {
+    "previous": "0.3.0",
+    "current": "0.3.1",
+    "all_other_fields_equal": true
+  }
+}

@@ -101,7 +101,7 @@ def main():
             imported = import_data(read_bounded(args.file, MAX_FILE_BYTES), args.file.name, mapping)
             result = {key: value for key, value in imported.items() if key != "records"}
         elif args.command == "verify-bundle":
-            run = verify_bundle(read_bounded(args.bundle, 500 * 1024 * 1024))
+            run = verify_bundle(args.bundle)
             result = {"run_id": run["id"], "integrity": True}
             if args.replay:
                 if run["artifact_hash"] != engine_artifact_hash():

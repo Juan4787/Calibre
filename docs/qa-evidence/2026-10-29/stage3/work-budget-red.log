@@ -1,0 +1,40 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_matching_budget_rejects_before_expanding_candidates ___________
+
+make_dataset = <function make_dataset.<locals>.factory at 0x7d7dd5f8c900>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d7dd5f79010>
+
+    def test_matching_budget_rejects_before_expanding_candidates(make_dataset, monkeypatch):
+        from freight_audit import engine
+    
+        monkeypatch.setattr(engine, "MAX_AUDIT_WORK", 1, raising=False)
+    
+        def unexpected(*_args, **_kwargs):
+            raise AssertionError("Over-budget input must not construct candidate traces")
+    
+        monkeypatch.setattr(engine, "inspect_matching", unexpected)
+        with pytest.raises(ValueError, match="presupuesto"):
+>           engine.audit(make_dataset())
+
+tests/test_resource_delivery.py:153: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/freight_audit/engine.py:307: in audit
+    return _audit(dataset)
+           ^^^^^^^^^^^^^^^
+src/freight_audit/engine.py:364: in _audit
+    matched, execution = inspect_matching(charge, agreement, shipments, indexes[agreement.id])
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+_args = (Charge(id='C1', settlement='L1', carrier='C', agreement='A', reference='00001', concept='base', amount='100', currenc...ype='date', value='2026-05-01', unit=None), 'weight': Value(type='decimal', value='10', unit='kg')}, provenance={})]}))
+_kwargs = {}
+
+    def unexpected(*_args, **_kwargs):
+>       raise AssertionError("Over-budget input must not construct candidate traces")
+E       AssertionError: Over-budget input must not construct candidate traces
+
+tests/test_resource_delivery.py:149: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_resource_delivery.py::test_matching_budget_rejects_before_expanding_candidates
+1 failed in 0.24s

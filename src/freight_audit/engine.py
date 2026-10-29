@@ -1,6 +1,7 @@
 """Pure deterministic audit. Findings never incorporate mutable human resolutions."""
 
 from collections import Counter, defaultdict
+from dataclasses import dataclass
 from decimal import Decimal
 
 from . import ENGINE_VERSION
@@ -102,6 +103,80 @@ def matching_indexes(dataset: Dataset) -> dict:
     return indexes
 
 
+MAX_AUDIT_WORK = 2_000_000
+
+
+class AuditLimitError(ValueError):
+    """The whole batch is refused before pricing or candidate trace expansion."""
+
+
+@dataclass(frozen=True)
+class MatchingPreparation:
+    agreements: dict[str, Agreement]
+    shipments: dict[str, Shipment]
+    indexes: dict[str, dict[tuple, list[Shipment]]]
+
+
+def prepare_matching(dataset: Dataset) -> MatchingPreparation:
+    """Pure phase: bound index, association, expression and evidence expansion.
+
+    Work units are a conservative structural budget, not a guarantee of RSS or
+    elapsed time. No prices or partial findings are emitted when it is exceeded.
+    """
+    work = 0
+
+    def consume(amount: int) -> None:
+        nonlocal work
+        work += amount
+        if work > MAX_AUDIT_WORK:
+            raise AuditLimitError(
+                "El lote supera el presupuesto de asociaciones y cálculo. Dividirlo por períodos o "
+                "acuerdos conservando completas las operaciones de cada cargo; no se guardó un resultado parcial."
+            )
+
+    costs = {}
+    degrees = Counter(
+        (kind, identifier)
+        for e in dataset.evidence
+        for kind, identifiers in (("shipment", e.shipment_ids), ("charge", e.charge_ids))
+        for identifier in identifiers
+    )
+    consume(sum(degrees.values()))
+    max_degree = max(degrees.values(), default=0)
+    for agreement in dataset.agreements:
+        consume(len(dataset.shipments) * len(agreement.matching.keys))
+        expression_cost = 1
+        evidence_cost = 0
+        for version in agreement.versions:
+            consume(sum(len(table.rows) for table in version.tables.values()))
+            for rule in version.rules:
+                evidence_cost += sum(len(r.any_of) + 1 for r in rule.evidence)
+                pending = [rule.expression, *([rule.when] if rule.when else [])]
+                while pending:
+                    expression = pending.pop()
+                    expression_cost += 1
+                    if expression.op == "band" and expression.table in version.tables:
+                        expression_cost += len(version.tables[expression.table].bands)
+                    pending.extend(expression.args)
+        costs[agreement.id] = expression_cost, evidence_cost
+        if agreement.detect_missing:
+            consume(len(dataset.coverage.get(agreement.id, [])) * expression_cost)
+    indexes = matching_indexes(dataset)
+    agreements = {a.id: a for a in dataset.agreements}
+    for charge in dataset.charges:
+        selected = agreements.get(charge.agreement)
+        if selected is None or charge.carrier != selected.carrier or charge.currency != selected.currency:
+            consume(1)
+            continue
+        candidates = len(indexes[selected.id].get(key_for(charge, selected, "charge"), ()))
+        explicit = len(selected.matching.explicit.get(charge.id, ()))
+        expression_cost, evidence_cost = costs[selected.id]
+        # Count candidates before inspect_matching sorts/copies their IDs.
+        width = 1 + candidates + explicit
+        consume(width * (expression_cost + 4) + evidence_cost * width * width * max_degree)
+    return MatchingPreparation(agreements, {s.id: s for s in dataset.shipments}, indexes)
+
+
 def inspect_explicit_link(charge: Charge, agreement: Agreement, shipments: dict, index: dict):
     """One policy for preflight and audit; explicit disambiguation is not a silent override."""
     ids = sorted(agreement.matching.explicit[charge.id])
@@ -174,9 +249,8 @@ def inspect_matching(charge: Charge, agreement: Agreement, shipments: dict, inde
 
 def matching_preflight(dataset: Dataset) -> dict:
     """Read-only, bounded matching diagnostics; audit always checks again."""
-    indexes = matching_indexes(dataset)
-    shipments = {s.id: s for s in dataset.shipments}
-    agreements = {a.id: a for a in dataset.agreements}
+    prepared = prepare_matching(dataset)
+    indexes, shipments, agreements = prepared.indexes, prepared.shipments, prepared.agreements
     conflicts: list[dict] = []
     issues: list[dict] = []
     counts = dict.fromkeys(MATCHING_PROBLEMS, 0)
@@ -308,9 +382,8 @@ def audit(dataset: Dataset) -> AuditResult:
 
 
 def _audit(dataset: Dataset) -> AuditResult:
-    agreements = {a.id: a for a in dataset.agreements}
-    shipments = {s.id: s for s in dataset.shipments}
-    indexes = matching_indexes(dataset)
+    prepared = prepare_matching(dataset)
+    agreements, shipments, indexes = prepared.agreements, prepared.shipments, prepared.indexes
     findings = []
     version_lookup_indexes: dict = {}
     match_execution: dict = {}

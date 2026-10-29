@@ -2,19 +2,20 @@
 
 import gc
 import importlib.metadata
-import json
 import os
 import platform
 import sqlite3
 import tempfile
 from contextlib import closing, contextmanager
 from datetime import UTC, datetime
+from fractions import Fraction
 from pathlib import Path
 
 from . import ENGINE_VERSION
 from .canonical import bytes_hash, canonical, digest, load_json
 from .document_control import documentary_control
 from .engine import audit
+from .importing import MAX_NORMALIZED_BYTES
 from .local_paths import checked_output_path
 from .models import AuditResult, Charge, Dataset, Decision, Shipment
 from .provenance import check_provenance
@@ -75,39 +76,82 @@ def run_identity(input_hash: str, result_hash: str, artifact_hash: str, metadata
     return digest(components)
 
 
+def _check_recorded_totals(dataset: Dataset, result: AuditResult) -> None:
+    """Independent conservation check; no interpreter or Decimal aggregation."""
+    expected: dict[str, Fraction] = {}
+    for charge in dataset.charges:
+        expected[charge.currency] = expected.get(charge.currency, Fraction()) + Fraction(charge.amount)
+    try:
+        observed = {}
+        for currency, bucket in result.summary["currencies"].items():
+            if not isinstance(bucket["actual"], str):
+                raise ValueError("Non-text exact total")
+            observed[currency] = Fraction(bucket["actual"])
+        if any(
+            expected.get(currency, Fraction()) != observed.get(currency, Fraction())
+            for currency in expected.keys() | observed.keys()
+        ):
+            raise ValueError("Input totals differ")
+    except (KeyError, TypeError, ValueError, ZeroDivisionError) as exc:
+        raise IntegrityError(
+            "Los totales del resultado no conservan los cargos originales. No se guardó la auditoría; revisar el cálculo antes de continuar."
+        ) from exc
+
+
+def _check_stored_json(payload: str, expected: str) -> None:
+    # Normal stored payloads are canonical already: hash without building their
+    # object graphs. Fallback preserves older equivalent JSON representations.
+    if bytes_hash(payload.encode()) == expected:
+        return
+    try:
+        if digest(load_json(payload)) == expected:
+            return
+    except ValueError:
+        pass
+    raise IntegrityError(
+        "La auditoría guardada no supera la verificación de integridad; restaurar una copia verificada."
+    )
+
+
 class Store:
     def __init__(self, path: str | Path):
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        with self.connect() as conn:
-            version = conn.execute("PRAGMA user_version").fetchone()[0]
-            if version > 2:
-                raise IntegrityError(
-                    "La base pertenece a una versión más nueva; abrir con esa versión del programa."
-                )
-            if version == 0:
-                conn.executescript("""
-                    CREATE TABLE IF NOT EXISTS sources (hash TEXT PRIMARY KEY, data BLOB NOT NULL);
-                    CREATE TABLE IF NOT EXISTS configs (hash TEXT PRIMARY KEY, kind TEXT NOT NULL, name TEXT NOT NULL, payload TEXT NOT NULL, created_at TEXT NOT NULL);
-                    CREATE TABLE IF NOT EXISTS runs (id TEXT PRIMARY KEY, input_hash TEXT NOT NULL, result_hash TEXT NOT NULL, artifact_hash TEXT NOT NULL, snapshot TEXT NOT NULL, result TEXT NOT NULL, metadata TEXT NOT NULL, created_at TEXT NOT NULL);
-                    CREATE TABLE IF NOT EXISTS decisions (seq INTEGER PRIMARY KEY AUTOINCREMENT, run_id TEXT NOT NULL REFERENCES runs(id), finding_id TEXT NOT NULL, payload TEXT NOT NULL, previous_hash TEXT NOT NULL, hash TEXT NOT NULL, created_at TEXT NOT NULL);
-                    CREATE INDEX IF NOT EXISTS decisions_run ON decisions(run_id, seq);
-                    PRAGMA user_version=1;
-                """)
-            if version < 2:
-                conn.execute("BEGIN IMMEDIATE")
-                conn.execute(
-                    "CREATE TABLE IF NOT EXISTS imports (id TEXT PRIMARY KEY, artifact_hash TEXT NOT NULL, payload TEXT NOT NULL, created_at TEXT NOT NULL)"
-                )
-                conn.execute(
-                    "CREATE INDEX IF NOT EXISTS runs_parent ON runs(json_extract(snapshot, '$.parent_run_id'))"
-                )
-                conn.execute("PRAGMA user_version=2")
-            for table in ("sources", "configs", "runs", "decisions", "imports"):
-                for operation in ("UPDATE", "DELETE"):
-                    conn.execute(
-                        f"CREATE TRIGGER IF NOT EXISTS immutable_{table}_{operation} BEFORE {operation} ON {table} BEGIN SELECT RAISE(ABORT, 'immutable history'); END"
+        try:
+            with self.connect() as conn:
+                version = conn.execute("PRAGMA user_version").fetchone()[0]
+                if version > 2:
+                    raise IntegrityError(
+                        "La base pertenece a una versión más nueva; abrir con esa versión del programa."
                     )
+                if version == 0:
+                    conn.executescript("""
+                        CREATE TABLE IF NOT EXISTS sources (hash TEXT PRIMARY KEY, data BLOB NOT NULL);
+                        CREATE TABLE IF NOT EXISTS configs (hash TEXT PRIMARY KEY, kind TEXT NOT NULL, name TEXT NOT NULL, payload TEXT NOT NULL, created_at TEXT NOT NULL);
+                        CREATE TABLE IF NOT EXISTS runs (id TEXT PRIMARY KEY, input_hash TEXT NOT NULL, result_hash TEXT NOT NULL, artifact_hash TEXT NOT NULL, snapshot TEXT NOT NULL, result TEXT NOT NULL, metadata TEXT NOT NULL, created_at TEXT NOT NULL);
+                        CREATE TABLE IF NOT EXISTS decisions (seq INTEGER PRIMARY KEY AUTOINCREMENT, run_id TEXT NOT NULL REFERENCES runs(id), finding_id TEXT NOT NULL, payload TEXT NOT NULL, previous_hash TEXT NOT NULL, hash TEXT NOT NULL, created_at TEXT NOT NULL);
+                        CREATE INDEX IF NOT EXISTS decisions_run ON decisions(run_id, seq);
+                        PRAGMA user_version=1;
+                    """)
+                if version < 2:
+                    conn.execute("BEGIN IMMEDIATE")
+                    conn.execute(
+                        "CREATE TABLE IF NOT EXISTS imports (id TEXT PRIMARY KEY, artifact_hash TEXT NOT NULL, payload TEXT NOT NULL, created_at TEXT NOT NULL)"
+                    )
+                    conn.execute(
+                        "CREATE INDEX IF NOT EXISTS runs_parent ON runs(json_extract(snapshot, '$.parent_run_id'))"
+                    )
+                    conn.execute("PRAGMA user_version=2")
+                for table in ("sources", "configs", "runs", "decisions", "imports"):
+                    for operation in ("UPDATE", "DELETE"):
+                        conn.execute(
+                            f"CREATE TRIGGER IF NOT EXISTS immutable_{table}_{operation} BEFORE {operation} ON {table} BEGIN SELECT RAISE(ABORT, 'immutable history'); END"
+                        )
+        except sqlite3.DatabaseError as exc:
+            raise IntegrityError(
+                "No se pudo abrir o actualizar la base. Conservar el archivo y abrir una copia verificada; "
+                "la actualización incompleta se revirtió."
+            ) from exc
 
     @contextmanager
     def connect(self):
@@ -152,7 +196,7 @@ class Store:
     def save_import(self, imported: dict) -> str:
         self.source(imported["document"])
         payload = canonical(imported)
-        if len(payload.encode()) > 128 * 1024 * 1024:
+        if len(payload.encode()) > MAX_NORMALIZED_BYTES:
             raise ValueError(
                 "El lote normalizado supera el presupuesto de importación; dividirlo en períodos más pequeños antes de continuar."
             )
@@ -199,6 +243,7 @@ class Store:
         # The result must belong to exactly these inputs; callers cannot persist an edited finding.
         if result.engine_version != ENGINE_VERSION:
             raise IntegrityError("El resultado no corresponde a estos datos y a esta versión del motor.")
+        _check_recorded_totals(dataset, result)
 
         # Serialize result once and compute hash directly
         result_json = canonical(result)
@@ -263,11 +308,36 @@ class Store:
         return identities[-1] if identities else {"id": "main", "name": "Sin cliente asignado"}
 
     def list_runs(self) -> list[dict]:
-        with self.connect() as conn:
-            rows = conn.execute(
-                "SELECT id, created_at, input_hash, result_hash, json_extract(snapshot, '$.label') label, json_extract(result, '$.summary') summary FROM runs ORDER BY created_at DESC, id"
-            ).fetchall()
-        return [{**dict(row), "summary": json.loads(row["summary"])} for row in rows]
+        result = []
+        try:
+            with self.connect() as conn:
+                rows = conn.execute(
+                    "SELECT id,created_at,input_hash,result_hash,artifact_hash,snapshot,result,metadata,json_extract(snapshot,'$.label') label,json_extract(result,'$.summary') summary FROM runs ORDER BY created_at DESC,id"
+                )
+                for row in rows:
+                    _check_stored_json(row["snapshot"], row["input_hash"])
+                    _check_stored_json(row["result"], row["result_hash"])
+                    if (
+                        run_identity(
+                            row["input_hash"],
+                            row["result_hash"],
+                            row["artifact_hash"],
+                            load_json(row["metadata"]),
+                        )
+                        != row["id"]
+                    ):
+                        raise IntegrityError(
+                            "El historial no supera la verificación de integridad; restaurar una copia verificada."
+                        )
+                    result.append(
+                        {key: row[key] for key in ("id", "created_at", "input_hash", "result_hash", "label")}
+                        | {"summary": load_json(row["summary"])}
+                    )
+        except sqlite3.DatabaseError as exc:
+            raise IntegrityError(
+                "No se pudo verificar el historial guardado. Conservar la base y restaurar una copia verificada."
+            ) from exc
+        return result
 
     def load(self, run_id: str) -> dict:
         with self.connect() as conn:

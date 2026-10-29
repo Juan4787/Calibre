@@ -176,3 +176,45 @@ def exercise_operations(page, client, destination, root):
         "network_failure_recovery": True,
         "scope": "Fictional client only; independent totals 194.25 + 204.25 = 398.5 USD",
     }
+
+
+def exercise_large_agreement_preview(page, client, destination, root):
+    """Large contractual table: bounded visible preview, full retained configuration."""
+    from playwright.sync_api import expect
+
+    agreement = json.loads((root / "fixtures/second-client/agreements.json").read_text())[0]
+    agreement["name"] = "Tabla grande ficticia de QA"
+    agreement["versions"][0]["tables"]["tabla_grande_qa"] = {
+        "kind": "lookup",
+        "rows": [
+            {"keys": [f"QA-{i:06}"], "value": {"type": "decimal", "value": "1", "unit": "USD"}}
+            for i in range(20000)
+        ],
+    }
+    response = client.post("/api/configs/agreement", json=agreement)
+    assert response.status_code == 200, response.text
+    identifier = response.json()["hash"]
+    page.locator('[data-view="configs"]').click()
+    card = page.locator(".run-card-rich").filter(has=page.locator(f'[data-view-config="{identifier}"]'))
+    expect(card).to_be_visible()
+    card.locator("summary").click()
+    expect(card).to_contain_text("primeras 20 de 20000 filas")
+    expect(card).to_contain_text("QA-000019")
+    expect(card).not_to_contain_text("QA-019999")
+    assert len(card.inner_text()) < 10000
+    page.screenshot(path=str(destination / "agreement-table-desktop.png"))
+    page.set_viewport_size({"width": 390, "height": 844})
+    card.scroll_into_view_if_needed()
+    assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+    page.screenshot(path=str(destination / "agreement-table-mobile.png"))
+    card.locator(f'[data-view-config="{identifier}"]').click()
+    stored = json.loads(page.locator("#config-data").input_value())
+    assert len(stored["versions"][0]["tables"]["tabla_grande_qa"]["rows"]) == 20000
+    assert stored["versions"][0]["tables"]["tabla_grande_qa"]["rows"][-1]["keys"] == ["QA-019999"]
+    page.set_viewport_size({"width": 1280, "height": 720})
+    return {
+        "configured_rows": 20000,
+        "visible_preview_rows": 20,
+        "full_editor_unchanged": True,
+        "viewports": [1280, 390],
+    }

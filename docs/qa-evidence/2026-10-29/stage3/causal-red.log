@@ -1,0 +1,133 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+___________ test_file_workbook_keeps_exact_cells_styles_and_filters ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-31/test_file_workbook_keeps_exact0')
+make_dataset = <function make_dataset.<locals>.factory at 0x7bb25077c220>
+
+    def test_file_workbook_keeps_exact_cells_styles_and_filters(tmp_path, make_dataset):
+        store, identifier = saved(tmp_path, make_dataset)
+        run = store.load(identifier)
+        target = tmp_path / "streamed.xlsx"
+        with target.open("wb") as output:
+>           reporting.write_workbook(run, output)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'freight_audit.reporting' has no attribute 'write_workbook'
+
+tests/test_resource_delivery.py:30: AttributeError
+____________ test_impossible_bundle_budget_rejects_before_workbook _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-31/test_impossible_bundle_budget_0')
+make_dataset = <function make_dataset.<locals>.factory at 0x7bb25077ff60>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bb25077aed0>
+
+    def test_impossible_bundle_budget_rejects_before_workbook(tmp_path, make_dataset, monkeypatch):
+        store, identifier = saved(tmp_path, make_dataset)
+        monkeypatch.setattr(reporting, "MAX_BUNDLE_UNCOMPRESSED_BYTES", 200)
+    
+        def unexpected(*_args, **_kwargs):
+            raise AssertionError("A package already over budget must not construct Excel")
+    
+        monkeypatch.setattr(reporting, "workbook_bytes", unexpected)
+        monkeypatch.setattr(reporting, "write_workbook", unexpected, raising=False)
+        with pytest.raises(reporting.ReportLimitError, match="límite"):
+>           reporting.bundle_bytes(store, identifier)
+
+tests/test_resource_delivery.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/freight_audit/reporting.py:336: in bundle_bytes
+    files["auditoria.xlsx"] = workbook_bytes(run)
+                              ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+_args = ({'id': '67b77ed58e0a4d74bebd1ea4393897ee2e5ccb5a9f0e21b61b3c3a7684f5cddb', 'input_hash': '3ccb6d3e8bad8711dfa9888de2a...e38a27e6841cc6859b658ba85', 'artifact_hash': 'fdd667513b48127a6a1c2e1475e05a6c27326e30d82841851d7777db7a8e702f', ...},)
+_kwargs = {}
+
+    def unexpected(*_args, **_kwargs):
+>       raise AssertionError("A package already over budget must not construct Excel")
+E       AssertionError: A package already over budget must not construct Excel
+
+tests/test_resource_delivery.py:48: AssertionError
+_______ test_file_bundle_verifies_sources_and_complete_canonical_output ________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-31/test_file_bundle_verifies_sour0')
+make_dataset = <function make_dataset.<locals>.factory at 0x7bb2505fce00>
+
+    def test_file_bundle_verifies_sources_and_complete_canonical_output(tmp_path, make_dataset):
+        store, identifier = saved(tmp_path, make_dataset)
+        target = tmp_path / "streamed.zip"
+        with target.open("w+b") as output:
+>           reporting.write_bundle(store, identifier, output)
+            ^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'freight_audit.reporting' has no attribute 'write_bundle'. Did you mean: 'verify_bundle'?
+
+tests/test_resource_delivery.py:60: AttributeError
+___________ test_history_list_rejects_altered_amounts_before_display ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-31/test_history_list_rejects_alte0')
+make_dataset = <function make_dataset.<locals>.factory at 0x7bb25077d300>
+
+    def test_history_list_rejects_altered_amounts_before_display(tmp_path, make_dataset):
+        store, identifier = saved(tmp_path, make_dataset)
+        result = deepcopy(store.load(identifier)["result"])
+        result["summary"]["currencies"]["ARS"]["actual"] = "999"
+        with sqlite3.connect(store.path) as connection:
+            connection.execute("DROP TRIGGER immutable_runs_UPDATE")
+            connection.execute("UPDATE runs SET result=? WHERE id=?", (canonical(result), identifier))
+>       with pytest.raises(IntegrityError):
+E       Failed: DID NOT RAISE IntegrityError
+
+tests/test_resource_delivery.py:75: Failed
+______________ test_persistence_independently_checks_input_totals ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-31/test_persistence_independently0')
+make_dataset = <function make_dataset.<locals>.factory at 0x7bb2505fc540>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bb25077ac30>
+
+    def test_persistence_independently_checks_input_totals(tmp_path, make_dataset, monkeypatch):
+        dataset = make_dataset()
+        tampered = audit(dataset).model_dump(mode="json")
+        tampered["summary"]["currencies"]["ARS"]["actual"] = "999"
+        result = AuditResult.model_validate(tampered)
+        # Simulate a systematic summarizer bug that repeating the motor would share.
+        monkeypatch.setattr("freight_audit.storage.audit", lambda _: result)
+        store = Store(tmp_path / "totals.db")
+>       with pytest.raises(IntegrityError):
+E       Failed: DID NOT RAISE IntegrityError
+
+tests/test_resource_delivery.py:87: Failed
+___________ test_normalization_budget_aborts_without_partial_records ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bb25077ac60>
+
+    def test_normalization_budget_aborts_without_partial_records(monkeypatch):
+        from test_importing import csv_data, mapping
+    
+        monkeypatch.setattr(importing, "MAX_NORMALIZED_BYTES", 2000, raising=False)
+        data = csv_data("".join(f"S{i};{i:05};10;01/05/2026\n" for i in range(20)))
+>       with pytest.raises(importing.ImportErrorDetail, match="normalizad"):
+E       Failed: DID NOT RAISE ImportErrorDetail
+
+tests/test_resource_delivery.py:97: Failed
+_____________ test_cell_budget_stops_expansion_even_with_small_csv _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bb250286f60>
+
+    def test_cell_budget_stops_expansion_even_with_small_csv(monkeypatch):
+        from test_importing import csv_data, mapping
+    
+        monkeypatch.setattr(importing, "MAX_TABULAR_CELLS", 10, raising=False)
+        data = csv_data("".join(f"S{i};{i:05};10;01/05/2026\n" for i in range(4)))
+>       with pytest.raises(importing.ImportErrorDetail, match="celdas"):
+E       Failed: DID NOT RAISE ImportErrorDetail
+
+tests/test_resource_delivery.py:106: Failed
+=========================== short test summary info ============================
+FAILED tests/test_resource_delivery.py::test_file_workbook_keeps_exact_cells_styles_and_filters
+FAILED tests/test_resource_delivery.py::test_impossible_bundle_budget_rejects_before_workbook
+FAILED tests/test_resource_delivery.py::test_file_bundle_verifies_sources_and_complete_canonical_output
+FAILED tests/test_resource_delivery.py::test_history_list_rejects_altered_amounts_before_display
+FAILED tests/test_resource_delivery.py::test_persistence_independently_checks_input_totals
+FAILED tests/test_resource_delivery.py::test_normalization_budget_aborts_without_partial_records
+FAILED tests/test_resource_delivery.py::test_cell_budget_stops_expansion_even_with_small_csv
+7 failed in 0.94s

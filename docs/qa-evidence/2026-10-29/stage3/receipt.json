@@ -1,9 +1,39 @@
 {
   "version": "0.3.1",
-  "status": "planned",
+  "status": "in_progress",
   "active_installed_version": "0.3.0",
-  "implementation": "pending",
-  "verification": "pending",
+  "implementation": "File-backed reporting/HTTP/CLI, budgets, independent totals, verified history, typed matching phase, deterministic build normalizer and hash locks, whole-workspace installer with rollback/recovery; not yet published",
+  "verification": "Canonical verify 349 passed; subsequent installer/build directed 8 passed; full source Chromium E2E and comparable benchmark passed; binary/install/CI delivery pending",
   "publication": "pending",
-  "final_audit": "pending"
+  "final_audit": "pending",
+  "baseline": {
+    "version": "0.3.0",
+    "charges": 1000,
+    "measured_repetitions": 3,
+    "pipeline_median_seconds": 21.9,
+    "engine_median_seconds": 0.2466,
+    "peak_rss_mib": 181.74
+  },
+  "causal_red_failed": 7,
+  "workbook_directed_passed": 20,
+  "build_normalizer_tests": 2,
+  "installer_tests": 6,
+  "browser": {
+    "passed": true,
+    "desktop": "1280x720",
+    "mobile": "390x844",
+    "large_config_rows": 20000,
+    "visible_table_rows": 20,
+    "all_rows_retained": true
+  },
+  "benchmark": {
+    "charges": 1000,
+    "measured_reps": 3,
+    "oracles_matched": true,
+    "pipeline_median_seconds": 16.0007,
+    "peak_rss_mib": 168.11,
+    "baseline_pipeline_median_seconds": 21.9,
+    "baseline_peak_rss_mib": 181.74,
+    "scope": "same synthetic pipeline including separate XLSX then ZIP; no extrapolation to large clients"
+  }
 }

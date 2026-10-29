@@ -211,7 +211,7 @@ def test_health_identifies_installed_engine_without_creating_runs(tmp_path):
     with authorized_client(tmp_path / "health.db") as client:
         result = client.get("/api/health")
         assert result.status_code == 200
-        assert result.json()["engine_version"] == "0.3.0"
+        assert result.json()["engine_version"] == "0.3.1"
         assert result.json()["database_schema"] == 2
         assert client.get("/api/runs").json() == []
 
@@ -360,8 +360,9 @@ def test_failed_v2_migration_rolls_back_schema_changes(tmp_path, raw_dataset):
     identifier, _, _ = legacy_database(path, raw_dataset)
     with sqlite3.connect(path) as connection:
         connection.execute("UPDATE runs SET snapshot='{' WHERE id=?", (identifier,))
-    with pytest.raises(sqlite3.DatabaseError):
+    with pytest.raises(IntegrityError, match="actualizar") as caught:
         Store(path)
+    assert isinstance(caught.value.__cause__, sqlite3.DatabaseError)
     with sqlite3.connect(path) as connection:
         assert connection.execute("PRAGMA user_version").fetchone()[0] == 1
         assert connection.execute("SELECT name FROM sqlite_master WHERE name='imports'").fetchall() == []

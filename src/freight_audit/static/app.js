@@ -957,12 +957,22 @@ function agreementRuleCount(agreement) {
 }
 
 function agreementVersionList(agreement) {
-  return (agreement.versions || []).map((version) => {
-    const ruleCount = Array.isArray(version.rules) ? version.rules.length : 0;
-    const formulas = (version.rules || []).map((rule) => `<li>${esc(rule.description)} · concepto ${esc(rule.concept)}: <strong>${esc(formulaText(rule.expression))}</strong>${rule.when ? `, cuando ${esc(formulaText(rule.when))}` : ""}${rule.evidence?.length ? `; requiere ${esc(rule.evidence.map((r) => r.any_of.join(" o ") + (r.document_required ? " con adjunto" : "")).join(", "))}` : ""}</li>`).join("");
-    const tables = Object.entries(version.tables || {}).map(([name, table]) => `<li>Tabla ${esc(name)}: ${table.kind === "band" ? table.bands.map((b) => `[${esc(b.lower ?? "sin límite")}, ${esc(b.upper ?? "sin límite")}) → ${esc(valueText(b.value))}`).join("; ") : table.rows.map((r) => `${esc(r.keys.join(" / "))} → ${esc(valueText(r.value))}`).join("; ")}</li>`).join("");
-    return `<li><strong>${esc(version.id)}</strong> · ${esc(version.valid_from || "sin inicio")} a ${esc(version.valid_to || "abierta")} · ${ruleCount} regla(s)<ul>${formulas}${tables}</ul><p>${esc(version.source_note)}</p></li>`;
+  const versions = agreement.versions || [];
+  const preview = versions.slice(0, 10).map((version) => {
+    const rules = version.rules || [];
+    const formulas = rules.slice(0, 20).map((rule) => `<li>${esc(rule.description)} · concepto ${esc(rule.concept)}: <strong>${esc(formulaText(rule.expression))}</strong>${rule.when ? `, cuando ${esc(formulaText(rule.when))}` : ""}${rule.evidence?.length ? `; requiere ${esc(rule.evidence.map((r) => r.any_of.join(" o ") + (r.document_required ? " con adjunto" : "")).join(", "))}` : ""}</li>`).join("");
+    const entries = Object.entries(version.tables || {});
+    const tables = entries.slice(0, 10).map(([name, table]) => {
+      const rows = (table.kind === "band" ? table.bands : table.rows) || [];
+      const values = rows.slice(0, 20).map((row) => table.kind === "band"
+        ? `[${esc(row.lower ?? "sin límite")}, ${esc(row.upper ?? "sin límite")}) → ${esc(valueText(row.value))}`
+        : `${esc(row.keys.join(" / "))} → ${esc(valueText(row.value))}`).join("; ");
+      return `<li>Tabla ${esc(name)} · ${rows.length} fila(s): ${values}${rows.length > 20 ? `. Vista previa: primeras 20 de ${rows.length} filas. El cálculo utiliza la tabla completa.` : ""}</li>`;
+    }).join("");
+    const limits = [rules.length > 20 ? `20 de ${rules.length} reglas` : "", entries.length > 10 ? `10 de ${entries.length} tablas` : ""].filter(Boolean);
+    return `<li><strong>${esc(version.id)}</strong> · ${esc(version.valid_from || "sin inicio")} a ${esc(version.valid_to || "abierta")} · ${rules.length} regla(s)<ul>${formulas}${tables}</ul>${limits.length ? `<p>Vista previa: ${limits.join(" y ")}. Revisá el acuerdo completo antes de aprobarlo.</p>` : ""}<p>${esc(version.source_note)}</p></li>`;
   }).join("");
+  return preview + (versions.length > 10 ? `<li>Vista previa: 10 de ${versions.length} versiones. Revisá el acuerdo completo antes de aprobarlo.</li>` : "");
 }
 
 function valueText(value) {

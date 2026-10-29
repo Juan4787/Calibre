@@ -72,6 +72,21 @@ def digest(value: Any) -> str:
     return hashlib.sha256(canonical(value).encode()).hexdigest()
 
 
+def canonical_chunks(value: Any):
+    """Same UTF-8 bytes as canonical(), without a second full JSON buffer."""
+    encoder = json.JSONEncoder(
+        default=_json_default, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False
+    )
+    pending = bytearray()
+    for chunk in encoder.iterencode(value):
+        pending.extend(chunk.encode("utf-8"))
+        if len(pending) >= 64 * 1024:
+            yield bytes(pending)
+            pending.clear()
+    if pending:
+        yield bytes(pending)
+
+
 def bytes_hash(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 

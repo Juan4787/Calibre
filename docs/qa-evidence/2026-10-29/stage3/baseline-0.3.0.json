@@ -1,0 +1,240 @@
+{
+  "reps": 3,
+  "correctness_verified": true,
+  "total_wall": {
+    "median": 21.9,
+    "min": 21.3371,
+    "max": 22.6116,
+    "mean": 21.9496,
+    "stdev": 0.6387
+  },
+  "total_cpu": {
+    "median": 21.1599,
+    "min": 20.9109,
+    "max": 21.5639,
+    "mean": 21.2116
+  },
+  "peak_rss_mb": 181.74,
+  "stages": {
+    "1_input_read": {
+      "wall": {
+        "median": 0.0003,
+        "min": 0.0003,
+        "max": 0.0004,
+        "mean": 0.0003,
+        "stdev": 0.0
+      },
+      "cpu": {
+        "median": 0.0003,
+        "min": 0.0003,
+        "max": 0.0004,
+        "mean": 0.0003
+      },
+      "peak_rss_mb": 53.07
+    },
+    "2_import": {
+      "wall": {
+        "median": 0.1718,
+        "min": 0.1682,
+        "max": 0.1951,
+        "mean": 0.1784,
+        "stdev": 0.0146
+      },
+      "cpu": {
+        "median": 0.1718,
+        "min": 0.1682,
+        "max": 0.1947,
+        "mean": 0.1782
+      },
+      "peak_rss_mb": 61.57
+    },
+    "3_normalization": {
+      "wall": {
+        "median": 0.0812,
+        "min": 0.0763,
+        "max": 0.0901,
+        "mean": 0.0825,
+        "stdev": 0.007
+      },
+      "cpu": {
+        "median": 0.0812,
+        "min": 0.0763,
+        "max": 0.0842,
+        "mean": 0.0806
+      },
+      "peak_rss_mb": 76.95
+    },
+    "4_audit": {
+      "wall": {
+        "median": 0.2466,
+        "min": 0.2214,
+        "max": 0.2523,
+        "mean": 0.2401,
+        "stdev": 0.0164
+      },
+      "cpu": {
+        "median": 0.2458,
+        "min": 0.2214,
+        "max": 0.2521,
+        "mean": 0.2397
+      },
+      "peak_rss_mb": 90.82,
+      "charges_per_sec": 4055.38,
+      "findings_per_sec": 4055.38
+    },
+    "5_store_save": {
+      "wall": {
+        "median": 0.7286,
+        "min": 0.6827,
+        "max": 0.7874,
+        "mean": 0.7329,
+        "stdev": 0.0525
+      },
+      "cpu": {
+        "median": 0.7029,
+        "min": 0.6643,
+        "max": 0.7528,
+        "mean": 0.7067
+      },
+      "peak_rss_mb": 115.88,
+      "db_size_bytes": 4784128
+    },
+    "6_store_load": {
+      "wall": {
+        "median": 0.3404,
+        "min": 0.3244,
+        "max": 0.8863,
+        "mean": 0.517,
+        "stdev": 0.3199
+      },
+      "cpu": {
+        "median": 0.34,
+        "min": 0.3243,
+        "max": 0.5024,
+        "mean": 0.3889
+      },
+      "peak_rss_mb": 116.88
+    },
+    "7_replay": {
+      "wall": {
+        "median": 0.5905,
+        "min": 0.4104,
+        "max": 0.6229,
+        "mean": 0.5413,
+        "stdev": 0.1145
+      },
+      "cpu": {
+        "median": 0.5215,
+        "min": 0.4104,
+        "max": 0.5453,
+        "mean": 0.4924
+      },
+      "peak_rss_mb": 116.88
+    },
+    "8_export_json": {
+      "wall": {
+        "median": 0.0681,
+        "min": 0.0679,
+        "max": 0.1029,
+        "mean": 0.0797,
+        "stdev": 0.0201
+      },
+      "cpu": {
+        "median": 0.0681,
+        "min": 0.0678,
+        "max": 0.1012,
+        "mean": 0.079
+      },
+      "peak_rss_mb": 116.88,
+      "size_bytes": 4575249
+    },
+    "9_export_xlsx": {
+      "wall": {
+        "median": 8.4133,
+        "min": 8.0415,
+        "max": 9.2641,
+        "mean": 8.573,
+        "stdev": 0.6267
+      },
+      "cpu": {
+        "median": 8.3159,
+        "min": 7.9831,
+        "max": 8.6921,
+        "mean": 8.3304
+      },
+      "peak_rss_mb": 155.53,
+      "size_bytes": 790482,
+      "status": "PASS"
+    },
+    "10_export_html": {
+      "wall": {
+        "median": 0.0041,
+        "min": 0.0039,
+        "max": 0.0044,
+        "mean": 0.0041,
+        "stdev": 0.0003
+      },
+      "cpu": {
+        "median": 0.0041,
+        "min": 0.0039,
+        "max": 0.0044,
+        "mean": 0.0041
+      },
+      "peak_rss_mb": 155.53,
+      "size_bytes": 184048,
+      "status": "PASS"
+    },
+    "11_bundle_zip": {
+      "wall": {
+        "median": 9.3396,
+        "min": 9.2489,
+        "max": 9.7808,
+        "mean": 9.4565,
+        "stdev": 0.2845
+      },
+      "cpu": {
+        "median": 9.1171,
+        "min": 9.1124,
+        "max": 9.5764,
+        "mean": 9.2687
+      },
+      "peak_rss_mb": 181.46,
+      "size_bytes": 831944,
+      "status": "PASS"
+    },
+    "12_verify_bundle": {
+      "wall": {
+        "median": 0.346,
+        "min": 0.3444,
+        "max": 0.3642,
+        "mean": 0.3515,
+        "stdev": 0.011
+      },
+      "cpu": {
+        "median": 0.3444,
+        "min": 0.3398,
+        "max": 0.3633,
+        "mean": 0.3492
+      },
+      "peak_rss_mb": 181.46,
+      "status": "PASS",
+      "verified": true
+    },
+    "13_api_retrieval": {
+      "wall": {
+        "median": 0.996,
+        "min": 0.9528,
+        "max": 1.6282,
+        "mean": 1.1923,
+        "stdev": 0.3781
+      },
+      "cpu": {
+        "median": 0.9933,
+        "min": 0.9521,
+        "max": 1.3346,
+        "mean": 1.0934
+      },
+      "peak_rss_mb": 181.46
+    }
+  }
+}
