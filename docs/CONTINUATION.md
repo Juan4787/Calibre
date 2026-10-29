@@ -163,3 +163,7 @@ No existen originales/contratos/control independiente de un cliente real. No se 
 - Evidencia durable (sin DB ni trace con tokens de sesión): docs/qa-evidence/2026-10-29/stage2/. El recibo dice publicación/instalación PENDIENTES. E2E fuente y corpus corresponden al producto actual; no equivalen al wheel aún no instalado.
 - verify_delivery.py ahora permite --artifacts-out RUTA_NUEVA y conserva exactamente wheel/sdist certificados para publicarlos, y limpia PYTHONPATH en subprocess. Todavía necesita ejecución después del commit limpio. La reproducibilidad binaria estricta sigue reservada a etapa 3.
 - Próximo paso: commit de implementación, merge origin/main (PR #2, posible conflicto de esta bitácora: conservar ambos hechos), crear PR y esperar checks. Ejecutar verify_delivery con preservación de assets, preparar instalación 0.3 sin activarla, E2E sobre wheel fuera del checkout. Actualizar recibos; sólo entonces merge/tag/release y actualización local con servicio detenido y backups.
+
+### Commits de etapa 2
+
+Implementación conservada en **3df0785**. Se incorporó origin/main con merge limpio (corrección de CI del PR #2); sólo agregó su nota histórica a esta bitácora, sin modificar el producto de etapa 2. Se publica ahora engineering/operations-0.3.0 para PR protegido. La instalación operativa sigue en 0.2.0. Falta certificación del wheel exacto, CI del PR y entrega efectiva.
