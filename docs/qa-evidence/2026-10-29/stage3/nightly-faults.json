@@ -1,0 +1,665 @@
+{
+  "total_faults": 41,
+  "results": {
+    "FI-A01": {
+      "fault_id": "FI-A01",
+      "severity": "P0",
+      "justification": "La API devuelve estado de conformidad (PASS) para un hallazgo que en base de datos es FAIL.",
+      "status": "DETECTED",
+      "primary_detector": "reconcile",
+      "detected_by": [
+        "reconcile"
+      ],
+      "violations_count": 1,
+      "sample_violation": "INV-23 API: result differs (check decision revision)",
+      "expected_detector": "reconcile",
+      "independent_detection": true
+    },
+    "FI-A02": {
+      "fault_id": "FI-A02",
+      "severity": "P0",
+      "justification": "La API omite un hallazgo en la respuesta JSON, entregando saldos y conteos incompletos.",
+      "status": "DETECTED",
+      "primary_detector": "reconcile",
+      "detected_by": [
+        "reconcile"
+      ],
+      "violations_count": 1,
+      "sample_violation": "INV-23 API: result differs (check decision revision)",
+      "expected_detector": "reconcile",
+      "independent_detection": true
+    },
+    "FI-A03": {
+      "fault_id": "FI-A03",
+      "severity": "P0",
+      "justification": "La API altera el importe auditado (actual) en el payload JSON consumido por integradores.",
+      "status": "DETECTED",
+      "primary_detector": "reconcile",
+      "detected_by": [
+        "reconcile"
+      ],
+      "violations_count": 1,
+      "sample_violation": "INV-23 API: result differs (check decision revision)",
+      "expected_detector": "reconcile",
+      "independent_detection": true
+    },
+    "FI-A04": {
+      "fault_id": "FI-A04",
+      "severity": "P1",
+      "justification": "La API entrega importes y estados correctos pero suprime la trazabilidad documental hacia las fuentes.",
+      "status": "DETECTED",
+      "primary_detector": "reconcile",
+      "detected_by": [
+        "reconcile"
+      ],
+      "violations_count": 1,
+      "sample_violation": "INV-23 API: snapshot differs (check decision revision)",
+      "expected_detector": "reconcile",
+      "independent_detection": true
+    },
+    "FI-E01": {
+      "fault_id": "FI-E01",
+      "severity": "P0",
+      "justification": "Invierte la f\u00f3rmula de diferencia (actual - expected -> expected - actual), invirtiendo el reclamo econ\u00f3mico.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 5,
+      "sample_violation": "Byte hash differs for audit.json: expected 74c028a6b777bbf08acd805de935067fa78a752258d1bf36ed1ec3d8fb533527, got efb4c8678d001e51bbce9c618a0fc5739d8fd79029306849870e79d7e5987a59",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-E02": {
+      "fault_id": "FI-E02",
+      "severity": "P0",
+      "justification": "Convierte tolerancia inclusiva en exclusiva, alterando el estado de certeza (PASS a FAIL dentro de tolerancia).",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 14,
+      "sample_violation": "Byte hash differs for audit.json: expected 452c437ce563c46bb34de31338dc79961e690d194bfed820b3238b882494e69a, got 97ca039ebf0c1ad8c8d83c739d38382e7715355a796dac1e37b7072c5d5cc772",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-E03": {
+      "fault_id": "FI-E03",
+      "severity": "P0",
+      "justification": "Confirma dinero indebidamente estando en estado REVIEW, violando el principio de incertidumbre.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 7,
+      "sample_violation": "Byte hash differs for audit.json: expected d6b93afe63738a46ca3073a928e7f63799c0ab45fb62c7d1a8716363bbbf9a53, got d92d8ffd33a036ea90357a4ae44d291822cf21cbe102133308fc118a611beb42",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-E04": {
+      "fault_id": "FI-E04",
+      "severity": "P0",
+      "justification": "Confirma diferencia y expectativa en estado UNDETERMINABLE sin regla contractual aplicable.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 9,
+      "sample_violation": "Byte hash differs for audit.json: expected b3bf29c53b4f14e6b6d86044f4edbd4567d7a50cdf52fb8def0a63de7540ad4b, got 76ebe97ec80ed84c467a8745fcc0359046a4edc8a451adabe0f3623774305b19",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-E05": {
+      "fault_id": "FI-E05",
+      "severity": "P0",
+      "justification": "Certifica como PASS un cargo con evidencia contractual requerida ausente.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 14,
+      "sample_violation": "Byte hash differs for audit.json: expected 43c5b8bbba8a6a786f7bd1d004f49260205cfda38fc1ffa4a83a9f23ca997955, got 8dde46d28b2178580926050206588bbd76dad19fffdaee3632459528d7b6c116",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-E06": {
+      "fault_id": "FI-E06",
+      "severity": "P0",
+      "justification": "Selecciona arbitrariamente la primera versi\u00f3n ante solapamiento de vigencias en lugar de declarar indeterminaci\u00f3n.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 14,
+      "sample_violation": "Byte hash differs for audit.json: expected d73d3eccb5904c3f4d85e9d9710842ed3b34db473b9efd9cec8977dcbebae493, got 128559e7826c6d01ce2db179c1502e73166585362358d7aba3b333ac85aa7950",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-E07": {
+      "fault_id": "FI-E07",
+      "severity": "P0",
+      "justification": "Selecciona arbitrariamente la primera regla ante ambig\u00fcedad tarifaria en vez de UNDETERMINABLE.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 15,
+      "sample_violation": "Byte hash differs for audit.json: expected 96e4f314acb8a0e4fbed47a28f7da58999bbcbee38bcbf8db8f5277dc0eee0eb, got 90a35059bc5693a72971e97bcf08584e89d13a060c5431213211418f7f0b4c53",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-E08": {
+      "fault_id": "FI-E08",
+      "severity": "P0",
+      "justification": "Selecciona arbitrariamente el primer shipment ante ambig\u00fcedad de matching en vez de REVIEW.",
+      "status": "DETECTED",
+      "primary_detector": "manifest_verifier",
+      "detected_by": [
+        "manifest_verifier",
+        "reconcile"
+      ],
+      "violations_count": 2,
+      "sample_violation": "Byte hash differs for audit.json: expected bff074b4bf6e0ab216e6325b479505a6f0cdc58e5c321ab37300f1d8fce51399, got 4ec2e9c24c276380df190f947970bd5195fd73d6c8229f2599cd654317c8805e",
+      "expected_detector": "manifest_verifier",
+      "independent_detection": true
+    },
+    "FI-E09": {
+      "fault_id": "FI-E09",
+      "severity": "P0",
+      "justification": "Mezcla o corrompe totales por moneda en el resumen econ\u00f3mico de la auditor\u00eda.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile"
+      ],
+      "violations_count": 6,
+      "sample_violation": "Byte hash differs for audit.json: expected e95bab8f005fc9a48704445ba57453014fe535aa6f05b5bf62415418e9976888, got cfb4db39e438fdc0f14e4a54b38d5ea9f8566a7a1ac3a0f62ada1b7d94110ab6",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-E10": {
+      "fault_id": "FI-E10",
+      "severity": "P0",
+      "justification": "P\u00e9rdida silenciosa de un cargo en los hallazgos (N -> N-1), omitiendo una obligaci\u00f3n financiera.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 13,
+      "sample_violation": "Byte hash differs for audit.json: expected 8dfb98d1fa3eb774b6ab3fede6d2b535ac922f42e1d4028cf43097873f2a7a00, got 82e266f801fdbcbed33374d3c664da8d5767199236bc6d78c05c8eb1a5172f13",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-E11": {
+      "fault_id": "FI-E11",
+      "severity": "P0",
+      "justification": "Duplica indebidamente un hallazgo econ\u00f3mico en los resultados (N -> N+1), duplicando el cobro.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 17,
+      "sample_violation": "Byte hash differs for audit.json: expected 4d1dcf1cfb8261d73f2c86acf35c471b238c359af29718a2f515765a3ac74eb9, got 7ba35e0912ace5ee2bfd45b1280f7f827627e5b8b1f36104e30aecce33974f41",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-E12": {
+      "fault_id": "FI-E12",
+      "severity": "P0",
+      "justification": "Redondeo prematuro que altera los centavos del valor esperado contractualmente.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 8,
+      "sample_violation": "Byte hash differs for audit.json: expected 7153260e476c00944dd1041ff2496eaf0bfb8f7f9f399b253c7b8f5689f4f64d, got e82e09902fecc7a1135e6460249ff47c0324a5b708f6f855b6057d748e90c859",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-I01": {
+      "fault_id": "FI-I01",
+      "severity": "P0",
+      "justification": "Altera directamente el importe econ\u00f3mico de un cargo (+0.01) tras la lectura documental.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 6,
+      "sample_violation": "Byte hash differs for audit.json: expected c10830896b9bef03a5a532b54cd524ab8316c623c09bbba17abe89d198dc3748, got 9d533e8ac3d7b56a3da98b33d6860ba02e5dd9b49c760859a8fd67a0718088e2",
+      "expected_detector": "provenance_verifier",
+      "independent_detection": true
+    },
+    "FI-I02": {
+      "fault_id": "FI-I02",
+      "severity": "P0",
+      "justification": "Invierte el signo del cargo econ\u00f3mico (100 -> -100), transformando un cobro en cr\u00e9dito.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 6,
+      "sample_violation": "Byte hash differs for audit.json: expected 5d487a76c23223cd64714a6fad8f61015e69894309fea7a29df1c22f4d495947, got f0abed54f825bb999d72c1ab4ddbb77c383f89911e604d48c61745af9996cc9e",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-I03": {
+      "fault_id": "FI-I03",
+      "severity": "P0",
+      "justification": "Muta la moneda del cargo (ARS -> USD), alterando la denominaci\u00f3n y balance financiero.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 6,
+      "sample_violation": "Byte hash differs for audit.json: expected 0fb2ff38d5515b840ed2f223f6cdc36bc178ba46e121a7def69d82eae8c6a8f4, got ad2af2ef5a77a225f19b5c7ab106c6dba5db25b7652489865110e515f879a973",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-I04": {
+      "fault_id": "FI-I04",
+      "severity": "P0",
+      "justification": "Desplaza la fecha de servicio a trav\u00e9s de una frontera de vigencia contractual, cambiando la tarifa aplicable.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 5,
+      "sample_violation": "Byte hash differs for audit.json: expected de5b6103d8d546c0c8226461718504e924005d9cdb5bcc3e7dadd562763b99fb, got 624332dcea585171e1f9394e8ccd5cd4b88e225827925be5b4013f90c058ca58",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-I05": {
+      "fault_id": "FI-I05",
+      "severity": "P0",
+      "justification": "Altera la referencia documental, provocando matching inv\u00e1lido o asociaci\u00f3n con shipment err\u00f3neo.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 4,
+      "sample_violation": "Byte hash differs for audit.json: expected 872a5eecbf6300ee88c2c5c49aa17b9641d3e4955add1b478bfa02b5767674a1, got 86318468055e3fdb1f4d8a3fbef753fdd1b1b7a7d5127d5b6f620e5f622f1a3d",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-I06": {
+      "fault_id": "FI-I06",
+      "severity": "P1",
+      "justification": "El valor econ\u00f3mico es correcto pero la celda/fila de procedencia es falsa, degradando la auditabilidad sin variar el saldo.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile"
+      ],
+      "violations_count": 5,
+      "sample_violation": "Byte hash differs for audit.json: expected ddf977b70e6a481e0cff1d2dbeaacbe26225366db30bc075db292cebeca2554b, got 0075d36d1fe5a69b4113f7479515ab2713204e986af571ae6ee3bfa880e1ff6f",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-P01": {
+      "fault_id": "FI-P01",
+      "severity": "P0",
+      "justification": "Sustituye el resultado de una corrida v\u00e1lida por el de otra, persistiendo una conclusi\u00f3n falsa.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 12,
+      "sample_violation": "Byte hash differs for audit.json: expected 150cca0df9716dc8ed8d20fe67be1df0f4b8b04bf13969709a59b9d6f97c05e2, got 3a56ee900c9df067c594585c9f9fd8ee03595991c2a6475b8bd61d5d5db349ef",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-P02": {
+      "fault_id": "FI-P02",
+      "severity": "P1",
+      "justification": "El c\u00e1lculo num\u00e9rico es correcto pero la decisi\u00f3n humana queda hu\u00e9rfana al referenciar un finding inexistente.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile"
+      ],
+      "violations_count": 4,
+      "sample_violation": "Byte hash differs for audit.json: expected 64c07d25f98daf1d0a29d3d4068923addc458c01de54e581973e5b3d5d40a6e9, got 17b08dff74ae5bb49a0b21bf93cd72cec4523bd6c60b5cd682a3465b8e61192d",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-P03": {
+      "fault_id": "FI-P03",
+      "severity": "P1",
+      "justification": "No altera saldos directos pero destruye la verificabilidad criptogr\u00e1fica secuencial de la cadena de decisiones.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile"
+      ],
+      "violations_count": 5,
+      "sample_violation": "Byte hash differs for audit.json: expected 929abf22d5ef98c85fbdeb4bfc1e0770cf404d12145bb4dcb2e6f6b348500c0c, got 9aed0357fe212a9c5e56007705ae1f3b5c60f78da4a46fda4fca59c8b8f678c1",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-P04": {
+      "fault_id": "FI-P04",
+      "severity": "P1",
+      "justification": "No altera importes pero falsifica el digest SHA-256 de identidad del motor de auditor\u00eda.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile"
+      ],
+      "violations_count": 4,
+      "sample_violation": "Byte hash differs for audit.json: expected b30863bed858549e281cff76f8618908f4754e66c95340eadd35b3fc9dfead06, got 0835f7a91cf6ba936f1728767629c7cd6a8a4a6ed3683944a2a976e20b60ff35",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-P05": {
+      "fault_id": "FI-P05",
+      "severity": "P1",
+      "justification": "Los resultados econ\u00f3micos persisten intactos pero la evidencia documental original es eliminada del bundle.",
+      "status": "DETECTED",
+      "primary_detector": "manifest_verifier",
+      "detected_by": [
+        "manifest_verifier",
+        "provenance_verifier",
+        "reconcile"
+      ],
+      "violations_count": 371,
+      "sample_violation": "Declarated file missing from bundle: sources/ced3ad5c8dc1f6c0b7a124ada3d198dfccca630e070a2b2fae7f6fd896cecb19",
+      "expected_detector": "manifest_verifier",
+      "independent_detection": true
+    },
+    "FI-R01": {
+      "fault_id": "FI-R01",
+      "severity": "P0",
+      "justification": "Muestra 'Coincide' (PASS) en el archivo Excel cuando el motor determin\u00f3 revisi\u00f3n humana pendiente.",
+      "status": "DETECTED",
+      "primary_detector": "manifest_verifier",
+      "detected_by": [
+        "manifest_verifier",
+        "reconcile"
+      ],
+      "violations_count": 3,
+      "sample_violation": "Byte hash differs for auditoria.xlsx: expected f04e5b9f3241c5c53ccb1a7469112bc512d5e95f6a276bf646b11f940ca951db, got 5993321bf6bfe444997aa5bd9529927991cfdb0629acde4e7e9b6995d52f64f7",
+      "expected_detector": "manifest_verifier",
+      "independent_detection": true
+    },
+    "FI-R02": {
+      "fault_id": "FI-R02",
+      "severity": "P0",
+      "justification": "Muestra 'Discrepancia' (FAIL) en HTML cuando el motor determin\u00f3 que el caso es indeterminado.",
+      "status": "DETECTED",
+      "primary_detector": "manifest_verifier",
+      "detected_by": [
+        "manifest_verifier",
+        "reconcile"
+      ],
+      "violations_count": 2,
+      "sample_violation": "Byte hash differs for reporte.html: expected 371da35859a9c87d5fb13b5ad14ec92ca75a0149d3800b6d83c94f126b513ef4, got 06f2d260479208723b29c8822cb0a45a781592114d95a07ad73b138d3242231c",
+      "expected_detector": "manifest_verifier",
+      "independent_detection": true
+    },
+    "FI-R03": {
+      "fault_id": "FI-R03",
+      "severity": "P0",
+      "justification": "Altera la diferencia econ\u00f3mica en la planilla Excel visible para el cliente (20 -> 99999).",
+      "status": "DETECTED",
+      "primary_detector": "manifest_verifier",
+      "detected_by": [
+        "manifest_verifier",
+        "reconcile"
+      ],
+      "violations_count": 3,
+      "sample_violation": "Byte hash differs for auditoria.xlsx: expected 4e5df8a96618155856f1d329bb5e8958c769ec38ebf0c1662537b38c50cf7446, got b8c5628ffb7290162b63221e5971737fa0e2e67243f949b3c25e86ee8899e792",
+      "expected_detector": "manifest_verifier",
+      "independent_detection": true
+    },
+    "FI-R04": {
+      "fault_id": "FI-R04",
+      "severity": "P0",
+      "justification": "Elimina f\u00edsicamente una fila de hallazgo del Excel, distorsionando la conciliaci\u00f3n del reporte.",
+      "status": "DETECTED",
+      "primary_detector": "manifest_verifier",
+      "detected_by": [
+        "manifest_verifier",
+        "reconcile"
+      ],
+      "violations_count": 3,
+      "sample_violation": "Byte hash differs for auditoria.xlsx: expected 8d83dcabb528205d4b107ed8d0ffbd7f3569b363b6e64b9e3b155dbad53b1088, got 8f74ffabe99045b6fa66b5889aed10bc37f9a71cd474474d57e05d4b4aef4693",
+      "expected_detector": "manifest_verifier",
+      "independent_detection": true
+    },
+    "FI-R05": {
+      "fault_id": "FI-R05",
+      "severity": "P0",
+      "justification": "Altera la columna de moneda en el reporte Excel (ARS -> USD) sin convertir el importe num\u00e9rico.",
+      "status": "DETECTED",
+      "primary_detector": "manifest_verifier",
+      "detected_by": [
+        "manifest_verifier",
+        "reconcile"
+      ],
+      "violations_count": 3,
+      "sample_violation": "Byte hash differs for auditoria.xlsx: expected b30e7d40a32d1055216475d73a98c7c13f666e841430f1526bfe194c9d53d0bb, got 3d2114fdb81f115bfe2fb813c257fb4ee90a5ea7c347793969d1c76bbebd8976",
+      "expected_detector": "manifest_verifier",
+      "independent_detection": true
+    },
+    "FI-R06": {
+      "fault_id": "FI-R06",
+      "severity": "P1",
+      "justification": "Conserva el estado REVIEW y los importes pero elimina la justificaci\u00f3n causal y evidencia ausente del Excel.",
+      "status": "DETECTED",
+      "primary_detector": "manifest_verifier",
+      "detected_by": [
+        "manifest_verifier",
+        "reconcile"
+      ],
+      "violations_count": 3,
+      "sample_violation": "Byte hash differs for auditoria.xlsx: expected 81ce2a12c948c8398f0fe43a4dd6cfa0f0387965b26be7b0d0e141f2d587a1e5, got 01e167df99baee507cf87bfc2d64ea570fa3f879ad49748599b7443ff146ea47",
+      "expected_detector": "manifest_verifier",
+      "independent_detection": true
+    },
+    "FI-U01": {
+      "fault_id": "FI-U01",
+      "severity": "P0",
+      "justification": "El DOM de la interfaz muestra 'Coincide' para un hallazgo en REVIEW, enga\u00f1ando al operador humano.",
+      "status": "DETECTED",
+      "primary_detector": "reconcile",
+      "detected_by": [
+        "reconcile"
+      ],
+      "violations_count": 1,
+      "sample_violation": "INV-23 UI: supplied complete DOM observation differs",
+      "expected_detector": "reconcile",
+      "independent_detection": true
+    },
+    "FI-U02": {
+      "fault_id": "FI-U02",
+      "severity": "P0",
+      "justification": "El DOM muestra una diferencia distorsionada (+2,00 en vez de +20,00), enga\u00f1ando sobre el recupero.",
+      "status": "DETECTED",
+      "primary_detector": "reconcile",
+      "detected_by": [
+        "reconcile"
+      ],
+      "violations_count": 1,
+      "sample_violation": "INV-23 UI: supplied complete DOM observation differs",
+      "expected_detector": "reconcile",
+      "independent_detection": true
+    },
+    "FI-U03": {
+      "fault_id": "FI-U03",
+      "severity": "P0",
+      "justification": "El DOM muestra s\u00edmbolo de moneda USD en vez de ARS para importes en moneda local.",
+      "status": "DETECTED",
+      "primary_detector": "reconcile",
+      "detected_by": [
+        "reconcile"
+      ],
+      "violations_count": 1,
+      "sample_violation": "INV-23 UI: supplied complete DOM observation differs",
+      "expected_detector": "reconcile",
+      "independent_detection": true
+    },
+    "FI-U04": {
+      "fault_id": "FI-U04",
+      "severity": "P1",
+      "justification": "Los datos num\u00e9ricos coinciden pero el DOM omite la advertencia visual de importaci\u00f3n incompleta.",
+      "status": "DETECTED",
+      "primary_detector": "reconcile",
+      "detected_by": [
+        "reconcile"
+      ],
+      "violations_count": 1,
+      "sample_violation": "INV-23 UI: supplied complete DOM observation differs",
+      "expected_detector": "reconcile",
+      "independent_detection": true
+    },
+    "FI-X01": {
+      "fault_id": "FI-X01",
+      "severity": "P0",
+      "justification": "Manipulaci\u00f3n coordinada de importe en importador y Excel para enmascarar desv\u00edo financiero.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 9,
+      "sample_violation": "Byte hash differs for audit.json: expected a59a70269f7a85947cf2e8a450038f9ff9e260d773895a14b64bb24b3e4b9898, got 6022a92c389b9eb7ebceaea4770630c8a28a6e7cc3010aa2ad441c08b2d54b00",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-X02": {
+      "fault_id": "FI-X02",
+      "severity": "P0",
+      "justification": "Cascada de suavizado cosm\u00e9tico: Core REVIEW -> HTML PASS -> UI Coincide.",
+      "status": "DETECTED",
+      "primary_detector": "manifest_verifier",
+      "detected_by": [
+        "manifest_verifier",
+        "reconcile"
+      ],
+      "violations_count": 4,
+      "sample_violation": "Byte hash differs for reporte.html: expected 371da35859a9c87d5fb13b5ad14ec92ca75a0149d3800b6d83c94f126b513ef4, got 4f435cfd13d87db2ab8c1d5cf2ff458b7aed7a626c5bbc52fc8ff70df3a61bf8",
+      "expected_detector": "manifest_verifier",
+      "independent_detection": true
+    },
+    "FI-X03": {
+      "fault_id": "FI-X03",
+      "severity": "P0",
+      "justification": "Falsificaci\u00f3n coordinada en snapshot y resultado preservando el archivo documental original.",
+      "status": "DETECTED",
+      "primary_detector": "invariants",
+      "detected_by": [
+        "invariants",
+        "manifest_verifier",
+        "reconcile",
+        "replay"
+      ],
+      "violations_count": 15,
+      "sample_violation": "Byte hash differs for audit.json: expected 784769028e93f087809570915a39abbc72dc3756fef691e9e28c1fe014ba4edf, got 4c98475ce0225cd585d6fca10d188f497f8a2176c66715c4fe5b551043f6c987",
+      "expected_detector": "invariants",
+      "independent_detection": true
+    },
+    "FI-X04": {
+      "fault_id": "FI-X04",
+      "severity": "P0",
+      "justification": "Corrupci\u00f3n directa de bytes en audit.json sin reflejo en el manifest criptogr\u00e1fico.",
+      "status": "DETECTED",
+      "primary_detector": "manifest_verifier",
+      "detected_by": [
+        "manifest_verifier",
+        "reconcile"
+      ],
+      "violations_count": 2,
+      "sample_violation": "Byte hash differs for audit.json: expected a77ab57176ce83b9095e1026bf5d3f1b28468800c8772cadf1ea31866d45e466, got edacdebe7f14401c8c9fa5fed299e2e966ab36b1656e966f5f0f19accb25f2b1",
+      "expected_detector": "manifest_verifier",
+      "independent_detection": true
+    }
+  },
+  "summary": {
+    "p0_total": 33,
+    "p0_detected_or_prevented": 33,
+    "p0_survived": 0,
+    "p1_total": 8,
+    "p1_detected_or_prevented": 8,
+    "p1_survived": 0,
+    "p2_total": 0,
+    "p2_detected_or_prevented": 0,
+    "p2_survived": 0
+  }
+}

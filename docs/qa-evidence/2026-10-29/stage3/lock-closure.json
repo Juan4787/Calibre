@@ -1,0 +1,16 @@
+{
+  "source": "Official PyPI release metadata, unchanged package versions plus conditional colorama0.4.6",
+  "python": "3.12",
+  "platforms": {
+    "linux": {
+      "pins": 41,
+      "active_dependency_edges": 38,
+      "errors": []
+    },
+    "win32": {
+      "pins": 42,
+      "active_dependency_edges": 40,
+      "errors": []
+    }
+  }
+}

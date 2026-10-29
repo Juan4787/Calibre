@@ -1,0 +1,40 @@
+{
+  "passed": true,
+  "old_health": {
+    "engine_version": "0.3.0",
+    "artifact_hash": "fdd667513b48127a6a1c2e1475e05a6c27326e30d82841851d7777db7a8e702f",
+    "database_schema": 2
+  },
+  "candidate_health": {
+    "engine_version": "0.3.1",
+    "artifact_hash": "dca7228d52b7db230a57a181bd71e8b8d9842960b5b941a247bba5941a50514e",
+    "database_schema": 2
+  },
+  "databases_before_upgrade": 4,
+  "historical_run_identities_unchanged": true,
+  "post_upgrade_run_preserved": "adfdc01819befcc935ae4571d8e44ed2635a5052a94d881e0a3d282c89a785a6",
+  "post_upgrade_client_preserved": true,
+  "explicit_rollback_health": true,
+  "occupied_port_automatic_rollback": true,
+  "previous_port_restored": true,
+  "real_systemd_service": "calibre-rehearsal-259869.service",
+  "events": [
+    {
+      "action": "--wheel",
+      "exit": 0
+    },
+    {
+      "action": "--wheel",
+      "exit": 0
+    },
+    {
+      "action": "--rollback",
+      "exit": 0
+    },
+    {
+      "action": "--wheel",
+      "exit": 1
+    }
+  ],
+  "scope": "Fictional data, actual installed wheels and user systemd; not production data or Windows"
+}

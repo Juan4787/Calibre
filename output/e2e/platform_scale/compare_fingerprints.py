@@ -25,7 +25,8 @@ def compare_runs(linux_runs, windows_runs):
         indexed.append({r.get("dataset_label"): r for r in runs})
     left, right = indexed
     for label in sorted(set(left) | set(right)):
-        # Compare all identities, traces and source/engine hashes, not a monetary subset.
+        # Compare portable identities, complete result/source/engine hashes, traces and documentary metadata.
+        # Actual runtime-bound identities are separately mandatory in fingerprint_errors.
         if left.get(label) != right.get(label):
             errors.append(f"Dataset {label}: full semantic fingerprint differs")
     return not errors, errors, {

@@ -12,25 +12,61 @@ from urllib.parse import quote
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
-from starlette.background import BackgroundTask
 from starlette.concurrency import run_in_threadpool
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from . import ENGINE_VERSION
-from .canonical import canonical, load_json
+from .canonical import canonical_chunks, load_json
 from .document_control import documentary_control
 from .engine import audit, matching_preflight
 from .fixtures import generate, run_demo
 from .importing import MAX_FILE_BYTES, ImportMapping, import_data, source_filename
 from .models import Agreement, Dataset, Decision
-from .reporting import bundle_bytes, html_report, workbook_bytes
+from .reporting import html_report, write_bundle, write_workbook
 from .storage import Store, engine_artifact_hash
 from .workspaces import Workspaces
 
 logger = logging.getLogger("freight_audit")
+
+
+class TemporaryArtifactResponse(FileResponse):
+    """Own temporary files until streaming ends, including a disconnected client."""
+
+    def __init__(self, path, *, cleanup, **kwargs):
+        super().__init__(path, **kwargs)
+        self.cleanup = cleanup
+
+    async def __call__(self, scope, receive, send):
+        # A deferred pathname transfer can outlive this call; own the chunked
+        # transfer so cleanup in finally always follows the last actual send.
+        scope = {
+            **scope,
+            "extensions": {
+                key: value
+                for key, value in scope.get("extensions", {}).items()
+                if key != "http.response.pathsend"
+            },
+        }
+        try:
+            await super().__call__(scope, receive, send)
+        finally:
+            self.cleanup()
+
+
+def _json_stream(value):
+    chunks = []
+    size = 0
+    for chunk in canonical_chunks(value):
+        chunks.append(chunk)
+        size += len(chunk)
+        if size >= 64 * 1024:
+            yield b"".join(chunks)
+            chunks, size = [], 0
+    if chunks:
+        yield b"".join(chunks)
 
 
 def create_app(db_path: Path) -> FastAPI:
@@ -277,7 +313,7 @@ def create_app(db_path: Path) -> FastAPI:
     @app.get("/api/runs/{run_id}")
     @limited
     def get_run(run_id: str, request: Request):
-        return selected(request).load(run_id)
+        return StreamingResponse(_json_stream(selected(request).load(run_id)), media_type="application/json")
 
     @app.get("/api/configs")
     def configs(request: Request):
@@ -304,11 +340,11 @@ def create_app(db_path: Path) -> FastAPI:
     @limited
     def workspace_backup(request: Request):
         backup = workspaces.backup(selected(request))
-        return FileResponse(
+        return TemporaryArtifactResponse(
             backup,
             media_type="application/octet-stream",
             filename="calibre-backup.db",
-            background=BackgroundTask(shutil.rmtree, backup.parent),
+            cleanup=lambda: shutil.rmtree(backup.parent),
         )
 
     @app.post("/api/workspaces/restore")
@@ -406,32 +442,36 @@ def create_app(db_path: Path) -> FastAPI:
     @limited
     def export(run_id: str, format: str, request: Request):
         store = selected(request)
-        run = store.load(run_id)
-        if format == "canonical":
-            return Response(
-                canonical(run),
-                media_type="application/json",
-                headers={"Content-Disposition": 'attachment; filename="audit.json"'},
+        choices = {
+            "canonical": ("audit.json", "application/json"),
+            "xlsx": ("auditoria.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+            "html": ("reporte.html", "text/html"),
+            "zip": ("auditoria.zip", "application/zip"),
+        }
+        if format not in choices:
+            raise HTTPException(404, "Formato no disponible.")
+        filename, media_type = choices[format]
+        directory = tempfile.TemporaryDirectory(prefix="calibre-report-")
+        path = Path(directory.name) / filename
+        try:
+            with path.open("wb") as output:
+                if format == "zip":
+                    write_bundle(store, run_id, output)
+                else:
+                    run = store.load(run_id)
+                    if format == "xlsx":
+                        write_workbook(run, output)
+                    elif format == "canonical":
+                        for chunk in canonical_chunks(run):
+                            output.write(chunk)
+                    else:
+                        output.write(html_report(run).encode())
+            return TemporaryArtifactResponse(
+                path, cleanup=directory.cleanup, media_type=media_type, filename=filename
             )
-        if format == "xlsx":
-            return Response(
-                workbook_bytes(run),
-                media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                headers={"Content-Disposition": 'attachment; filename="auditoria.xlsx"'},
-            )
-        if format == "html":
-            return Response(
-                html_report(run),
-                media_type="text/html",
-                headers={"Content-Disposition": 'attachment; filename="reporte.html"'},
-            )
-        if format == "zip":
-            return Response(
-                bundle_bytes(store, run_id),
-                media_type="application/zip",
-                headers={"Content-Disposition": 'attachment; filename="auditoria.zip"'},
-            )
-        raise HTTPException(404, "Formato no disponible.")
+        except BaseException:
+            directory.cleanup()
+            raise
 
     @app.get("/api/sources/{source_hash}")
     @limited

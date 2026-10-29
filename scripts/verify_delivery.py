@@ -6,13 +6,18 @@ import hashlib
 import io
 import json
 import os
+import platform
+import re
 import shutil
 import subprocess
 import sys
 import tarfile
 import tempfile
 import zipfile
+import zlib
 from pathlib import Path
+
+from packaging.requirements import Requirement
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -47,6 +52,16 @@ def archive_contents(path):
         }
 
 
+def expected_pins(lock, environment=None):
+    expected = {}
+    for line in lock.splitlines():
+        if re.match(r"^[A-Za-z0-9_.-]+==", line):
+            requirement = Requirement(line.removesuffix("\\").strip())
+            if requirement.marker is None or requirement.marker.evaluate(environment):
+                expected[requirement.name.lower().replace("_", "-")] = str(requirement.specifier)[2:]
+    return expected
+
+
 def pinned_environment(venv_python, lock):
     freeze = command([venv_python, "-m", "pip", "freeze"])
     installed = {
@@ -55,12 +70,7 @@ def pinned_environment(venv_python, lock):
         if "==" in line
         for name, version in [line.split("==", 1)]
     }
-    expected = {
-        name.lower().replace("_", "-"): version
-        for line in lock.splitlines()
-        if line and not line.startswith("#")
-        for name, version in [line.split("==", 1)]
-    }
+    expected = expected_pins(lock)
     if any(installed.get(name) != version for name, version in expected.items()):
         raise RuntimeError("The isolated environment differs from requirements.lock")
     command([venv_python, "-m", "pip", "check"])
@@ -121,6 +131,7 @@ def verify(output, artifacts_out=None):
         raise RuntimeError("Commit or remove worktree changes before delivery verification")
     commit = command(["git", "rev-parse", "HEAD"]).strip()
     tree = command(["git", "rev-parse", "HEAD^{tree}"]).strip()
+    epoch = int(command(["git", "show", "-s", "--format=%ct", "HEAD"]).strip())
     archived = command_bytes(["git", "archive", "--format=tar", "HEAD"])
     with tempfile.TemporaryDirectory(prefix="freight-delivery-") as temporary:
         base = Path(temporary)
@@ -130,7 +141,7 @@ def verify(output, artifacts_out=None):
         tracked_count = clean_source(checkouts[0], archived)
         clean_source(checkouts[1], archived)
         for checkout in checkouts:
-            command([sys.executable, "-m", "build", "--no-isolation"], cwd=checkout)
+            command([sys.executable, "scripts/build_reproducible.py", "--epoch", str(epoch)], cwd=checkout)
         artifacts = []
         for checkout in checkouts:
             files = sorted((checkout / "dist").iterdir())
@@ -145,6 +156,8 @@ def verify(output, artifacts_out=None):
             first_contents, second_contents = archive_contents(first), archive_contents(second)
             if first_contents != second_contents:
                 raise RuntimeError(f"Build content differs across clean checkouts: {name}")
+            if first.read_bytes() != second.read_bytes():
+                raise RuntimeError(f"Build bytes differ across clean checkouts: {name}")
             builds[name] = {
                 "first_sha256": sha(first.read_bytes()),
                 "second_sha256": sha(second.read_bytes()),
@@ -193,6 +206,12 @@ def verify(output, artifacts_out=None):
         sdist_smoke = smoke(venv_python, checkouts[0], base)
         report = {
             "commit": commit,
+            "source_date_epoch": epoch,
+            "toolchain": {
+                "python": platform.python_version(),
+                "zlib": zlib.ZLIB_RUNTIME_VERSION,
+                "build_isolation": False,
+            },
             "tree": tree,
             "tracked_files_compared": tracked_count,
             "requirements_lock_sha256": sha(lock.encode()),
@@ -212,6 +231,9 @@ def verify(output, artifacts_out=None):
             report["verified_artifacts"] = str(artifacts_out.resolve())
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    if artifacts_out is not None:
+        with (artifacts_out / "SHA256SUMS.txt").open("a") as checksums:
+            checksums.write(f"{sha(output.read_bytes())}  {output.name}\n")
     print(json.dumps(report, indent=2, ensure_ascii=False))
 
 

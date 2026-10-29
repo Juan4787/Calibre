@@ -1,0 +1,89 @@
+{
+  "run_id": "9f72aff921ef5ab42e14bdfcd4e07bfb80b3c2924eacedebad48920da7d06718",
+  "result_hash": "09d56dd538c4c7c17bbdc01fdb0f318f6ff2e8d62a1dd98d3db4f169161c24d9",
+  "rows_observed": 46,
+  "channels": {
+    "json": "checked",
+    "xlsx": "checked",
+    "html": "checked",
+    "api": "checked supplied response",
+    "ui": "46 actual DOM rows; all pages; exact cells and statuses"
+  },
+  "onr003": {
+    "loaded_mapping": "errores-demo@1",
+    "saved_selection_cleared": true,
+    "manual_survives_file_change": true
+  },
+  "onr005_views": {
+    "configs": true,
+    "guide": true,
+    "nonempty_inline_styles": 0
+  },
+  "onr001": {
+    "conflicting_run": "5762321ebc9aa589e4b2fe698b6ae13ed7b0c096c55c7de948f1e050b0da6122",
+    "corrected_run": "5eb6604cc07c2f7e16750fb30131d55f1c06e1c5fdb712cf63d491169987a4e5",
+    "confirmed_net_conflict": "-75",
+    "confirmed_net_corrected": "-25",
+    "rows_observed": 44,
+    "channels": {
+      "json": "checked",
+      "xlsx": "checked",
+      "html": "checked",
+      "api": "checked supplied response",
+      "ui": "44 actual DOM rows; exact cells and statuses"
+    },
+    "stale_preflight_discarded": true,
+    "retry_verified": true,
+    "decision_preserved_uncertainty": true,
+    "replay_identical": true
+  },
+  "uncertainty": {
+    "invalid_net": "0",
+    "corrected_net": "-50",
+    "false_missing": 0,
+    "history_preserved": true
+  },
+  "loading_and_paging": {
+    "config_fetch_race": "protected",
+    "file_read_races": "protected",
+    "warning_count": 121,
+    "max_list_rows": 50,
+    "mobile_width": 390
+  },
+  "operations": {
+    "keyboard_file_chooser": true,
+    "conversion_preview": true,
+    "document_control_positive_and_negative": true,
+    "contract_original_download_identical": true,
+    "immutable_revision_links": true,
+    "workspace_isolation": true,
+    "backup_restore_replay": true,
+    "network_failure_recovery": true,
+    "scope": "Fictional client only; independent totals 194.25 + 204.25 = 398.5 USD"
+  },
+  "large_agreement_preview": {
+    "configured_rows": 20000,
+    "visible_preview_rows": 20,
+    "full_editor_unchanged": true,
+    "viewports": [
+      1280,
+      390
+    ]
+  },
+  "product_path": "/home/usuario/CascadeProjects/CALIBRE/src/freight_audit/__init__.py",
+  "runtime_python": "/home/usuario/CascadeProjects/CALIBRE/.venv/bin/python",
+  "ui_sha256": "de7a38081b973cdad0bb445922028d25f029918ce04994914e99dc96ceca70be",
+  "browser": "153.0.8010.12",
+  "listener_scope": "127.0.0.1 only, inspected in /proc/net/tcp",
+  "network_boundary": {
+    "foreign_origin": "http://127.0.0.1:37673",
+    "browser_readable": false,
+    "runs_created": 0
+  },
+  "console_errors": [
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "csp_rejections": [],
+  "passed": true
+}

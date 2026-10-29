@@ -1,0 +1,68 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_______ test_temporary_download_streams_even_when_pathsend_is_advertised _______
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-41/test_temporary_download_stream0')
+
+    def test_temporary_download_streams_even_when_pathsend_is_advertised(tmp_path):
+        from freight_audit.server import TemporaryArtifactResponse
+    
+        path = tmp_path / "temporary.txt"
+        path.write_bytes(b"complete artifact")
+        response = TemporaryArtifactResponse(path, cleanup=path.unlink)
+        bodies = []
+    
+        async def send(message):
+            assert message["type"] != "http.response.pathsend", "Cleanup must wait for transfer, not a deferred pathname"
+            if message["type"] == "http.response.body":
+                bodies.append(message["body"])
+    
+        async def receive():
+            return {"type": "http.disconnect"}
+    
+>       asyncio.run(response({"type": "http", "method": "GET", "headers": [], "extensions": {"http.response.pathsend": {}}}, receive, send))
+
+tests/test_resource_delivery.py:174: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+src/freight_audit/server.py:44: in __call__
+    await super().__call__(scope, receive, send)
+.venv/lib/python3.12/site-packages/starlette/responses.py:366: in __call__
+    await self._handle_simple(send, send_header_only, send_pathsend)
+.venv/lib/python3.12/site-packages/starlette/responses.py:392: in _handle_simple
+    await send({"type": "http.response.pathsend", "path": str(self.path)})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+message = {'type': 'http.response.pathsend', 'path': '/tmp/pytest-of-usuario/pytest-41/test_temporary_download_stream0/temporary.txt'}
+
+    async def send(message):
+>       assert message["type"] != "http.response.pathsend", "Cleanup must wait for transfer, not a deferred pathname"
+E       AssertionError: Cleanup must wait for transfer, not a deferred pathname
+E       assert 'http.response.pathsend' != 'http.response.pathsend'
+
+tests/test_resource_delivery.py:167: AssertionError
+______ test_xlsx_budget_returns_warning_in_bundle_without_truncating_json ______
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-41/test_xlsx_budget_returns_warni0')
+make_dataset = <function make_dataset.<locals>.factory at 0x7404263b68e0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x74042639e360>
+
+    def test_xlsx_budget_returns_warning_in_bundle_without_truncating_json(tmp_path, make_dataset, monkeypatch):
+        store, identifier = saved(tmp_path, make_dataset)
+        monkeypatch.setattr(reporting, "MAX_XLSX_XML_BUDGET", 1, raising=False)
+>       with pytest.raises(reporting.ReportLimitError, match="presupuesto"):
+E       Failed: DID NOT RAISE ReportLimitError
+
+tests/test_resource_delivery.py:182: Failed
+=========================== short test summary info ============================
+FAILED tests/test_resource_delivery.py::test_temporary_download_streams_even_when_pathsend_is_advertised
+FAILED tests/test_resource_delivery.py::test_xlsx_budget_returns_warning_in_bundle_without_truncating_json
+2 failed in 0.68s

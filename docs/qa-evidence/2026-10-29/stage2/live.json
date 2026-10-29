@@ -1,0 +1,23 @@
+{
+  "health": {
+    "engine_version": "0.3.0",
+    "artifact_hash": "fdd667513b48127a6a1c2e1475e05a6c27326e30d82841851d7777db7a8e702f",
+    "database_schema": 2
+  },
+  "http_index": 200,
+  "ui_sha256": "a19a58b3e7042f2e6718efb85ff14235f0ee07ea8e612c6c75f2371db3b614b2",
+  "current": "/home/usuario/.local/share/calibre/releases/0.3.0",
+  "history_preserved": true,
+  "counts": {
+    "runs": 0,
+    "decisions": 0,
+    "configs": 0,
+    "sources": 0
+  },
+  "backup_v1_quick_check": "ok",
+  "loopback_listener": [
+    "0100007F:223D"
+  ],
+  "service": "active",
+  "pid": "204961"
+}

@@ -1,6 +1,6 @@
 # FREIGHT AUDIT
 
-La instalación local entregada se abre en **http://127.0.0.1:8765**. Operación, espacios de cliente, control documental, respaldos, restauración y contratos de compatibilidad de la siguiente etapa: [guía 0.3.0](docs/ENGINE_0_3_0.md). Consultar la bitácora para distinguir versión en desarrollo de versión efectivamente instalada.
+La instalación local entregada se abre en **http://127.0.0.1:8765**. Operación, espacios de cliente, control documental, respaldos, restauración y contratos de compatibilidad de la siguiente etapa: [guía operativa 0.3.0](docs/ENGINE_0_3_0.md) y [recursos/actualización 0.3.1](docs/ENGINE_0_3_1.md). Consultar la bitácora para distinguir versión en desarrollo de versión efectivamente instalada.
 
 Continuidad del trabajo: [directrices obligatorias](AGENTS.md), [bitácora actual](docs/CONTINUATION.md), [plan por etapas](docs/STAGED_HARDENING_2026_10_29.md) y [contrato 0.2.0](docs/ENGINE_0_2_0.md). El estado de publicación/instalación se registra con evidencia; una versión de trabajo no implica una entrega publicada.
 
@@ -103,7 +103,7 @@ node --check src/freight_audit/static/app.js
 .venv/bin/python scripts/verify_delivery.py --output output/delivery-verification.json
 ```
 
-Node sólo se usa para la comprobación de sintaxis de la UI, no para ejecutar el producto. El runner de 1.000 cargos mide las etapas del flujo y compara los resultados sintéticos con un oráculo; no acredita 50.000/100.000 cargos ni la UI de navegador a esa escala. Las campañas grandes requieren un equipo con memoria suficiente y controles explícitos de recursos. `verify_delivery.py` reconstruye wheel y sdist en dos copias limpias, compara sus contenidos, instala cada uno fuera del checkout y comprueba recursos, demo, replay, exportación y equivalencia económica LF/CRLF; no prueba Excel de escritorio.
+Node sólo se usa para la comprobación de sintaxis de la UI, no para ejecutar el producto. El runner de 1.000 cargos mide las etapas del flujo y compara los resultados sintéticos con un oráculo; no acredita 50.000/100.000 cargos ni la UI de navegador a esa escala. Las campañas grandes requieren un equipo con memoria suficiente y controles explícitos de recursos. `verify_delivery.py` reconstruye wheel y sdist en dos copias limpias, exige contenido y bytes idénticos, instala cada uno fuera del checkout y comprueba recursos, demo, replay, exportación y equivalencia económica LF/CRLF; no prueba Excel de escritorio.
 
 [Revisión adversarial](docs/ADVERSARIAL_REVIEW.md), [verificación y benchmarks](docs/VERIFICATION.md) y [entrega técnica](docs/DELIVERY.md) documentan evidencia, resultados y límites.
 

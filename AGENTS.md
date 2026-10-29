@@ -25,6 +25,8 @@ Actualizar `docs/CONTINUATION.md`:
 
 Debe registrar: objetivo activo, decisiones y motivos, archivos/contratos afectados, versiones y hashes, comandos y resultados con ubicación de evidencia, tareas en curso y sus identificadores, estado real de GitHub/instalación, backups/reversión y siguiente acción exacta. Marcar explícitamente cualquier dato todavía desconocido o comprobación pendiente.
 
+El SHA de un commit que sólo actualiza esta bitácora se obtiene con `git log -1 --format=%H -- docs/CONTINUATION.md`; no insertar su propio SHA recursivamente. Para una verificación que exige árbol limpio, registrar el inicio antes del commit documental y añadir el resultado después de terminar.
+
 No escribir tokens, credenciales ni datos privados en documentación, commits o artefactos públicos. No volcar logs completos con originales de clientes. Mantener la evidencia pública ficticia y acotada.
 
 ## Rigor técnico

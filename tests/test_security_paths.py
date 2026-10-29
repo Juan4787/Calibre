@@ -87,7 +87,9 @@ def test_export_marks_interrupted_or_invalid_package(tmp_path, make_dataset, mon
     with zipfile.ZipFile(package, "w") as archive:
         archive.writestr("audit.json", b"partial")
         archive.writestr("../witness.txt", b"changed")
-    monkeypatch.setattr("freight_audit.reporting.bundle_bytes", lambda *_: package.getvalue())
+    monkeypatch.setattr(
+        "freight_audit.reporting.write_bundle", lambda _store, _run, output: output.write(package.getvalue())
+    )
 
     output = tmp_path / "partial"
     with pytest.raises(IntegrityError, match="ruta"):

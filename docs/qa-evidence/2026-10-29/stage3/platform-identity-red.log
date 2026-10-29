@@ -1,0 +1,33 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_portable_fingerprint_validates_machine_bound_identities_without_comparing_them _
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-48/test_portable_fingerprint_vali0')
+make_dataset = <function make_dataset.<locals>.factory at 0x7f6a18d85440>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f6a18d7e2a0>
+
+    def test_portable_fingerprint_validates_machine_bound_identities_without_comparing_them(tmp_path, make_dataset, monkeypatch):
+        from freight_audit.canonical import digest
+        from freight_audit.engine import audit
+        from freight_audit.storage import Store
+        from output.e2e.platform_scale.compare_fingerprints import compare_runs
+        from output.e2e.platform_scale.run_platform_suite import compute_semantic_fingerprint
+    
+        dataset = make_dataset()
+        result = audit(dataset)
+        fingerprints = []
+        ids = []
+        for system in ("Linux", "Windows"):
+            monkeypatch.setattr("freight_audit.storage.environment", lambda system=system: {"system": system})
+            store = Store(tmp_path / (system + ".db"))
+            identifier = store.save(dataset, result)
+            ids.append(identifier)
+            fingerprints.append(compute_semantic_fingerprint(store, [identifier]))
+        assert ids[0] != ids[1], "Metadata-bound identities must preserve the actual environment"
+>       assert compare_runs(fingerprints[0]["runs"], fingerprints[1]["runs"])[0]
+E       assert False
+
+tests/test_qa_gates.py:200: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_qa_gates.py::test_portable_fingerprint_validates_machine_bound_identities_without_comparing_them
+1 failed in 0.56s

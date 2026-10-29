@@ -126,7 +126,7 @@ run_tier_release() {
 
     echo "[2/5] Building distribution artifacts from clean HEAD..."
     rm -rf dist/
-    "$PYTHON" -m build
+    "$PYTHON" scripts/verify_delivery.py --output dist/delivery-verification.json --artifacts-out dist
 
     echo "[3/5] Computing and logging SHA-256 hashes..."
     sha256sum dist/*

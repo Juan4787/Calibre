@@ -1,0 +1,12 @@
+{
+  "python_patch_versions": [
+    "3.12.15",
+    "3.12.10"
+  ],
+  "original_gate_parity": false,
+  "new_gate_parity": true,
+  "actual_run_ids_differ": true,
+  "result_hash_equal": true,
+  "new_gate_checks_original_identity_and_metadata": true,
+  "source_of_previous_function": "git HEAD before QA fix; no product code modified"
+}

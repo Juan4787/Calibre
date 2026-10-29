@@ -17,16 +17,22 @@ from defusedxml.ElementTree import iterparse
 from openpyxl.utils.cell import column_index_from_string, coordinate_from_string
 from pydantic import Field, ValidationError, model_validator
 
-from .canonical import bytes_hash, decimal_text, number
+from .canonical import bytes_hash, canonical, decimal_text, number
 from .models import Charge, DataIssue, Identifier, Model, Shipment, SourceRef, Value
 
 MAX_FILE_BYTES = 25 * 1024 * 1024
 MAX_EXPANDED_BYTES = 150 * 1024 * 1024
 MAX_ROWS = 200001
 MAX_COLUMNS = 250
+MAX_TABULAR_CELLS = 1_000_000
+MAX_NORMALIZED_BYTES = 128 * 1024 * 1024
 
 
 class ImportErrorDetail(ValueError):
+    pass
+
+
+class _BudgetExceeded(ImportErrorDetail):
     pass
 
 
@@ -231,9 +237,15 @@ def read_table(data: bytes, filename: str, mapping: ImportMapping) -> Tabular:
             rows = []
             physical_lines = []
             previous_line = 0
+            cell_count = 0
             for index, csv_row in enumerate(reader):
                 if index >= MAX_ROWS or len(csv_row) > MAX_COLUMNS:
                     raise ImportErrorDetail("El archivo supera el límite de filas o columnas.")
+                cell_count += len(csv_row)
+                if cell_count > MAX_TABULAR_CELLS:
+                    raise ImportErrorDetail(
+                        "El archivo supera el presupuesto de celdas expandidas; dividirlo o seleccionar sólo el período y columnas necesarios."
+                    )
                 physical_lines.append(previous_line + 1)
                 previous_line = reader.line_num
                 rows.append([Cell(value) for value in csv_row])
@@ -278,10 +290,20 @@ def read_table(data: bytes, filename: str, mapping: ImportMapping) -> Tabular:
                     raise ImportErrorDetail(
                         "La hoja supera el límite de filas o columnas; revisar su rango utilizado."
                     )
+                if (sheet.max_row or 0) * (sheet.max_column or 0) > MAX_TABULAR_CELLS:
+                    raise ImportErrorDetail(
+                        "La hoja supera el presupuesto de celdas expandidas; revisar su rango utilizado."
+                    )
                 rows = []
+                cell_count = 0
                 for index, row in enumerate(sheet.iter_rows()):
                     if index >= MAX_ROWS or len(row) > MAX_COLUMNS:
                         raise ImportErrorDetail("La hoja supera el límite de importación.")
+                    cell_count += len(row)
+                    if cell_count > MAX_TABULAR_CELLS:
+                        raise ImportErrorDetail(
+                            "La hoja supera el presupuesto de celdas expandidas; revisar su rango utilizado."
+                        )
                     rows.append(
                         [
                             Cell(cell.value, cell.number_format or "", cell.data_type in {"f", "e"})
@@ -328,6 +350,10 @@ def read_table(data: bytes, filename: str, mapping: ImportMapping) -> Tabular:
                     )
                 if sheet_xls.nrows > MAX_ROWS or sheet_xls.ncols > MAX_COLUMNS:
                     raise ImportErrorDetail("El libro XLS supera el límite de importación.")
+                if sheet_xls.nrows * sheet_xls.ncols > MAX_TABULAR_CELLS:
+                    raise ImportErrorDetail(
+                        "El libro XLS supera el presupuesto de celdas expandidas; revisar su rango utilizado."
+                    )
                 rows = []
                 for row_index in range(sheet_xls.nrows):
                     xls_row: list[Cell] = []
@@ -483,6 +509,32 @@ def import_data(data: bytes, filename: str, mapping: ImportMapping) -> dict:
     rejected = []
     seen = set()
     preview: list[dict] = []
+    normalized_bytes = (
+        len(
+            canonical(
+                {
+                    "mapping": mapping,
+                    "headers": headers,
+                    "sheets": table.sheets,
+                    "filename": source_filename(filename),
+                    "document": document,
+                    "sheet": table.sheet,
+                }
+            ).encode()
+        )
+        + 256
+    )
+
+    def reserve(value):
+        nonlocal normalized_bytes
+        normalized_bytes += len(canonical(value).encode()) + 2
+        if normalized_bytes > MAX_NORMALIZED_BYTES:
+            raise _BudgetExceeded(
+                "El lote normalizado supera el presupuesto de importación; dividirlo en períodos más pequeños antes de continuar. No se conservaron registros parciales."
+            )
+
+    for issue in issues:
+        reserve(issue)
     for logical_row, row in enumerate(table.rows[mapping.header_row :], start=mapping.header_row + 1):
         row_number = table.row_numbers[logical_row - 1] if table.row_numbers else logical_row
         if all(cell.value is None or cell.value == "" for cell in row):
@@ -497,6 +549,7 @@ def import_data(data: bytes, filename: str, mapping: ImportMapping) -> dict:
                     },
                 }
             )
+            reserve(preview[-1])
         record: dict = {"attributes": {}, "provenance": {}}
         row_issues = []
         has_extra_columns = (
@@ -542,6 +595,7 @@ def import_data(data: bytes, filename: str, mapping: ImportMapping) -> dict:
                                 raw=str(value),
                             )
                         )
+                        reserve(issues[-1])
                         value = "external:" + str(value)
                 if column.target.startswith("attributes."):
                     record["attributes"][column.target[11:]] = Value(
@@ -558,6 +612,8 @@ def import_data(data: bytes, filename: str, mapping: ImportMapping) -> dict:
                     raw=cell.raw(),
                     transform=f"{mapping.id}@{mapping.version}:{column.type}",
                 )
+            except _BudgetExceeded:
+                raise
             except ValueError as exc:
                 row_issues.append(
                     DataIssue(
@@ -579,7 +635,11 @@ def import_data(data: bytes, filename: str, mapping: ImportMapping) -> dict:
                 if model.id in seen:
                     raise ValueError(f"Identificador '{model.id}' repetido; corregirlo en el archivo.")
                 seen.add(model.id)
-                records.append(model.model_dump(mode="json"))
+                normalized = model.model_dump(mode="json")
+                reserve(normalized)
+                records.append(normalized)
+            except _BudgetExceeded:
+                raise
             except (ValidationError, ValueError) as exc:
                 message = (
                     "La fila no cumple el contrato de datos; revisar identificadores y campos obligatorios."
@@ -596,6 +656,9 @@ def import_data(data: bytes, filename: str, mapping: ImportMapping) -> dict:
                 )
         if row_issues:
             rejected.append(row_number)
+            reserve(row_number)
+            for issue in row_issues:
+                reserve(issue)
             issues.extend(row_issues)
     return {
         "document": document,

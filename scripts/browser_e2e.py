@@ -781,9 +781,15 @@ def main():
                             result["loading_and_paging"] = exercise_loading_and_paging(
                                 page, client, args.output_dir, ROOT
                             )
-                            from scripts.browser_operations import exercise_operations
+                            from scripts.browser_operations import (
+                                exercise_large_agreement_preview,
+                                exercise_operations,
+                            )
 
                             result["operations"] = exercise_operations(page, client, args.output_dir, ROOT)
+                            result["large_agreement_preview"] = exercise_large_agreement_preview(
+                                page, client, args.output_dir, ROOT
+                            )
                             assert not errors, errors
                             csp_rejections = [
                                 message

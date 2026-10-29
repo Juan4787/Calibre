@@ -1,0 +1,72 @@
+{
+  "commit": "ec5566d50408b857ab23a5755be8c4e6ec61f1e1",
+  "source_date_epoch": 1793299410,
+  "toolchain": {
+    "python": "3.12.3",
+    "zlib": "1.3",
+    "build_isolation": false
+  },
+  "tree": "34dd76771ba4ec72647f71ced91ab2adbda19e49",
+  "tracked_files_compared": 644,
+  "requirements_lock_sha256": "377b9d3924d47aff612fe1874c28e981a1607142b7e604a3c20b8d0d6d49f34f",
+  "pinned_environment": {
+    "annotated-doc": "0.0.5",
+    "annotated-types": "0.8.0",
+    "anyio": "4.15.1",
+    "build": "1.6.1",
+    "certifi": "2026.7.22",
+    "click": "8.5.0",
+    "defusedxml": "0.7.1",
+    "et-xmlfile": "2.0.0",
+    "fastapi": "0.141.1",
+    "h11": "0.16.0",
+    "httpcore": "1.0.9",
+    "httpx": "0.28.1",
+    "hypothesis": "6.168.0",
+    "idna": "3.19",
+    "iniconfig": "2.3.0",
+    "librt": "0.15.0",
+    "mypy": "1.20.2",
+    "mypy-extensions": "1.1.0",
+    "openpyxl": "3.1.5",
+    "packaging": "26.3",
+    "pathspec": "1.1.1",
+    "pluggy": "1.6.0",
+    "pydantic": "2.13.5",
+    "pydantic-core": "2.46.5",
+    "pygments": "2.21.0",
+    "pyproject-hooks": "1.3.3",
+    "pytest": "9.1.1",
+    "python-multipart": "0.0.32",
+    "ruff": "0.16.8",
+    "setuptools": "80.9.0",
+    "sortedcontainers": "2.4.0",
+    "starlette": "1.6.0",
+    "typing-extensions": "4.16.0",
+    "typing-inspection": "0.4.4",
+    "uvicorn": "0.53.0",
+    "wheel": "0.45.1",
+    "xlrd": "2.0.2",
+    "xlwt": "1.3.0"
+  },
+  "clean_builds": {
+    "freight_audit-0.3.1-py3-none-any.whl": {
+      "first_sha256": "e8d45b60170718b233b3363e5c286606fa02433d503c7cde9935d2b5a1daca01",
+      "second_sha256": "e8d45b60170718b233b3363e5c286606fa02433d503c7cde9935d2b5a1daca01",
+      "byte_identical": true,
+      "member_count": 25,
+      "content_digest": "46df90c2c76c990eeaf7d3b63d19215c8827c290c91f036543a7d914c50b70b0"
+    },
+    "freight_audit-0.3.1.tar.gz": {
+      "first_sha256": "7d6fe724347921c70da3961b37627f287868da9f2d25b16bd552ad2cf6a4dbc0",
+      "second_sha256": "7d6fe724347921c70da3961b37627f287868da9f2d25b16bd552ad2cf6a4dbc0",
+      "byte_identical": true,
+      "member_count": 347,
+      "content_digest": "494c95528757ac5772aeeac594c0c4d13bc2fbd7024e1138f9b0f74d9db0d26e"
+    }
+  },
+  "wheel_smoke": "Installed wheel: static UI, generated fixtures, audit, persistence, replay and export passed.",
+  "sdist_smoke": "Installed wheel: static UI, generated fixtures, audit, persistence, replay and export passed.",
+  "scope": "Clean source, package content and installed behavior on this OS; not Windows Excel or field validation",
+  "verified_artifacts": "/tmp/calibre-implementation-20261029-CvSz5k/stage3-candidate-assets"
+}

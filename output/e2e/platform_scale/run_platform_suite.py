@@ -94,6 +94,7 @@ def normalize_fingerprint_finding(finding: dict) -> dict:
 def compute_semantic_fingerprint(store: Store, run_ids: list[str]) -> dict:
     """Computes a normalized semantic fingerprint for a list of runs."""
     runs_fingerprints = []
+    identities = []
     for rid in run_ids:
         run = store.load(rid)
         findings_norm = [
@@ -124,9 +125,16 @@ def compute_semantic_fingerprint(store: Store, run_ids: list[str]) -> dict:
                 "undeterminable": str(Decimal(str(sdata.get("undeterminable", "0")))),
             }
 
+        # Python patch versions are observed independently per OS. Preserve the
+        # actual metadata-bound identity as proof, then compare a portable
+        # identity retaining ALL metadata except that explicit runtime field.
+        portable_metadata = {key: value for key, value in run["metadata"].items() if key != "python"}
+        identities.append({"dataset_label": run["snapshot"]["label"], "run_id": rid, "metadata": run["metadata"]})
         runs_fingerprints.append(
             {
-                "run_id": rid,
+                "portable_run_id": digest([run["input_hash"], run["result_hash"], run["artifact_hash"], digest(portable_metadata)]),
+                "result_hash": run["result_hash"],
+                "portable_metadata": portable_metadata,
                 "snapshot_hash": run["input_hash"],
                 "engine_artifact_hash": run["artifact_hash"],
                 "dataset_label": run["snapshot"].get("label", ""),
@@ -139,7 +147,8 @@ def compute_semantic_fingerprint(store: Store, run_ids: list[str]) -> dict:
     # Sort runs by dataset label
     runs_fingerprints.sort(key=lambda r: r["dataset_label"])
     return {
-        "schema": "calibre-platform/v2",
+        "schema": "calibre-platform/v3",
+        "identities": sorted(identities, key=lambda entry: entry["dataset_label"]),
         "runs": runs_fingerprints,
         "digest": digest(runs_fingerprints),
     }
