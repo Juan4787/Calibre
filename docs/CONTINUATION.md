@@ -106,3 +106,12 @@ Final: reabrir cada hallazgo original con evidencia nueva, cruzar API/UI/CLI/rep
 ## Certificación de fuente comprometida
 
 Implementación etapa3 comprometida en **ae87e18** sobre engineering/performance-0.3.1. El commit siguiente sólo registra este checkpoint/directriz de SHA documental (consultar git log -1 -- docs/CONTINUATION.md). Árbol de producto idéntico. Se inicia verify_delivery estricto con dos archives limpios; salida/artefactos temporales **stage3-candidate-delivery.json** y **stage3-candidate-assets/** bajo /tmp/calibre-implementation-20261029-CvSz5k. Mientras corre no editar ningún archivo trackeado porque compara HEAD/estado; registrar resultado al finalizar. Luego ensayo real aislado, no producción.
+
+
+## Distribución candidata certificada
+
+verify_delivery PASSED sobre **ec5566d50408b857ab23a5755be8c4e6ec61f1e1**: dos builds de cada wheel/sdist idénticos EN BYTES; pip con hashes y 38pins/pipcheck; smoke de ambos instalados fuera del checkout. Python3.12.3/zlib1.3, epoch1793299410. Wheel candidato e8d45b60170718b233b3363e5c286606fa02433d503c7cde9935d2b5a1daca01; sdist7d6fe724347921c70da3961b37627f287868da9f2d25b16bd552ad2cf6a4dbc0. Recibo stage3/candidate-delivery.json; assets en stage3-candidate-assets/. NO son assets definitivos desde main/tag, ni se instalaron en producción.
+
+Ensayo REAL en curso: scripts/rehearse_upgrade.py, sesión80482; raíz NUEVA /tmp/calibre-implementation-20261029-CvSz5k/stage3-real-rehearsal, log stage3-real-rehearsal.log, salida prevista stage3-real-rehearsal.json. Al finalizar deshabilita/elimina exclusivamente su service/launcher de nombre único; conserva venvs/DB ficticias privadas. La producción0.3permanece activa y aislada. No ejecutar otra QA pesada local a la vez.
+
+Se prepara PR de etapa3 como draft: CI puede ejecutarse mientras se terminan los ensayos locales; no mergear/publicar hasta revisar todos los checks y resultados. Pending: E2E del candidato instalado, corpus/mutaciones/nightly actual, plataformas Windows/Linux actuales, assets definitivos desde main, release/activación y auditoría final.
