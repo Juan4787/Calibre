@@ -1,0 +1,38 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_independent_checker_includes_contract_original_not_repeated_in_registry _
+
+tmp_path = PosixPath('/tmp/pytest-of-usuario/pytest-25/test_independent_checker_inclu0')
+raw_dataset = {'label': 'Prueba ficticia', 'shipments': [{'id': 'S1', 'reference': '00001', 'carrier': 'C', 'attributes': {'service_...arrier': 'C', ...}], 'agreements': [{'id': 'A', 'name': 'Acuerdo FICTICIO A', 'carrier': 'C', 'currency': 'ARS', ...}]}
+
+    def test_independent_checker_includes_contract_original_not_repeated_in_registry(tmp_path, raw_dataset):
+        from qa.external_control import compare_external_control
+    
+        with authorized_client(tmp_path / "contract-inventory.db") as client:
+            refs = upload(client)
+            attachment = client.post("/api/evidence-file", files={"file": ("contract.txt", b"fictional reference")}).json()
+            body = body_for(raw_dataset, refs)
+            body["contract_sources"] = [{"document_hash": attachment["document_hash"], "agreement": "A", "version": "V1", "page": 1}]
+            body["external_control"] = independent_control()
+            body["external_control"]["source_hashes"].append(attachment["document_hash"])
+            response = client.post("/api/audit", json=body)
+            assert response.status_code == 200, response.text
+            run = client.get("/api/runs/" + response.json()["run_id"]).json()
+            assert attachment["document_hash"] not in run["snapshot"]["documents"]
+>           assert compare_external_control(run, body["external_control"])["passed"]
+E           assert False
+
+tests/test_operations.py:385: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /home/usuario/CascadeProjects/CALIBRE/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv/lib/python3.12/site-packages/starlette/testclient.py:53
+  /home/usuario/CascadeProjects/CALIBRE/.venv/lib/python3.12/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_operations.py::test_independent_checker_includes_contract_original_not_repeated_in_registry
+1 failed, 14 deselected, 2 warnings in 0.75s

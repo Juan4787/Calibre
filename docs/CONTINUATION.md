@@ -1,6 +1,6 @@
 # Bitácora obligatoria de continuidad
 
-Leer completa después de cada compactación junto con `AGENTS.md`. Última actualización: 29/10/2026, inicio de implementación.
+Leer completa después de cada compactación junto con `AGENTS.md`. Última actualización: 29/10/2026, implementación de etapa 2; etapa 1 entregada.
 
 ## Objetivo y autorizaciones
 
@@ -15,14 +15,17 @@ El usuario exige documentación completa y directrices que se relean después de
 El workflow del tag v0.2.0, run 40830562663, terminó con fallo en el smoke instalado: pip heredó PYTHONPATH del checkout, reconoció los metadatos de la misma versión como instalada y omitió copiar el wheel al entorno aislado. El smoke fuera del checkout detectó correctamente la ausencia del módulo. Los smoke/E2E instalados locales y los hashes descargados del release habían pasado; no son evidencia de aprobación de ese workflow. Se corrige el aislamiento quitando PYTHONPATH también durante pip y forzando la instalación del wheel. Requiere CI y workflow manual sobre el commit corregido, sin mover el tag histórico ni reemplazar sus artefactos. Rama de esta corrección: engineering/release-install-isolation.
 
 - Cwd: `/home/usuario/CascadeProjects/CALIBRE`.
-- Rama de trabajo: `engineering/staged-hardening-20261029`.
+- Rama de trabajo actual: `engineering/operations-0.3.0`, creada desde main al terminar etapa 1. La rama anterior queda como historia del PR #1.
 - HEAD inicial publicado: `fd62f05392f819896589c2a3b271ad49cdcfafbd`, versión 0.1.0.
 - Commit de preservación: `e5a404e`, conserva los cambios anteriores 0.1.2 (ONR-001..005, pruebas y evidencia). Publicado en la rama de trabajo.
-- Commit de etapa 1: `a237fd136c9fb759504852ac365dfc2e77bc360b`, publicado en esa rama. PR: https://github.com/Juan4787/Calibre/pull/1. CI en curso: https://github.com/Juan4787/Calibre/actions/runs/40829017212.
-- Documentación de etapas: `docs/STAGED_HARDENING_2026_10_29.md`. Se acaba de crear, todavía sin commit.
-- Etapa activa: **1, certeza e integridad**, implementación en curso, todavía SIN entrega ni publicación. Versión de trabajo 0.2.0.
-- Publicaciones realizadas: rama/PR de etapa 1; **main y releases todavía no actualizados**.
-- Instalación nueva: entorno **preparado y verificado, NO activado** en `/home/usuario/.local/share/calibre/releases/0.2.0/`. Smoke y E2E completo del wheel instalado pasaron. No hay listener Calibre activo ni base operativa creada.
+- Commit de etapa 1: `a237fd136c9fb759504852ac365dfc2e77bc360b`, publicado en esa rama. PR: https://github.com/Juan4787/Calibre/pull/1. CI final de PR #1 aprobado: https://github.com/Juan4787/Calibre/actions/runs/40829412107.
+- Documentación de etapas: `docs/STAGED_HARDENING_2026_10_29.md`. Publicado en main con la etapa 1.
+- Etapa 1: completada; los apartados de trabajo de esa etapa que siguen son historia cronológica, no pendientes actuales.
+- **Etapa 1 publicada e instalada.** PR #1 MERGED, main `30d774cc5695103e4396cc78d2b5db5daa63e6a9`. Su árbol coincide con el de 4b83186, que pasó CI; CI de main también aprobada (40829873255).
+- Release: https://github.com/Juan4787/Calibre/releases/tag/v0.2.0. Incluye wheel, sdist, SHA256SUMS y recibo de distribución. Descarga remota repetida: hashes de los tres archivos comprobados OK.
+- Instalación activa: `/home/usuario/.local/share/calibre/current` → `releases/0.2.0`; DB `/home/usuario/.local/share/calibre/workspaces/default/audit.db`. Al activar tenía **0 corridas**; volver a verificar antes de migrar porque el usuario puede abrirla.
+- Servicio de usuario **activo y habilitado**: `calibre-freight.service`, puerto **127.0.0.1:8765**, PID inicial 3744918 (no asumir PID vigente). Launcher `/home/usuario/.local/bin/calibre-freight`; unit `/home/usuario/.config/systemd/user/calibre-freight.service`. Root de instalación modo 700; DB 600. Readback HTTP 200, JS igual al wheel instalado. Los ensayos usaron bases temporales, no esta DB.
+- Etapa activa: **2, operación**, versión de trabajo 0.3.0 sin publicar. Cambios locales todavía sin commit; producción sigue en 0.2.0 / schema 1.
 - No hay herramientas Browser activas; está disponible Playwright Python con Chromium. Usar el fallback documentado y pruebas secuenciales.
 - CLI `gh` autenticada con cuenta activa `Juan4787`; git HTTPS tiene acceso de lectura. No se imprimieron secretos. Comprobar escritura al publicar la rama autorizada.
 - No hay agentes secundarios en ejecución. No delegar salvo instrucción explícita aplicable.
@@ -65,10 +68,10 @@ No existen originales/contratos/control independiente de un cliente real. No se 
 
 ## Próxima acción exacta
 
-1. Comprobar CI de PR #1. Preservar/commit de los recibos instalados y esta actualización documental; se disparará CI sobre el nuevo HEAD, que debe aprobar.
-2. Configurar protección de main con los nombres reales de checks exitosos; integrar PR, publicar tag/release 0.2.0 con wheel y sdist concretamente verificados. Conservar el código anterior para replay.
-3. Activar el entorno local preparado con el **mismo wheel** de `dist/`, crear launcher y servicio systemd de usuario en loopback; comprobar puerto/UI/version/ruta y base vacía. Registrar todo.
-4. Cambiar a etapa 2, nueva rama y versión 0.3.0. Diseñar imports conservados con referencias pequeñas (schema SQLite v2, migración sólo probada en copias), teclado y controles documentales.
+1. Crear y ejecutar las regresiones de etapa 2: imports compactos/ref de servidor, protección contra sustitución, control externo, referencias contractuales y relación entre corridas; comprobar estado rojo antes de implementar.
+2. Implementar schema SQLite v2 (tabla imports inmutable, migración aditiva transaccional), API por referencias y paginación de incidencias; UI por teclado, preflight y control documental. NO modificar el servicio 0.2.0 mientras se desarrolla.
+3. Completar identificación de espacio local, cotejo/backup/restauración y resumen contractual legible. Ver diseño abajo.
+4. Antes de instalar 0.3.0: detener servicio, backup consistente verificado, migrar una copia y ensayar rollback. Conservar entorno 0.2.0. Nunca abrir una DB v2 con el motor viejo ni sustituir la DB sin preservar sus cambios.
 
 ## Trabajo de etapa 1 ya realizado y comprobaciones
 
@@ -106,3 +109,84 @@ No existen originales/contratos/control independiente de un cliente real. No se 
 - Preparación instalada: log `stage1-install.log`; entorno aislado, lock completo, smoke fuera del checkout. E2E instalado: `stage1-installed-browser/result.json`, passed, ruta de paquete dentro de releases/0.2.0; recibido permanente `installed-browser.json`.
 - Checks de PR revelaron una integración Netlify no documentada. **Sitio público y deploy preview devuelven 404**, igual que /api/session público. No existe backend declarado allí. No confundir check verde del deploy con app operativa. Registro `stage1/netlify-inspection.json`. Destinos elegidos por el usuario: GitHub y primera instalación local; no se configuró un SaaS ni se alteró Netlify.
 - Al retomar, la presencia de esta inspección no autoriza afirmar que Netlify publica el motor ni que es el destino operativo. Mantener el estado real visible en auditoría final.
+
+### Entrega efectiva de etapa 1
+
+- Protección de main aplicada y leída: checks obligatorios `Tier 1 - PR & Fast Functional Gate` y `Tier 2 - Full Semantic & Invariant Verification`, strict, aplica a admins, requiere PR (0 aprobaciones porque el dueño trabaja solo), sin force push ni borrado, conversaciones resueltas.
+- Replay histórico preservado mediante tags `replay-0.1.0-fd62f05` y `replay-0.1.2-e5a404e` (no se presentan como releases recomendadas).
+- Verificador de distribución de dos checkouts limpios aprobado: `/tmp/calibre-implementation-20261029-CvSz5k/stage1-delivery.json`. Byte-identical aún es deuda de etapa 3; contenido e instalaciones wheel/sdist verificados.
+- Artefactos concretos inmutables de etapa 1: `/tmp/calibre-implementation-20261029-CvSz5k/stage1-assets/`; copia descargada y comprobada en `stage1-readback/`.
+- Activación y readback local: `stage1-activation.json`, `stage1-live.json`. Aún falta copiarlos al recibo permanente junto con el de distribución y registrar el workflow de release que se disparó con el tag. No afirmar que ese workflow terminó hasta consultarlo.
+- El unit ejecuta el launcher con `serve --port 8765`, WorkingDirectory en root de instalación, PYTHONDONTWRITEBYTECODE=1, UMask=0077, NoNewPrivileges=yes, Restart=on-failure. `systemctl --user stop/start/status calibre-freight.service` administra el proceso.
+
+## Diseño de etapa 2 pendiente de implementación
+
+- API `/api/import` con Form compact=true para el wizard: conservar resultado completo en SQLite y devolver ID/contadores/vista previa acotada; mantener API normal por compatibilidad. Los requests de audit/preflight llevan `{imports:{shipments:id,charges:id}, label, agreements, evidence, coverage, ...}`. Resolver en servidor, rechazar mezcla con records/overrides. La respuesta preflight incluye sólo referencias de los candidatos mostrados, para conservar avisos sin enviar todas las operaciones.
+- Incidencias compactas: no volver a enviar todas; devolver conteos y primera página, con endpoint de páginas de 50. Conservar todos los mensajes backend y proteger respuestas obsoletas al cambiar vista/archivo/página.
+- Huella de importador liga cada import conservado a lector/modelos/canonical; rechazar import antiguo si esos archivos cambian. Las optimizaciones de reporting no deberían invalidar un import por cambiar sólo la versión del paquete.
+- Control externo: debe estar vinculado al snapshot (campo opcional excluido de hash semántico económico); así agregar control crea una corrida distinta sin sobrescribir metadata por INSERT OR IGNORE. Validar inventario, conteos por fuente y moneda mediante Fraction, con archivo independiente aportado por operador. No generar los expected copiando los resultados. Sin control, mostrar pendiente; control contradictorio bloquea conservación hasta corregir.
+- Contrato: referencias opcionales a hash, acuerdo/versión/regla y página/cláusula/aprobación aportadas. Validar IDs y conservar documentos; no inventar aprobación ni autenticidad.
+- Relación entre corridas: campos opcionales `parent_run_id`/motivo/tipo vinculados al snapshot, excluidos de semántica económica. Evidencia adicional fija parent a la corrida actual. UI permite volver al original y muestra revisiones posteriores sin cambiar resultados históricos.
+- Workspace: hacer visibles nombre/DB y evitar fingir cliente asignado. Mantener DB separada por cliente; no construir SaaS/multiusuario. No cambiar el cliente de una base con historia de forma silenciosa. Diseñar el flujo concreto antes de extenderlo.
+- Accesibilidad: selector inicial nativo o botón, nombre/foco/teclado, label persistente del buscador, errores de conexión comprensibles. Preservar estilo/CSP existente y ejecutar desktop+390px/teclado real.
+
+## Actualización operativa de etapa 2 (estado vigente)
+
+- Corrección remota adicional de etapa 1: PR #2 https://github.com/Juan4787/Calibre/pull/2, commit 6ffb523, merge main **7dbc16d651472af955a8e5688075cd280f5bc372**. El workflow del tag 0.2 falló porque pip heredaba PYTHONPATH del checkout y omitía instalar el wheel al reconocer metadatos de la misma versión. Smoke fuera del checkout detectó la ausencia del módulo. Se quitó PYTHONPATH durante pip y se fuerza instalar el wheel; ambos checks del PR pasaron. **Workflow manual completo de release 40833070930 aprobado**, sin mover el tag ni reemplazar los artefactos. Recibo permanente release-recheck.json. Worktree de corrección /tmp/calibre-release-isolation-20261029, no es un agente paralelo.
+- Copias de activation/live/delivery de etapa 1 ya están en evidencia permanente, aún sin commit en la rama de etapa 2. Receipt actualizado con el estado real y el fallo/remediación remotos. No ocultar el fallo histórico del tag.
+- Nuevos módulos: document_control.py (comparación exacta Fraction), workspaces.py (bases separadas, backup íntegro, restore como base nueva). SQLite v2 agrega imports inmutables e índice de revisiones. Configs contienen registro de espacios en la DB principal e identidad inmutable por espacio. El backup de un espacio incluye SÓLO su DB, no las DB de los otros espacios registrados.
+- API compact=true conserva registros en servidor; IDs ligados al hash del importador; paginación de incidencias de 50; muestra de transformaciones limitada; requests rechazan sustituciones de registros. Trabajos costosos se serializan en threadpool para no bloquear el event loop ni ejecutar varios cálculos grandes simultáneamente. /api/health identifica versión y schema sin crear corridas.
+- Dataset añade control externo, fuentes contractuales (documento/versión/regla/página/cláusula/aprobación), parent_run_id/tipo/motivo. Se excluyen de semántica económica. Store.save rechaza control contradictorio y parent ausente. UI soporta carga de control, documento contractual y aprobación aportada; nueva evidencia deja control pendiente porque el inventario cambió.
+- Las nuevas corridas ligan metadata a su identidad (run_identity_version=2), para que no pueda alterarse la declaración de cotejo sin fallar el hash. Lectura y verificación de paquetes conservan compatibilidad de identidad v1. Metadatos históricos v1 no obtienen retroactivamente esa garantía. Se actualizaron QA invariants e impact para ambos contratos.
+- UI: selector visible de cliente/espacio, bases nuevas por nombre; backups preparados y restauración sin reemplazar; carga por botón nativo/teclado, labels buscadores, errores de red humanos, links y comparación entre revisiones, fórmulas/tarifas legibles. Cambio de espacio invalida respuestas pendientes. La restauración web admite 25 MiB; CLI restore-workspace admite 500 MiB y verifica antes de registrar.
+- Causal rojo inicial: 7/7 fallos en stage2-red.log; luego 7/7 verdes. Dos casos de aislamiento/restore fallaron antes del backend, luego pasaron. Nuevo caso de metadata alterada falló antes de proteger identidad, luego pasa dentro del cruce de familias.
+- Primera suite total: 322 passed / 2 failed: golden por versión y simulación de corrupción impedida por nuevo índice JSON. Golden comparado estructuralmente: SÓLO engine_version 0.2→0.3; importes/semántica/trazas idénticos. Para simular DB corrupta se elimina expresamente índice además del trigger antes de inyectar JSON inválido; no se elimina ninguna defensa del producto.
+- Primer E2E llegó al último flujo existente y detectó selector de espacio desplazando acción principal fuera del primer viewport móvil. Se compactó la cabecera móvil; requiere repetir. No se declara E2E aprobado todavía.
+- Cruce posterior detectó 15 fallos del verificador QA al asumir metadata siempre presente/parseada. Corregido: fixtures sintéticos v1 sin metadata siguen válidos y impact deserializa metadata para identidad v2. **Cruce repetido 63 passed**. Cambios UI/API posteriores requieren gate final.
+- Nuevas pruebas browser_operations.py (integradas al E2E canónico): chooser por Enter, transformaciones, control independiente escrito a mano (194.25+204.25=398.5 USD), negativo de cantidad, respaldo contractual descargado idéntico, corrección relacionada/comparación, cliente B vacío, restaurar A en base nueva y replay. Todavía sin ejecutar.
+
+### Siguiente acción exacta actualizada
+
+1. Terminar controles locales de etapa 2: ejecutar E2E nuevo y corregir fallos reales; probar 36.000 operaciones por referencias para cerrar el 413 original; migrar una copia v1 creada con el wheel instalado 0.2 y comprobar historia/rollback.
+2. Crear docs/ENGINE_0_3_0.md, actualizar APIs/arquitectura/uso y schemas, guardar recibo etapa 2. Completar tests de controles negativos/tampering/restore y límites; suite/corpus/mutaciones pertinentes/gate canónico.
+3. Commit de etapa 2, incorporar origin/main (PR #2) sin perder esta bitácora, PR protegido, CI y distribución/instalación aislada. Publicar 0.3 únicamente con evidencia aprobada. Antes de migrar instalación: parar servicio, backup verificado, ensayo copia, activar/reiniciar/readback, rollback conservando DB posterior.
+4. Etapa 3 y auditoría final siguen pendientes según plan. No cerrar por cantidad de tests ni omitir piloto real/Windows del operador pendientes externos.
+
+## Cierre local de etapa 2 antes de commit
+
+- Gate canónico final: **330 passed, 2 warnings**; Ruff/tipos/matriz/JS/compile/build aprobados, stage2-verify.log. Últimos cambios posteriores sólo amplían catálogo/documentación y preservación de artefactos en verify_delivery.py; comprobar esos scripts al entregar.
+- Nuevas familias/selectoras añadidas a QA-14/15/29/31/34/36 y matriz regenerada. Identidad de metadata v2 y schema 2 descritos sin atribuirlos a históricos.
+- **20/20 mutaciones detectadas** en etapa 2; **62/62 corpus adversarial**. E2E final **passed**, stage2-browser-release/result.json. Incluye recuperación real de conexión fallida (página aislada, sin excepciones JS), contratos/controles, comparación y restore. Fallos encontrados y corregidos: scroll persistente al navegar, busy genérico eliminaba opciones del select, cantidad esperada mal escrita en control de prueba (original tiene seis operaciones, no tres). No se relajó ninguna protección para pasar.
+- Ajustes finales: reportes HTML/XLSX indican control coincidente o pendiente; QA coteja exactamente ese texto. Verificador QA externo incluye originales citados aunque no estén repetidos en documents; regresión causal roja preservada y verde en suite final.
+- Volumen real API por referencias: **36.000 operaciones, un cargo**; originales pequeños; request 1.480 bytes vs 48.528.135 bytes con registros normalizados; 36.001 registros cotejados; esperado/facturado 100, diferencia 0, replay idéntico; 41,489 s en este host. NO equivale a 36.000 cargos tarifados ni a benchmark de exportación. Reproducir con scripts/audit_operations.py.
+- Migración real ensayada en copia: wheel instalado 0.2 fuera del checkout produjo DB/ZIP v1 de fixtures. Abrir con 0.3 migró a schema 2 y conservó id, hashes, snapshot, resultado, metadata, decisiones y fecha. El ZIP viejo pasa verificación nueva. Wheel viejo rechaza DB v2 y reproduce backup v1 intacto. Evidencia privada de trabajo stage2-migration/; recibo público migration.json, no se tocó DB operativa.
+- Evidencia durable (sin DB ni trace con tokens de sesión): docs/qa-evidence/2026-10-29/stage2/. El recibo dice publicación/instalación PENDIENTES. E2E fuente y corpus corresponden al producto actual; no equivalen al wheel aún no instalado.
+- verify_delivery.py ahora permite --artifacts-out RUTA_NUEVA y conserva exactamente wheel/sdist certificados para publicarlos, y limpia PYTHONPATH en subprocess. Todavía necesita ejecución después del commit limpio. La reproducibilidad binaria estricta sigue reservada a etapa 3.
+- Próximo paso: commit de implementación, merge origin/main (PR #2, posible conflicto de esta bitácora: conservar ambos hechos), crear PR y esperar checks. Ejecutar verify_delivery con preservación de assets, preparar instalación 0.3 sin activarla, E2E sobre wheel fuera del checkout. Actualizar recibos; sólo entonces merge/tag/release y actualización local con servicio detenido y backups.
+
+### Commits de etapa 2
+
+Implementación conservada en **3df0785**. Se incorporó origin/main con merge limpio (corrección de CI del PR #2); sólo agregó su nota histórica a esta bitácora, sin modificar el producto de etapa 2. Se publica ahora engineering/operations-0.3.0 para PR protegido. La instalación operativa sigue en 0.2.0. Falta certificación del wheel exacto, CI del PR y entrega efectiva.
+
+### Distribución certificada de etapa 2; activación pendiente
+
+- PR #3: https://github.com/Juan4787/Calibre/pull/3. HEAD inicial **29cd2bc184262c8072cf7d26db2ed227c12d0865**: ambos checks aprobados, run **40921597549**.
+- verify_delivery ejecutado desde árbol limpio: dos archives/checkouts limpios, contenido idéntico, wheel y sdist instalados y smoke fuera del checkout; **exactos artefactos certificados conservados** en /tmp/calibre-implementation-20261029-CvSz5k/stage2-assets/. Recibo público stage2/delivery.json. No sustituirlos por otro build al publicar.
+- Entorno preparado **/home/usuario/.local/share/calibre/releases/0.3.0** con el wheel de esos assets, requirements.lock y smoke instalado aprobado. **NO activado**; current sigue 0.2.0 y DB operativa schema 1.
+- E2E sobre Python real del entorno preparado: **passed**, stage2-installed-browser/result.json; product_path dentro de releases/0.3.0. Se agregó a browser_e2e.py --runtime-python para ejecutar backend con su Python, manteniendo Playwright en el entorno de QA. No se agregaron dependencias de navegador a producción. Esta opción conserva el default anterior para CI.
+- Recibos de instalación preparada, wheel/sdist y navegador instalado copiados a evidencia permanente. Falta commit de estos recibos + opción del runner y nueva CI de ese HEAD; luego merge/release/activación. El único cambio ejecutable tras certificar los assets es del runner de QA; ningún archivo de producto ni metadata del wheel cambió.
+
+### Fallo remoto de preparación y corrección del runner (bloqueo vigente hasta CI verde)
+
+- Head 61109c4: run **40922533991 FAILED**, Tier 2 omitido por dependencia. Falla en E2E al click #goto-step-3 oculto, no en las 330 pruebas/corpus/build.
+- Trace remoto descargado sólo a /tmp/.../stage2-ci-61109c4-browser/. Captura durable y diagnóstico en stage2/CI_READINESS.md. No publicar trace con tokens efímeros.
+- Causa comprobada: el test esperaba el substring «filas aceptadas», también presente en el placeholder previo a validar. En runner rápido intentó ir a Acuerdo antes de terminar cargos; el producto bloqueó el avance y conservó Datos. El test pudo cargar el JSON en input oculto; luego falló el click oculto. No es justificación para rerun sin corrección.
+- Runner corregido exige 32/46 filas exactas + botón habilitado + paso Acuerdo visible. Agrega una respuesta de cargos retenida intencionalmente y prueba que avanzar mientras espera sea rechazado, luego la libera. Producto y assets sin cambios. Repetición sobre wheel real en curso: **sesión 3021**, log stage2-installed-browser-readiness.log.
+- **No se mergeó, publicó ni activó 0.3.0**. Producción continúa 0.2.0, schema 1, **0 runs / 0 fuentes / 0 decisiones** al preflight más reciente. Su copia migró y verificó íntegra; no se migró producción. PR #3 espera CI corregida. La CLI gh pr edit falla por GraphQL projectCards deprecado; el body se actualizó correctamente por gh api PATCH con JSON de archivo.
+
+### Oráculo de preparación reforzado: repetición instalada aprobada
+
+- El head f2cbe37 falló también en CI (run 40923753720). La repetición local reforzada detectó que route.fetch reenviaba multipart con **file vacío**; bodies MIME 1242/977 bytes, file=0, 422. Evidencia durable route-fetch-file-omission.json, sin contenido ni tokens. El test anterior de respuesta obsoleta descartaba también ese error, por eso no había comprobado la entrega intacta de ese upload retenido.
+- Se mantiene la solicitud original del navegador retenida y se libera con **route.continue_()**, exigiendo **HTTP 200 para ambos originales retenidos**. Se conserva guard de avance pendiente, assert de 32/46 filas exactas, paso visible y descarte de respuesta obsoleta. Ningún timeout ampliado ni assert eliminado.
+- **E2E completo instalado aprobado** con esta versión del runner: /tmp/.../stage2-installed-browser-original-request/result.json, Python real releases/0.3.0. Recibo instalado público actualizado. Sólo quedan dos errores HTTP 503 intencionales de recuperación; no hay excepciones JS ni CSP. Se suprimió de la campaña el 422 involuntario del proxy del test, no una defensa del producto.
+- Se publica la corrección y se exige CI nueva antes de merge. Producto, wheel/sdist certificados y producción 0.2.0 permanecen sin cambios. El último commit de producto sigue 3df0785; el artefacto instalado preparado conserva SHA c682f5fa639c2f36628fa2fa149486673823e387ca4ccf55f66ee3d5a4871d07.

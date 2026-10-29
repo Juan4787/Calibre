@@ -297,6 +297,27 @@ class DataIssue(Model):
     raw: str | None = None
 
 
+class ContractSource(Model):
+    document_hash: Hash
+    agreement: Identifier
+    version: Identifier
+    rule: Identifier | None = None
+    page: int | None = Field(default=None, ge=1)
+    clause: str | None = None
+    approved_by: Identifier | None = None
+    approved_on: str | None = None
+
+    @model_validator(mode="after")
+    def citation(self):
+        if self.page is None and not (self.clause or "").strip():
+            raise ValueError("Indicar la página o cláusula del respaldo contractual.")
+        if bool(self.approved_by) != bool(self.approved_on):
+            raise ValueError("La aprobación requiere responsable y fecha, o dejar ambos pendientes.")
+        if self.approved_on and date.fromisoformat(self.approved_on).isoformat() != self.approved_on:
+            raise ValueError("La aprobación requiere fecha AAAA-MM-DD.")
+        return self
+
+
 class Dataset(Model):
     schema_version: Literal[1] = 1
     label: str
@@ -309,9 +330,18 @@ class Dataset(Model):
     documents: dict[str, str] = Field(default_factory=dict)
     # Missing-charge checks require an explicit agreement-to-operation scope.
     coverage: dict[Identifier, list[Identifier]] = Field(default_factory=dict)
+    contract_sources: list[ContractSource] = Field(default_factory=list)
+    external_control: dict | None = None
+    parent_run_id: Hash | None = None
+    revision_kind: Literal["correction", "evidence"] | None = None
+    revision_note: Annotated[str, StringConstraints(strip_whitespace=True, min_length=3)] | None = None
 
     @model_validator(mode="after")
     def unique_ids(self):
+        if any((self.parent_run_id, self.revision_kind, self.revision_note)) and not all(
+            (self.parent_run_id, self.revision_kind, self.revision_note)
+        ):
+            raise ValueError("Una revisión requiere auditoría anterior, tipo y motivo.")
         for field in ("shipments", "charges", "agreements", "evidence"):
             values = getattr(self, field)
             if len({item.id for item in values}) != len(values):
@@ -324,6 +354,18 @@ class Dataset(Model):
             if not evidence.shipment_ids and not evidence.charge_ids:
                 raise ValueError("La evidencia debe vincularse a una operación o cargo.")
         agreements = {a.id for a in self.agreements}
+        by_agreement = {a.id: a for a in self.agreements}
+        for citation in self.contract_sources:
+            target_agreement = by_agreement.get(citation.agreement)
+            versions = (
+                [v for v in target_agreement.versions if v.id == citation.version] if target_agreement else []
+            )
+            if len(versions) != 1 or (
+                citation.rule and citation.rule not in {r.id for r in versions[0].rules}
+            ):
+                raise ValueError(
+                    "El respaldo contractual referencia un acuerdo, versión o regla inexistente."
+                )
         carrier_by_agreement = {a.id: a.carrier for a in self.agreements}
         carrier_by_shipment = {s.id: s.carrier for s in self.shipments}
         for agreement, ids in self.coverage.items():

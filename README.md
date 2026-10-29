@@ -1,5 +1,7 @@
 # FREIGHT AUDIT
 
+La instalación local entregada se abre en **http://127.0.0.1:8765**. Operación, espacios de cliente, control documental, respaldos, restauración y contratos de compatibilidad de la siguiente etapa: [guía 0.3.0](docs/ENGINE_0_3_0.md). Consultar la bitácora para distinguir versión en desarrollo de versión efectivamente instalada.
+
 Continuidad del trabajo: [directrices obligatorias](AGENTS.md), [bitácora actual](docs/CONTINUATION.md), [plan por etapas](docs/STAGED_HARDENING_2026_10_29.md) y [contrato 0.2.0](docs/ENGINE_0_2_0.md). El estado de publicación/instalación se registra con evidencia; una versión de trabajo no implica una entrega publicada.
 
 Revisión técnica: [RIGOR_REVIEW](docs/RIGOR_REVIEW.md) y [avance del 23/09/2026](docs/QA_ADVANCEMENT_2026-09-23.md). Detallan los fallos encontrados, las correcciones, la evidencia ejecutada y los límites pendientes. El [ledger](docs/QA_COVERAGE_LEDGER.md) conserva las obligaciones completas; no declara cobertura total a partir del número de tests.

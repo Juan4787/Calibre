@@ -41,6 +41,13 @@ const state = {
   importPending: { shipments: false, charges: false },
   agreementRevision: 0,
   agreementReadPending: false,
+  externalControl: null,
+  controlRevision: 0,
+  controlReadPending: false,
+  contractDocuments: {},
+  workspaceId: "main",
+  workspaces: [],
+  parentRunId: null,
 };
 
 const esc = (value) =>
@@ -89,10 +96,16 @@ function notice(text, error = false) {
 }
 
 async function api(url, options = {}) {
-  const headers = { "X-Freight-Local": state.token, ...options.headers };
+  const workspace = state.workspaceId;
+  const headers = { "X-Freight-Local": state.token, "X-Freight-Workspace": state.workspaceId, ...options.headers };
   if (options.body && !(options.body instanceof FormData))
     headers["Content-Type"] = "application/json";
-  const response = await fetch(url, { ...options, headers });
+  let response;
+  try {
+    response = await fetch(url, { ...options, headers });
+  } catch {
+    throw new Error("No se pudo conectar con Calibre. Verificá que el servicio local esté abierto y volvé a intentar; los resultados guardados se conservan.");
+  }
   let result;
   try {
     result = await response.json();
@@ -109,6 +122,7 @@ async function api(url, options = {}) {
             result.details.map((d) => d.field + ": " + d.message).join("\n")
           : ""),
     );
+  if (workspace !== state.workspaceId) throw new Error("Se cambió el espacio de trabajo. Volvé a abrir el dato en el espacio seleccionado.");
   return result;
 }
 
@@ -146,7 +160,10 @@ const post = (url, body) =>
           : JSON.stringify(body),
   });
 
+const localDownload = (url) => state.workspaceId === "main" ? url : `${url}${url.includes("?") ? "&" : "?"}workspace=${encodeURIComponent(state.workspaceId)}`;
+
 function nav(view) {
+  window.scrollTo(0, 0);
   state.viewRevision += 1;
   state.view = view;
   document
@@ -176,8 +193,16 @@ async function showRuns() {
     ) +
     `<div id="runs"><p class="muted">Leyendo auditorías del equipo…</p></div>`;
 
-  $("#new-run").onclick = showNew;
-  const runs = await api("/api/runs");
+  $("#new-run").onclick = () => showNew();
+  let runs;
+  try {
+    runs = await api("/api/runs");
+  } catch (error) {
+    if (revision !== state.viewRevision) return;
+    $("#runs").innerHTML = `<div class="panel empty"><p>${esc(error.message)}</p><button type="button" class="btn" id="retry-runs">Volver a cargar auditorías</button></div>`;
+    $("#retry-runs").onclick = () => busy(null, showRuns);
+    return;
+  }
   if (revision !== state.viewRevision) return;
   state.allRuns = runs;
   renderRunsList();
@@ -216,7 +241,7 @@ function renderRunsList() {
         </div>
       </div>
       <div class="search-toolbar">
-        <input id="search-runs" type="text" placeholder="Buscar por transportista, período o identificador…" value="${esc(state.runSearch || "")}" />
+        <input id="search-runs" type="text" aria-label="Buscar auditorías" placeholder="Buscar por transportista, período o identificador…" value="${esc(state.runSearch || "")}" />
         <button class="btn" id="demo">Ejecutar demostración ficticia</button>
       </div>
       <div id="runs-items" class="run-list ui-display-141abdf4"></div>
@@ -334,9 +359,12 @@ function renderAudit() {
       "AUDITORÍA / RESULTADO CONSERVADO",
       esc(run.snapshot.label),
       `${run.snapshot.shipments.length} operaciones · ${run.snapshot.charges.length} cargos aceptados · ${run.snapshot.agreements.length} acuerdos`,
-      `<button class="btn" id="back">← Auditorías</button><a class="btn primary" href="/api/runs/${run.id}/export/zip">↓ Exportar paquete</a>`,
+      `<button class="btn" id="back">← Auditorías</button><button class="btn" id="new-correction">Crear corrección</button><a class="btn primary" href="${localDownload(`/api/runs/${run.id}/export/zip`)}">↓ Exportar paquete</a>`,
     ) +
-    `<div class="banner info"><p>${run.metadata?.provenance ? `${run.metadata.provenance.checked_records} registro(s) cotejados contra archivos y formatos conservados; ${run.metadata.provenance.declared_records} aportados sin cotejo.` : "Esta auditoría histórica no registra un cotejo de datos contra originales."} La documentación completa del período requiere un control independiente.</p></div>` +
+    `<div class="banner info"><p>${run.metadata?.provenance ? `${run.metadata.provenance.checked_records} registro(s) cotejados contra archivos y formatos conservados; ${run.metadata.provenance.declared_records} aportados sin cotejo.` : "Esta auditoría histórica no registra un cotejo de datos contra originales."} ${run.metadata?.document_control?.status === "matched" ? "Control documental cotejado con el inventario, cantidades e importes aportados." : "La documentación completa del período requiere un control independiente pendiente."}</p></div>
+    ${run.snapshot.parent_run_id ? `<p>Revisión por ${esc(run.snapshot.revision_kind === "evidence" ? "evidencia adicional" : "corrección")}: ${esc(run.snapshot.revision_note)}. <button class="btn small" data-related-run="${run.snapshot.parent_run_id}">Ver auditoría anterior</button> <button class="btn small" id="compare-revision">Comparar cambios</button></p><div id="revision-comparison" role="status"></div>` : ""}
+    ${(run.revisions || []).length ? `<p>Revisiones posteriores: ${run.revisions.map((r) => `<button class="btn small" data-related-run="${r.id}">${esc(r.label)}</button>`).join(" ")}</p>` : ""}
+    ${run.snapshot.contract_sources?.length ? `<details><summary>${run.snapshot.contract_sources.length} respaldo(s) contractual(es)</summary><ul>${run.snapshot.contract_sources.map((c) => `<li><a href="${localDownload(`/api/sources/${c.document_hash}?filename=${encodeURIComponent(run.snapshot.documents[c.document_hash] || "contrato")}`)}">${esc(run.snapshot.documents[c.document_hash] || "Documento contractual")}</a> · acuerdo ${esc(c.agreement)} · versión ${esc(c.version)}${c.rule ? " · regla " + esc(c.rule) : ""}${c.page ? " · página " + c.page : ""}${c.clause ? " · cláusula " + esc(c.clause) : ""} · ${c.approved_by ? "aprobación declarada: " + esc(c.approved_by) + ", " + esc(c.approved_on) : "aprobación pendiente"}</li>`).join("")}</ul></details>` : ""}` +
     (!summary.import_complete
       ? `<div class="banner warning">
           <div class="ui-fontsize-997b3b04">⚠</div>
@@ -393,7 +421,7 @@ function renderAudit() {
           <p class="muted ui-margin-ebd1dbfe">Cobertura con reglas completas: ${coverage}% (${summary.determinable_findings} de ${count})</p>
         </div>
         <div class="filters">
-          <input id="search" type="search" placeholder="Buscar por referencia, concepto o regla…" value="${esc(state.search)}">
+          <input id="search" type="search" aria-label="Buscar hallazgos" placeholder="Buscar por referencia, concepto o regla…" value="${esc(state.search)}">
           <select id="filter-status" aria-label="Filtrar por estado">
             <option value="">Todos los estados</option>
             ${Object.entries(labels)
@@ -428,9 +456,9 @@ function renderAudit() {
     </div>
 
     <div class="actions ui-margintop-04bbec5e">
-      <a class="btn" href="/api/runs/${run.id}/export/xlsx">↓ Planilla operativa</a>
-      <a class="btn" href="/api/runs/${run.id}/export/html" target="_blank">↓ Informe imprimible</a>
-      <a class="btn" href="/api/runs/${run.id}/export/canonical" target="_blank">Exportar JSON canónico</a>
+      <a class="btn" href="${localDownload(`/api/runs/${run.id}/export/xlsx`)}">↓ Planilla operativa</a>
+      <a class="btn" href="${localDownload(`/api/runs/${run.id}/export/html`)}" target="_blank">↓ Informe imprimible</a>
+      <a class="btn" href="${localDownload(`/api/runs/${run.id}/export/canonical`)}" target="_blank">Exportar JSON canónico</a>
     </div>
   `;
 
@@ -445,6 +473,24 @@ function renderAudit() {
     state.page = 0;
     renderFindings();
   };
+  $("#new-correction").onclick = () => showNew(run.id);
+  main.querySelectorAll("[data-related-run]").forEach((button) => button.onclick = () => busy(button, () => openRun(button.dataset.relatedRun)));
+  if ($("#compare-revision")) $("#compare-revision").onclick = (event) => busy(event.target, async () => {
+    const revision = state.viewRevision;
+    const parent = await api("/api/runs/" + run.snapshot.parent_run_id);
+    if (revision !== state.viewRevision) return;
+    const counts = [ ["shipments", "Operaciones"], ["charges", "Cargos"], ["agreements", "Acuerdos"], ["evidence", "Evidencias"] ].map(([field, title]) => {
+      const before = new Map(parent.snapshot[field].map((r) => [r.id, JSON.stringify(r)]));
+      const after = new Map(run.snapshot[field].map((r) => [r.id, JSON.stringify(r)]));
+      return `<li>${title}: ${[...after.keys()].filter((id) => !before.has(id)).length} agregados, ${[...before.keys()].filter((id) => !after.has(id)).length} retirados, ${[...after.keys()].filter((id) => before.has(id) && before.get(id) !== after.get(id)).length} modificados (incluye procedencia).</li>`;
+    }).join("");
+    const currencies = new Set([...Object.keys(parent.result.summary.currencies), ...Object.keys(run.result.summary.currencies)]);
+    const moneyRows = [...currencies].map((currency) => {
+      const before = parent.result.summary.currencies[currency], after = run.result.summary.currencies[currency];
+      return `<tr><td>${esc(currency)}</td><td>${money(before?.actual, "Sin cargos")}</td><td>${money(after?.actual, "Sin cargos")}</td><td>${money(before?.confirmed_net_difference, "Sin diferencia")}</td><td>${money(after?.confirmed_net_difference, "Sin diferencia")}</td></tr>`;
+    }).join("");
+    $("#revision-comparison").innerHTML = `<h3>Comparación con la corrida anterior</h3><ul>${counts}</ul><div class="table-wrap"><table><thead><tr><th>Moneda</th><th>Facturado anterior</th><th>Facturado actual</th><th>Diferencia confirmada anterior</th><th>Diferencia confirmada actual</th></tr></thead><tbody>${moneyRows}</tbody></table></div><p>Ambas corridas conservan sus resultados. Los cambios de evidencia, respaldo y control documental se revisan por separado en sus detalles.</p>`;
+  });
   $("#prev").onclick = () => {
     state.page--;
     renderFindings();
@@ -882,6 +928,11 @@ function showDetail(id) {
         document_hash,
       });
       snapshot.label += " · evidencia adicional";
+      snapshot.parent_run_id = detailRun.id;
+      snapshot.revision_kind = "evidence";
+      snapshot.revision_note = note;
+      // A previous external control does not cover newly attached originals.
+      snapshot.external_control = null;
       const result = await post("/api/audit", snapshot);
       if (revision !== state.viewRevision) return;
       $("#detail").close();
@@ -908,26 +959,175 @@ function agreementRuleCount(agreement) {
 function agreementVersionList(agreement) {
   return (agreement.versions || []).map((version) => {
     const ruleCount = Array.isArray(version.rules) ? version.rules.length : 0;
-    return `<li><strong>${esc(version.id)}</strong> · ${esc(version.valid_from || "sin inicio")} a ${esc(version.valid_to || "abierta")} · ${ruleCount} regla(s)</li>`;
+    const formulas = (version.rules || []).map((rule) => `<li>${esc(rule.description)} · concepto ${esc(rule.concept)}: <strong>${esc(formulaText(rule.expression))}</strong>${rule.when ? `, cuando ${esc(formulaText(rule.when))}` : ""}${rule.evidence?.length ? `; requiere ${esc(rule.evidence.map((r) => r.any_of.join(" o ") + (r.document_required ? " con adjunto" : "")).join(", "))}` : ""}</li>`).join("");
+    const tables = Object.entries(version.tables || {}).map(([name, table]) => `<li>Tabla ${esc(name)}: ${table.kind === "band" ? table.bands.map((b) => `[${esc(b.lower ?? "sin límite")}, ${esc(b.upper ?? "sin límite")}) → ${esc(valueText(b.value))}`).join("; ") : table.rows.map((r) => `${esc(r.keys.join(" / "))} → ${esc(valueText(r.value))}`).join("; ")}</li>`).join("");
+    return `<li><strong>${esc(version.id)}</strong> · ${esc(version.valid_from || "sin inicio")} a ${esc(version.valid_to || "abierta")} · ${ruleCount} regla(s)<ul>${formulas}${tables}</ul><p>${esc(version.source_note)}</p></li>`;
   }).join("");
+}
+
+function valueText(value) {
+  return value ? `${value.value}${value.unit ? " " + value.unit : ""}` : "sin valor";
+}
+
+function formulaText(expr) {
+  if (!expr) return "sin fórmula";
+  if (expr.op === "const") return valueText(expr.value);
+  if (expr.op === "attr") return expr.field + (expr.unit ? " (" + expr.unit + ")" : "");
+  if (expr.op === "sum") return "suma de " + expr.field;
+  if (expr.op === "count") return "cantidad de operaciones";
+  const args = (expr.args || []).map(formulaText);
+  const infix = { add: "+", sub: "−", mul: "×", div: "÷", eq: "=", gt: ">", gte: "≥", lt: "<", lte: "≤", and: "y", or: "o" };
+  const names = { min: "mínimo", max: "máximo", round: "redondear", lookup: "buscar en", band: "tramo de", if: "si / entonces / si no", not: "no" };
+  const result = infix[expr.op] ? `(${args.join(" " + infix[expr.op] + " ")})` : `${names[expr.op] || expr.op} ${expr.table || ""} (${args.join("; ")})`;
+  return result + (expr.scale !== undefined && expr.scale !== null ? `, ${expr.scale} decimales ${expr.rounding}` : "");
 }
 
 function agreementSummary(agreements) {
   const versions = agreements.flatMap((agreement) => agreement.versions || []);
   const rules = agreements.reduce((count, agreement) => count + agreementRuleCount(agreement), 0);
   const details = agreements.map((agreement) => {
-    return `<li><strong>${esc(agreement.id)}</strong> · ${esc(agreement.carrier)} · ${esc(agreement.currency)}
+    return `<li><strong>${esc(agreement.id)}</strong> · ${esc(agreement.carrier)} · ${esc(agreement.currency)} · fecha de vigencia: ${esc(agreement.date_field)} · ${esc(agreement.scale)} decimales, ${esc(agreement.rounding)} · tolerancia absoluta ${esc(agreement.tolerance_absolute)}, relativa ${esc(agreement.tolerance_relative)}
       <ul>${agreementVersionList(agreement)}</ul></li>`;
   }).join("");
   return `<strong>${agreements.length} acuerdo(s)</strong> · <strong>${versions.length} versión(es)</strong> · <strong>${rules} regla(s) configuradas</strong>
     <details class="agreement-summary-detail"><summary>Ver acuerdos y versiones cargados</summary><ul>${details}</ul></details>`;
 }
 
-async function showNew() {
+function refreshContractTargets() {
+  const target = $("#contract-target");
+  if (!target) return;
+  try {
+    const agreements = JSON.parse($("#agreements").value);
+    target.innerHTML = '<option value="">Seleccionar versión…</option>' + agreements.flatMap((a) => (a.versions || []).map((v) => `<option value="${esc(JSON.stringify([a.id, v.id]))}">${esc(a.name)} · ${esc(v.id)}</option>`)).join("");
+  } catch {
+    target.innerHTML = '<option value="">Revisar el acuerdo antes de adjuntar</option>';
+  }
+}
+
+function bindDocumentaryInputs() {
+  $("#add-contract").onclick = (event) => busy(event.target, async () => {
+    const target = $("#contract-target").value;
+    const file = $("#contract-file").files[0];
+    const page = $("#contract-page").value;
+    const clause = $("#contract-clause").value.trim();
+    const actor = $("#contract-actor").value.trim();
+    const date = $("#contract-date").value;
+    if (!target || !file || (!page && !clause)) throw new Error("Seleccioná una versión y su documento; indicá la página o cláusula que respalda la configuración.");
+    if ((actor && !date) || (date && !actor)) throw new Error("La aprobación requiere responsable y fecha. Si está pendiente, dejá ambos campos vacíos.");
+    if (page && (!Number.isInteger(Number(page)) || Number(page) < 1)) throw new Error("La página debe ser un número entero positivo.");
+    const revision = state.viewRevision;
+    const agreementRevision = state.agreementRevision;
+    const form = new FormData();
+    form.append("file", file);
+    const saved = await post("/api/evidence-file", form);
+    if (revision !== state.viewRevision || agreementRevision !== state.agreementRevision) return;
+    const [agreement, version] = JSON.parse(target);
+    const citations = JSON.parse($("#contract-sources").value);
+    citations.push({ document_hash: saved.document_hash, agreement, version, ...(page ? { page: Number(page) } : {}), ...(clause ? { clause } : {}), ...(actor ? { approved_by: actor, approved_on: date } : {}) });
+    $("#contract-sources").value = JSON.stringify(citations, null, 2);
+    state.contractDocuments[saved.document_hash] = saved.filename;
+    state.matchingCheck = null;
+    $("#contract-status").textContent = `${citations.length} respaldo(s) conservado(s). Último: ${saved.filename}, versión ${version}${page ? ", página " + page : ""}${clause ? ", cláusula " + clause : ""}. Aprobación ${actor ? "aportada por " + actor + " el " + date : "pendiente"}.`;
+  });
+  $("#external-control").onchange = (event) => busy(null, async () => {
+    const file = event.target.files[0];
+    const revision = ++state.controlRevision;
+    const view = state.viewRevision;
+    state.externalControl = null;
+    state.matchingCheck = null;
+    state.controlReadPending = false;
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) throw new Error("El control supera 2 MB. Aportá el inventario y los totales sin los registros completos.");
+    state.controlReadPending = true;
+    $("#external-control-status").textContent = "Leyendo el control documental…";
+    try {
+      const content = await file.text();
+      if (revision !== state.controlRevision || view !== state.viewRevision) return;
+      state.externalControl = JSON.parse(content);
+      $("#external-control-status").textContent = `Control ${file.name} cargado. Volvé a verificar antes de ejecutar.`;
+    } finally {
+      if (revision === state.controlRevision && view === state.viewRevision) state.controlReadPending = false;
+    }
+    await goToStep(3);
+  });
+  $("#clear-external-control").onclick = () => {
+    state.controlRevision += 1;
+    state.controlReadPending = false;
+    state.externalControl = null;
+    $("#external-control").value = "";
+    $("#external-control-status").textContent = "Control documental pendiente: no se aportó un inventario independiente.";
+    goToStep(3);
+  };
+}
+
+async function refreshWorkspaces() {
+  state.workspaces = await api("/api/workspaces");
+  $("#workspace-select").innerHTML = state.workspaces.map((w) => `<option value="${w.id}" ${w.id === state.workspaceId ? "selected" : ""}>${esc(w.name)}</option>`).join("");
+}
+
+async function switchWorkspace(identifier) {
+  state.workspaceId = identifier;
+  state.viewRevision += 1;
+  state.run = null;
+  state.imports = {};
+  state.configs = [];
+  state.runSearch = "";
+  $("#detail").close();
+  $("#workspace-select").value = identifier;
+  await showRuns();
+}
+
+async function showWorkspace() {
+  nav("workspace");
+  const revision = state.viewRevision;
+  await refreshWorkspaces();
+  const status = await api("/api/workspace/status");
+  if (revision !== state.viewRevision) return;
+  const current = state.workspaces.find((w) => w.id === state.workspaceId);
+  main.innerHTML = heading("", "Espacios y respaldos", "Cada cliente conserva sus archivos e historia en una base local separada.") + `
+    <section class="panel"><h2>${esc(current.name)}</h2><p>Espacio activo. El nombre de un cliente se establece al crear su base; para otro cliente, creá otro espacio.</p>
+      <a class="btn primary" href="${localDownload("/api/workspace/backup")}">Descargar respaldo verificado</a>
+      <p>${status.last_backup ? `Última copia preparada: ${esc(status.last_backup.created_at)} (${status.last_backup.bytes} bytes). La descarga y su conservación fuera del equipo deben comprobarse por separado.` : "Todavía no se preparó un respaldo desde esta pantalla. Guardá una copia también fuera del equipo."}</p>
+      <details><summary>Ubicación local de la base</summary><p class="mono">${esc(current.database)}</p></details>
+    </section>
+    <section class="panel"><h2>Crear espacio de cliente</h2><form id="workspace-create"><label for="workspace-name">Cliente o nombre del espacio</label><input id="workspace-name" required maxlength="120"><button type="submit" class="btn">Crear base vacía</button></form></section>
+    <section class="panel"><h2>Restaurar una copia</h2><p>Se verifican originales, auditorías y decisiones. La copia se incorpora como otro espacio y conserva la historia; las bases existentes se mantienen. La reproducción del cálculo exige el motor de su versión.</p>
+      <form id="workspace-restore"><label for="restore-name">Nombre para identificar la copia</label><input id="restore-name" required maxlength="120"><label for="restore-file">Respaldo de Calibre (hasta 25 MB en este formulario)</label><input id="restore-file" type="file" required accept=".db,.sqlite,.sqlite3"><button type="submit" class="btn">Verificar y restaurar en otro espacio</button></form>
+      <p>Para respaldos mayores, usá el comando local restore-workspace indicado en la documentación.</p>
+    </section>`;
+  $("#workspace-create").onsubmit = (event) => {
+    event.preventDefault();
+    busy($("button", event.target), async () => {
+      const created = await post("/api/workspaces", { name: $("#workspace-name").value });
+      if (revision !== state.viewRevision) return;
+      await refreshWorkspaces();
+      await switchWorkspace(created.id);
+      notice("Espacio creado con base vacía. Cargá los acuerdos y archivos de este cliente.");
+    });
+  };
+  $("#workspace-restore").onsubmit = (event) => {
+    event.preventDefault();
+    busy($("button", event.target), async () => {
+      const file = $("#restore-file").files[0];
+      if (file.size > 25 * 1024 * 1024) throw new Error("El respaldo supera el límite de este formulario. Usá restore-workspace desde la herramienta local para conservarlo completo.");
+      const form = new FormData();
+      form.append("name", $("#restore-name").value);
+      form.append("file", file);
+      const restored = await post("/api/workspaces/restore", form);
+      if (revision !== state.viewRevision) return;
+      await refreshWorkspaces();
+      await switchWorkspace(restored.id);
+      notice("Respaldo verificado e incorporado en un espacio separado. La historia anterior se conserva.");
+    });
+  };
+}
+
+async function showNew(parentRunId = null) {
   nav("new");
   const revision = state.viewRevision;
   main.innerHTML = heading("NUEVA AUDITORÍA", "Preparando el asistente", "Leyendo acuerdos y formatos del equipo…");
   state.imports = {};
+  state.parentRunId = parentRunId;
   state.mappingSource = { shipments: null, charges: null };
   state.mappingReadPending = { shipments: false, charges: false };
   state.importPending = { shipments: false, charges: false };
@@ -936,6 +1136,10 @@ async function showNew() {
   state.matchingRevision += 1;
   state.matchingCheck = null;
   state.auditLabel = "";
+  state.externalControl = null;
+  state.contractDocuments = {};
+  state.controlRevision += 1;
+  state.controlReadPending = false;
   state.importRevision.shipments += 1;
   state.importRevision.charges += 1;
   state.wizardStep = 1;
@@ -947,7 +1151,7 @@ async function showNew() {
   } catch (error) {
     if (revision !== state.viewRevision) return;
     main.innerHTML = heading("NUEVA AUDITORÍA", "No se pudo abrir el asistente", esc(error.message), '<button class="btn primary" id="retry-new">Reintentar</button>');
-    $("#retry-new").onclick = showNew;
+    $("#retry-new").onclick = () => showNew();
   }
 }
 
@@ -1015,6 +1219,7 @@ function renderWizard() {
           <div class="ui-marginbottom-3c4a3d44">
             <label for="audit-label" class="ui-fontsize-df949b3e">Nombre del período o lote</label>
             <input id="audit-label" type="text" placeholder="Ej.: Cierre de septiembre · Transportes Gómez" value="${esc(state.auditLabel || "")}" required class="ui-maxwidth-344a0df9">
+            ${state.parentRunId ? '<label for="revision-note">Motivo de la corrección</label><input id="revision-note" type="text" minlength="3" required><p>Volvé a cargar los archivos y acuerdos corregidos. La corrida anterior se conserva y quedará vinculada.</p>' : ""}
           </div>
 
           <div class="ui-marginbottom-7564ec60">
@@ -1083,11 +1288,22 @@ function renderWizard() {
               </select>
             </div>
             <div class="field ui-margin-38965f9b">
-              <label>Importar acuerdo JSON</label>
+              <label for="agreement-file">Importar acuerdo JSON</label>
               <input type="file" id="agreement-file" accept=".json" class="ui-padding-45d64fe9">
               <p id="agreement-load-status" role="status" aria-live="polite"></p>
             </div>
           </div>
+
+          <details class="agreement-summary-detail">
+            <summary>Adjuntar respaldo del contrato y aprobación</summary>
+            <p>Seleccioná la versión pactada y citá su página o cláusula. La aprobación se declara sólo si fue aportada por su responsable.</p>
+            <label for="contract-target">Acuerdo y versión</label><select id="contract-target"><option value="">Seleccionar primero un acuerdo</option></select>
+            <label for="contract-file">Documento contractual</label><input id="contract-file" type="file">
+            <div class="grid2"><div><label for="contract-page">Página</label><input id="contract-page" type="number" min="1"></div><div><label for="contract-clause">Cláusula</label><input id="contract-clause" type="text"></div></div>
+            <div class="grid2"><div><label for="contract-actor">Aprobado por (opcional)</label><input id="contract-actor" type="text"></div><div><label for="contract-date">Fecha de aprobación (opcional)</label><input id="contract-date" type="date"></div></div>
+            <button type="button" class="btn" id="add-contract">Conservar respaldo</button>
+            <p id="contract-status" role="status">Sin respaldo contractual adjunto.</p>
+          </details>
 
           <div class="panel-advanced ui-margintop-910f53fb">
             <div class="ui-display-c8cc40c3">
@@ -1104,6 +1320,8 @@ function renderWizard() {
               <div class="ui-margintop-726e8b31">
                 <label for="coverage">Alcance por acuerdo (JSON)</label>
                 <textarea id="coverage" rows="3">{}</textarea>
+                <label for="contract-sources">Referencias contractuales (lista JSON opcional)</label>
+                <textarea id="contract-sources" rows="3">[]</textarea>
               </div>
             </div>
           </div>
@@ -1121,6 +1339,10 @@ function renderWizard() {
           <h2>Paso 3: Verificación Previa</h2>
           <p class="muted">Revisá la consistencia del lote antes de ejecutar el motor de auditoría determinista.</p>
           <div id="matching-check-step3" role="status" aria-live="polite"></div>
+          <label for="external-control">Control documental independiente (JSON opcional)</label>
+          <input id="external-control" type="file" accept=".json">
+          <p id="external-control-status" role="status">Pendiente: aportar inventario, cantidades e importes del período controlados fuera de esta app.</p>
+          <button type="button" class="btn small" id="clear-external-control">Quitar control y dejar pendiente</button>
 
           <div class="field ui-margin-5de38404">
             <label for="audit-label-step3">Nombre de la auditoría</label>
@@ -1201,6 +1423,7 @@ function renderWizard() {
     state.agreementReadPending = false;
     state.matchingCheck = null;
     $("#agreement-load-status").textContent = "";
+    refreshContractTargets();
     document.querySelectorAll(".agreement-card").forEach((card) => {
       const isSelected = card.dataset.hash === hash;
       card.classList.toggle("selected", isSelected);
@@ -1281,6 +1504,7 @@ function renderWizard() {
         null,
         2,
       );
+      refreshContractTargets();
       notice("Archivo de acuerdo cargado correctamente.");
     });
   $("#agreements").oninput = () => {
@@ -1292,6 +1516,7 @@ function renderWizard() {
     const body = $("#agreements-advanced-body");
     if (body) body.classList.toggle("hidden");
   };
+  bindDocumentaryInputs();
 
   // Setup Step 3 Handlers
   $("#audit-label-step3").oninput = (e) => {
@@ -1333,17 +1558,16 @@ function renderWizard() {
 }
 
 function auditDataset() {
-  const values = Object.values(state.imports);
   return {
     label: state.auditLabel || $("#audit-label")?.value.trim() || "Auditoría local",
-    shipments: state.imports.shipments.records,
-    charges: state.imports.charges.records,
+    imports: { shipments: state.imports.shipments.import_id, charges: state.imports.charges.import_id },
     agreements: JSON.parse($("#agreements")?.value || "[]"),
     evidence: JSON.parse($("#evidence")?.value || "[]"),
     coverage: JSON.parse($("#coverage")?.value || "{}"),
-    mappings: values.map((r) => r.mapping),
-    documents: Object.fromEntries(values.map((r) => [r.document, r.filename])),
-    issues: values.flatMap((r) => r.issues),
+    documents: state.contractDocuments,
+    contract_sources: JSON.parse($("#contract-sources")?.value || "[]"),
+    external_control: state.externalControl,
+    ...(state.parentRunId ? { parent_run_id: state.parentRunId, revision_kind: "correction", revision_note: $("#revision-note").value.trim() } : {}),
   };
 }
 
@@ -1354,12 +1578,12 @@ function matchingSignature(dataset) {
 
 function matchingConflictDetails(conflicts, dataset) {
   if (!conflicts.length) return "";
-  const shipments = new Map(dataset.shipments.map((s) => [s.id, s]));
-  const charges = new Map(dataset.charges.map((c) => [c.id, c]));
-  const operationList = (ids) => ids.slice(0, 8).map((id) => {
+  const shipments = new Map((dataset.shipments || []).map((s) => [s.id, s]));
+  const charges = new Map((dataset.charges || []).map((c) => [c.id, c]));
+  const operationList = (ids, total = ids.length) => ids.slice(0, 8).map((id) => {
     const shipment = shipments.get(id);
     return shipment ? `${esc(id)} (referencia ${esc(shipment.reference || "vacía")})` : `${esc(id)} (no existe en el lote)`;
-  }).join(", ") + (ids.length > 8 ? `; y ${ids.length - 8} más, disponibles en la traza completa` : "") || "ninguna operación";
+  }).join(", ") + (total > 8 ? `; y ${total - 8} más, disponibles en la traza completa` : "") || "ninguna operación";
   const reasons = {
     conflict: "Las claves y el vínculo explícito se contradicen.",
     invalid: "El vínculo explícito no es válido.",
@@ -1370,7 +1594,7 @@ function matchingConflictDetails(conflicts, dataset) {
   return `<ul class="matching-conflicts">${conflicts.map((conflict) => `
     <li><strong>Cargo ${esc(conflict.charge_id)}</strong> · referencia ${esc(charges.get(conflict.charge_id)?.reference || "vacía")}
       <p>${reasons[conflict.comparison] || "Revisar la vinculación."}</p>
-      <p>Según las claves del archivo: ${operationList(conflict.key_candidate_ids || [])}.</p>
+      <p>Según las claves del archivo: ${operationList(conflict.key_candidate_ids || [], conflict.key_candidate_ids_count)}.</p>
       ${conflict.method === "explicit" ? `<p>Según la vinculación explícita: ${operationList(conflict.shipment_ids || [])}.</p>` : ""}
       ${conflict.invalid_targets?.empty ? "<p>La lista de destinos está vacía.</p>" : ""}
       ${conflict.invalid_targets?.repeated?.length ? `<p>Destinos repetidos: ${operationList(conflict.invalid_targets.repeated)}.</p>` : ""}
@@ -1405,6 +1629,10 @@ async function goToStep(step) {
     return;
   }
   if (step > 2) {
+    if (state.controlReadPending) {
+      notice("Esperá a que termine de cargar el control documental.", true);
+      return;
+    }
     if (state.agreementReadPending) {
       notice("Esperá a que termine de cargar el acuerdo antes de verificar.", true);
       return;
@@ -1427,6 +1655,11 @@ async function goToStep(step) {
         return;
       }
       state.matchingCheck = signature;
+      if (check.document_control?.status === "mismatch") {
+        state.matchingCheck = null;
+        notice("El control documental no coincide. " + check.document_control.problems.join(" "), true);
+        return;
+      }
       state.matchingConflicts = check.total_issues + check.skipped_charges;
       // A successful retry replaces the failed check; do not leave a stale error toast.
       const previousNotice = $("#notice");
@@ -1439,10 +1672,11 @@ async function goToStep(step) {
           <p>Los cargos señalados no confirmarán diferencias. Tampoco los grupos de sus operaciones candidatas. Corregí la vinculación o
           el formato en Acuerdo; también podés guardar la auditoría con esos casos en revisión.</p>
           ${check.skipped_charges ? `<p>${check.skipped_charges} cargo(s) no se pudieron vincular por un acuerdo, transportista o moneda incompatibles. Revisá esos datos; la auditoría conservará el motivo de cada caso.</p>` : ""}
-          ${matchingConflictDetails(check.issues, dataset)}
+          ${matchingConflictDetails(check.issues, check.references || dataset)}
           ${check.total_issues > check.issues.length ? `<p>Se muestran ${check.issues.length} de ${check.total_issues} incidencias de vinculación. La auditoría conservará el detalle de todas.</p>` : ""}
         </section>` : "<p>Vinculaciones comprobadas con las claves disponibles: no se encontraron incidencias. Las reglas, vigencias y evidencias se evaluarán al auditar.</p>";
-      for (const id of ["matching-check-step3", "matching-check-step4"]) $("#" + id).innerHTML = warning;
+      const documentary = check.document_control?.status === "matched" ? "Control documental cotejado: inventario, cantidades e importes coinciden con el archivo aportado." : "Control documental pendiente: no se aportó un inventario independiente del período. Los resultados sólo abarcan los archivos seleccionados.";
+      for (const id of ["matching-check-step3", "matching-check-step4"]) $("#" + id).innerHTML = `<p>${documentary}</p>` + warning;
     } catch (error) {
       if (matchingRevision === state.matchingRevision && viewRevision === state.viewRevision) notice(error.message, true);
       return;
@@ -1485,7 +1719,7 @@ async function goToStep(step) {
       const cImp = state.imports.charges;
       const sCount = sImp?.accepted !== undefined ? sImp.accepted : 0;
       const cCount = cImp?.accepted !== undefined ? cImp.accepted : 0;
-      const totalRej = (sImp?.rejected?.length || 0) + (cImp?.rejected?.length || 0);
+      const totalRej = (sImp?.rejected_count || 0) + (cImp?.rejected_count || 0);
       const s1Text = $("#step-summary-1-text");
       if (s1Text) {
         s1Text.innerHTML = `<strong>${sCount} operaciones</strong> · <strong>${cCount} cargos</strong> · ${totalRej} rechazos`;
@@ -1510,7 +1744,7 @@ async function goToStep(step) {
     if (step > 3) {
       const sCount = state.imports.shipments?.accepted || 0;
       const cCount = state.imports.charges?.accepted || 0;
-      const issueCount = (state.imports.shipments?.issues?.length || 0) + (state.imports.charges?.issues?.length || 0);
+      const issueCount = (state.imports.shipments?.issue_count || 0) + (state.imports.charges?.issue_count || 0);
       const s3Text = $("#step-summary-3-text");
       if (s3Text) {
         const verification = state.matchingConflicts
@@ -1534,9 +1768,9 @@ function updateStep3Summaries() {
   const cImp = state.imports.charges;
 
   const importSummary = (result, title, role) => result
-    ? `<p class="verify-import-count">✓ ${result.accepted} filas aceptadas · ${result.rejected.length} rechazadas</p>
-       <p class="muted verify-import-file">Archivo: ${esc(result.filename)} (${result.records.length} registros)</p>
-       ${renderImportIssues(result.issues, role)}`
+    ? `<p class="verify-import-count">✓ ${result.accepted} filas aceptadas · ${result.rejected_count} rechazadas</p>
+       <p class="muted verify-import-file">Archivo: ${esc(result.filename)} (${result.accepted} registros)</p>
+       ${renderImportIssues(result, role)}`
     : `<p class="verify-import-missing">⚠ Archivo de ${title} aún no validado en Paso 1.</p>`;
 
   const sContainer = $("#verify-shipments-summary");
@@ -1547,28 +1781,42 @@ function updateStep3Summaries() {
   bindImportIssues($("#step-panel-3"));
 }
 
-function renderImportIssues(issues, role) {
-  if (!issues?.length) return '<p class="verify-no-issues">Sin incidencias de importación.</p>';
-  const warnings = issues.filter((issue) => issue.category === "warning").length;
-  return `<details class="import-issues" data-role="${role}"><summary>${issues.length} incidencia(s) de importación (${warnings} advertencia(s)); ver detalle</summary>
+function renderImportIssues(result, role) {
+  if (!result.issue_count) return '<p class="verify-no-issues">Sin incidencias de importación.</p>';
+  return `<details class="import-issues" data-role="${role}"><summary>${result.issue_count} incidencia(s) de importación (${result.warning_count} advertencia(s)); ver detalle</summary>
     <div class="import-issue-page"></div></details>`;
 }
 
 function bindImportIssues(container) {
   container.querySelectorAll(".import-issues").forEach((details) => {
-    const issues = state.imports[details.dataset.role].issues;
+    const imported = state.imports[details.dataset.role];
     const body = $(".import-issue-page", details);
     const size = 50;
-    const pages = Math.ceil(issues.length / size);
+    const total = imported.issue_count;
+    const pages = Math.ceil(total / size);
     let page = 0;
-    const render = () => {
+    let requestRevision = 0;
+    const render = async () => {
+      const revision = ++requestRevision;
       if (!details.open) {
         body.replaceChildren();
         return;
       }
+      body.textContent = "Leyendo incidencias…";
+      let issues;
+      try {
+        const response = await api(`/api/imports/${imported.import_id}/issues?page=${page}`);
+        if (revision !== requestRevision || !details.isConnected || !details.open || state.imports[details.dataset.role] !== imported) return;
+        issues = response.issues;
+      } catch (error) {
+        if (revision !== requestRevision || !details.isConnected || !details.open) return;
+        body.innerHTML = `<p>${esc(error.message)}</p><button type="button" class="btn small issue-retry">Reintentar</button>`;
+        $(".issue-retry", body).onclick = render;
+        return;
+      }
       const start = page * size;
-      body.innerHTML = `<p role="status">Incidencias ${start + 1}–${Math.min(start + size, issues.length)} de ${issues.length}</p>
-        <ol start="${start + 1}">${issues.slice(start, start + size).map((issue) => `<li>${esc(issue.message)}</li>`).join("")}</ol>
+      body.innerHTML = `<p role="status">Incidencias ${start + 1}–${Math.min(start + size, total)} de ${total}</p>
+        <ol start="${start + 1}">${issues.map((issue) => `<li>${esc(issue.message)}</li>`).join("")}</ol>
         ${pages > 1 ? `<div class="issue-navigation">
           <button type="button" class="btn small issue-prev" ${page === 0 ? "disabled" : ""}>Anteriores</button>
           <label>Página <input class="issue-page-number" aria-label="Página de incidencias" type="number" min="1" max="${pages}" value="${page + 1}"> de ${pages}</label>
@@ -1607,6 +1855,7 @@ function renderDropzoneSection(role, title, subtitle) {
           <div class="dropzone-icon">⇪</div>
           <div class="dropzone-title">Arrastrá el archivo acá o seleccioná uno</div>
           <div class="dropzone-hint">CSV, XLSX o XLS</div>
+          <button type="button" class="btn" id="choose-file-${role}">Seleccionar archivo de ${title.toLowerCase()}</button>
           <!-- Hidden standard file input -->
           <input id="file-${role}" type="file" accept=".csv,.xlsx,.xls" class="sr-only-file">
         </div>
@@ -1690,6 +1939,7 @@ function setupStep1Handlers() {
 
     if (dropzone && fileInput) {
       dropzone.onclick = () => fileInput.click();
+      $(`#choose-file-${role}`).onclick = (event) => { event.stopPropagation(); fileInput.click(); };
 
       ["dragenter", "dragover"].forEach((eventName) => {
         dropzone.addEventListener(eventName, (e) => {
@@ -1812,13 +2062,15 @@ function setupStep1Handlers() {
         const form = new FormData();
         form.append("file", file);
         form.append("mapping", JSON.stringify(mapping));
+        form.append("compact", "true");
         const result = await post("/api/import", form);
         if (revision !== state.importRevision[role] || viewRevision !== state.viewRevision) return;
         state.imports[role] = result;
         $(`#result-${role}`).innerHTML = `
-          <strong class="ui-color-e4fa61d1">✓ ${result.accepted} filas aceptadas · ${result.rejected.length} rechazadas</strong>
+          <strong class="ui-color-e4fa61d1">✓ ${result.accepted} filas aceptadas · ${result.rejected_count} rechazadas</strong>
           <p class="muted ui-margin-138901e5">Hoja: ${esc(result.sheet)} · Archivo original conservado</p>
-          ${renderImportIssues(result.issues, role)}
+          ${renderImportIssues(result, role)}
+          <details><summary>Transformaciones y valores interpretados (muestra de hasta 10 registros)</summary><div class="table-wrap"><table><thead><tr><th>Fila</th><th>Campo</th><th>Original</th><th>Transformación</th><th>Interpretado</th></tr></thead><tbody>${result.conversion_preview.map((p) => `<tr><td>${p.row}</td><td>${esc(p.field)}</td><td>${esc(p.raw)}</td><td>${esc(p.transform)}</td><td>${esc(p.value)}</td></tr>`).join("")}</tbody></table></div><p>Muestra limitada a 20 campos y 500 caracteres por celda; los registros completos permanecen en el archivo conservado.</p></details>
           <details class="ui-margintop-a33b8fc2">
             <summary>Vista previa del origen (${result.preview.length} filas)</summary>
             <div class="table-wrap">
@@ -1835,7 +2087,7 @@ function setupStep1Handlers() {
         `;
         bindImportIssues($(`#result-${role}`));
         notice(
-          `Validación de ${role === "shipments" ? "operaciones" : "cargos"} completada: ${result.accepted} aceptadas, ${result.rejected.length} rechazadas y ${result.issues.length} incidencias. Revisá el detalle antes de continuar.`,
+          `Validación de ${role === "shipments" ? "operaciones" : "cargos"} completada: ${result.accepted} aceptadas, ${result.rejected_count} rechazadas y ${result.issue_count} incidencias. Revisá el detalle antes de continuar.`,
         );
       }).finally(() => {
         if (validationView === state.viewRevision) {
@@ -1973,7 +2225,15 @@ function invalidateImport(role) {
 async function showConfigs() {
   nav("configs");
   const revision = state.viewRevision;
-  const configs = await api("/api/configs");
+  let configs;
+  try {
+    configs = await api("/api/configs");
+  } catch (error) {
+    if (revision !== state.viewRevision) return;
+    main.innerHTML = heading("", "No se pudieron cargar los acuerdos y formatos", esc(error.message), '<button class="btn" id="retry-configs">Volver a cargar configuraciones</button>');
+    $("#retry-configs").onclick = () => busy(null, showConfigs);
+    return;
+  }
   if (revision !== state.viewRevision) return;
   state.configs = configs;
   main.innerHTML = heading(
@@ -2201,12 +2461,20 @@ async function init() {
         else if (v === "new") showNew();
         else if (v === "configs") showConfigs();
         else if (v === "guide") showGuide();
+        else if (v === "workspace") busy(button, showWorkspace);
       }),
     );
 
   try {
     const session = await api("/api/session");
     state.token = session.token;
+    await refreshWorkspaces();
+    $("#workspace-select").onchange = (event) => {
+      const select = event.target;
+      const identifier = select.value;
+      select.disabled = true;
+      return busy(null, () => switchWorkspace(identifier)).finally(() => { select.disabled = false; });
+    };
     await showRuns();
   } catch (error) {
     main.innerHTML = `<div class="panel empty">

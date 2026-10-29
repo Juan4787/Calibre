@@ -2,24 +2,33 @@
 
 import logging
 import secrets
+import shutil
 import tempfile
+import threading
+from functools import wraps
 from pathlib import Path
 from typing import Annotated
+from urllib.parse import quote
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
+from starlette.background import BackgroundTask
+from starlette.concurrency import run_in_threadpool
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
+from . import ENGINE_VERSION
 from .canonical import canonical, load_json
+from .document_control import documentary_control
 from .engine import audit, matching_preflight
 from .fixtures import generate, run_demo
 from .importing import MAX_FILE_BYTES, ImportMapping, import_data, source_filename
 from .models import Agreement, Dataset, Decision
 from .reporting import bundle_bytes, html_report, workbook_bytes
-from .storage import Store
+from .storage import Store, engine_artifact_hash
+from .workspaces import Workspaces
 
 logger = logging.getLogger("freight_audit")
 
@@ -28,8 +37,141 @@ def create_app(db_path: Path) -> FastAPI:
     app = FastAPI(title="Freight Audit local", docs_url=None, redoc_url=None)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "testserver"])
     store = Store(db_path)
+    workspaces = Workspaces(store)
     token = secrets.token_urlsafe(32)
     static = Path(__file__).parent / "static"
+    job_lock = threading.Lock()
+
+    def limited(function):
+        @wraps(function)
+        def execute(*args, **kwargs):
+            with job_lock:
+                return function(*args, **kwargs)
+
+        return execute
+
+    async def heavy(function, *args):
+        return await run_in_threadpool(limited(function), *args)
+
+    def selected(request: Request) -> Store:
+        return workspaces.select(
+            request.headers.get("x-freight-workspace") or request.query_params.get("workspace", "main")
+        )
+
+    def resolve_dataset(value: dict, store: Store) -> Dataset:
+        if not isinstance(value, dict):
+            raise ValueError("Seleccionar los datos y acuerdos de esta auditoría.")
+        if "imports" not in value:
+            return Dataset.model_validate(value)
+        allowed = set(Dataset.model_fields) - {"shipments", "charges", "mappings", "issues"}
+        if set(value) - allowed - {"imports"}:
+            raise ValueError(
+                "El lote debe usar las importaciones conservadas; no se admiten registros sustituidos desde el navegador."
+            )
+        references = value["imports"]
+        if not isinstance(references, dict) or set(references) != {"shipments", "charges"}:
+            raise ValueError("Validar un archivo de operaciones y otro de cargos antes de continuar.")
+        composed = {key: data for key, data in value.items() if key != "imports"}
+        composed.update(mappings=[], issues=[], documents=dict(value.get("documents", {})))
+        for role in ("shipments", "charges"):
+            identifier = references[role]
+            if not isinstance(identifier, str):
+                raise ValueError("La referencia de importación no es válida; volver a validar el archivo.")
+            imported = store.load_import(identifier)
+            if imported["mapping"]["entity"] != role:
+                raise ValueError(
+                    "La importación corresponde a otro tipo de archivo; revisar operaciones y cargos."
+                )
+            composed[role] = imported["records"]
+            composed["mappings"].append(imported["mapping"])
+            composed["issues"].extend(imported["issues"])
+            composed["documents"][imported["document"]] = imported["filename"]
+        return Dataset.model_validate(composed)
+
+    def compact_import(imported: dict, identifier: str) -> dict:
+        result = {key: imported[key] for key in ("document", "filename", "sheet", "sheets", "accepted")}
+        result.update(
+            import_id=identifier,
+            rejected=imported["rejected"][:50],
+            rejected_count=len(imported["rejected"]),
+            issues=imported["issues"][:50],
+            issue_count=len(imported["issues"]),
+            warning_count=sum(i["category"] == "warning" for i in imported["issues"]),
+            mapping={key: imported["mapping"][key] for key in ("id", "version", "entity")},
+            headers=[h[:500] for h in imported["headers"][:20]],
+            preview=[
+                {
+                    "row": row["row"],
+                    "values": {
+                        h[:500]: str(row["values"].get(h, ""))[:500] for h in imported["headers"][:20]
+                    },
+                }
+                for row in imported["preview"]
+            ],
+            preview_limited=True,
+        )
+        conversions = []
+        for record in imported["records"][:10]:
+            for field, ref in list(record.get("provenance", {}).items())[:20]:
+                value = (
+                    record.get("attributes", {}).get(field.removeprefix("attributes."))
+                    if field.startswith("attributes.")
+                    else record.get(field)
+                )
+                if isinstance(value, dict):
+                    value = str(value.get("value", "")) + (" " + value["unit"] if value.get("unit") else "")
+                conversions.append(
+                    {
+                        "row": ref["row"],
+                        "field": field,
+                        "raw": ref["raw"][:500],
+                        "transform": ref["transform"][:500],
+                        "value": str(value)[:500],
+                    }
+                )
+        result["conversion_preview"] = conversions
+        return result
+
+    def perform_import(data, filename, config, store, compact):
+        result = import_data(data, filename, config)
+        store.put_source(data)
+        store.save_config("mapping", f"{config.id}@{config.version}", config.model_dump(mode="json"))
+        return compact_import(result, store.save_import(result)) if compact else result
+
+    def perform_audit(body, store, preview=False):
+        dataset = resolve_dataset(body, store)
+        if preview:
+            return preflight_result(dataset)
+        return {"run_id": store.save(dataset, audit(dataset))}
+
+    def preflight_result(dataset):
+        result = matching_preflight(dataset)
+
+        def bounded(detail):
+            if isinstance(detail, dict):
+                output = {}
+                for key, value in detail.items():
+                    output[key] = value[:50] if isinstance(value, list) else bounded(value)
+                    if isinstance(value, list) and len(value) > 50:
+                        output[key + "_count"] = len(value)
+                return output
+            return detail
+
+        result["issues"] = [bounded(e) for e in result["issues"]]
+        result["conflicts"] = [bounded(e) for e in result["conflicts"]]
+        ids = {
+            sid
+            for issue in result["issues"]
+            for field in ("affected_shipment_ids", "key_candidate_ids", "shipment_ids")
+            for sid in issue.get(field, [])
+        }
+        cids = {issue["charge_id"] for issue in result["issues"]}
+        result["references"] = {
+            "shipments": [{"id": s.id, "reference": s.reference} for s in dataset.shipments if s.id in ids],
+            "charges": [{"id": c.id, "reference": c.reference} for c in dataset.charges if c.id in cids],
+        }
+        result["document_control"] = documentary_control(dataset)
+        return result
 
     @app.middleware("http")
     async def local_boundary(request: Request, call_next):
@@ -118,20 +260,69 @@ def create_app(db_path: Path) -> FastAPI:
     def session():
         return {"token": token, "mode": "local", "network_required": False}
 
+    @app.get("/api/health")
+    def health():
+        with store.connect() as connection:
+            schema = connection.execute("PRAGMA user_version").fetchone()[0]
+        return {
+            "engine_version": ENGINE_VERSION,
+            "artifact_hash": engine_artifact_hash(),
+            "database_schema": schema,
+        }
+
     @app.get("/api/runs")
-    def runs():
-        return store.list_runs()
+    def runs(request: Request):
+        return selected(request).list_runs()
 
     @app.get("/api/runs/{run_id}")
-    def get_run(run_id: str):
-        return store.load(run_id)
+    @limited
+    def get_run(run_id: str, request: Request):
+        return selected(request).load(run_id)
 
     @app.get("/api/configs")
-    def configs():
-        return store.configs()
+    def configs(request: Request):
+        return selected(request).configs()
+
+    @app.get("/api/workspaces")
+    def workspace_list():
+        return workspaces.list()
+
+    @app.get("/api/workspace/status")
+    def workspace_status(request: Request):
+        store = selected(request)
+        receipts = [c["payload"] for c in store.configs() if c["kind"] == "backup_receipt"]
+        return {"identity": store.identity(), "last_backup": receipts[0] if receipts else None}
+
+    @app.post("/api/workspaces")
+    async def workspace_create(request: Request):
+        body = load_json(await request.body())
+        if not isinstance(body, dict) or set(body) != {"name"}:
+            raise ValueError("Indicar solamente el nombre del nuevo cliente o espacio local.")
+        return await run_in_threadpool(workspaces.create, body["name"])
+
+    @app.get("/api/workspace/backup")
+    @limited
+    def workspace_backup(request: Request):
+        backup = workspaces.backup(selected(request))
+        return FileResponse(
+            backup,
+            media_type="application/octet-stream",
+            filename="calibre-backup.db",
+            background=BackgroundTask(shutil.rmtree, backup.parent),
+        )
+
+    @app.post("/api/workspaces/restore")
+    async def workspace_restore(file: Annotated[UploadFile, File()], name: Annotated[str, Form()]):
+        data = await file.read(MAX_FILE_BYTES + 1)
+        if len(data) > MAX_FILE_BYTES:
+            raise ValueError(
+                "El respaldo supera 25 MB. Restaurarlo con la herramienta local de línea de comandos para conservar su contenido completo."
+            )
+        return await heavy(workspaces.create, name, data)
 
     @app.post("/api/configs/{kind}")
     async def save_config(kind: str, request: Request):
+        store = selected(request)
         value = load_json(await request.body())
         if kind == "mapping":
             model = ImportMapping.model_validate(value)
@@ -146,16 +337,32 @@ def create_app(db_path: Path) -> FastAPI:
         return {"hash": store.save_config(kind, name, model.model_dump(mode="json"))}
 
     @app.post("/api/import")
-    async def preview(file: Annotated[UploadFile, File()], mapping: Annotated[str, Form()]):
+    async def preview(
+        request: Request,
+        file: Annotated[UploadFile, File()],
+        mapping: Annotated[str, Form()],
+        compact: Annotated[bool, Form()] = False,
+    ):
+        store = selected(request)
         data = await file.read(MAX_FILE_BYTES + 1)
         config = ImportMapping.model_validate(load_json(mapping))
-        result = import_data(data, file.filename or "archivo", config)
-        store.put_source(data)
-        store.save_config("mapping", f"{config.id}@{config.version}", config.model_dump(mode="json"))
-        return result
+        return await heavy(perform_import, data, file.filename or "archivo", config, store, compact)
+
+    @app.get("/api/imports/{identifier}/issues")
+    @limited
+    def import_issues(identifier: str, request: Request, page: int = 0):
+        store = selected(request)
+        if page < 0:
+            raise ValueError("Seleccionar una página de incidencias válida.")
+        imported = store.load_import(identifier)
+        total = len(imported["issues"])
+        if page and page * 50 >= total:
+            raise ValueError("La página de incidencias no existe; volver a la primera página.")
+        return {"issues": imported["issues"][page * 50 : (page + 1) * 50], "page": page, "total": total}
 
     @app.post("/api/evidence-file")
-    async def evidence_file(file: Annotated[UploadFile, File()]):
+    async def evidence_file(request: Request, file: Annotated[UploadFile, File()]):
+        store = selected(request)
         data = await file.read(MAX_FILE_BYTES + 1)
         if len(data) > MAX_FILE_BYTES:
             raise ValueError("El adjunto supera 25 MB; aportar un archivo más pequeño.")
@@ -166,17 +373,17 @@ def create_app(db_path: Path) -> FastAPI:
 
     @app.post("/api/audit/preflight")
     async def preflight(request: Request):
-        dataset = Dataset.model_validate(load_json(await request.body()))
-        return matching_preflight(dataset)
+        return await heavy(perform_audit, load_json(await request.body()), selected(request), True)
 
     @app.post("/api/audit")
     async def run_audit(request: Request):
-        dataset = Dataset.model_validate(load_json(await request.body()))
-        result = audit(dataset)
-        return {"run_id": store.save(dataset, result)}
+        store = selected(request)
+        return await heavy(perform_audit, load_json(await request.body()), store)
 
     @app.post("/api/demo")
-    def demo():
+    @limited
+    def demo(request: Request):
+        store = selected(request)
         fixture_path = Path(__file__).resolve().parents[2] / "fixtures"
         if fixture_path.exists():
             return run_demo(store, fixture_path)
@@ -185,15 +392,20 @@ def create_app(db_path: Path) -> FastAPI:
             return run_demo(store, Path(directory))
 
     @app.post("/api/runs/{run_id}/replay")
-    def replay(run_id: str):
-        return store.replay(run_id)
+    @limited
+    def replay(run_id: str, request: Request):
+        return selected(request).replay(run_id)
 
     @app.post("/api/runs/{run_id}/decisions")
     async def decision(run_id: str, request: Request):
-        return store.add_decision(run_id, Decision.model_validate(load_json(await request.body())))
+        return selected(request).add_decision(
+            run_id, Decision.model_validate(load_json(await request.body()))
+        )
 
     @app.get("/api/runs/{run_id}/export/{format}")
-    def export(run_id: str, format: str):
+    @limited
+    def export(run_id: str, format: str, request: Request):
+        store = selected(request)
         run = store.load(run_id)
         if format == "canonical":
             return Response(
@@ -220,6 +432,18 @@ def create_app(db_path: Path) -> FastAPI:
                 headers={"Content-Disposition": 'attachment; filename="auditoria.zip"'},
             )
         raise HTTPException(404, "Formato no disponible.")
+
+    @app.get("/api/sources/{source_hash}")
+    @limited
+    def original(source_hash: str, request: Request, filename: str = "documento-original"):
+        data = selected(request).source(source_hash)
+        return Response(
+            data,
+            media_type="application/octet-stream",
+            headers={
+                "Content-Disposition": "attachment; filename*=UTF-8''" + quote(source_filename(filename))
+            },
+        )
 
     app.mount("/static", StaticFiles(directory=static), name="static")
     return app

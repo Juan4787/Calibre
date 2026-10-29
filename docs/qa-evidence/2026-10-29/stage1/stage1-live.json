@@ -1,0 +1,9 @@
+{
+  "url": "http://127.0.0.1:8765",
+  "page_status": 200,
+  "installed_js_sha256": "43ad6f4bb4753f9b43275b96e864f522dde237d111ab70dce95629d17d8f129d",
+  "runs": 0,
+  "version": "0.2.0",
+  "service": "calibre-freight.service",
+  "loopback_only": true
+}

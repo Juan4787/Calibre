@@ -6,6 +6,8 @@
 
 El responsable obtiene, por fuera de Freight Audit, la lista de originales del período, el SHA-256 de cada uno, la cantidad de filas de operaciones y cargos por archivo y los importes de cargos por moneda. Conserva ese control separado de la corrida y de los resultados previos. No lo genera copiando el JSON ni los totales calculados por Freight Audit: eso haría circular la comparación. Los anexos de evidencia también integran `source_hashes`, aunque no tengan filas de operaciones o cargos.
 
+Desde 0.3.0 el asistente permite cargar este control en Verificación y conserva el archivo JSON interpretado dentro del snapshot. Un control contradictorio bloquea guardar; sin control, el alcance completo del período queda pendiente. También se incluyen los respaldos contractuales en el inventario. El CLI admite la ruta `external_control` en `project.json`. El verificador QA separado sigue siendo una segunda comparación y no una fuente automática de verdad.
+
 El formato `freight-audit-external-control/v1` exige exactamente:
 
 - `source_hashes`: hashes SHA-256 de todos los originales esperados, sin repetidos.

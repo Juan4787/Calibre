@@ -1,0 +1,9 @@
+{
+  "version": "0.2.0",
+  "current": "/home/usuario/.local/share/calibre/releases/0.2.0",
+  "previous": null,
+  "database": "/home/usuario/.local/share/calibre/workspaces/default/audit.db",
+  "backup": null,
+  "wheel_sha256": "de0acaeef0a1d675df6ec1365cee39e25256fe95e56c280e6c5f960de55a7ea3",
+  "activated_at": "2026-10-29T06:33:43.436814+00:00"
+}

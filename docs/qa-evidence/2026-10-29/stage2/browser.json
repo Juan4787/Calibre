@@ -1,0 +1,80 @@
+{
+  "run_id": "5f0ecf85f5f424aee18660fcb21c57b2134a5072d7f713c3e557f070eb1392bb",
+  "result_hash": "db4942ede0038dd4cbd6995a614b2e19f5f98456f0762ab779e926072a2e2eaa",
+  "rows_observed": 46,
+  "channels": {
+    "json": "checked",
+    "xlsx": "checked",
+    "html": "checked",
+    "api": "checked supplied response",
+    "ui": "46 actual DOM rows; all pages; exact cells and statuses"
+  },
+  "onr003": {
+    "loaded_mapping": "errores-demo@1",
+    "saved_selection_cleared": true,
+    "manual_survives_file_change": true
+  },
+  "onr005_views": {
+    "configs": true,
+    "guide": true,
+    "nonempty_inline_styles": 0
+  },
+  "onr001": {
+    "conflicting_run": "0e19897ec4c2d49623e58feb9df1fd0fd4fb1217cc9d0819e614e699680a64c0",
+    "corrected_run": "5aca87d902e174ba1254f00a20c9e5ce40a0f00188d2461b0f6b8921acd90edf",
+    "confirmed_net_conflict": "-75",
+    "confirmed_net_corrected": "-25",
+    "rows_observed": 44,
+    "channels": {
+      "json": "checked",
+      "xlsx": "checked",
+      "html": "checked",
+      "api": "checked supplied response",
+      "ui": "44 actual DOM rows; exact cells and statuses"
+    },
+    "stale_preflight_discarded": true,
+    "retry_verified": true,
+    "decision_preserved_uncertainty": true,
+    "replay_identical": true
+  },
+  "uncertainty": {
+    "invalid_net": "0",
+    "corrected_net": "-50",
+    "false_missing": 0,
+    "history_preserved": true
+  },
+  "loading_and_paging": {
+    "config_fetch_race": "protected",
+    "file_read_races": "protected",
+    "warning_count": 121,
+    "max_list_rows": 50,
+    "mobile_width": 390
+  },
+  "operations": {
+    "keyboard_file_chooser": true,
+    "conversion_preview": true,
+    "document_control_positive_and_negative": true,
+    "contract_original_download_identical": true,
+    "immutable_revision_links": true,
+    "workspace_isolation": true,
+    "backup_restore_replay": true,
+    "network_failure_recovery": true,
+    "scope": "Fictional client only; independent totals 194.25 + 204.25 = 398.5 USD"
+  },
+  "product_path": "/home/usuario/CascadeProjects/CALIBRE/src/freight_audit/__init__.py",
+  "ui_sha256": "a19a58b3e7042f2e6718efb85ff14235f0ee07ea8e612c6c75f2371db3b614b2",
+  "browser": "153.0.8010.12",
+  "listener_scope": "127.0.0.1 only, inspected in /proc/net/tcp",
+  "network_boundary": {
+    "foreign_origin": "http://127.0.0.1:34185",
+    "browser_readable": false,
+    "runs_created": 0
+  },
+  "console_errors": [
+    "Failed to load resource: the server responded with a status of 422 (Unprocessable Entity)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "csp_rejections": [],
+  "passed": true
+}

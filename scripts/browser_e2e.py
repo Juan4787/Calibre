@@ -231,7 +231,7 @@ def exercise(page, client, destination):
             held = []
 
             def hold(route, _request, held=held):
-                held.append((route, route.fetch()))
+                held.append(route)
 
             page.route("**/api/import", hold)
             page.locator(f"#validate-{role}").click()
@@ -247,16 +247,49 @@ def exercise(page, client, destination):
                     "buffer": (ROOT / "fixtures" / filename).read_bytes(),
                 }
             )
-            held[0][0].fulfill(response=held[0][1])
+            with page.expect_response(lambda response: response.url.endswith("/api/import")) as released:
+                held[0].continue_()
+            assert released.value.status == 200, (
+                "The held original browser upload must reach the server intact"
+            )
             expect(page.locator(f"#validate-{role}")).to_be_enabled()
             expect(page.locator(f"#result-{role}")).to_have_text(
                 "Validar para ver filas aceptadas, rechazos y origen de los datos."
             )
             page.unroute("**/api/import", hold)
+        pending_charges = []
+        if role == "charges":
+
+            def hold_charges(route, _request, pending_charges=pending_charges):
+                pending_charges.append(route)
+
+            page.route("**/api/import", hold_charges)
         page.locator(f"#validate-{role}").click()
-        expect(page.locator(f"#result-{role}")).to_contain_text("filas aceptadas")
+        if role == "charges":
+            for _ in range(100):
+                if pending_charges:
+                    break
+                page.wait_for_timeout(20)
+            assert pending_charges, "Charge import request did not reach server"
+            expect(page.locator("#result-charges")).to_have_text(
+                "Validar para ver filas aceptadas, rechazos y origen de los datos."
+            )
+            page.locator("#goto-step-2").click()
+            expect(page.locator("#step-panel-1")).to_be_visible()
+            expect(page.locator("#notice")).to_contain_text("Validá los archivos")
+            with page.expect_response(lambda response: response.url.endswith("/api/import")) as released:
+                pending_charges[0].continue_()
+            assert released.value.status == 200, (
+                "The held original charge upload must reach the server intact"
+            )
+            page.unroute("**/api/import", hold_charges)
+        expect(page.locator(f"#result-{role}")).to_contain_text(
+            f"{32 if role == 'shipments' else 46} filas aceptadas"
+        )
+        expect(page.locator(f"#validate-{role}")).to_be_enabled()
     page.locator("#audit-label").fill("QA interfaz actual")
     page.locator("#goto-step-2").click()
+    expect(page.locator("#step-panel-2")).to_be_visible()
     page.locator("#agreement-file").set_input_files(ROOT / "fixtures/agreements.json")
     expect(page.locator("#agreements")).not_to_have_value("[]")
     page.locator("#goto-step-3").click()
@@ -652,6 +685,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=ROOT / "output/playwright/rigor")
     parser.add_argument("--installed-root", type=Path)
+    parser.add_argument(
+        "--runtime-python",
+        default=sys.executable,
+        help="Python of the installed backend; the browser driver stays in the QA environment",
+    )
     args = parser.parse_args()
     args.output_dir = args.output_dir.resolve()
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -668,7 +706,7 @@ def main():
         if not args.installed_root:
             env["PYTHONPATH"] = str(ROOT / "src")
         probe = subprocess.check_output(
-            [sys.executable, "-c", "import freight_audit; print(freight_audit.__file__)"],
+            [args.runtime_python, "-c", "import freight_audit; print(freight_audit.__file__)"],
             cwd=td,
             env=env,
             text=True,
@@ -686,7 +724,7 @@ def main():
         with (args.output_dir / "server.log").open("w") as log:
             server = subprocess.Popen(
                 [
-                    sys.executable,
+                    args.runtime_python,
                     "-m",
                     "freight_audit.cli",
                     "--db",
@@ -743,6 +781,9 @@ def main():
                             result["loading_and_paging"] = exercise_loading_and_paging(
                                 page, client, args.output_dir, ROOT
                             )
+                            from scripts.browser_operations import exercise_operations
+
+                            result["operations"] = exercise_operations(page, client, args.output_dir, ROOT)
                             assert not errors, errors
                             csp_rejections = [
                                 message
@@ -758,6 +799,7 @@ def main():
                             ), console_errors
                             result.update(
                                 product_path=probe,
+                                runtime_python=args.runtime_python,
                                 ui_sha256=script_hash,
                                 browser=browser.version,
                                 listener_scope=listener_scope,

@@ -208,6 +208,100 @@
       "title": "Charge",
       "type": "object"
     },
+    "ContractSource": {
+      "additionalProperties": false,
+      "properties": {
+        "document_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Document Hash",
+          "type": "string"
+        },
+        "agreement": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Agreement",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "rule": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rule"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        },
+        "clause": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Clause"
+        },
+        "approved_by": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approved By"
+        },
+        "approved_on": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approved On"
+        }
+      },
+      "required": [
+        "document_hash",
+        "agreement",
+        "version"
+      ],
+      "title": "ContractSource",
+      "type": "object"
+    },
     "DataIssue": {
       "additionalProperties": false,
       "properties": {
@@ -987,6 +1081,68 @@
       },
       "title": "Coverage",
       "type": "object"
+    },
+    "contract_sources": {
+      "items": {
+        "$ref": "#/$defs/ContractSource"
+      },
+      "title": "Contract Sources",
+      "type": "array"
+    },
+    "external_control": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "External Control"
+    },
+    "parent_run_id": {
+      "anyOf": [
+        {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Run Id"
+    },
+    "revision_kind": {
+      "anyOf": [
+        {
+          "enum": [
+            "correction",
+            "evidence"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Revision Kind"
+    },
+    "revision_note": {
+      "anyOf": [
+        {
+          "minLength": 3,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Revision Note"
     }
   },
   "required": [

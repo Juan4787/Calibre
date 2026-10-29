@@ -2146,3 +2146,14 @@ footer {
   font-size:13px;
   margin:0;
 }
+/* Workspace identity stays visible while reviewing or preparing a batch. */
+.workspace-picker { margin: 0 18px 18px; }
+.workspace-picker label { color: inherit; }
+.workspace-picker select { width: 100%; min-width: 0; }
+.mono { overflow-wrap: anywhere; }
+@media (max-width: 768px) {
+  .sidebar .brand { margin-bottom: 12px; }
+  .sidebar .nav-label { display: none; }
+  .workspace-picker { margin: 0 0 12px; }
+  .sidebar .local { display: none; }
+}

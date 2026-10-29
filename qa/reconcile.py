@@ -117,6 +117,7 @@ def reconcile(directory: Path, *, api_run=None, observed_ui=None) -> dict:
         for record in snapshot[entity]:
             source_hashes.update(ref["document"] for ref in record.get("provenance", {}).values())
     source_hashes.update(e["document_hash"] for e in snapshot["evidence"] if e.get("document_hash"))
+    source_hashes.update(c["document_hash"] for c in snapshot.get("contract_sources", []))
     for source_hash in source_hashes:
         path = _contained(directory, "sources/" + source_hash)
         if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != source_hash:
@@ -184,6 +185,13 @@ def reconcile(directory: Path, *, api_run=None, observed_ui=None) -> dict:
                         if proof
                         else "Auditoría histórica sin registro de cotejo contra originales. La completitud documental requiere control independiente."
                     )
+                    control = run.get("metadata", {}).get("document_control")
+                    if control:
+                        note += " " + (
+                            "Control documental: inventario, cantidades e importes coinciden con el control aportado."
+                            if control["status"] == "matched"
+                            else "Control documental independiente pendiente."
+                        )
                     wanted.append(["", "Procedencia", note])
                 if rows(actual_summary) != rows(wanted):
                     errors.append("INV-23 XLSX Resumen: metrics differ")

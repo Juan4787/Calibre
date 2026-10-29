@@ -12,6 +12,7 @@ from .models import Agreement, Dataset, Decision
 from .project import load_project
 from .reporting import export_run, verify_bundle
 from .storage import Store, engine_artifact_hash
+from .workspaces import Workspaces
 
 
 def main():
@@ -52,6 +53,12 @@ def main():
     decision.add_argument("decision", type=Path)
     backup = commands.add_parser("backup")
     backup.add_argument("destination", type=Path)
+    restore = commands.add_parser(
+        "restore-workspace",
+        help="Verificar un respaldo e incorporarlo como otra base, sin reemplazar las existentes",
+    )
+    restore.add_argument("backup", type=Path)
+    restore.add_argument("--name", required=True)
     serve = commands.add_parser("serve")
     serve.add_argument("--port", type=int, default=8765)
     schemas = commands.add_parser("schemas")
@@ -135,6 +142,8 @@ def main():
             elif args.command == "backup":
                 store.backup(args.destination)
                 result = {"backup": str(args.destination)}
+            elif args.command == "restore-workspace":
+                result = Workspaces(store).create(args.name, read_bounded(args.backup, 500 * 1024 * 1024))
             else:
                 raise ValueError("Comando desconocido.")
         print(json.dumps(result, ensure_ascii=False, indent=2))

@@ -26,11 +26,17 @@
   "browser": {
     "passed": true
   },
-  "publication": "pending",
-  "installed": "pending",
+  "publication": "published",
+  "installed": "active",
   "scope": "Synthetic local verification; no real-client or Windows Excel certification",
   "installed_smoke": true,
   "installed_browser": true,
   "source_commit": "a237fd136c9fb759504852ac365dfc2e77bc360b",
-  "pull_request": "https://github.com/Juan4787/Calibre/pull/1"
+  "pull_request": "https://github.com/Juan4787/Calibre/pull/1",
+  "merge_commit": "30d774cc5695103e4396cc78d2b5db5daa63e6a9",
+  "release": "https://github.com/Juan4787/Calibre/releases/tag/v0.2.0",
+  "release_tag_workflow": "40830562663 failed: installer inherited checkout PYTHONPATH",
+  "release_gate_after_ci_fix": "40833070930 success on 7dbc16d651472af955a8e5688075cd280f5bc372 (same product files; CI installation fix)",
+  "local_url": "http://127.0.0.1:8765",
+  "schema": 1
 }

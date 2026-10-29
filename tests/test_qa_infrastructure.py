@@ -188,6 +188,9 @@ def test_impact_is_read_only_and_retains_unknowns(tmp_path):
     assert inventory(path, {"currency": "USD"})["candidates"] == []
     with sqlite3.connect(path) as conn:
         conn.execute("DROP TRIGGER immutable_runs_UPDATE")
+        # Bypass the JSON expression index as well to simulate a corrupt DB,
+        # rather than merely proving SQLite rejects a malformed indexed value.
+        conn.execute("DROP INDEX runs_parent")
         conn.execute("UPDATE runs SET snapshot='{' WHERE id=?", (run_id,))
     assert inventory(path, {"currency": "USD"})["candidates"][0]["classification"] == "unknown"
     absent = tmp_path / "absent.db"

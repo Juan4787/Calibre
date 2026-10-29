@@ -1,0 +1,25 @@
+{
+  "scope": "Synthetic volume and API lifecycle; one billed operation, not 36000 priced charges or a real client",
+  "rows": 36000,
+  "sources_bytes": {
+    "shipments": 960913,
+    "charges": 95
+  },
+  "compact_response_bytes": {
+    "shipments": 6836,
+    "charges": 1482
+  },
+  "audit_request_bytes": 1480,
+  "old_style_request_bytes": 48528135,
+  "original_barrier_exceeded": true,
+  "run_id": "c076758c15f7d989cd9846d944d8fe0343b8c5e7920a22c93dcda42e519d71b2",
+  "result_hash": "21733f7ab6e6155af8246c037e24ac03292db70f5b74745d87890c7bfd5b9b60",
+  "engine_artifact_hash": "fdd667513b48127a6a1c2e1475e05a6c27326e30d82841851d7777db7a8e702f",
+  "checked_records": 36001,
+  "replay_identical": true,
+  "actual": "100",
+  "expected": "100",
+  "confirmed_net_difference": "0",
+  "elapsed_seconds": 41.489,
+  "passed": true
+}

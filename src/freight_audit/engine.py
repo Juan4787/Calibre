@@ -20,7 +20,20 @@ def field_value(record: Shipment | Charge, field: str) -> str | bool | None:
 
 
 def semantic_input(dataset: Dataset) -> dict:
-    data = dataset.model_dump(mode="json", exclude={"documents", "mappings", "label", "issues"})
+    data = dataset.model_dump(
+        mode="json",
+        exclude={
+            "documents",
+            "mappings",
+            "label",
+            "issues",
+            "contract_sources",
+            "external_control",
+            "parent_run_id",
+            "revision_kind",
+            "revision_note",
+        },
+    )
     for key in ("shipments", "charges", "agreements", "evidence"):
         for record in data[key]:
             record.pop("provenance", None)

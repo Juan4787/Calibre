@@ -12,6 +12,8 @@ Freight Audit es un monolito modular local. No necesita internet para importar, 
 | `engine.py` | Matching, versiones, cargos esperados, comparación, evidencia, estados y agregados |
 | `importing.py` | Lectura tabular, conversiones declaradas, preview, rechazos y procedencia por celda |
 | `storage.py` | SQLite, originales por contenido, snapshots inmutables, decisiones anexadas, replay y backup |
+| `provenance.py`, `document_control.py` | Cotejo contra originales/mappings y comparación racional de control documental aportado |
+| `workspaces.py` | Bases locales separadas, registro de espacios, backup verificado y restauración sin reemplazar |
 | `reporting.py` | XLSX, HTML imprimible y paquete portable verificable |
 | `project.py`, `cli.py` | Orquestación reproducible desde archivos |
 | `server.py`, `static/` | Adaptador HTTP de loopback e interfaz local |
@@ -89,9 +91,9 @@ Las decisiones se agregan con responsable declarado, motivo, evidencia ya presen
 - Snapshot de datasets, acuerdos, mappings, problemas de datos y evidencia.
 - Hash semántico que ignora etiqueta, procedencia incidental y orden de filas; sí incorpora la condición de importación incompleta.
 - Hash exacto del snapshot, resultado y artefacto fuente del núcleo.
-- Identidad de corrida derivada de esos hashes. Repetir exactamente una corrida es idempotente.
+- Identidad de corrida derivada de esos hashes. Desde 0.3 incluye además hash de metadata (run_identity_version=2); conserva lectura de identidades históricas de tres componentes. Repetir exactamente snapshot, resultado, artefacto y metadata es idempotente. El entorno y el espacio local también quedan ligados; no son una autenticación de cliente u operador.
 - Versión del motor y metadata del entorno (Python y dependencias).
-- SQLite schema v1; inicialización/migración y reapertura idempotentes, rechazo de schemas futuros.
+- SQLite schema v2 desde 0.3: imports inmutables e índice de revisiones, migración aditiva transaccional desde v1; reapertura idempotente y rechazo de schemas futuros. Restaurar el backup v1 antes de volver a ejecutar 0.2 sobre datos de esa versión.
 - Tablas con bloqueo de UPDATE/DELETE por triggers. Las decisiones forman una cadena de hashes.
 - `replay` verifica originales y resultado; exige el mismo artefacto del motor. Conservar el wheel, lock y fuentes de cada release.
 
