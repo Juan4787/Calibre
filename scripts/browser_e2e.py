@@ -231,7 +231,7 @@ def exercise(page, client, destination):
             held = []
 
             def hold(route, _request, held=held):
-                held.append((route, route.fetch()))
+                held.append(route)
 
             page.route("**/api/import", hold)
             page.locator(f"#validate-{role}").click()
@@ -247,7 +247,11 @@ def exercise(page, client, destination):
                     "buffer": (ROOT / "fixtures" / filename).read_bytes(),
                 }
             )
-            held[0][0].fulfill(response=held[0][1])
+            with page.expect_response(lambda response: response.url.endswith("/api/import")) as released:
+                held[0].continue_()
+            assert released.value.status == 200, (
+                "The held original browser upload must reach the server intact"
+            )
             expect(page.locator(f"#validate-{role}")).to_be_enabled()
             expect(page.locator(f"#result-{role}")).to_have_text(
                 "Validar para ver filas aceptadas, rechazos y origen de los datos."
@@ -257,7 +261,7 @@ def exercise(page, client, destination):
         if role == "charges":
 
             def hold_charges(route, _request, pending_charges=pending_charges):
-                pending_charges.append((route, route.fetch()))
+                pending_charges.append(route)
 
             page.route("**/api/import", hold_charges)
         page.locator(f"#validate-{role}").click()
@@ -273,7 +277,11 @@ def exercise(page, client, destination):
             page.locator("#goto-step-2").click()
             expect(page.locator("#step-panel-1")).to_be_visible()
             expect(page.locator("#notice")).to_contain_text("Validá los archivos")
-            pending_charges[0][0].fulfill(response=pending_charges[0][1])
+            with page.expect_response(lambda response: response.url.endswith("/api/import")) as released:
+                pending_charges[0].continue_()
+            assert released.value.status == 200, (
+                "The held original charge upload must reach the server intact"
+            )
             page.unroute("**/api/import", hold_charges)
         expect(page.locator(f"#result-{role}")).to_contain_text(
             f"{32 if role == 'shipments' else 46} filas aceptadas"
