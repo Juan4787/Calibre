@@ -34,7 +34,7 @@ HTTP prepara un archivo privado completo y lo sirve por bloques. TemporaryArtifa
 
 ## Dependencias y builds
 
-requirements.lock y requirements-browser.lock mantienen las versiones anteriores y agregan hashes SHA-256 de todos los archivos de cada release obtenidos de su metadata oficial PyPI. No es un lock sólo Linux; pip selecciona el archivo compatible y comprueba su hash. La instalación con hashes se activa automáticamente al contenerlos y el instalador además exige --require-hashes. No confundir identidad de archivos con ausencia de vulnerabilidades. El bootstrap de Python/pip y la descarga del navegador requieren red; la auditoría de producto funciona localmente.
+requirements.lock y requirements-browser.lock mantienen las versiones anteriores y agregan hashes SHA-256 de todos los archivos de cada release obtenidos de su metadata oficial PyPI. Se fija además colorama0.4.6, dependencia condicional de Windows que antes se resolvía sin pin, con marcador sys_platform==win32 y sus hashes. check_lock_closure.py coteja dependencias activas contra metadata oficial para Python3.12/Linux/Windows y complementa la instalación nativa. No es un lock sólo Linux; pip selecciona el archivo compatible y comprueba su hash. La instalación con hashes se activa automáticamente al contenerlos y el instalador además exige --require-hashes. No confundir identidad de archivos con ausencia de vulnerabilidades. El bootstrap de Python/pip y la descarga del navegador requieren red; la auditoría de producto funciona localmente.
 
 Regeneración deliberada, revisando el diff:
 

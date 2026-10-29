@@ -44,3 +44,16 @@ def test_sdist_normalization_removes_owners_headers_and_gzip_metadata(tmp_path):
         normalize(path, 1700000000)
         assert archive_contents(path) == before
     assert paths[0].read_bytes() == paths[1].read_bytes()
+
+
+def test_lock_environment_checks_respect_conditional_windows_dependency():
+    from pathlib import Path
+
+    from scripts.verify_delivery import expected_pins
+
+    lock = (Path(__file__).resolve().parents[1] / "requirements.lock").read_text()
+    linux = expected_pins(lock, {"sys_platform": "linux"})
+    windows = expected_pins(lock, {"sys_platform": "win32"})
+    assert "colorama" not in linux
+    assert windows.pop("colorama") == "0.4.6"
+    assert linux == windows

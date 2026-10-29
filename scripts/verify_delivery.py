@@ -17,6 +17,8 @@ import zipfile
 import zlib
 from pathlib import Path
 
+from packaging.requirements import Requirement
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -50,6 +52,16 @@ def archive_contents(path):
         }
 
 
+def expected_pins(lock, environment=None):
+    expected = {}
+    for line in lock.splitlines():
+        if re.match(r"^[A-Za-z0-9_.-]+==", line):
+            requirement = Requirement(line.removesuffix("\\").strip())
+            if requirement.marker is None or requirement.marker.evaluate(environment):
+                expected[requirement.name.lower().replace("_", "-")] = str(requirement.specifier)[2:]
+    return expected
+
+
 def pinned_environment(venv_python, lock):
     freeze = command([venv_python, "-m", "pip", "freeze"])
     installed = {
@@ -58,12 +70,7 @@ def pinned_environment(venv_python, lock):
         if "==" in line
         for name, version in [line.split("==", 1)]
     }
-    expected = {
-        name.lower().replace("_", "-"): version
-        for line in lock.splitlines()
-        if re.match(r"^[A-Za-z0-9_.-]+==", line)
-        for name, version in [line.split()[0].split("==", 1)]
-    }
+    expected = expected_pins(lock)
     if any(installed.get(name) != version for name, version in expected.items()):
         raise RuntimeError("The isolated environment differs from requirements.lock")
     command([venv_python, "-m", "pip", "check"])

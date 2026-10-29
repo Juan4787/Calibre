@@ -14,7 +14,13 @@ from pathlib import Path
 
 
 def refresh(path):
-    pins = re.findall(r"^([A-Za-z0-9_.-]+)==([^\s\\]+)", path.read_text(), re.M)
+    pins = []
+    for line in path.read_text().splitlines():
+        match = re.match(r"^([A-Za-z0-9_.-]+)==([^\s;\\]+)(.*)", line)
+        if match:
+            tail = match[3].strip().removesuffix("\\").strip()
+            marker = tail if tail.startswith(";") else ""
+            pins.append((match[1], match[2], marker))
     if not pins:
         raise ValueError("No exact package pins found")
     lines = [
@@ -22,7 +28,7 @@ def refresh(path):
         "# Regenerate: python3 scripts/lock_hashes.py " + path.name,
         "# Install: python -m pip install --require-hashes -r " + path.name,
     ]
-    for name, version in pins:
+    for name, version, marker in pins:
         url = f"https://pypi.org/pypi/{name}/{version}/json"
         with urllib.request.urlopen(url, timeout=30) as response:
             metadata = json.load(response)
@@ -31,7 +37,7 @@ def refresh(path):
         hashes = sorted({file["digests"]["sha256"] for file in metadata["urls"]})
         if not hashes or any(not re.fullmatch("[0-9a-f]{64}", value) for value in hashes):
             raise ValueError(f"Missing distribution hashes from {url}")
-        lines += [f"# {url}", f"{name}=={version} \\"]
+        lines += [f"# {url}", f"{name}=={version}{' ' + marker if marker else ''} \\"]
         lines += [
             f"    --hash=sha256:{value}" + (" \\" if index < len(hashes) - 1 else "")
             for index, value in enumerate(hashes)
