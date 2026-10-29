@@ -167,3 +167,11 @@ No existen originales/contratos/control independiente de un cliente real. No se 
 ### Commits de etapa 2
 
 Implementación conservada en **3df0785**. Se incorporó origin/main con merge limpio (corrección de CI del PR #2); sólo agregó su nota histórica a esta bitácora, sin modificar el producto de etapa 2. Se publica ahora engineering/operations-0.3.0 para PR protegido. La instalación operativa sigue en 0.2.0. Falta certificación del wheel exacto, CI del PR y entrega efectiva.
+
+### Distribución certificada de etapa 2; activación pendiente
+
+- PR #3: https://github.com/Juan4787/Calibre/pull/3. HEAD inicial **29cd2bc184262c8072cf7d26db2ed227c12d0865**: ambos checks aprobados, run **40921597549**.
+- verify_delivery ejecutado desde árbol limpio: dos archives/checkouts limpios, contenido idéntico, wheel y sdist instalados y smoke fuera del checkout; **exactos artefactos certificados conservados** en /tmp/calibre-implementation-20261029-CvSz5k/stage2-assets/. Recibo público stage2/delivery.json. No sustituirlos por otro build al publicar.
+- Entorno preparado **/home/usuario/.local/share/calibre/releases/0.3.0** con el wheel de esos assets, requirements.lock y smoke instalado aprobado. **NO activado**; current sigue 0.2.0 y DB operativa schema 1.
+- E2E sobre Python real del entorno preparado: **passed**, stage2-installed-browser/result.json; product_path dentro de releases/0.3.0. Se agregó a browser_e2e.py --runtime-python para ejecutar backend con su Python, manteniendo Playwright en el entorno de QA. No se agregaron dependencias de navegador a producción. Esta opción conserva el default anterior para CI.
+- Recibos de instalación preparada, wheel/sdist y navegador instalado copiados a evidencia permanente. Falta commit de estos recibos + opción del runner y nueva CI de ese HEAD; luego merge/release/activación. El único cambio ejecutable tras certificar los assets es del runner de QA; ningún archivo de producto ni metadata del wheel cambió.

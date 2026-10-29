@@ -40,6 +40,13 @@
     "rollback_v1_replay": true
   },
   "publication": "pending",
-  "installed": "pending; active version remains 0.2.0",
-  "scope": "Fictional inputs only; real client and operator Windows Excel pending"
+  "installed": "prepared; active version remains 0.2.0",
+  "scope": "Fictional inputs only; real client and operator Windows Excel pending",
+  "source_commit": "3df0785",
+  "distribution_source_commit": "29cd2bc184262c8072cf7d26db2ed227c12d0865",
+  "pull_request": "https://github.com/Juan4787/Calibre/pull/3",
+  "ci_initial": "https://github.com/Juan4787/Calibre/actions/runs/40921597549",
+  "installed_smoke": true,
+  "installed_browser": true,
+  "exact_artifacts_preserved": true
 }

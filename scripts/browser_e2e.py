@@ -652,6 +652,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=ROOT / "output/playwright/rigor")
     parser.add_argument("--installed-root", type=Path)
+    parser.add_argument(
+        "--runtime-python",
+        default=sys.executable,
+        help="Python of the installed backend; the browser driver stays in the QA environment",
+    )
     args = parser.parse_args()
     args.output_dir = args.output_dir.resolve()
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -668,7 +673,7 @@ def main():
         if not args.installed_root:
             env["PYTHONPATH"] = str(ROOT / "src")
         probe = subprocess.check_output(
-            [sys.executable, "-c", "import freight_audit; print(freight_audit.__file__)"],
+            [args.runtime_python, "-c", "import freight_audit; print(freight_audit.__file__)"],
             cwd=td,
             env=env,
             text=True,
@@ -686,7 +691,7 @@ def main():
         with (args.output_dir / "server.log").open("w") as log:
             server = subprocess.Popen(
                 [
-                    sys.executable,
+                    args.runtime_python,
                     "-m",
                     "freight_audit.cli",
                     "--db",
@@ -761,6 +766,7 @@ def main():
                             ), console_errors
                             result.update(
                                 product_path=probe,
+                                runtime_python=args.runtime_python,
                                 ui_sha256=script_hash,
                                 browser=browser.version,
                                 listener_scope=listener_scope,
