@@ -1,0 +1,11 @@
+{
+  "release": "https://github.com/Juan4787/Calibre/releases/tag/v0.3.0",
+  "tag_commit": "7724b5ad19247df16e9a2e017b16c6e8498d12ac",
+  "files_identical_to_certified_assets": {
+    "SHA256SUMS.txt": "393a60953ae5c37edb441caacce78bf2365904eb743f31972241365c7786b64d",
+    "delivery-verification.json": "44b3ee7c915da5bfd73704cc1624d82c8789866649c6eecf6e2f34ba445987f4",
+    "freight_audit-0.3.0-py3-none-any.whl": "c682f5fa639c2f36628fa2fa149486673823e387ca4ccf55f66ee3d5a4871d07",
+    "freight_audit-0.3.0.tar.gz": "119a3b2eff2ca5b91bb8cd8dbd26298cb137ace71e595e1644549626304e192d"
+  },
+  "verified_at": "2026-10-29T18:01:26.319368+00:00"
+}

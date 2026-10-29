@@ -1,0 +1,27 @@
+{
+  "database": "/home/usuario/.local/share/calibre/workspaces/default/audit.db",
+  "previous": "/home/usuario/.local/share/calibre/releases/0.2.0",
+  "before": {
+    "schema": 1,
+    "runs": {
+      "count": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "decisions": {
+      "count": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "configs": {
+      "count": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "sources": {
+      "count": 0,
+      "inventory_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  },
+  "backup": "/home/usuario/.local/share/calibre/backups/before-0.3.0-cutover-20261029T175920403421Z.db",
+  "backup_sha256": "bb16bcb524b077a0ced74d23962d7b7b6cfb47c40e8a50ced3309928f6522f84",
+  "launcher_unsets_pythonpath": true,
+  "service_stopped": true
+}

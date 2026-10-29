@@ -39,8 +39,8 @@
     "history_preserved": true,
     "rollback_v1_replay": true
   },
-  "publication": "pending",
-  "installed": "prepared; active version remains 0.2.0",
+  "publication": "published",
+  "installed": "active",
   "scope": "Fictional inputs only; real client and operator Windows Excel pending",
   "source_commit": "3df0785",
   "distribution_source_commit": "29cd2bc184262c8072cf7d26db2ed227c12d0865",
@@ -48,5 +48,14 @@
   "ci_initial": "https://github.com/Juan4787/Calibre/actions/runs/40921597549",
   "installed_smoke": true,
   "installed_browser": true,
-  "exact_artifacts_preserved": true
+  "exact_artifacts_preserved": true,
+  "merge_commit": "7724b5ad19247df16e9a2e017b16c6e8498d12ac",
+  "release": "https://github.com/Juan4787/Calibre/releases/tag/v0.3.0",
+  "ci_final": "https://github.com/Juan4787/Calibre/actions/runs/40924686583",
+  "ci_main": "https://github.com/Juan4787/Calibre/actions/runs/40925405676",
+  "ci_release": "https://github.com/Juan4787/Calibre/actions/runs/40925586805",
+  "backup_schema": 1,
+  "active_schema": 2,
+  "local_url": "http://127.0.0.1:8765",
+  "wheel_sha256": "c682f5fa639c2f36628fa2fa149486673823e387ca4ccf55f66ee3d5a4871d07"
 }

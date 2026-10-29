@@ -22,3 +22,7 @@ Cada entrega requiere: commit identificado, pruebas del caso que fallaba, regres
 
 - Preservación inicial: código y archivos sin seguimiento guardados fuera del repo; copias SQLite verificadas de las cinco bases locales existentes. Ninguna se declara base de producción.
 - Implementación y recibos por etapa: se incorporan al completar sus verificaciones.
+
+- Etapa 1: entregada 0.2.0, release y primera instalación local verificadas.
+- Etapa 2: entregada 0.3.0, PR #3/main 7724b5a, CI PR/main/release aprobadas, assets exactos descargados y servicio activo con schema2. Recibo stage2/receipt.json.
+- Etapa activa: 3, rendimiento/distribución; recibo stage3/receipt.json (pendiente de implementación). Auditoría final pendiente.
