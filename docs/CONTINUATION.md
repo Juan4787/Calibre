@@ -13,11 +13,12 @@ El usuario exige documentación completa y directrices que se relean después de
 - Cwd: `/home/usuario/CascadeProjects/CALIBRE`.
 - Rama de trabajo: `engineering/staged-hardening-20261029`.
 - HEAD inicial publicado: `fd62f05392f819896589c2a3b271ad49cdcfafbd`, versión 0.1.0.
-- Commit local de preservación: `e5a404e`, conserva los cambios anteriores 0.1.2 (ONR-001..005, pruebas y evidencia). No fue publicado aún.
+- Commit de preservación: `e5a404e`, conserva los cambios anteriores 0.1.2 (ONR-001..005, pruebas y evidencia). Publicado en la rama de trabajo.
+- Commit de etapa 1: `a237fd136c9fb759504852ac365dfc2e77bc360b`, publicado en esa rama. PR: https://github.com/Juan4787/Calibre/pull/1. CI en curso: https://github.com/Juan4787/Calibre/actions/runs/40829017212.
 - Documentación de etapas: `docs/STAGED_HARDENING_2026_10_29.md`. Se acaba de crear, todavía sin commit.
 - Etapa activa: **1, certeza e integridad**, implementación en curso, todavía SIN entrega ni publicación. Versión de trabajo 0.2.0.
-- Publicaciones realizadas durante esta implementación: **ninguna**.
-- Instalación nueva: **todavía no creada**. No hay listener Calibre activo. No hay base operativa definida ni cliente real.
+- Publicaciones realizadas: rama/PR de etapa 1; **main y releases todavía no actualizados**.
+- Instalación nueva: entorno **preparado y verificado, NO activado** en `/home/usuario/.local/share/calibre/releases/0.2.0/`. Smoke y E2E completo del wheel instalado pasaron. No hay listener Calibre activo ni base operativa creada.
 - No hay herramientas Browser activas; está disponible Playwright Python con Chromium. Usar el fallback documentado y pruebas secuenciales.
 - CLI `gh` autenticada con cuenta activa `Juan4787`; git HTTPS tiene acceso de lectura. No se imprimieron secretos. Comprobar escritura al publicar la rama autorizada.
 - No hay agentes secundarios en ejecución. No delegar salvo instrucción explícita aplicable.
@@ -60,9 +61,10 @@ No existen originales/contratos/control independiente de un cliente real. No se 
 
 ## Próxima acción exacta
 
-1. Etapa 1 pasó el gate canónico `scripts/verify.sh` (log `stage1-verify.log`, build wheel/sdist 0.2.0 en `dist/`). Instalación aislada **en preparación**, log `/tmp/calibre-implementation-20261029-CvSz5k/stage1-install.log`; usar el identificador exec vigente entregado por herramientas, o comprobar el log/proceso antes de reintentar. NO está activada.
-2. Revisar resultado de instalación; ejecutar E2E con `--installed-root` sobre el site-packages de `/home/usuario/.local/share/calibre/releases/0.2.0/`. Comparar huellas con el checkout. Preservar recibos de esta comprobación.
-3. Commit de etapa 1 con todos los cambios/evidencia/documentación; publicar rama y abrir PR, comprobar CI exacta. Activar protección con checks observados antes de merge/release. Publicar artefactos, activar instalación y crear servicio local sólo después de verificación. Registrar SHA/URLs/rutas/rollback.
+1. Comprobar CI de PR #1. Preservar/commit de los recibos instalados y esta actualización documental; se disparará CI sobre el nuevo HEAD, que debe aprobar.
+2. Configurar protección de main con los nombres reales de checks exitosos; integrar PR, publicar tag/release 0.2.0 con wheel y sdist concretamente verificados. Conservar el código anterior para replay.
+3. Activar el entorno local preparado con el **mismo wheel** de `dist/`, crear launcher y servicio systemd de usuario en loopback; comprobar puerto/UI/version/ruta y base vacía. Registrar todo.
+4. Cambiar a etapa 2, nueva rama y versión 0.3.0. Diseñar imports conservados con referencias pequeñas (schema SQLite v2, migración sólo probada en copias), teclado y controles documentales.
 
 ## Trabajo de etapa 1 ya realizado y comprobaciones
 
@@ -93,3 +95,10 @@ No existen originales/contratos/control independiente de un cliente real. No se 
 - Evidencia permanente: `docs/qa-evidence/2026-10-29/stage1/` y contrato `docs/ENGINE_0_2_0.md`.
 - `scripts/install_local.py` prepara venv de versión, instala lock+wheel y corre smoke fuera del checkout; sólo activa con --activate, preservando pointer anterior y backup SQLite verificado. Usa bloqueo exclusivo. Todavía no ejercitado completamente: instalación en curso.
 - Los registros enriquecidos con atributos manuales adicionales se cuentan como declarados (aunque sus campos importados sean cotejados), para no atribuir respaldo al registro completo.
+
+### Publicación y entorno descubierto
+
+- Conector GitHub rechazó crear PR con 403 de integración. Se usó la CLI `gh` ya autenticada con permisos ADMIN; no fue un rechazo de aprobación automática. PR #1 creado correctamente.
+- Preparación instalada: log `stage1-install.log`; entorno aislado, lock completo, smoke fuera del checkout. E2E instalado: `stage1-installed-browser/result.json`, passed, ruta de paquete dentro de releases/0.2.0; recibido permanente `installed-browser.json`.
+- Checks de PR revelaron una integración Netlify no documentada. **Sitio público y deploy preview devuelven 404**, igual que /api/session público. No existe backend declarado allí. No confundir check verde del deploy con app operativa. Registro `stage1/netlify-inspection.json`. Destinos elegidos por el usuario: GitHub y primera instalación local; no se configuró un SaaS ni se alteró Netlify.
+- Al retomar, la presencia de esta inspección no autoriza afirmar que Netlify publica el motor ni que es el destino operativo. Mantener el estado real visible en auditoría final.

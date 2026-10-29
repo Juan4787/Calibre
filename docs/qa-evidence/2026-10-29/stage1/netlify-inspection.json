@@ -1,0 +1,8 @@
+{
+  "production_url": "https://calibre-argentina.netlify.app",
+  "production_status": 404,
+  "api_session_status": 404,
+  "preview_url": "https://deploy-preview-1--calibre-argentina.netlify.app",
+  "preview_status": 404,
+  "scope": "Public read-only inspection before merge; no backend is declared on Netlify. Authorized targets are GitHub releases and local installation."
+}

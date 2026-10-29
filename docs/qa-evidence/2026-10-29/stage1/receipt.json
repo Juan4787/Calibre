@@ -28,5 +28,9 @@
   },
   "publication": "pending",
   "installed": "pending",
-  "scope": "Synthetic local verification; no real-client or Windows Excel certification"
+  "scope": "Synthetic local verification; no real-client or Windows Excel certification",
+  "installed_smoke": true,
+  "installed_browser": true,
+  "source_commit": "a237fd136c9fb759504852ac365dfc2e77bc360b",
+  "pull_request": "https://github.com/Juan4787/Calibre/pull/1"
 }
