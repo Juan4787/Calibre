@@ -28,6 +28,9 @@ class Service:
         for path in self.files:
             path.write_text("next configuration")
 
+    def reload(self):
+        self.events.append("reload")
+
     def start(self):
         self.events.append("start")
 
@@ -153,3 +156,49 @@ def test_systemd_refuses_another_installations_service(tmp_path, monkeypatch):
     unit.write_text('[Service]\nWorkingDirectory="/some/other/installation"\n')
     with pytest.raises(ValueError, match="otra instalación"):
         release.SystemdService(tmp_path / "candidate")
+
+
+def test_systemd_working_directory_with_spaces_has_no_command_line_quotes(tmp_path, monkeypatch):
+    import os
+    import shutil
+    import subprocess
+
+    if shutil.which("systemd-analyze") is None:
+        pytest.skip("systemd parser applies to the Linux installer only")
+    monkeypatch.setattr(Path, "home", lambda: tmp_path / "home")
+    root = tmp_path / "installation with spaces"
+    root.mkdir()
+    service = release.SystemdService(root, name="calibre-test.service")
+    service.configure()
+    text = service.unit.read_text()
+    assert f"WorkingDirectory={root}\n" in text
+    assert "After=default.target" not in text
+    assert f'WorkingDirectory="{root}"' not in text
+    # The actual local systemd parser is the oracle for its unit grammar.
+    runtime = tmp_path / "xdg-runtime"
+    runtime.mkdir(mode=0o700)
+    environment = {k: v for k, v in os.environ.items() if k != "DBUS_SESSION_BUS_ADDRESS"}
+    environment["XDG_RUNTIME_DIR"] = str(runtime)
+    verified = subprocess.run(
+        ["systemd-analyze", "--user", "verify", str(service.unit)],
+        capture_output=True,
+        text=True,
+        env=environment,
+    )
+    assert verified.returncode == 0, verified.stderr
+    assert release.SystemdService(root, name="calibre-test.service").root == root
+
+
+def test_stop_of_invalid_unit_without_pid_does_not_mask_original_failure(tmp_path, monkeypatch):
+    import subprocess
+
+    monkeypatch.setattr(Path, "home", lambda: tmp_path / "home")
+    service = release.SystemdService(tmp_path)
+    service.unit.parent.mkdir(parents=True)
+    service.unit.write_text("invalid unit")
+
+    def command(*arguments, check=True):
+        return subprocess.CompletedProcess(arguments, 5, stdout=b"0\n", stderr=b"invalid unit")
+
+    monkeypatch.setattr(service, "command", command)
+    service.stop()

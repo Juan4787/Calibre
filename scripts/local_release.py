@@ -232,10 +232,7 @@ class SystemdService:
             raise ValueError("Seleccionar una ubicación sin caracteres de control.")
         if self.unit.exists():
             configured = re.search(r"^WorkingDirectory=(.+)$", self.unit.read_text(), re.M)
-            if (
-                configured is None
-                or Path(shlex.split(configured[1])[0].replace("%%", "%")).resolve() != root.resolve()
-            ):
+            if configured is None or Path(configured[1].replace("%%", "%")).resolve() != root.resolve():
                 raise ValueError(
                     "Este servicio pertenece a otra instalación. Elegir su raíz correcta u otro --service-name."
                 )
@@ -245,7 +242,15 @@ class SystemdService:
 
     def stop(self):
         if self.unit.exists() or self.command("is-active", "--quiet", self.name, check=False).returncode == 0:
-            self.command("stop", self.name)
+            stopped = self.command("stop", self.name, check=False)
+            if stopped.returncode:
+                pid = self.command(
+                    "show", "--property=MainPID", "--value", self.name, check=False
+                ).stdout.strip()
+                # An invalid/not-loaded unit has no process to stop. Never let
+                # that mask the startup failure or skip preservation/rollback.
+                if pid not in {b"", b"0"}:
+                    stopped.check_returncode()
 
     def configure(self):
         self.launcher.parent.mkdir(parents=True, exist_ok=True)
@@ -265,16 +270,21 @@ class SystemdService:
 
         self.unit.parent.mkdir(parents=True, exist_ok=True)
         self.unit.write_text(
-            "[Unit]\nDescription=Calibre local freight audit\nAfter=default.target\n\n[Service]\nType=simple\nWorkingDirectory="
-            + quoted(self.root)
+            "[Unit]\nDescription=Calibre local freight audit\n\n[Service]\nType=simple\nWorkingDirectory="
+            + str(self.root).replace("%", "%%")
             + "\nExecStart="
             + quoted(self.launcher)
             + "\nUMask=0077\nNoNewPrivileges=true\nRestart=on-failure\nRestartSec=3\n\n[Install]\nWantedBy=default.target\n"
         )
         self.unit.chmod(0o600)
 
-    def start(self):
+    def reload(self):
+        if not self.unit.exists():
+            self.command("disable", self.name, check=False)
         self.command("daemon-reload")
+
+    def start(self):
+        self.reload()
         self.command("enable", "--now", self.name)
 
     def owns_listener(self, port):
@@ -398,6 +408,8 @@ def activate(root, release, checksum_value, *, service=None):
         if manifest is not None:
             preserved = preserve_and_restore(root, manifest)
             restore_service_files(manifest)
+            if service:
+                service.reload()
             atomic_json(
                 root / "activation-failed.json",
                 {
@@ -445,6 +457,8 @@ def rollback(root, *, service=None):
         service.stop()
     preserved = preserve_and_restore(root, manifest)
     restore_service_files(manifest)
+    if service:
+        service.reload()
     switch(root, previous)
     health = None
     if service:
@@ -472,6 +486,8 @@ def recover(root, *, service=None):
         service.stop()
     preserved = preserve_and_restore(root, manifest)
     restore_service_files(manifest)
+    if service:
+        service.reload()
     health = None
     if previous:
         switch(root, previous)

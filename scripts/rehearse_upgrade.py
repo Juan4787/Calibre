@@ -12,6 +12,7 @@ import socket
 import subprocess
 import sys
 import threading
+from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -50,10 +51,11 @@ def main():
         events.append({"action": str(arguments[0]), "exit": result.returncode})
         assert (result.returncode == 0) == (expected == 0), (result.stdout + result.stderr)[-3000:]
 
+    @contextmanager
     def client():
-        connection = httpx.Client(base_url=f"http://127.0.0.1:{port}", timeout=60)
-        connection.headers["X-Freight-Local"] = connection.get("/api/session").json()["token"]
-        return connection
+        with httpx.Client(base_url=f"http://127.0.0.1:{port}", timeout=60) as connection:
+            connection.headers["X-Freight-Local"] = connection.get("/api/session").json()["token"]
+            yield connection
 
     def recorded(connection, workspace):
         listed = connection.get("/api/runs", headers={"X-Freight-Workspace": workspace})

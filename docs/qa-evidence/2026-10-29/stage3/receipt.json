@@ -17,7 +17,7 @@
   "causal_red_failed": 7,
   "workbook_directed_passed": 20,
   "build_normalizer_tests": 2,
-  "installer_tests": 6,
+  "installer_tests": 8,
   "browser": {
     "passed": true,
     "desktop": "1280x720",
@@ -35,5 +35,16 @@
     "baseline_pipeline_median_seconds": 21.9,
     "baseline_peak_rss_mib": 181.74,
     "scope": "same synthetic pipeline including separate XLSX then ZIP; no extrapolation to large clients"
-  }
+  },
+  "real_upgrade_rollback": {
+    "passed": true,
+    "actual_installed_wheels": true,
+    "actual_systemd": true,
+    "databases": 4,
+    "new_run_and_client_preserved": true,
+    "occupied_port_reverts_config_and_port": true
+  },
+  "candidate_sdist": "Predates systemd correction; MUST NOT publish candidate sdist; certify final main/tag again",
+  "pull_request": "https://github.com/Juan4787/Calibre/pull/4",
+  "first_pr_ci": "40933933375 success on d7e4dc5; before systemd correction"
 }
