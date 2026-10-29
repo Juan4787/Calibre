@@ -253,10 +253,35 @@ def exercise(page, client, destination):
                 "Validar para ver filas aceptadas, rechazos y origen de los datos."
             )
             page.unroute("**/api/import", hold)
+        pending_charges = []
+        if role == "charges":
+
+            def hold_charges(route, _request, pending_charges=pending_charges):
+                pending_charges.append((route, route.fetch()))
+
+            page.route("**/api/import", hold_charges)
         page.locator(f"#validate-{role}").click()
-        expect(page.locator(f"#result-{role}")).to_contain_text("filas aceptadas")
+        if role == "charges":
+            for _ in range(100):
+                if pending_charges:
+                    break
+                page.wait_for_timeout(20)
+            assert pending_charges, "Charge import request did not reach server"
+            expect(page.locator("#result-charges")).to_have_text(
+                "Validar para ver filas aceptadas, rechazos y origen de los datos."
+            )
+            page.locator("#goto-step-2").click()
+            expect(page.locator("#step-panel-1")).to_be_visible()
+            expect(page.locator("#notice")).to_contain_text("Validá los archivos")
+            pending_charges[0][0].fulfill(response=pending_charges[0][1])
+            page.unroute("**/api/import", hold_charges)
+        expect(page.locator(f"#result-{role}")).to_contain_text(
+            f"{32 if role == 'shipments' else 46} filas aceptadas"
+        )
+        expect(page.locator(f"#validate-{role}")).to_be_enabled()
     page.locator("#audit-label").fill("QA interfaz actual")
     page.locator("#goto-step-2").click()
+    expect(page.locator("#step-panel-2")).to_be_visible()
     page.locator("#agreement-file").set_input_files(ROOT / "fixtures/agreements.json")
     expect(page.locator("#agreements")).not_to_have_value("[]")
     page.locator("#goto-step-3").click()
