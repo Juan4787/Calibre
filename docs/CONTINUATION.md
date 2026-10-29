@@ -16,12 +16,15 @@ Las tres etapas están entregadas. La [auditoría final](FINAL_AUDIT_2026_10_29.
 - **0.3.0:** operación. PR #3/main 7724b5ad19247df16e9a2e017b16c6e8498d12ac. CI PR/main/tag 40924686583/40925405676/40925586805 aprobadas, assets idénticos e instalación efectiva antes de 0.3.1. [Recibo](qa-evidence/2026-10-29/stage2/receipt.json).
 - **0.3.1 vigente:** recursos/distribución. [PR #4 merged](https://github.com/Juan4787/Calibre/pull/4), main/tag **002ca84c592481083470a701e78d66a496d50ddf**. Head revisado **85a6192a9b3b905f76785ae0f54a150886452d1e**, mismo árbol **40c85f58af1a29ea66f3ce0e80d0a1f5db28a943**. [Release pública](https://github.com/Juan4787/Calibre/releases/tag/v0.3.1) desde 2026-10-29T19:19:05Z. Cuatro archivos descargados idénticos. No reemplazar assets existentes.
 
+Publicación documental: [PR #5](https://github.com/Juan4787/Calibre/pull/5), abierto desde el commit **1a952f58f6b5cffc000629baefd9e0588615d93c**. Este registro se añade antes del último push y merge; su estado final/checks se consultan en ese PR, que es la evidencia autoritativa posterior. No interpretar esta marca temporal como trabajo todavía pendiente si el PR ya figura merged.
+
 Rama de cierre: `engineering/final-audit-0.3.1`, desde 002ca84. Sólo documentación, recibos y runner de QA; no cambió ningún archivo del producto. Obtener procedencia documental sin referencia recursiva:
 
 ```sh
 git log -1 --format=%H -- docs/CONTINUATION.md
 git status --short
-gh pr list --state all --head engineering/final-audit-0.3.1
+gh pr view 5 --json state,mergedAt,mergeCommit,headRefOid,statusCheckRollup
+gh pr checks 5
 ```
 
 La documentación se publica mediante PR protegido y sus dos checks. Antes de responder al usuario se debe comprobar merge y servicio. El tag/paquetes siguen vinculados a 002ca84 aunque main avance con documentación; no reconstruir ni retaguear para incorporar recibos posteriores.
